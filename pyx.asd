@@ -27,4 +27,6 @@
    (:file "input-mouse")
    (:file "input-window")
    (:file "input")
+   (:file "transform")
+   (:file "game-object")
    (:file "game-state")))

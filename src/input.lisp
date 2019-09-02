@@ -118,7 +118,18 @@
      (on-key-up game-state (aref +key-names+ (sdl2:scancode-value keysym))))
     (:keydown
      (:keysym keysym)
-     (on-key-down game-state (aref +key-names+ (sdl2:scancode-value keysym))))))
+     (on-key-down game-state (aref +key-names+ (sdl2:scancode-value keysym))))
+    ;; TODO: gamepad support
+    (:controllerdeviceadded
+     (:which gamepad-id))
+    (:controllerdeviceremoved
+     (:which gamepad-id))
+    (:controlleraxismotion
+     (:which gamepad-id :axis axis :value value))
+    (:controllerbuttonup
+     (:which gamepad-id :button button))
+    (:controllerbuttondown
+     (:which gamepad-id :button button))))
 
 (defun perform-input-tasks (game-state)
   (let* ((input-state (input-state game-state))

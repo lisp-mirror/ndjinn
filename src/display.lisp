@@ -48,9 +48,10 @@
           (values 0 0 0 1)))
     (gl:clear :color-buffer :depth-buffer)))
 
-(defun render-screen (game-state)
+(defun update-display (game-state)
   (with-slots (%clock %display %running-p) game-state
     (when %running-p
       (clear-screen %display)
+      (render-game-objects game-state)
       (sdl2:gl-swap-window (window %display))
       (incf (clock-frame-count %clock)))))

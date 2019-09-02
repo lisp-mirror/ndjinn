@@ -10,32 +10,33 @@
    (%input-state :reader input-state
                  :initform (make-instance 'input-state))
    (%display :accessor display)
+   (%scene-tree :reader scene-tree)
    (%running-p :accessor running-p
                :initform nil)))
 
-(defun make-game-state ()
-  (make-instance 'game-state
-                 :clock (make-clock)))
-
 (defun iterate-main-loop (game-state)
   (with-continue-restart "Pyx"
+    (clock-tick game-state)
     (handle-events game-state)
-    (render-screen game-state)
-    (clock-tick (clock game-state) (refresh-rate (display game-state)))
+    (update-game-objects game-state)
+    (update-display game-state)
     ;; TODO: Remove this later when possible
     (when (input-enter-p game-state '(:key :escape))
       (stop game-state))))
 
+(defun update-physics (game-state)
+  (declare (ignore game-state)))
+
 (defun start ()
   (unwind-protect
-       (let ((game-state (make-game-state)))
-         ;; TODO: init
+       (let ((game-state (make-instance 'game-state)))
          (setup-live-coding)
          (initialize-host game-state)
-         (log:info :pyx "Started Pyx.")
+         (make-clock game-state)
+         (make-scene-tree game-state)
          (setf (running-p game-state) t
                *game-state* game-state)
-         (initialize-clock game-state)
+         (log:info :pyx "Started Pyx.")
          (u:while (running-p game-state)
            (iterate-main-loop game-state)))
     (sdl2:sdl-quit)))
@@ -44,4 +45,4 @@
   (setf (running-p game-state) nil
         *game-state* nil)
   (shutdown-host game-state)
-  (log:info :pyx "Shut down Pyx."))
+  (log:info :pyx "Stopped Pyx."))

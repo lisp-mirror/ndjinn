@@ -11,9 +11,12 @@
                #:cl-opengl
                #:golden-utils
                #:origin
+               #:queues.simple-cqueue
                #:sdl2
                #:sdl2-image
+               #:shadow
                #:uiop
+               #:umbra
                #:verbose)
   :pathname "src"
   :serial t
@@ -27,6 +30,8 @@
    (:file "input-mouse")
    (:file "input-window")
    (:file "input")
+   (:file "scene-graph")
    (:file "transform")
+   (:file "shader")
    (:file "game-object")
    (:file "game-state")))

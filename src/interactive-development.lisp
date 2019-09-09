@@ -18,18 +18,18 @@
              (setf (clock-pause-time ,clock)
                    (- (get-time ,clock) debugger-entry-time))))))))
 
-(defun compile-live-coding-functions ()
+(defun compile-repl-functions ()
   (let ((repl-package (find-if #'find-package '(:slynk :swank))))
     (macrolet ((sym (sym &optional package)
                  (let ((name (symbol-name sym)))
                    `(a:ensure-symbol ,name ,(or package 'repl-package)))))
       (case repl-package
         ((:slynk :swank)
-         (compile 'find-lisp-repl
+         (compile '%find-repl
                   `(lambda ()
                      (or ,(sym :*emacs-connection*)
                          (,(sym :default-connection)))))
-         (compile 'setup-lisp-repl
+         (compile '%setup-repl
                   (ecase repl-package
                     (:slynk
                      `(lambda ()
@@ -40,17 +40,17 @@
                           (,(sym :send-prompt :slynk-mrepl) repl))))
                     (:swank
                      (constantly nil))))
-         (compile 'update-lisp-repl
+         (compile '%update-repl
                   `(lambda ()
-                     (a:when-let ((repl (find-lisp-repl)))
+                     (a:when-let ((repl (%find-repl)))
                        (with-continue-restart "REPL"
                          (,(sym :handle-requests) repl t))))))
-        (t (setf (symbol-function 'setup-lisp-repl) (constantly nil)
-                 (symbol-function 'update-lisp-repl) (constantly nil)))))))
+        (t (setf (symbol-function '%setup-repl) (constantly nil)
+                 (symbol-function '%update-repl) (constantly nil)))))))
 
-(defun setup-live-coding ()
-  (compile-live-coding-functions)
-  (funcall 'setup-lisp-repl))
+(defun setup-repl ()
+  (compile-repl-functions)
+  (funcall '%setup-repl))
 
-(defun live-coding-update ()
-  (funcall 'update-lisp-repl))
+(defun update-repl ()
+  (funcall '%update-repl))

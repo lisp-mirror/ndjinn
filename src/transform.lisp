@@ -3,28 +3,44 @@
 (defclass transform-state ()
   ((%current :accessor current
              :initarg :current)
+   (%frame :accessor frame
+           :initarg :frame)
    (%incremental :accessor incremental
                  :initarg :incremental)
-   (%increment-delta :accessor incremental-delta
-                     :initarg :incremental-delta)
-   (%previous :accessor previous
-              :initarg :previous)
+   (%incremental-delta :accessor incremental-delta
+                       :initarg :incremental-delta)
    (%interpolated :accessor interpolated
-                  :initarg :interpolated)))
+                  :initarg :interpolated)
+   (%previous :accessor previous
+              :initarg :previous)))
 
 (defclass transform-state-vector (transform-state) ()
   (:default-initargs :current (v3:zero)
+                     :frame (v3:zero)
                      :incremental (v3:zero)
                      :incremental-delta (v3:zero)
-                     :previous (v3:zero)
-                     :interpolated (v3:zero)))
+                     :interpolated (v3:zero)
+                     :previous (v3:zero)))
 
 (defclass transform-state-quaternion (transform-state) ()
   (:default-initargs :current (q:id)
+                     :frame (q:id)
                      :incremental (q:id)
                      :incremental-delta (q:id)
-                     :previous (q:id)
-                     :interpolated (q:id)))
+                     :interpolated (q:id)
+                     :previous (q:id)))
+
+(defclass transform ()
+  ((%translation :reader translation
+                 :initform (make-translation-state))
+   (%rotation :reader rotation
+              :initform (make-rotation-state))
+   (%scaling :reader scaling
+             :initform (make-scaling-state))
+   (%local :reader local
+           :initform (m4:id))
+   (%model :reader model
+           :initform (m4:id))))
 
 (defun make-translation-state ()
   (make-instance 'transform-state-vector))
@@ -43,42 +59,35 @@
   (with-slots (%interpolated %current %previous) state
     (q:slerp! %interpolated %previous %current factor)))
 
-(defclass transform ()
-  ((%parent :accessor parent
-            :initform nil)
-   (%children :accessor children
-              :initform nil)
-   (%translation :reader translation
-                 :initform (make-translation-state))
-   (%rotation :reader rotation
-              :initform (make-rotation-state))
-   (%scaling :reader scaling
-             :initform (make-scaling-state))
-   (%local :reader local
-           :initform (m4:id))
-   (%model :reader model
-           :initform (m4:id))))
-
-(defun transform-node/vector (state delta)
-  (with-slots (%previous %current %incremental-delta %incremental) state
+(defun transform-node/vector (state delta frame-time)
+  (with-slots (%frame %previous %current %incremental-delta %incremental) state
     (v3:copy! %previous %current)
+    (v3:scale! %frame %frame frame-time)
+    (v3:+! %current %current %frame)
     (v3:scale! %incremental-delta %incremental delta)
-    (v3:+! %current %current %incremental-delta)))
+    (v3:+! %current %current %incremental-delta)
+    (v3:zero! %frame)))
 
-(defun transform-node/quaternion (state delta)
-  (with-slots (%previous %current %incremental-delta %incremental) state
+(defun transform-node/quaternion (state delta frame-time)
+  (with-slots (%frame %previous %current %incremental-delta %incremental) state
     (q:copy! %previous %current)
+    (q:slerp! %frame q:+id+ %frame frame-time)
+    (q:rotate! %current %current %frame)
     (q:slerp! %incremental-delta q:+id+ %incremental delta)
-    (q:rotate! %current %current %incremental-delta)))
+    (q:rotate! %current %current %incremental-delta)
+    (q:id! %frame)))
 
-(defun transform-node (game-state node)
-  (let ((delta (clock-delta-time (clock game-state))))
-    (transform-node/vector (scaling node) delta)
-    (transform-node/quaternion (rotation node) delta)
-    (transform-node/vector (translation node) delta)))
+(defun transform-node (node)
+  (with-slots (%scaling %rotation %translation) (transform node)
+    (let* ((clock (clock (game-state node)))
+           (delta (clock-delta-time clock))
+           (frame-time (clock-frame-time clock)))
+      (transform-node/vector %scaling delta frame-time)
+      (transform-node/quaternion %rotation delta frame-time)
+      (transform-node/vector %translation delta frame-time))))
 
 (defun resolve-local (node factor)
-  (with-slots (%scaling %rotation %translation %local) node
+  (with-slots (%scaling %rotation %translation %local) (transform node)
     (interpolate-vector %scaling factor)
     (interpolate-quaternion %rotation factor)
     (interpolate-vector %translation factor)
@@ -86,20 +95,9 @@
     (m4:*! %local %local (m4:set-scale m4:+id+ (interpolated %scaling)))
     (m4:set-translation! %local %local (interpolated %translation))))
 
-(defun resolve-model (node factor)
-  (a:when-let ((parent (parent node)))
-    (resolve-local node factor)
-    (m4:*! (model node) (model parent) (local node))))
-
-(defun make-scene-tree (game-state)
-  (setf (slot-value game-state '%scene-tree) (make-instance 'transform)))
-
-(defun map-nodes (func parent)
-  (funcall func parent)
-  (dolist (child (children parent))
-    (map-nodes func child)))
-
-(defun interpolate-transforms (game-state)
-  (map-nodes
-   (lambda (x) (resolve-model x (clock-interpolation-factor (clock game-state))))
-   (scene-tree game-state)))
+(defun resolve-model (node)
+  (with-slots (%game-state %parent %transform) node
+    (with-slots (%model %local) %transform
+      (when %parent
+        (resolve-local node (clock-interpolation-factor (clock %game-state)))
+        (m4:*! %model (model (transform %parent)) %local)))))

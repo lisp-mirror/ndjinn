@@ -7,42 +7,48 @@
            :initarg :clock)
    (%debug-p :reader debug-p
              :initform t)
+   (%display :accessor display)
    (%input-state :reader input-state
                  :initform (make-instance 'input-state))
-   (%display :accessor display)
-   (%scene-tree :reader scene-tree)
    (%running-p :accessor running-p
-               :initform nil)))
+               :initform t)
+   (%scene-graph :reader scene-graph)
+   (%shaders :reader shaders)))
 
-(defun iterate-main-loop (game-state)
-  (with-continue-restart "Pyx"
-    (clock-tick game-state)
-    (handle-events game-state)
-    (update-game-objects game-state)
-    (update-display game-state)
-    ;; TODO: Remove this later when possible
-    (when (input-enter-p game-state '(:key :escape))
-      (stop game-state))))
+(defmethod initialize-instance :after ((instance game-state) &key)
+  (setup-repl)
+  (initialize-host instance)
+  (initialize-shaders instance)
+  (make-clock instance)
+  (make-scene-graph instance)
 
-(defun update-physics (game-state)
-  (declare (ignore game-state)))
+  ;; test
+  (let ((test (make-game-object instance 'foo)))
+    (add-child test :parent (scene-graph instance)))
+
+  (log:info :pyx "Started Pyx."))
+
+(defun run-main-game-loop (game-state)
+  (u:while (running-p game-state)
+    (with-continue-restart "Pyx"
+      (clock-tick game-state)
+      (handle-events game-state)
+      (update-display game-state)
+      ;; TODO: Remove this later when possible
+      (when (input-enter-p game-state '(:key :escape))
+        (stop game-state)))))
+
+(defun run-periodic-tasks (game-state)
+  (update-repl)
+  (recompile-shaders game-state))
 
 (defun start ()
   (unwind-protect
-       (let ((game-state (make-instance 'game-state)))
-         (setup-live-coding)
-         (initialize-host game-state)
-         (make-clock game-state)
-         (make-scene-tree game-state)
-         (setf (running-p game-state) t
-               *game-state* game-state)
-         (log:info :pyx "Started Pyx.")
-         (u:while (running-p game-state)
-           (iterate-main-loop game-state)))
+       (let ((*game-state* (make-instance 'game-state)))
+         (run-main-game-loop *game-state*))
     (sdl2:sdl-quit)))
 
 (defun stop (game-state)
-  (setf (running-p game-state) nil
-        *game-state* nil)
   (shutdown-host game-state)
+  (setf (running-p game-state) nil)
   (log:info :pyx "Stopped Pyx."))

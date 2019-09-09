@@ -52,6 +52,6 @@
   (with-slots (%clock %display %running-p) game-state
     (when %running-p
       (clear-screen %display)
-      (render-game-objects game-state)
+      (render-entities game-state)
       (sdl2:gl-swap-window (window %display))
       (incf (clock-frame-count %clock)))))

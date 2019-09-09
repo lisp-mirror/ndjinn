@@ -20,4 +20,4 @@
       (map-nodes game-state func child))))
 
 (defun make-scene-graph (game-state)
-  (setf (slot-value game-state '%scene-graph) (make-game-object game-state)))
+  (setf (slot-value game-state '%scene-graph) (make-entity game-state)))

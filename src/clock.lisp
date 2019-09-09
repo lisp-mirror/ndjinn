@@ -64,7 +64,7 @@
                       (delta (clock-delta-time clock)))
       (incf accumulator (clock-frame-time clock))
       (u:while (>= accumulator delta)
-        (update-game-objects game-state)
+        (update-entities game-state)
         (decf accumulator delta))
       (setf (clock-interpolation-factor clock)
             (float (/ accumulator delta) 1f0))

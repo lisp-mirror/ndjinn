@@ -33,5 +33,5 @@
    (:file "scene-graph")
    (:file "transform")
    (:file "shader")
-   (:file "game-object")
+   (:file "entity")
    (:file "game-state")))

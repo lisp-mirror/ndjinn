@@ -21,10 +21,9 @@
   (initialize-shaders instance)
   (make-clock instance)
   (make-scene-graph instance)
-
   ;; test
-  (let ((test (make-game-object instance 'foo)))
-    (add-child test :parent (scene-graph instance)))
+  ;; (let ((test (make-entity instance 'foo)))
+  ;;   (add-child test :parent (scene-graph instance)))
 
   (log:info :pyx "Started Pyx."))
 

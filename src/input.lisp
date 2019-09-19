@@ -56,19 +56,19 @@
               %exit nil)))
     (setf exiting nil)))
 
-(defun input-enter-p (game-state input)
-  (a:when-let* ((input-state (input-state game-state))
-                (state (u:href (states input-state) input)))
+(defun input-enter-p (&rest args)
+  (a:when-let* ((input-state (input-state *state*))
+                (state (u:href (states input-state) args)))
     (enter state)))
 
-(defun input-enabled-p (game-state input)
-  (a:when-let* ((input-state (input-state game-state))
-                (state (u:href (states input-state) input)))
+(defun input-enabled-p (&rest args)
+  (a:when-let* ((input-state (input-state *state*))
+                (state (u:href (states input-state) args)))
     (enabled state)))
 
-(defun input-exit-p (game-state input)
-  (a:when-let* ((input-state (input-state game-state))
-                (state (u:href (states input-state) input)))
+(defun input-exit-p (&rest args)
+  (a:when-let* ((input-state (input-state *state*))
+                (state (u:href (states input-state) args)))
     (exit state)))
 
 (defmacro event-case ((event) &body handlers)
@@ -84,41 +84,41 @@
     `(case (sdl2:get-event-type ,event)
        ,@(nreverse events))))
 
-(defun dispatch-event (game-state event)
+(defun dispatch-event (event)
   (event-case (event)
     (:windowevent
      (:event event-type :data1 data1 :data2 data2)
      (case (aref +window-event-names+ event-type)
-       (:show (on-window-show game-state))
-       (:hide (on-window-hide game-state))
-       (:move (on-window-move game-state :x data1 :y data2))
-       (:resize (on-window-resize game-state :width data1 :height data2))
-       (:minimize (on-window-minimize game-state))
-       (:maximize (on-window-maximize game-state))
-       (:restore (on-window-restore game-state))
-       (:mouse-focus-enter (on-window-mouse-focus-enter game-state))
-       (:mouse-focus-leave (on-window-mouse-focus-leave game-state))
-       (:keyboard-focus-enter (on-window-keyboard-focus-enter game-state))
-       (:keyboard-focus-leave (on-window-keyboard-focus-leave game-state))
-       (:close (on-window-close game-state))))
+       (:show (on-window-show))
+       (:hide (on-window-hide))
+       (:move (on-window-move :x data1 :y data2))
+       (:resize (on-window-resize :width data1 :height data2))
+       (:minimize (on-window-minimize))
+       (:maximize (on-window-maximize))
+       (:restore (on-window-restore))
+       (:mouse-focus-enter (on-window-mouse-focus-enter))
+       (:mouse-focus-leave (on-window-mouse-focus-leave))
+       (:keyboard-focus-enter (on-window-keyboard-focus-enter))
+       (:keyboard-focus-leave (on-window-keyboard-focus-leave))
+       (:close (on-window-close))))
     (:mousebuttonup
      (:button button)
-     (on-mouse-button-up game-state (aref +mouse-button-names+ button)))
+     (on-mouse-button-up (aref +mouse-button-names+ button)))
     (:mousebuttondown
      (:button button)
-     (on-mouse-button-down game-state (aref +mouse-button-names+ button)))
+     (on-mouse-button-down (aref +mouse-button-names+ button)))
     (:mousewheel
      (:x x :y y)
-     (on-mouse-scroll game-state x y))
+     (on-mouse-scroll x y))
     (:mousemotion
      (:x x :y y :xrel dx :yrel dy)
-     (on-mouse-move game-state x y dx dy))
+     (on-mouse-move x y dx dy))
     (:keyup
      (:keysym keysym)
-     (on-key-up game-state (aref +key-names+ (sdl2:scancode-value keysym))))
+     (on-key-up (aref +key-names+ (sdl2:scancode-value keysym))))
     (:keydown
      (:keysym keysym)
-     (on-key-down game-state (aref +key-names+ (sdl2:scancode-value keysym))))
+     (on-key-down (aref +key-names+ (sdl2:scancode-value keysym))))
     ;; TODO: gamepad support
     (:controllerdeviceadded
      (:which gamepad-id))
@@ -131,17 +131,17 @@
     (:controllerbuttondown
      (:which gamepad-id :button button))))
 
-(defun perform-input-tasks (game-state)
-  (let* ((input-state (input-state game-state))
+(defun perform-input-tasks ()
+  (let* ((input-state (input-state *state*))
          (states (states input-state)))
     (setf (u:href states '(:mouse :scroll-horizontal)) 0
           (u:href states '(:mouse :scroll-vertical)) 0)
     (input-enable-entering input-state)
     (input-disable-exiting input-state)))
 
-(defun handle-events (game-state)
+(defun handle-events ()
   (let ((event (sdl2:new-event)))
     (unwind-protect
          (loop :until (zerop (sdl2:next-event event :poll))
-               :do (dispatch-event game-state event))
+               :do (dispatch-event event))
       (sdl2:free-event event))))

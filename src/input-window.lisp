@@ -6,38 +6,28 @@
       :keyboard-focus-exit :close nil nil)
   :test #'equalp)
 
-(defun on-window-show (game-state)
-  (declare (ignore game-state)))
+(defun on-window-show ())
 
-(defun on-window-hide (game-state)
-  (declare (ignore game-state)))
+(defun on-window-hide ())
 
-(defun on-window-move (game-state &key x y)
-  (declare (ignore game-state x y)))
+(defun on-window-move (&key x y)
+  (declare (ignore x y)))
 
-(defun on-window-resize (game-state &key width height)
-  (declare (ignore game-state width height)))
+(defun on-window-resize (&key width height)
+  (declare (ignore width height)))
 
-(defun on-window-minimize (game-state)
-  (declare (ignore game-state)))
+(defun on-window-minimize ())
 
-(defun on-window-maximize (game-state)
-  (declare (ignore game-state)))
+(defun on-window-maximize ())
 
-(defun on-window-restore (game-state)
-  (declare (ignore game-state)))
+(defun on-window-restore ())
 
-(defun on-window-mouse-focus-enter (game-state)
-  (declare (ignore game-state)))
+(defun on-window-mouse-focus-enter ())
 
-(defun on-window-mouse-focus-leave (game-state)
-  (declare (ignore game-state)))
+(defun on-window-mouse-focus-leave ())
 
-(defun on-window-keyboard-focus-enter (game-state)
-  (declare (ignore game-state)))
+(defun on-window-keyboard-focus-enter ())
 
-(defun on-window-keyboard-focus-leave (game-state)
-  (declare (ignore game-state)))
+(defun on-window-keyboard-focus-leave ())
 
-(defun on-window-close (game-state)
-  (declare (ignore game-state)))
+(defun on-window-close ())

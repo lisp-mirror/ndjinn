@@ -2,7 +2,7 @@
 
 (defmacro with-continue-restart (report &body body)
   (a:with-gensyms (clock)
-    `(let* ((,clock (clock *game-state*))
+    `(let* ((,clock (clock *state*))
             (debugger-entry-time)
             (previous-hook *debugger-hook*)
             (#+sbcl sb-ext:*invoke-debugger-hook*

@@ -35,14 +35,14 @@
       :kbdillumup :eject :sleep)
   :test #'equalp)
 
-(defun on-key-up (game-state key)
-  (let ((input-state (input-state game-state)))
+(defun on-key-up (key)
+  (let ((input-state (input-state *state*)))
     (input-transition-out input-state (list :key key))
     (input-transition-out input-state '(:key :any))
     (input-transition-out input-state '(:button :any))))
 
-(defun on-key-down (game-state key)
-  (let ((input-state (input-state game-state)))
+(defun on-key-down (key)
+  (let ((input-state (input-state *state*)))
     (input-transition-in input-state (list :key key))
     (input-transition-in input-state '(:key :any))
     (input-transition-in input-state '(:button :any))))

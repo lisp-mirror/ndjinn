@@ -1,11 +1,11 @@
 (in-package #:pyx)
 
-(define-component xform
-    (:translate (make-translate-state)
-     :rotate (make-rotate-state)
-     :scale (make-scale-state)
-     :local (m4:id)
-     :model (m4:id)))
+(define-component xform (:after node)
+  (:translate (make-translate-state)
+   :rotate (make-rotate-state)
+   :scale (make-scale-state)
+   :local (m4:id)
+   :model (m4:id)))
 
 (defun initialize-translation (entity current incremental)
   (with-slots (%current %previous %incremental) (xform/translate entity)

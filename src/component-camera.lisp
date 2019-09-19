@@ -1,6 +1,6 @@
 (in-package #:pyx)
 
-(define-component camera
+(define-component camera (:before render :after xform)
   (:view (m4:id)
    :projection (m4:id)
    :clip-near 0.0

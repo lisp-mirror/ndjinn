@@ -8,9 +8,9 @@
   :bug-tracker "https://github.com/mfiano/pyx/issues"
   :encoding :utf-8
   :depends-on (#:alexandria
+               #:cl-graph
                #:cl-opengl
                #:closer-mop
-               #:dynamic-mixins
                #:fast-io
                #:golden-utils
                #:jsown
@@ -42,6 +42,7 @@
    (:file "texture")
    (:file "spritesheet")
    (:file "mesh")                       ; TODO: make into component
+   (:file "mixin")
    (:file "entity")
    (:file "component")               ; TODO: add before/after to toposort mixins
    (:file "component-node")

@@ -1,6 +1,6 @@
 (in-package #:pyx)
 
-(define-component node
+(define-component node (:before xform)
   (:root-p nil
    :parent nil
    :children nil))

@@ -1,11 +1,12 @@
 (in-package #:pyx)
 
 (define-component camera (:before render :after xform)
-  (:view (m4:id)
+  (:active-p t
+   :view (m4:id)
    :projection (m4:id)
    :clip-near 0.0
-   :clip-far 64.0
-   :fov-y 45f0
+   :clip-far 1024.0
+   :fov-y 45.0
    :zoom 1))
 
 (defun set-camera-projection (entity)
@@ -29,9 +30,8 @@
     (setf %camera/zoom (a:clamp (+ %camera/zoom (/ direction 2)) 1 10))
     (set-camera-projection entity)))
 
-(defun make-camera ()
-  (setf (slot-value *state* '%camera) (make-entity (camera))))
-
 (defmethod on-component-added ((component (eql 'camera)) entity)
+  (when (camera/active-p entity)
+    (setf (slot-value *state* '%camera) entity))
   (set-camera-projection entity)
   (set-camera-view entity))

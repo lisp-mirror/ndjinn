@@ -14,8 +14,8 @@
 
 (defmethod on-render progn ((entity sprite))
   (when (has-component-p 'render entity)
-    (with-slots (%render/shader %sprite/spritesheet %sprite/index) entity
-      (with-render %render/shader
+    (with-slots (%sprite/spritesheet %sprite/index) entity
+      (with-render entity
         ((:int :sprite.index %sprite/index)
          (:float :opacity 1.0)
          (:float :alpha-cutoff 0.1))

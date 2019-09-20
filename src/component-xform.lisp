@@ -1,20 +1,20 @@
 (in-package #:pyx)
 
 (define-component xform (:after node)
-  (:translate (make-translate-state)
-   :rotate (make-rotate-state)
-   :scale (make-scale-state)
+  (:translation (make-translate-state)
+   :rotation (make-rotate-state)
+   :scaling (make-scale-state)
    :local (m4:id)
    :model (m4:id)))
 
 (defun initialize-translation (entity current incremental)
-  (with-slots (%current %previous %incremental) (xform/translate entity)
+  (with-slots (%current %previous %incremental) (xform/translation entity)
     (setf %current current
           %previous (v3:copy %current)
           %incremental incremental)))
 
 (defun initialize-rotation (entity current incremental)
-  (with-slots (%current %previous %incremental) (xform/rotate entity)
+  (with-slots (%current %previous %incremental) (xform/rotation entity)
     (setf %current (etypecase current
                      (v3:vec (q:rotate-euler q:+id+ current))
                      (q:quat current))
@@ -24,7 +24,7 @@
                          (q:quat incremental)))))
 
 (defun initialize-scale (entity current incremental)
-  (with-slots (%current %previous %incremental) (xform/scale entity)
+  (with-slots (%current %previous %incremental) (xform/scaling entity)
     (setf %current (etypecase current
                      (v3:vec current)
                      (real (v3:vec current current current)))
@@ -44,26 +44,27 @@
   (initialize-scale instance xform/scale xform/scale/inc))
 
 (defun transform-node (entity)
-  (with-slots (%xform/translate %xform/rotate %xform/scale) entity
+  (with-slots (%xform/translation %xform/rotation %xform/scaling) entity
     (let* ((clock (clock *state*))
            (delta (clock-delta-time clock))
            (frame-time (float (clock-frame-time clock) 1f0)))
-      (transform-node/vector %xform/scale delta frame-time)
-      (transform-node/quaternion %xform/rotate delta frame-time)
-      (transform-node/vector %xform/translate delta frame-time))))
+      (transform-node/vector %xform/scaling delta frame-time)
+      (transform-node/quaternion %xform/rotation delta frame-time)
+      (transform-node/vector %xform/translation delta frame-time))))
 
 (defun resolve-local (entity factor)
-  (with-slots (%xform/translate %xform/rotate %xform/scale %xform/local) entity
-    (interpolate-vector %xform/scale factor)
-    (interpolate-quaternion %xform/rotate factor)
-    (interpolate-vector %xform/translate factor)
-    (m4:copy! %xform/local (q:to-mat4 (interpolated %xform/rotate)))
+  (with-slots (%xform/translation %xform/rotation %xform/scaling %xform/local)
+      entity
+    (interpolate-vector %xform/scaling factor)
+    (interpolate-quaternion %xform/rotation factor)
+    (interpolate-vector %xform/translation factor)
+    (m4:copy! %xform/local (q:to-mat4 (interpolated %xform/rotation)))
     (m4:*! %xform/local
            %xform/local
-           (m4:set-scale m4:+id+ (interpolated %xform/scale)))
+           (m4:set-scale m4:+id+ (interpolated %xform/scaling)))
     (m4:set-translation! %xform/local
                          %xform/local
-                         (interpolated %xform/translate))))
+                         (interpolated %xform/translation))))
 
 (defun resolve-model (entity)
   (with-slots (%node/parent %xform/local %xform/model) entity
@@ -75,8 +76,8 @@
   (transform-node entity))
 
 (defmethod on-render progn ((entity xform))
-  (with-slots (%xform/model %render/shader) entity
+  (with-slots (%xform/model) entity
     (resolve-model entity)
     (when (has-component-p 'render entity)
-      (with-render %render/shader
+      (with-render entity
         ((:mat4 :model %xform/model))))))

@@ -1,6 +1,6 @@
 (in-package #:pyx)
 
-(a:define-constant +attribute-locations+
+(a:define-constant +gltf-attribute-locations+
     '(("POSITION" . 0)
       ("NORMAL" . 1)
       ("TANGENT" . 2)
@@ -124,7 +124,7 @@
             %chunks (parse-gltf-chunks gltf)))
     datastream))
 
-(defun load-gltf-file (path)
+(defun parse-gltf-file (path)
   (u:with-binary-input (in path)
     (let* ((buffer (fast-io:make-input-buffer :stream in))
            (gltf (make-instance 'gltf :buffer buffer)))
@@ -150,7 +150,7 @@
     (:mat4 16)))
 
 (defun get-gltf-attribute-location (name)
-  (u:alist-get +attribute-locations+ name :test #'string=))
+  (u:alist-get +gltf-attribute-locations+ name :test #'string=))
 
 (defun get-gltf-attribute-normalization (name component-type)
   (if (and (or (eq component-type :unsigned-byte)
@@ -230,26 +230,26 @@
             %index-buffer (make-gltf-buffer
                            gltf :element-array-buffer accessor)))))
 
-(defun draw-primitive/vertices (primitive instance-count)
+(defun draw-gltf-primitive/vertices (primitive instance-count)
   (declare (optimize speed))
   (with-slots (%vao %mode %count) primitive
     (gl:bind-vertex-array %vao)
     (gl:draw-arrays-instanced %mode 0 %count instance-count)))
 
-(defun draw-primitive/indexed (primitive instance-count)
+(defun draw-gltf-primitive/indexed (primitive instance-count)
   (declare (optimize speed))
   (with-slots (%vao %index-buffer %mode %count %type) primitive
     (gl:bind-vertex-array %vao)
     (gl:bind-buffer :element-array-buffer %index-buffer)
     (%gl:draw-elements-instanced %mode %count %type 0 instance-count)))
 
-(defun make-draw-func (primitive)
+(defun make-gltf-draw-func (primitive)
   (with-slots (%index-buffer %draw-func) primitive
     (setf %draw-func (if %index-buffer
                          (lambda (x)
-                           (draw-primitive/indexed primitive x))
+                           (draw-gltf-primitive/indexed primitive x))
                          (lambda (x)
-                           (draw-primitive/vertices primitive x))))))
+                           (draw-gltf-primitive/vertices primitive x))))))
 
 (defun make-gltf-primitive (gltf data)
   (let ((primitive (make-instance 'gltf-primitive
@@ -259,19 +259,19 @@
       (gl:bind-vertex-array (vao primitive))
       (make-gltf-vertex-buffers gltf primitive data)
       (make-gltf-index-buffer gltf primitive data)
-      (make-draw-func primitive)
+      (make-gltf-draw-func primitive)
       primitive)))
 
-(defun load-static-geometry (path mesh-id)
-  (let ((gltf (load-gltf-file path)))
+(defun load-gltf (path mesh-id)
+  (let ((gltf (parse-gltf-file path)))
     (dolist (primitive-data (find-gltf-mesh gltf mesh-id))
       (push (make-gltf-primitive gltf primitive-data) (primitives gltf)))
     (setf (buffers gltf) nil)
     gltf))
 
-(defun draw-static-primitive (primitive count)
+(defun draw-gltf-primitive (primitive count)
   (funcall (draw-func primitive) count))
 
-(defun draw-static-geometry (mesh count)
+(defun draw-gltf (mesh count)
   (dolist (primitive (primitives mesh))
-    (draw-static-primitive primitive count)))
+    (draw-gltf-primitive primitive count)))

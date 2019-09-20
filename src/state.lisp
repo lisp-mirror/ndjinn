@@ -24,12 +24,20 @@
     (make-display)
     (initialize-shaders)
     (make-scene-graph)
-    (make-camera)
-    (make-entity (render sprite)
+    (make-entity (camera))
+    (make-entity (render mesh)
+      :xform/scale 200
       :xform/rotate/inc (v3:vec 0 0 0.07)
-      :sprite/file "sprites.png"
-      :sprite/name "ship01"
-      :render/shader 'umbra.sprite:sprite)
+      :mesh/file "sphere.glb"
+      :mesh/index 0
+      :render/shader 'pyx.shader:default
+      :render/uniforms (uniforms
+                         (:sampler :sampler "debug2.png")))
+    #++(make-entity (render sprite)
+         :xform/rotate/inc (v3:vec 0 0 0.07)
+         :sprite/file "sprites.png"
+         :sprite/name "ship01"
+         :render/shader 'umbra.sprite:sprite)
     (log:info :pyx "Started Pyx.")))
 
 (defun run-main-game-loop ()

@@ -12,3 +12,6 @@
   (:use #:cl)
   (:export #:start
            #:stop))
+
+(defpackage #:pyx.shader
+  (:use #:cl #:vari #:umbra.common))

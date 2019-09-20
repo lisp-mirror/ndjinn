@@ -83,13 +83,16 @@
 (defun load-texture (path
                      &key (mipmaps-p t) (min-filter :linear-mipmap-linear)
                        (mag-filter :linear))
-  (cache-lookup :texture path
-    (let ((texture (make-texture (resolve-asset-path path))))
-      (gl:bind-texture :texture-2d (id texture))
-      (store-texture texture)
-      (configure-texture mipmaps-p min-filter mag-filter)
-      (gl:bind-texture :texture-2d 0)
-      texture)))
+  (flet ((%load-file (path)
+           (cache-lookup :texture path
+             (let ((texture (make-texture (resolve-asset-path path))))
+               (gl:bind-texture :texture-2d (id texture))
+               (store-texture texture)
+               (configure-texture mipmaps-p min-filter mag-filter)
+               (gl:bind-texture :texture-2d 0)
+               texture))))
+    (handler-case (%load-file path)
+      (error () (%load-file "debug.png")))))
 
 (defun bind-texture (unit value)
   (gl:active-texture unit)

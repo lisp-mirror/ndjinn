@@ -1,0 +1,72 @@
+(in-package #:pyx)
+
+(define-component world (:before mesh)
+  (:options nil
+   :level nil
+   :cell-counts (u:dict #'eq)
+   :metadata nil))
+
+(defun make-world (level &rest args)
+  (let ((world (make-entity (world)
+                 :xform/scale 10
+                 :world/options args
+                 :world/level level)))
+    (make-entity (render mesh)
+      :node/parent world
+      :render/shader 'pyx.shader:world
+      :render/uniforms (uniforms (:int :cell-type 1))
+      :mesh/file "wall.glb"
+      :mesh/instances (u:href (world/cell-counts world) :wall))))
+
+(defun analyze-world (world)
+  (with-slots (%world/cell-counts %world/metadata) world
+    (with-accessors ((width dungen:stage-width)
+                     (height dungen:stage-height)
+                     (grid dungen:stage-grid))
+        %world/metadata
+      (let (walls floors doors/v doors/h)
+        (dotimes (x width)
+          (dotimes (y height)
+            (let* ((cell (aref grid x y))
+                   (coords (vector x y)))
+              (push coords floors)
+              (cond
+                ((dungen:has-feature-p cell :wall)
+                 (push coords walls))
+                ((dungen:has-feature-p cell :door/vertical)
+                 (push coords doors/v))
+                ((dungen:has-feature-p cell :door/horizontal)
+                 (push coords doors/h))))))
+        (setf (u:href %world/cell-counts :floor) (length floors)
+              (u:href %world/cell-counts :wall) (length walls)
+              (u:href %world/cell-counts :door/v) (length doors/v)
+              (u:href %world/cell-counts :door/h) (length doors/h))
+        (values walls floors doors/v doors/h)))))
+
+(defun write-world-buffer (world buffer)
+  (destructuring-bind (&key width height &allow-other-keys)
+      (world/options world)
+    (u:mvlet ((walls floors doors/v doors/h (analyze-world world)))
+      (shadow:write-buffer-path buffer :width (list width))
+      (shadow:write-buffer-path buffer :height (list height))
+      (shadow:write-buffer-path buffer :cells/floor floors)
+      (shadow:write-buffer-path buffer :cells/wall walls)
+      (shadow:write-buffer-path buffer :cells/door/v doors/v)
+      (shadow:write-buffer-path buffer :cells/door/h doors/h))))
+
+(defun make-world-data (world)
+  (with-slots (%world/level %world/options %world/metadata) world
+    (shadow:create-block-alias
+     :buffer :world 'pyx.shader::world %world/level)
+    (shadow:bind-block %world/level 1)
+    (setf %world/metadata (apply #'dungen:make-stage %world/options))
+    (unless (shadow:find-buffer %world/level)
+      (shadow:create-buffer %world/level %world/level)
+      (shadow:bind-buffer %world/level 1)
+      (write-world-buffer world %world/level))
+    %world/metadata))
+
+(defmethod shared-initialize :after ((instance world) slot-names &key)
+  (with-slots (%world/level %world/metadata) instance
+    (setf %world/metadata (cache-lookup :world %world/level
+                            (make-world-data instance)))))

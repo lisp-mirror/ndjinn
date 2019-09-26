@@ -30,30 +30,30 @@
     ((:rgba :bgra) :rgba8)))
 
 (defun get-image-channel-count (raw-data)
-  (ecase (pngload:color-type raw-data)
+  (ecase (pngload-fast:color-type raw-data)
     (:greyscale 1)
     (:truecolour 3)
     (:truecolour-alpha 4)))
 
 (defun get-image-pixel-format (raw-data)
-  (ecase (pngload:color-type raw-data)
+  (ecase (pngload-fast:color-type raw-data)
     (:greyscale :red)
     (:truecolour :rgb)
     (:truecolour-alpha :rgba)))
 
 (defun make-texture (path)
-  (let* ((raw-data (pngload:load-file path :flatten t :flip-y t))
+  (let* ((raw-data (pngload-fast:load-file path :flatten t :flip-y t))
          (pixel-format (get-image-pixel-format raw-data)))
     (make-instance 'texture
                    :path path
                    :id (gl:gen-texture)
                    :raw-data raw-data
-                   :width (pngload:width raw-data)
-                   :height (pngload:height raw-data)
+                   :width (pngload-fast:width raw-data)
+                   :height (pngload-fast:height raw-data)
                    :channels (get-image-channel-count raw-data)
                    :pixel-format pixel-format
                    :internal-format (get-internal-format pixel-format)
-                   :data (pngload:data raw-data))))
+                   :data (pngload-fast:data raw-data))))
 
 (defun free-texture-image (texture)
   (with-slots (%raw-data %data) texture

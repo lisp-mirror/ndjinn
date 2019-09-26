@@ -11,11 +11,12 @@
                #:cl-graph
                #:cl-opengl
                #:closer-mop
+               #:dungen
                #:fast-io
                #:golden-utils
                #:jsown
                #:origin
-               #:pngload
+               #:pngload-fast
                #:queues.simple-cqueue
                #:sdl2
                #:shadow
@@ -39,6 +40,7 @@
    (:file "transform-state")
    (:file "shader")
    (:file "shader-default")
+   (:file "shader-world")
    (:file "asset")
    (:file "texture")
    (:file "spritesheet")
@@ -50,6 +52,7 @@
    (:file "component-render")
    (:file "component-xform")
    (:file "component-camera")
+   (:file "component-world")
    (:file "component-sprite")
    (:file "component-mesh")
    (:file "state")))

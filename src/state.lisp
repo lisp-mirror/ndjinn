@@ -15,8 +15,7 @@
    (%scene-graph :reader scene-graph)
    (%shaders :reader shaders)))
 
-(defmethod initialize-instance :after ((instance state)
-                                       &rest args
+(defmethod initialize-instance :after ((instance state) &rest args
                                        &key &allow-other-keys)
   (let ((*state* instance))
     (setup-repl)
@@ -24,15 +23,9 @@
     (make-display)
     (initialize-shaders)
     (make-scene-graph)
-    (make-entity (camera))
-    (make-entity (render mesh)
-      :xform/scale 200
-      :xform/rotate/inc (v3:vec 0 0 0.07)
-      :mesh/file "sphere.glb"
-      :mesh/index 0
-      :render/shader 'pyx.shader:default
-      :render/uniforms (uniforms
-                         (:sampler :sampler "debug2.png")))
+    (make-entity (camera)
+      :camera/mode :isometric)
+    (make-world 1 :width 49 :height 49)
     #++(make-entity (render sprite)
          :xform/rotate/inc (v3:vec 0 0 0.07)
          :sprite/file "sprites.png"

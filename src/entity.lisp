@@ -9,9 +9,8 @@
          ,entity))))
 
 (defgeneric on-update (entity)
-  (:method-combination progn :most-specific-last)
+  (:method-combination progn)
   (:method progn (entity)))
 
 (defgeneric on-render (entity)
-  (:method-combination progn :most-specific-last)
-  (:method progn (entity)))
+  (:method-combination progn))

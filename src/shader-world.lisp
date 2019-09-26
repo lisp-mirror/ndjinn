@@ -13,7 +13,7 @@
   (with-slots (cells/floor cells/wall cells/door/v cells/door/h) world
     (case cell-type
       (0 (aref cells/floor gl-instance-id))
-      (1 (+ 3 (aref cells/wall gl-instance-id)))
+      (1 (aref cells/wall gl-instance-id))
       (2 (aref cells/door/v gl-instance-id))
       (3 (aref cells/door/h gl-instance-id))
       (otherwise (aref cells/floor gl-instance-id)))))

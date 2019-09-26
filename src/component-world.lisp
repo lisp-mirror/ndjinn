@@ -47,12 +47,12 @@
       :mesh/file "wall.glb"
       :mesh/instances (u:href (world/cell-counts world) :wall))))
 
-(defun analyze-world (world)
-  (with-slots (%world/cell-counts %world/metadata) world
+(defun analyze-world (world data)
+  (with-slots (%world/cell-counts) world
     (with-accessors ((width dungen:stage-width)
                      (height dungen:stage-height)
                      (grid dungen:stage-grid))
-        %world/metadata
+        data
       (let (walls floors doors/v doors/h)
         (dotimes (x width)
           (dotimes (y height)
@@ -72,10 +72,10 @@
               (u:href %world/cell-counts :door/h) (length doors/h))
         (values walls floors doors/v doors/h)))))
 
-(defun write-world-buffer (world buffer)
+(defun write-world-buffer (world data buffer)
   (destructuring-bind (&key width height &allow-other-keys)
       (world/options world)
-    (u:mvlet ((walls floors doors/v doors/h (analyze-world world)))
+    (u:mvlet ((walls floors doors/v doors/h (analyze-world world data)))
       (shadow:write-buffer-path buffer :width (list width))
       (shadow:write-buffer-path buffer :height (list height))
       (shadow:write-buffer-path buffer :cells/floor floors)
@@ -84,16 +84,10 @@
       (shadow:write-buffer-path buffer :cells/door/h doors/h))))
 
 (defun make-world-data (world)
-  (with-slots (%world/level %world/options %world/metadata) world
-    (shadow:create-block-alias
-     :buffer :world 'pyx.shader::world %world/level)
-    (shadow:bind-block %world/level 1)
-    (setf %world/metadata (apply #'dungen:make-stage %world/options))
-    (unless (shadow:find-buffer %world/level)
-      (shadow:create-buffer %world/level %world/level)
-      (shadow:bind-buffer %world/level 1)
-      (write-world-buffer world %world/level))
-    %world/metadata))
+  (let ((data (apply #'dungen:make-stage (world/options world))))
+    (make-shader-buffer :world 'pyx.shader:world)
+    (write-world-buffer world data :world)
+    data))
 
 (defmethod shared-initialize :after ((instance world) slot-names &key)
   (with-slots (%world/level %world/metadata) instance

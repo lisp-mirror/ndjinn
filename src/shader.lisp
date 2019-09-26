@@ -21,7 +21,7 @@
               (log:info :pyx "Recompiled shader programs: ~{~s~^, ~}"
                         programs)))
 
-(defun make-shader-buffer ( name shader)
+(defun make-shader-buffer (name shader)
   (symbol-macrolet ((binding (u:href (cache *state*) :shader-buffers)))
     (a:with-gensyms (alias)
       (unless binding

@@ -9,7 +9,7 @@
 
 (defclass mixin () ())
 
-(u:define-printer (mixin stream :type nil)
+(u:define-printer (mixin stream :type nil :identity t)
   (format stream "MIXIN (~{~a~^, ~})" (get-mixin-class-names mixin)))
 
 (defmethod c2mop:validate-superclass ((class mixin-class)

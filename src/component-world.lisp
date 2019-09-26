@@ -1,6 +1,6 @@
 (in-package #:pyx)
 
-(define-component world (:before mesh)
+(define-component world (:before mesh :after render)
   (:options nil
    :level nil
    :cell-counts (u:dict #'eq)
@@ -8,13 +8,42 @@
 
 (defun make-world (level &rest args)
   (let ((world (make-entity (world)
-                 :xform/scale 10
+                 :xform/scale 50
                  :world/options args
                  :world/level level)))
     (make-entity (render mesh)
       :node/parent world
+      :xform/scale (v3:vec 0.5 0.5 0.1)
       :render/shader 'pyx.shader:world
-      :render/uniforms (uniforms (:int :cell-type 1))
+      :render/uniforms (uniforms
+                         (:int :cell-type 0)
+                         (:vec3 :light.position (v3:vec 0.1 0.25 -1))
+                         (:vec4 :light.ambient (v4:vec 0.01 0.01 0.01 0.01))
+                         (:vec4 :light.diffuse (v4:vec 0.5 0.5 0.5 0.5))
+                         (:vec4 :light.specular (v4:vec 0.2 0.2 0.2 0.2))
+                         (:vec4 :material.ambient (v4:one))
+                         (:vec4 :material.diffuse (v4:one))
+                         (:vec4 :material.specular (v4:one))
+                         (:float :material.shininess 10)
+                         (:float :opacity 1.0))
+      :mesh/file "floor.glb"
+      :mesh/instances (u:href (world/cell-counts world) :floor))
+    (make-entity (render mesh)
+      :node/parent world
+      :xform/translate (v3:vec 0 0 0.75)
+      :xform/scale (v3:vec 0.5 0.5 0.75)
+      :render/shader 'pyx.shader:world
+      :render/uniforms (uniforms
+                         (:int :cell-type 1)
+                         (:vec3 :light.position (v3:vec 0.1 0.25 -1))
+                         (:vec4 :light.ambient (v4:vec 0.01 0.01 0.01 0.01))
+                         (:vec4 :light.diffuse (v4:vec 1 0.5 0.5 0.5))
+                         (:vec4 :light.specular (v4:vec 0.2 0.2 0.2 0.2))
+                         (:vec4 :material.ambient (v4:one))
+                         (:vec4 :material.diffuse (v4:one))
+                         (:vec4 :material.specular (v4:one))
+                         (:float :material.shininess 10)
+                         (:float :opacity 1.0))
       :mesh/file "wall.glb"
       :mesh/instances (u:href (world/cell-counts world) :wall))))
 

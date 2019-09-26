@@ -5,8 +5,8 @@
    :view (m4:id)
    :projection (m4:id)
    :mode :orthographic
-   :clip-near -1024.0
-   :clip-far 1024.0
+   :clip-near -10000.0
+   :clip-far 10000.0
    :fov-y 45.0
    :zoom 1))
 

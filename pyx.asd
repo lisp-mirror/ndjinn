@@ -15,9 +15,9 @@
                #:fast-io
                #:golden-utils
                #:jsown
+               #:lparallel
                #:origin
                #:pngload-fast
-               #:queues.simple-cqueue
                #:sdl2
                #:shadow
                #:uiop
@@ -28,6 +28,7 @@
   :components
   ((:file "package")
    (:file "common")
+   (:file "threading")
    (:file "interactive-development")
    (:file "binary-parser")
    (:file "config")

@@ -13,13 +13,13 @@
    (%running-p :accessor running-p
                :initform t)
    (%scene-graph :reader scene-graph)
-   (%shaders :reader shaders)))
 
 (defmethod initialize-instance :after ((instance state) &rest args
                                        &key &allow-other-keys)
   (let ((*state* instance))
     (setup-repl)
     (apply #'load-config args)
+    (make-thread-pool)
     (make-display)
     (initialize-shaders)
     (make-scene-graph)
@@ -41,7 +41,7 @@
 
 (defun run-periodic-tasks ()
   (update-repl)
-  (recompile-shaders))
+  (recompile-jobs))
 
 (defun start (&rest args)
   (unwind-protect
@@ -51,6 +51,7 @@
 
 (defun stop ()
   (kill-display)
+  (destroy-thread-pool)
   (when *state*
     (setf (running-p *state*) nil)
     (log:info :pyx "Stopped Pyx.")))

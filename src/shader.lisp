@@ -1,25 +1,14 @@
 (in-package #:pyx)
 
-(defclass shaders ()
-  ((%programs :reader programs
-              :initarg :programs)
-   (%hooks :reader hooks
-           :initform (queues:make-queue :simple-cqueue))))
-
 (defun initialize-shaders ()
   (with-slots (%shaders) *state*
-    (let ((programs (shadow:load-shaders
-                     (lambda (x) (queues:qpush (hooks %shaders) x)))))
-      (setf %shaders (make-instance 'shaders :programs programs)))))
+    (setf %shaders (shadow:load-shaders
+                    (lambda (x)
+                      (push-queue :recompile (list :shader x)))))))
 
-(defun recompile-shaders ()
-  (loop :with queue = (hooks (shaders *state*))
-        :for (programs . found-p) = (multiple-value-list (queues:qpop queue))
-        :while found-p
-        :when programs
-          :do (shadow:recompile-shaders programs)
-              (log:info :pyx "Recompiled shader programs: ~{~s~^, ~}"
-                        programs)))
+(defun recompile-shaders (program-names)
+  (shadow:recompile-shaders program-names)
+  (log:info :pyx "Recompiled shader programs: ~{~s~^, ~}" program-names))
 
 (defun make-shader-buffer (name shader)
   (symbol-macrolet ((binding (u:href (cache *state*) :shader-buffers)))

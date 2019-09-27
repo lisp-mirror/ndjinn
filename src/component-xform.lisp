@@ -79,5 +79,4 @@
   (with-slots (%xform/model) entity
     (resolve-model entity)
     (when (has-component-p 'render entity)
-      (with-render entity
-        ((:mat4 :model %xform/model))))))
+      (set-uniforms entity :model %xform/model))))

@@ -15,11 +15,11 @@
 (defmethod on-render progn ((entity sprite))
   (when (has-component-p 'render entity)
     (with-slots (%sprite/spritesheet %sprite/index) entity
-      (with-render entity
-        ((:int :sprite.index %sprite/index)
-         (:float :opacity 1.0)
-         (:float :alpha-cutoff 0.1))
-        (bind-texture 0 (texture-id %sprite/spritesheet))
-        (gl:bind-vertex-array (vao %sprite/spritesheet))
-        (gl:draw-arrays :points 0 1)
-        (gl:bind-vertex-array 0)))))
+      (set-uniforms entity
+                    :sprite.index %sprite/index
+                    :sprite.sampler (texture %sprite/spritesheet)
+                    :opacity 1.0
+                    :alpha-cutoff 0.1)
+      (gl:bind-vertex-array (vao %sprite/spritesheet))
+      (gl:draw-arrays :points 0 1)
+      (gl:bind-vertex-array 0))))

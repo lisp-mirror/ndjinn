@@ -52,6 +52,6 @@
   (with-slots (%clock %display %running-p) *state*
     (when %running-p
       (clear-screen)
-      (map-nodes #'on-render)
+      (map-nodes #'render)
       (sdl2:gl-swap-window (window %display))
       (incf (clock-frame-count %clock)))))

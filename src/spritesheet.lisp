@@ -5,8 +5,8 @@
           :initarg :spec)
    (%sprites :reader sprites
              :initform (u:dict #'equalp))
-   (%texture-id :reader texture-id
-                :initarg :texture-id)
+   (%texture :reader texture
+             :initarg :texture)
    (%vao :reader vao
          :initarg :vao)))
 
@@ -30,11 +30,11 @@
     (let* ((spec-file (make-pathname :defaults image-path :type "spec"))
            (spec (u:safe-read-file-form
                   (resolve-asset-path spec-file)))
-           (texture (load-texture image-path))
            (spritesheet (make-instance 'spritesheet
                                        :spec spec
-                                       :texture-id (id texture)
+                                       :texture image-path
                                        :vao (gl:gen-vertex-array))))
+      (load-texture image-path)
       (make-shader-buffer :spritesheet 'umbra.sprite:sprite)
       (write-spritesheet-buffer :spritesheet spritesheet)
       spritesheet)))

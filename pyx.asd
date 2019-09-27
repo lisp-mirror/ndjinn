@@ -38,6 +38,7 @@
    (:file "input-window")
    (:file "input")
    (:file "transform-state")
+   (:file "uniform")
    (:file "shader")
    (:file "shader-default")
    (:file "shader-world")

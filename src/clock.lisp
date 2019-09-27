@@ -54,7 +54,8 @@
     (let* ((current (clock-current-time clock))
            (elapsed (- current debug-time))
            (fps (/ debug-count debug-interval)))
-      (when (and (>= elapsed debug-interval)
+      (when (and (cfg :debug)
+                 (>= elapsed debug-interval)
                  (plusp fps))
         (log:info :pyx.clock "Frame rate: ~,2f fps / ~,3f ms/f"
                   fps (/ 1000 fps))

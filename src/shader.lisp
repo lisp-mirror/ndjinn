@@ -31,3 +31,5 @@
       (shadow:bind-block alias binding)
       (shadow:create-buffer name alias)
       (shadow:bind-buffer name binding))))
+
+(defgeneric update-shader-buffer (object buffer &key))

@@ -10,8 +10,8 @@
    (%vao :reader vao
          :initarg :vao)))
 
-(defun write-spritesheet-buffer (buffer spritesheet)
-  (with-slots (%spec %sprites) spritesheet
+(defmethod update-shader-buffer ((object spritesheet) buffer &key)
+  (with-slots (%spec %sprites) object
     (loop :with count = (length %spec)
           :with pos = (make-array count)
           :with size = (make-array count)
@@ -36,5 +36,5 @@
                                        :vao (gl:gen-vertex-array))))
       (load-texture image-path)
       (make-shader-buffer :spritesheet 'umbra.sprite:sprite)
-      (write-spritesheet-buffer :spritesheet spritesheet)
+      (update-shader-buffer spritesheet :spritesheet)
       spritesheet)))

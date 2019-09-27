@@ -72,10 +72,10 @@
               (u:href %world/cell-counts :door/h) (length doors/h))
         (values walls floors doors/v doors/h)))))
 
-(defun write-world-buffer (world data buffer)
+(defmethod update-shader-buffer ((object world) buffer &key data)
   (destructuring-bind (&key width height &allow-other-keys)
-      (world/options world)
-    (u:mvlet ((walls floors doors/v doors/h (analyze-world world data)))
+      (world/options object)
+    (u:mvlet ((walls floors doors/v doors/h (analyze-world object data)))
       (shadow:write-buffer-path buffer :width (list width))
       (shadow:write-buffer-path buffer :height (list height))
       (shadow:write-buffer-path buffer :cells/floor floors)
@@ -86,7 +86,7 @@
 (defun make-world-data (world)
   (let ((data (apply #'dungen:make-stage (world/options world))))
     (make-shader-buffer :world 'pyx.shader:world)
-    (write-world-buffer world data :world)
+    (update-shader-buffer world :world :data data)
     data))
 
 (defmethod shared-initialize :after ((instance world) slot-names &key)

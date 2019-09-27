@@ -8,6 +8,7 @@
 
 (defmethod shared-initialize :after ((instance mesh) slot-names &key)
   (with-slots (%mesh/file %mesh/index %mesh/primitives) instance
+    (assert %mesh/file)
     (let ((mesh (cache-lookup :mesh (cons %mesh/file %mesh/index)
                   (load-gltf (resolve-asset-path %mesh/file) %mesh/index))))
       (setf %mesh/primitives (primitives mesh)))))

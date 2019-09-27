@@ -8,9 +8,13 @@
            (on-component-added name ,entity))
          ,entity))))
 
+(defun modify-entity (entity &rest args)
+  (apply #'reinitialize-instance entity args))
+
 (defgeneric on-update (entity)
   (:method-combination progn)
   (:method progn (entity)))
 
 (defgeneric on-render (entity)
-  (:method-combination progn))
+  (:method-combination progn)
+  (:method progn (entity)))

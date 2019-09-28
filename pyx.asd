@@ -28,6 +28,7 @@
   :components
   ((:file "package")
    (:file "common")
+   (:file "metadata")
    (:file "threading")
    (:file "interactive-development")
    (:file "binary-parser")
@@ -43,6 +44,8 @@
    (:file "shader")
    (:file "shader-default")
    (:file "shader-world")
+   (:file "material-spec")
+   (:file "material")
    (:file "asset")
    (:file "texture")
    (:file "spritesheet")
@@ -57,4 +60,5 @@
    (:file "component-world")
    (:file "component-sprite")
    (:file "component-mesh")
-   (:file "state")))
+   (:file "state")
+   (:file "test")))

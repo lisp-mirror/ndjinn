@@ -20,7 +20,7 @@
           *thread-pool* thread-pool)))
 
 (defun destroy-thread-pool ()
-  (lparallel:end-kernel)
+  (lparallel:end-kernel :wait t)
   (setf *thread-pool* nil))
 
 (defun ensure-channel (purpose)
@@ -31,21 +31,27 @@
   (let ((queues (queues *thread-pool*)))
     (a:ensure-gethash purpose queues (lparallel.queue:make-queue))))
 
-(defun submit-job (purpose job &optional (priority :high))
+(defun submit-job (purpose job &optional (priority :default))
   (let ((channel (ensure-channel purpose))
-        (lparallel:*task-priority* priority))
+        (lparallel:*task-priority* priority)
+        (lparallel:*task-category* purpose))
     (lparallel:submit-task channel job)))
 
 (defun get-job-results (purpose)
   (let ((channel (ensure-channel purpose)))
     (lparallel:receive-result channel)))
 
+(defun kill-jobs (purpose)
+  (lparallel:kill-tasks purpose))
+
 (defun push-queue (purpose data)
-  (let ((queue (ensure-queue purpose)))
-    (lparallel.queue:push-queue data queue)))
+  (when *thread-pool*
+    (let ((queue (ensure-queue purpose)))
+      (lparallel.queue:push-queue data queue))))
 
 (defun pop-queue (purpose)
-  (let ((queue (ensure-queue purpose)))
-    (unless (lparallel.queue:queue-empty-p queue)
-      (let ((result (lparallel.queue:pop-queue queue)))
-        (values result t)))))
+  (when *thread-pool*
+    (let ((queue (ensure-queue purpose)))
+      (unless (lparallel.queue:queue-empty-p queue)
+        (let ((result (lparallel.queue:pop-queue queue)))
+          (values result t))))))

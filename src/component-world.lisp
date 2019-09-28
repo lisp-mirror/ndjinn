@@ -6,47 +6,6 @@
    :cell-counts (u:dict #'eq)
    :metadata nil))
 
-(defun make-world (level &rest args)
-  (let ((world (make-entity (world)
-                 :xform/scale 50
-                 :world/options args
-                 :world/level level)))
-    (make-entity (render mesh)
-      :node/parent world
-      :xform/scale (v3:vec 0.5 0.5 0.1)
-      :render/shader 'pyx.shader:world
-      :render/uniforms (u:dict
-                        :cell-type 0
-                        :light.position (v3:vec 0.1 0.25 -1)
-                        :light.ambient (v4:vec 0.01 0.01 0.01 0.01)
-                        :light.diffuse (v4:vec 0.5 0.5 0.5 0.5)
-                        :light.specular (v4:vec 0.2 0.2 0.2 0.2)
-                        :material.ambient (v4:one)
-                        :material.diffuse (v4:one)
-                        :material.specular (v4:one)
-                        :material.shininess 10
-                        :opacity 1.0)
-      :mesh/file "floor.glb"
-      :mesh/instances (u:href (world/cell-counts world) :floor))
-    (make-entity (render mesh)
-      :node/parent world
-      :xform/translate (v3:vec 0 0 0.75)
-      :xform/scale (v3:vec 0.5 0.5 0.75)
-      :render/shader 'pyx.shader:world
-      :render/uniforms (u:dict
-                        :cell-type 1
-                        :light.position (v3:vec 0.1 0.25 -1)
-                        :light.ambient (v4:vec 0.01 0.01 0.01 0.01)
-                        :light.diffuse (v4:vec 0.5 0.5 0.5 0.5)
-                        :light.specular (v4:vec 0.2 0.2 0.2 0.2)
-                        :material.ambient (v4:one)
-                        :material.diffuse (v4:one)
-                        :material.specular (v4:one)
-                        :material.shininess 10
-                        :opacity 1.0)
-      :mesh/file "wall.glb"
-      :mesh/instances (u:href (world/cell-counts world) :wall))))
-
 (defun analyze-world (world data)
   (with-slots (%world/cell-counts) world
     (with-accessors ((width dungen:stage-width)

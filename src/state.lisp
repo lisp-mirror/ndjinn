@@ -10,9 +10,12 @@
    (%display :accessor display)
    (%input-state :reader input-state
                  :initform (make-instance 'input-state))
+   (%materials :reader materials
+               :initform (u:dict #'eq))
+   (%node-tree :reader node-tree)
    (%running-p :accessor running-p
                :initform t)
-   (%scene-graph :reader scene-graph)
+   (%shaders :reader shaders)))
 
 (defmethod initialize-instance :after ((instance state) &rest args
                                        &key &allow-other-keys)
@@ -22,10 +25,8 @@
     (make-thread-pool)
     (make-display)
     (initialize-shaders)
-    (make-scene-graph)
-    (make-entity (camera)
-      :camera/mode :isometric)
-    (make-world 1 :width 11 :height 11 :room-extent 3 :seed 1)
+    (make-node-tree)
+    (test)
     (log:info :pyx "Started Pyx.")))
 
 (defun run-main-game-loop ()

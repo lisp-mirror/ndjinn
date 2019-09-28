@@ -1,59 +1,49 @@
 (in-package #:pyx)
 
-(defclass uniforms ()
-  ((%specified :reader specified
-               :initarg :specified
-               :initform (u:dict #'eq))
-   (%all :reader all
-         :initform (u:dict #'eq))
-   (%funcs :reader funcs
-           :initform (u:dict #'eq))))
+(defun register-uniform-func (material uniform)
+  (with-slots (%id %shader %uniforms %funcs) material
+    (let ((program (shadow:find-program %shader)))
+      (unless (u:href (shadow:uniforms program) uniform)
+        (error "Material ~s has the uniform ~s but shader ~s does not use it."
+               %id uniform %shader))
+      (let* ((type (u:href (shadow:uniforms program) uniform :type))
+             (func (generate-uniform-func material type)))
+        (setf (u:href %funcs uniform) func)))))
 
-(defun make-uniforms (specified)
-  (make-instance 'uniforms :specified specified))
-
-(defun register-uniform-func (entity uniform)
-  (with-slots (%render/shader %render/uniforms) entity
-    (let* ((program (shadow:find-program %render/shader))
-           (type (u:href (shadow:uniforms program) uniform :type))
-           (func (generate-uniform-func entity type)))
-      (setf (u:href (funcs %render/uniforms) uniform) func))))
-
-(defun %generate-uniform-func (entity type)
+(defun %generate-uniform-func (material type)
   (let ((func (a:format-symbol :shadow "UNIFORM-~a" type)))
     (lambda (k v)
-      (funcall func (render/shader entity) k v))))
+      (funcall func (shader material) k v))))
 
-(defun %generate-uniform-func/sampler (entity)
-  (with-slots (%render/shader %render/texture-unit) entity
+(defun %generate-uniform-func/sampler (material)
+  (with-slots (%shader %texture-unit-state) material
     (lambda (k v)
-      (let ((unit %render/texture-unit)
+      (let ((unit %texture-unit-state)
             (texture-id (id (load-texture v))))
-        (incf %render/texture-unit)
+        (incf %texture-unit-state)
         (gl:active-texture unit)
         (bind-texture unit texture-id)
-        (shadow:uniform-int %render/shader k unit)))))
+        (shadow:uniform-int %shader k unit)))))
 
-(defun %generate-uniform-func/array (entity type)
+(defun %generate-uniform-func/array (material type)
   (let ((func (a:format-symbol :shadow "UNIFORM-~a-ARRAY" type)))
     (lambda (k v)
-      (funcall func (render/shader entity) k v))))
+      (funcall func (shader material) k v))))
 
-(defun %generate-uniform-func/sampler-array (entity dimensions)
-  (with-slots (%render/shader %render/texture-unit) entity
+(defun %generate-uniform-func/sampler-array (material dimensions)
+  (with-slots (%shader %texture-unit-state) material
     (lambda (k v)
-      (loop :with unit-count = (+ %render/texture-unit dimensions)
+      (loop :with unit-count = (+ %texture-unit-state dimensions)
             :for texture :in v
             :for texture-id = (id (load-texture texture))
-            :for unit :from %render/texture-unit :to unit-count
+            :for unit :from %texture-unit-state :to unit-count
             :do (gl:active-texture unit)
                 (bind-texture unit texture-id)
             :collect unit :into units
-            :finally (incf %render/texture-unit dimensions)
-                     (shadow:uniform-int-array
-                      %render/shader k units)))))
+            :finally (incf %texture-unit-state dimensions)
+                     (shadow:uniform-int-array %shader k units)))))
 
-(defun generate-uniform-func (entity type-spec)
+(defun generate-uniform-func (material type-spec)
   (flet ((resolve-type (type-spec)
            (if (search "SAMPLER" (symbol-name type-spec))
                :sampler
@@ -62,24 +52,21 @@
       (symbol
        (ecase (resolve-type type-spec)
          (:sampler
-          (%generate-uniform-func/sampler entity))
+          (%generate-uniform-func/sampler material))
          ((:bool :int :float :vec2 :vec3 :vec4 :mat2 :mat3 :mat4)
-          (%generate-uniform-func entity type-spec))))
+          (%generate-uniform-func material type-spec))))
       (cons
        (destructuring-bind (type . dimensions) type-spec
          (ecase (resolve-type type-spec)
            (:sampler
-            (%generate-uniform-func/sampler-array entity dimensions))
+            (%generate-uniform-func/sampler-array material dimensions))
            ((:bool :int :float :vec2 :vec3 :vec4 :mat2 :mat3 :mat4)
-            (%generate-uniform-func/array entity type))))))))
+            (%generate-uniform-func/array material type))))))))
 
-(defun set-uniforms (entity &rest args)
-  (let* ((uniforms (render/uniforms entity))
-         (all (all uniforms))
-         (funcs (funcs uniforms)))
+(defun set-uniforms (material &rest args)
+  (let ((funcs (funcs material)))
     (u:do-plist (k v args)
       (symbol-macrolet ((func (u:href funcs k)))
-        (setf (u:href all k) v)
         (unless func
-          (register-uniform-func entity k))
+          (register-uniform-func material k))
         (funcall func k v)))))

@@ -60,4 +60,5 @@
                                       (pop-queue :recompile))
         :while found-p
         :do (ecase type
-              (:shader (recompile-shaders data)))))
+              (:shader (recompile-shaders data))
+              (:material (update-materials data)))))

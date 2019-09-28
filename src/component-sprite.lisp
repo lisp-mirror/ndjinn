@@ -15,7 +15,7 @@
 (defmethod on-render progn ((entity sprite))
   (when (has-component-p 'render entity)
     (with-slots (%sprite/spritesheet %sprite/index) entity
-      (set-uniforms entity
+      (set-uniforms (render/material entity)
                     :sprite.index %sprite/index
                     :sprite.sampler (texture %sprite/spritesheet)
                     :opacity 1.0

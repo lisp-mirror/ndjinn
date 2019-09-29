@@ -7,6 +7,8 @@
    (%clock :reader clock
            :initarg :clock)
    (%config :reader config)
+   (%database :reader database
+              :initform (u:dict #'eq))
    (%display :accessor display)
    (%input-state :reader input-state
                  :initform (make-instance 'input-state))
@@ -23,6 +25,7 @@
     (setup-repl)
     (apply #'load-config args)
     (make-thread-pool)
+    (make-database)
     (make-display)
     (initialize-shaders)
     (make-node-tree)

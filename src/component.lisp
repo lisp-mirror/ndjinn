@@ -1,7 +1,5 @@
 (in-package #:pyx)
 
-(defvar *component-order* (u:dict #'eq))
-
 (defun compute-component-order (types)
   (flet ((dag-p (graph)
            (unless (or (cl-graph:find-edge-if
@@ -11,8 +9,8 @@
                         (lambda (x) (cl-graph:in-cycle-p graph x)))))))
     (let ((graph (cl-graph:make-graph 'cl-graph:graph-container
                                       :default-edge-type :directed))
-          (types (list* 'node 'xform types)))
-      (u:do-hash (type order *component-order*)
+          (types (list* 'identify 'node 'xform types)))
+      (u:do-hash (type order (meta :component-order))
         (cl-graph:add-vertex graph type)
         (destructuring-bind (&key before after) order
           (dolist (x before)
@@ -26,7 +24,7 @@
        (mapcar #'cl-graph:element (cl-graph:topological-sort graph))))))
 
 (defun compute-all-components-order ()
-  (compute-component-order (u:hash-keys *component-order*)))
+  (compute-component-order (u:hash-keys (meta :component-order))))
 
 (defmacro define-component (type (&key before after) &body body)
   `(u:eval-always
@@ -40,7 +38,9 @@
                                :initform ,value)))
      (defmethod has-component-p ((type (eql ',type)) entity)
        (typep entity ',type))
-     (setf (u:href *component-order* ',type)
+     (unless (meta :component-order)
+       (setf (meta :component-order) (u:dict #'eq)))
+     (setf (meta :component-order ',type)
            (list :before ',(a:ensure-list before)
                  :after ',(a:ensure-list after)))))
 

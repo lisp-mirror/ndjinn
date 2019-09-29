@@ -39,6 +39,7 @@
    (:file "display")
    (:file "input-keyboard")
    (:file "input-mouse")
+   (:file "input-gamepad")
    (:file "input-window")
    (:file "input")
    (:file "transform-state")

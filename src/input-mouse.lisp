@@ -11,16 +11,14 @@
    (%dy :accessor dy)))
 
 (defun on-mouse-button-up (button)
-  (let ((input-state (input-state *state*)))
-    (input-transition-out input-state (list :mouse button))
-    (input-transition-out input-state '(:mouse :any))
-    (input-transition-out input-state '(:button :any))))
+  (input-transition-out (list :mouse button))
+  (input-transition-out '(:mouse :any))
+  (input-transition-out '(:button :any)))
 
 (defun on-mouse-button-down (button)
-  (let ((input-state (input-state *state*)))
-    (input-transition-in input-state (list :mouse button))
-    (input-transition-in input-state '(:mouse :any))
-    (input-transition-in input-state '(:button :any))))
+  (input-transition-in (list :mouse button))
+  (input-transition-in '(:mouse :any))
+  (input-transition-in '(:button :any)))
 
 (defun on-mouse-scroll (x y)
   (let* ((input-state (input-state *state*))

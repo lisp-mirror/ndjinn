@@ -26,6 +26,7 @@
     (apply #'load-config args)
     (make-thread-pool)
     (make-database)
+    (prepare-gamepads)
     (make-display)
     (initialize-shaders)
     (make-node-tree)
@@ -57,5 +58,6 @@
   (kill-display)
   (destroy-thread-pool)
   (when *state*
+    (shutdown-gamepads)
     (setf (running-p *state*) nil)
     (log:info :pyx "Stopped Pyx.")))

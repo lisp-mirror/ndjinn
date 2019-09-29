@@ -1,7 +1,13 @@
 (in-package #:pyx)
 
 (defclass input-state ()
-  ((%entering :accessor entering
+  ((%gamepad-instances :reader gamepad-instances
+                       :initform (u:dict))
+   (%gamepad-ids :accessor gamepad-ids
+                 :initform (u:dict))
+   (%detached-gamepads :accessor detached-gamepads
+                       :initform nil)
+   (%entering :accessor entering
               :initform nil)
    (%exiting :accessor exiting
              :initform nil)
@@ -20,41 +26,45 @@
              :initform nil)
    (%exit :accessor exit)))
 
-(defun input-transition-in (input-state input)
-  (symbol-macrolet ((state (u:href (states input-state) input)))
-    (with-slots (%enter %enabled %exit) state
-      (if state
-          (setf %enter t
-                %enabled t
-                %exit nil)
-          (setf state (make-instance 'input-button-states :enter t :enabled t)))
-      (push input (entering input-state)))))
+(defun input-transition-in (input)
+  (let ((input-state (input-state *state*)))
+    (symbol-macrolet ((state (u:href (states input-state) input)))
+      (with-slots (%enter %enabled %exit) state
+        (if state
+            (setf %enter t
+                  %enabled t
+                  %exit nil)
+            (setf state (make-instance 'input-button-states
+                                       :enter t
+                                       :enabled t)))
+        (push input (entering input-state))))))
 
-(defun input-transition-out (input-state input)
-  (a:when-let ((state (u:href (states input-state) input)))
+(defun input-transition-out (input)
+  (a:when-let* ((input-state (input-state *state*))
+                (state (u:href (states input-state) input)))
     (with-slots (%enter %enabled %exit) state
       (setf %enter nil
             %enabled nil
             %exit t)
       (push input (exiting input-state)))))
 
-(defun input-enable-entering (input-state)
-  (symbol-macrolet ((entering (entering input-state)))
-    (dolist (input entering)
-      (with-slots (%enter %enabled %exit) (u:href (states input-state) input)
+(defun input-enable-entering ()
+  (with-slots (%entering %states) (input-state *state*)
+    (dolist (input %entering)
+      (with-slots (%enter %enabled %exit) (u:href %states input)
         (setf %enter nil
               %enabled t
               %exit nil)))
-    (setf entering nil)))
+    (setf %entering nil)))
 
-(defun input-disable-exiting (input-state)
-  (symbol-macrolet ((exiting (exiting input-state)))
-    (dolist (input exiting)
-      (with-slots (%enter %enabled %exit) (u:href (states input-state) input)
+(defun input-disable-exiting ()
+  (with-slots (%exiting %states) (input-state *state*)
+    (dolist (input %exiting)
+      (with-slots (%enter %enabled %exit) (u:href %states input)
         (setf %enter nil
               %enabled nil
               %exit nil)))
-    (setf exiting nil)))
+    (setf %exiting nil)))
 
 (defun input-enter-p (&rest args)
   (a:when-let* ((input-state (input-state *state*))
@@ -119,25 +129,28 @@
     (:keydown
      (:keysym keysym)
      (on-key-down (aref +key-names+ (sdl2:scancode-value keysym))))
-    ;; TODO: gamepad support
     (:controllerdeviceadded
-     (:which gamepad-id))
+     (:which gamepad-id)
+     (on-gamepad-attach gamepad-id))
     (:controllerdeviceremoved
-     (:which gamepad-id))
+     (:which gamepad-id)
+     (on-gamepad-detach gamepad-id))
     (:controlleraxismotion
-     (:which gamepad-id :axis axis :value value))
+     (:which gamepad-id :axis axis :value value)
+     (on-gamepad-analog-move gamepad-id (aref +gamepad-axis-names+ axis) value))
     (:controllerbuttonup
-     (:which gamepad-id :button button))
+     (:which gamepad-id :button button)
+     (on-gamepad-button-up gamepad-id (aref +gamepad-button-names+ button)))
     (:controllerbuttondown
-     (:which gamepad-id :button button))))
+     (:which gamepad-id :button button)
+     (on-gamepad-button-down gamepad-id (aref +gamepad-button-names+ button)))))
 
 (defun perform-input-tasks ()
-  (let* ((input-state (input-state *state*))
-         (states (states input-state)))
+  (let ((states (states (input-state *state*))))
     (setf (u:href states '(:mouse :scroll-horizontal)) 0
           (u:href states '(:mouse :scroll-vertical)) 0)
-    (input-enable-entering input-state)
-    (input-disable-exiting input-state)))
+    (input-enable-entering)
+    (input-disable-exiting)))
 
 (defun handle-events ()
   (let ((event (sdl2:new-event)))

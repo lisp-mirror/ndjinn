@@ -8,6 +8,9 @@
            (on-component-added name ,entity))
          ,entity))))
 
+(defun make-entity2 ()
+  (let ((components (component-component-order)))))
+
 (defun modify-entity (entity &rest args)
   (apply #'reinitialize-instance entity args))
 

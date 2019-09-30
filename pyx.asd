@@ -55,7 +55,6 @@
    (:file "gltf")
    (:file "mixin")
    (:file "entity")
-   (:file "prefab")
    (:file "component")
    (:file "component-identify")
    (:file "component-node")

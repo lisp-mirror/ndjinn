@@ -52,14 +52,3 @@
        :sprite/name "ship01"
        :render/shader 'umbra.sprite:sprite)
   )
-
-(define-prefab world (level &rest args)
-  ((world
-    (xform :scale 50)
-    (world :options args
-           :level level))
-   ((floor
-     (xform :scale (v3:vec 0.5 0.5 0.1))
-     (render :material 'world/floor)
-     (mesh :file "floor.glb"
-           :count (u:href (world/cell-counts world) :floor))))))

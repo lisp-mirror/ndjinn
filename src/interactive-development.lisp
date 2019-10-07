@@ -56,9 +56,8 @@
   (funcall '%update-repl))
 
 (defun recompile-jobs ()
-  (loop :for ((type data) found-p) = (multiple-value-list
-                                      (pop-queue :recompile))
-        :while found-p
-        :do (ecase type
-              (:shader (recompile-shaders data))
-              (:material (update-materials data)))))
+  (u:while (not (queue-empty-p :recompile))
+    (destructuring-bind (type data) (dequeue :recompile)
+      (ecase type
+        (:shader (recompile-shaders data))
+        (:material (update-materials data))))))

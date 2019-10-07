@@ -45,10 +45,14 @@
 (defun test ()
   (make-entity (camera)
     :camera/mode :isometric)
-  (make-world 1 :width 49 :height 49 :seed 1)
-  #++(make-entity (render sprite)
-       :xform/rotate/inc (v3:vec 0 0 0.07)
-       :sprite/file "sprites.png"
-       :sprite/name "ship01"
-       :render/shader 'umbra.sprite:sprite)
-  )
+  (make-world 1 :width 49 :height 49 :seed 1))
+
+(defun test2 ()
+  (make-entity (camera))
+  (make-entity (render sprite)
+    :sprite/file "sprites.png"
+    :sprite/name "planet01"
+    :render/material 'sprite))
+
+(define-material sprite ()
+  (:shader umbra.sprite:sprite))

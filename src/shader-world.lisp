@@ -3,10 +3,10 @@
 (defstruct world-data
   (width :uint :accessor width)
   (height :uint :accessor height)
-  (cells/floor (:ivec2 75625) :accessor cells/floor)
-  (cells/wall (:ivec2 75625) :accessor cells/wall)
-  (cells/door/v (:ivec2 75625) :accessor cells/door/v)
-  (cells/door/h (:ivec2 75625) :accessor cells/door/h))
+  (cells/floor (:uvec2 75625) :accessor cells/floor)
+  (cells/wall (:uvec2 75625) :accessor cells/wall)
+  (cells/door/v (:uvec2 75625) :accessor cells/door/v)
+  (cells/door/h (:uvec2 75625) :accessor cells/door/h))
 
 (defun get-cell-coords ((world world-data)
                         (cell-type :int))

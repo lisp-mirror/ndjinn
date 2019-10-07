@@ -53,7 +53,7 @@
                            :shader shader
                            :uniforms uniforms
                            :master master)
-    (push-queue :recompile (list :material (id spec)))
+    (enqueue :recompile (list :material (id spec)))
     (update-material-spec-relationships spec)
     (dolist (slave-id (slaves spec))
       (let ((slave (meta :materials slave-id)))

@@ -44,14 +44,17 @@
 (defun kill-jobs (purpose)
   (lparallel:kill-tasks purpose))
 
-(defun push-queue (purpose data)
+(defun enqueue (purpose data)
   (when *thread-pool*
     (let ((queue (ensure-queue purpose)))
       (lparallel.queue:push-queue data queue))))
 
-(defun pop-queue (purpose)
+(defun dequeue (purpose)
   (when *thread-pool*
     (let ((queue (ensure-queue purpose)))
-      (unless (lparallel.queue:queue-empty-p queue)
-        (let ((result (lparallel.queue:pop-queue queue)))
-          (values result t))))))
+      (lparallel.queue:pop-queue queue))))
+
+(defun queue-empty-p (purpose)
+  (when *thread-pool*
+    (let ((queue (ensure-queue purpose)))
+      (lparallel.queue:queue-empty-p queue))))

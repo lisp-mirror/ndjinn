@@ -14,4 +14,4 @@
            #:stop))
 
 (defpackage #:pyx.shader
-  (:use #:cl #:vari #:umbra.common))
+  (:use #:shadow.glsl #:umbra.common))

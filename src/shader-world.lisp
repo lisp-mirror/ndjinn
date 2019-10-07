@@ -1,6 +1,6 @@
 (in-package #:pyx.shader)
 
-(define-struct world-data
+(defstruct world-data
   (width :uint :accessor width)
   (height :uint :accessor height)
   (cells/floor (:ivec2 75625) :accessor cells/floor)
@@ -8,8 +8,8 @@
   (cells/door/v (:ivec2 75625) :accessor cells/door/v)
   (cells/door/h (:ivec2 75625) :accessor cells/door/h))
 
-(define-function get-cell-coords ((world world-data)
-                                  (cell-type :int))
+(defun get-cell-coords ((world world-data)
+                        (cell-type :int))
   (with-slots (cells/floor cells/wall cells/door/v cells/door/h) world
     (case cell-type
       (0 (aref cells/floor gl-instance-id))
@@ -18,25 +18,25 @@
       (3 (aref cells/door/h gl-instance-id))
       (otherwise (aref cells/floor gl-instance-id)))))
 
-(define-struct light/directional
+(defstruct light/directional
   (position :vec3 :accessor position)
   (ambient :vec4 :accessor ambient)
   (diffuse :vec4 :accessor diffuse)
   (specular :vec4 :accessor specular))
 
-(define-struct material-data
+(defstruct material-data
   (ambient :vec4 :accessor ambient)
   (diffuse :vec4 :accessor diffuse)
   (specular :vec4 :accessor specular)
   (shininess :float :accessor shininess))
 
-(define-function world/v ((mesh-attrs mesh-attrs)
-                          &uniform
-                          (model :mat4)
-                          (view :mat4)
-                          (proj :mat4)
-                          (cell-type :int)
-                          (world world-data :ssbo :std-430))
+(defun world/v ((mesh-attrs mesh-attrs)
+                &uniforms
+                (model :mat4)
+                (view :mat4)
+                (proj :mat4)
+                (cell-type :int)
+                (world world-data :ssbo :std-430))
   (with-slots (mesh/pos mesh/normal mesh/uv1) mesh-attrs
     (with-slots (width height) world
       (let* ((normal-mat (transpose (inverse (mat3 (* view model)))))
@@ -52,10 +52,10 @@
                 world-normal
                 to-camera)))))
 
-(define-function calculate-lighting ((light light/directional)
-                                     (material material-data)
-                                     (to-camera :vec3)
-                                     (normal :vec3))
+(defun calculate-lighting ((light light/directional)
+                           (material material-data)
+                           (to-camera :vec3)
+                           (normal :vec3))
   (with-accessors ((light/position position)
                    (light/ambient ambient)
                    (light/diffuse diffuse)
@@ -81,7 +81,7 @@
         (let ((specular (* light-specular specular-factor)))
           (vec3 (+ ambient diffuse specular)))))))
 
-(define-function generate-texture/floor ((frag-pos :vec3))
+(defun generate-texture/floor ((frag-pos :vec3))
   (let* ((base-1 (vec3 (+ (* 0.25 (umbra.noise:perlin-surflet (* frag-pos 0.024)))
                           (* 0.4 (umbra.noise:cellular-fast (* frag-pos 0.08)))
                           (* 0.4 (umbra.noise:cellular-fast (* frag-pos 0.06)))
@@ -97,7 +97,7 @@
          (base-color (umbra.color:set-contrast base-color 1.3)))
     (+ base base-color)))
 
-(define-function generate-texture/wall ((frag-pos :vec3))
+(defun generate-texture/wall ((frag-pos :vec3))
   (let* ((base-1 (vec3 (+ (* 0.45 (umbra.noise:simplex-perlin (vec3 (* frag-pos 0.18))))
                           (* 0.55 (umbra.noise:cellular-fast (vec3 (* frag-pos 0.044)))))))
          (base-2 (vec3 (* 0.8 (umbra.noise:simplex-perlin (vec3 (* frag-pos 0.0028))))))
@@ -109,22 +109,22 @@
      (+ base base-color)
      1.5)))
 
-(define-function generate-texture ((cell-type :int)
-                                   (frag-pos :vec3))
+(defun generate-texture ((cell-type :int)
+                         (frag-pos :vec3))
   (case cell-type
     (0 (generate-texture/floor frag-pos))
     (1 (generate-texture/wall frag-pos))
     (otherwise (vec3 0))))
 
-(define-function world/f ((uv :vec2)
-                          (frag-pos :vec3)
-                          (normal :vec3)
-                          (to-camera :vec3)
-                          &uniform
-                          (cell-type :int)
-                          (light light/directional)
-                          (material material-data)
-                          (opacity :float))
+(defun world/f ((uv :vec2)
+                (frag-pos :vec3)
+                (normal :vec3)
+                (to-camera :vec3)
+                &uniforms
+                (cell-type :int)
+                (light light/directional)
+                (material material-data)
+                (opacity :float))
   (let ((lighting (calculate-lighting light material to-camera normal))
         (texture (generate-texture cell-type frag-pos)))
     (vec4 (mix texture lighting 0.5) opacity)))

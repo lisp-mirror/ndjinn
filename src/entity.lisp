@@ -9,7 +9,7 @@
          ,entity))))
 
 (defun modify-entity (entity &rest args)
-  (apply #'reinitialize-instance entity args))
+  (apply #'reinitialize-instance entity :allow-other-keys t args))
 
 (defgeneric on-update (entity)
   (:method-combination progn)

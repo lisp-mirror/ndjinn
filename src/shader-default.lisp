@@ -1,19 +1,19 @@
 (in-package #:pyx.shader)
 
-(define-function default/v ((mesh-attrs mesh-attrs)
-                            &uniform
-                            (model :mat4)
-                            (view :mat4)
-                            (proj :mat4))
+(defun default/v ((mesh-attrs mesh-attrs)
+                  &uniforms
+                  (model :mat4)
+                  (view :mat4)
+                  (proj :mat4))
   (with-slots (mesh/pos mesh/color mesh/uv1) mesh-attrs
     (values (* proj view model (vec4 mesh/pos 1))
             mesh/color
             mesh/uv1)))
 
-(define-function default/f ((color :vec4)
-                            (uv :vec2)
-                            &uniform
-                            (sampler :sampler-2d))
+(defun default/f ((color :vec4)
+                  (uv :vec2)
+                  &uniforms
+                  (sampler :sampler-2d))
   (texture sampler uv))
 
 (define-shader default ()

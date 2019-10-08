@@ -19,6 +19,8 @@
 
 (define-event-handler :entity-flow :component-remove)
 
+(define-event-handler :entity-flow :entity-remove)
+
 (define-event-handler :recompile :shader recompile-shaders)
 
 (define-event-handler :recompile :material update-materials)

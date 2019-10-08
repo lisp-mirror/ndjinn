@@ -20,6 +20,16 @@
    (lambda ()
      (apply #'reinitialize-instance entity :allow-other-keys t args))))
 
+(defun remove-entity (entity &key reparent-children-p)
+  (register-entity-flow-event
+   :entity-remove
+   (lambda ()
+     (let ((parent (node/parent entity)))
+       (when reparent-children-p
+         (dolist (child (node/children entity))
+           (add-child child :parent parent)))
+       (a:deletef (node/children parent) entity)))))
+
 (defgeneric on-update (entity)
   (:method-combination progn)
   (:method progn (entity)))

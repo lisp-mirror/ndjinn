@@ -8,7 +8,9 @@
    :clip-near -10000.0
    :clip-far 10000.0
    :fov-y 45.0
-   :zoom 1))
+   :zoom 1
+   :target nil
+   :target-z-axis-p nil))
 
 (defun set-camera-projection (entity)
   (%set-camera-projection entity (camera/mode entity)))
@@ -31,11 +33,17 @@
     (initialize-rotation entity rotation)))
 
 (defun set-camera-view (entity)
-  (let* ((model (xform/model entity))
-         (eye (m4:get-translation model))
-         (target (v3:+ eye (v3:negate (m4:rotation-axis-to-vec3 model :z))))
-         (up (m4:rotation-axis-to-vec3 model :y)))
-    (m4:set-view! (camera/view entity) eye target up)))
+  (with-slots (%camera/target %camera/target-z-axis-p) entity
+    (let* ((model (xform/model entity))
+           (eye (if %camera/target
+                    (v3:with-components ((v (m4:get-translation
+                                             (xform/model %camera/target))))
+                      (v3:+ (m4:get-translation model)
+                            (if %camera/target-z-axis-p v (v3:vec vx vy 0))))
+                    (m4:get-translation model)))
+           (target (v3:+ eye (v3:negate (m4:rotation-axis-to-vec3 model :z))))
+           (up (m4:rotation-axis-to-vec3 model :y)))
+      (m4:set-view! (camera/view entity) eye target up))))
 
 (defun zoom-camera (entity direction)
   (with-slots (%camera/zoom) entity

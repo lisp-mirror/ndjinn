@@ -51,20 +51,18 @@
   (:method (entity component-type)))
 
 (defun add-component (entity component-type &rest args)
-  (enqueue
-   :entity-flow
-   (list :component-add
-         (lambda ()
-           (let ((entity (apply #'add-mixin-class entity component-type args)))
-             (on-component-added entity component-type))))))
+  (register-entity-flow-event
+   :component-add
+   (lambda ()
+     (let ((entity (apply #'add-mixin-class entity component-type args)))
+       (on-component-added entity component-type)))))
 
 (defun remove-component (entity component-type)
   (if (member component-type '(node xform))
       (error "The ~s component is immutable and cannot be removed."
              component-type)
-      (enqueue
-       :entity-flow
-       (list :component-remove
-             (lambda ()
-               (let ((entity (remove-mixin-class entity component-type)))
-                 (on-component-removed entity component-type)))))))
+      (register-entity-flow-event
+       :component-remove
+       (lambda ()
+         (let ((entity (remove-mixin-class entity component-type)))
+           (on-component-removed entity component-type))))))

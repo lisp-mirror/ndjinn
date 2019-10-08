@@ -54,9 +54,3 @@
 
 (defun update-repl ()
   (funcall '%update-repl))
-
-(defmethod handle-queued-event ((purpose (eql :recompile)) event-type data)
-  (case event-type
-    (:shader (recompile-shaders data))
-    (:material (update-materials data))
-    (t (unhandled-queue-event-type purpose event-type))))

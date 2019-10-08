@@ -27,9 +27,3 @@
 (defgeneric on-render (entity)
   (:method-combination progn)
   (:method progn (entity)))
-
-(defmethod handle-queued-event ((purpose (eql :entity-flow)) event-type data)
-  (case event-type
-    ((:component-add :component-add-hook :component-modify :component-remove)
-     (funcall data))
-    (t (unhandled-queue-event-type purpose event-type))))

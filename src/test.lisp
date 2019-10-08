@@ -29,7 +29,6 @@
 (defun make-world (level &rest args)
   (let ((world (make-entity (world)
                  :xform/scale 50
-                 :xform/rotate/inc (v3:vec 0 0 0.1)
                  :world/options args
                  :world/level level)))
     (make-entity (render mesh)

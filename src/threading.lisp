@@ -63,11 +63,3 @@
   (u:while (not (queue-empty-p purpose))
     (destructuring-bind (event-type data) (dequeue purpose)
       (handle-queued-event purpose event-type data))))
-
-(defun unhandled-queue-event-type (purpose event-type)
-  (error "Unhandled queue event type ~s for queue purpose ~a."
-         event-type purpose))
-
-(defgeneric handle-queued-event (purpose event-type data)
-  (:method (purpose event-type data)
-    (unhandled-queue-event-type purpose event-type)))

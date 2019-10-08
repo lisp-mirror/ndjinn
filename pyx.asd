@@ -36,6 +36,7 @@
    (:file "config")
    (:file "clock")
    (:file "database")
+   (:file "queued-events")
    (:file "display")
    (:file "input-keyboard")
    (:file "input-mouse")

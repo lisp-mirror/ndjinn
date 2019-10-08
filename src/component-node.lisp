@@ -22,6 +22,6 @@
   (let ((root (make-entity () :node/root-p t)))
     (setf (slot-value *state* '%node-tree) root)))
 
-(defmethod on-component-added ((component (eql 'node)) entity)
+(defmethod on-component-added (entity (component (eql 'node)))
   (unless (node/root-p entity)
     (add-child entity :parent (node/parent entity))))

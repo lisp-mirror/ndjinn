@@ -28,7 +28,7 @@
                     q:+id+
                     (v3:vec (- (asin (/ (sqrt 3)))) 0 (/ pi 4))))))
     (%set-camera-projection entity :orthographic)
-    (initialize-rotation entity rotation (q:id))))
+    (initialize-rotation entity rotation)))
 
 (defun set-camera-view (entity)
   (let* ((model (xform/model entity))
@@ -42,7 +42,7 @@
     (setf %camera/zoom (a:clamp (+ %camera/zoom (/ direction 2)) 1 10))
     (set-camera-projection entity)))
 
-(defmethod on-component-added ((component (eql 'camera)) entity)
+(defmethod on-component-added (entity (component (eql 'camera)))
   (when (camera/active-p entity)
     (setf (slot-value *state* '%camera) entity))
   (set-camera-projection entity))

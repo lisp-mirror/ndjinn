@@ -55,9 +55,8 @@
 (defun update-repl ()
   (funcall '%update-repl))
 
-(defun recompile-jobs ()
-  (u:while (not (queue-empty-p :recompile))
-    (destructuring-bind (type data) (dequeue :recompile)
-      (ecase type
-        (:shader (recompile-shaders data))
-        (:material (update-materials data))))))
+(defmethod handle-queued-event ((purpose (eql :recompile)) event-type data)
+  (case event-type
+    (:shader (recompile-shaders data))
+    (:material (update-materials data))
+    (t (unhandled-queue-event-type purpose event-type))))

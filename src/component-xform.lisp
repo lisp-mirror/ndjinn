@@ -7,29 +7,38 @@
    :local (m4:id)
    :model (m4:id)))
 
-(defun initialize-translation (entity current incremental)
-  (with-slots (%current %previous %incremental) (xform/translation entity)
+(defun initialize-translation (entity current)
+  (with-slots (%current %previous) (xform/translation entity)
     (setf %current current
-          %previous (v3:copy %current)
-          %incremental incremental)))
+          %previous (v3:copy %current))))
 
-(defun initialize-rotation (entity current incremental)
-  (with-slots (%current %previous %incremental) (xform/rotation entity)
+(defun initialize-translation/inc (entity incremental)
+  (with-slots (%incremental) (xform/translation entity)
+    (setf %incremental incremental)))
+
+(defun initialize-rotation (entity current)
+  (with-slots (%current %previous) (xform/rotation entity)
     (setf %current (etypecase current
                      (v3:vec (q:rotate-euler q:+id+ current))
                      (q:quat current))
-          %previous (q:copy %current)
-          %incremental (etypecase incremental
+          %previous (q:copy %current))))
+
+(defun initialize-rotation/inc (entity incremental)
+  (with-slots (%incremental) (xform/rotation entity)
+    (setf %incremental (etypecase incremental
                          (v3:vec (q:rotate-euler q:+id+ incremental))
                          (q:quat incremental)))))
 
-(defun initialize-scale (entity current incremental)
-  (with-slots (%current %previous %incremental) (xform/scaling entity)
+(defun initialize-scaling (entity current)
+  (with-slots (%current %previous) (xform/scaling entity)
     (setf %current (etypecase current
                      (v3:vec current)
                      (real (v3:vec current current current)))
-          %previous (v3:copy %current)
-          %incremental incremental)))
+          %previous (v3:copy %current))))
+
+(defun initialize-scaling/inc (entity incremental)
+  (with-slots (%incremental) (xform/scaling entity)
+    (setf %incremental incremental)))
 
 (defmethod initialize-instance :after ((instance xform)
                                        &key
@@ -39,9 +48,33 @@
                                          (xform/rotate/inc (q:id))
                                          (xform/scale (v3:one))
                                          (xform/scale/inc (v3:zero)))
-  (initialize-translation instance xform/translate xform/translate/inc)
-  (initialize-rotation instance xform/rotate xform/rotate/inc)
-  (initialize-scale instance xform/scale xform/scale/inc))
+  (initialize-translation instance xform/translate)
+  (initialize-translation/inc instance xform/translate/inc)
+  (initialize-rotation instance xform/rotate)
+  (initialize-rotation/inc instance xform/rotate/inc)
+  (initialize-scaling instance xform/scale)
+  (initialize-scaling/inc instance xform/scale/inc))
+
+(defmethod reinitialize-instance :after ((instance xform)
+                                         &key
+                                           xform/translate
+                                           xform/translate/inc
+                                           xform/rotate
+                                           xform/rotate/inc
+                                           xform/scale
+                                           xform/scale/inc)
+  (when xform/translate
+    (initialize-translation instance xform/translate))
+  (when xform/translate/inc
+    (initialize-translation/inc instance xform/translate/inc))
+  (when xform/rotate
+    (initialize-rotation instance xform/rotate))
+  (when xform/rotate/inc
+    (initialize-rotation/inc instance xform/rotate/inc))
+  (when xform/scale
+    (initialize-scaling instance xform/scale))
+  (when xform/scale/inc
+    (initialize-scaling/inc instance xform/scale/inc)))
 
 (defun transform-node (entity)
   (with-slots (%xform/translation %xform/rotation %xform/scaling) entity

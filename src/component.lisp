@@ -44,19 +44,27 @@
            (list :before ',(a:ensure-list before)
                  :after ',(a:ensure-list after)))))
 
-(defgeneric on-component-added (component entity)
-  (:method (component entity)))
+(defgeneric on-component-added (entity component-type)
+  (:method (entity component-type)))
 
-(defgeneric on-component-removed (component entity)
-  (:method (component entity)))
+(defgeneric on-component-removed (entity component-type)
+  (:method (entity component-type)))
 
-(defun add-component (entity component &rest args)
-  (let ((entity (apply #'add-mixin-class entity component args)))
-    (on-component-added component entity)))
+(defun add-component (entity component-type &rest args)
+  (enqueue
+   :entity-flow
+   (list :component-add
+         (lambda ()
+           (let ((entity (apply #'add-mixin-class entity component-type args)))
+             (on-component-added entity component-type))))))
 
-(defun remove-component (entity component)
-  (if (member component '(node xform))
+(defun remove-component (entity component-type)
+  (if (member component-type '(node xform))
       (error "The ~s component is immutable and cannot be removed."
-             component)
-      (let ((entity (remove-mixin-class entity component)))
-        (on-component-removed component entity))))
+             component-type)
+      (enqueue
+       :entity-flow
+       (list :component-remove
+             (lambda ()
+               (let ((entity (remove-mixin-class entity component-type)))
+                 (on-component-removed entity component-type)))))))

@@ -3,7 +3,8 @@
 (defclass state ()
   ((%cache :reader cache
            :initform (u:dict #'eq))
-   (%camera :reader camera)
+   (%camera :reader camera
+            :initform nil)
    (%clock :reader clock
            :initarg :clock)
    (%config :reader config)
@@ -38,6 +39,7 @@
   (u:while (running-p *state*)
     (with-continue-restart "Pyx"
       (clock-tick)
+      (process-queue :entity-flow)
       (handle-events)
       (update-display)
       ;; TODO: Remove this later when possible
@@ -46,7 +48,7 @@
 
 (defun run-periodic-tasks ()
   (update-repl)
-  (recompile-jobs))
+  (process-queue :recompile))
 
 (defun start (&rest args)
   (unwind-protect

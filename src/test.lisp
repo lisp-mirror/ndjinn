@@ -5,6 +5,9 @@
               :view (m4:id)
               :proj (m4:id))))
 
+(define-material sprite ()
+  (:shader umbra.sprite:sprite))
+
 (define-material world (base)
   (:shader pyx.shader:world
    :uniforms (:light.position (v3:vec 0.1 0.25 -1)
@@ -26,6 +29,7 @@
 (defun make-world (level &rest args)
   (let ((world (make-entity (world)
                  :xform/scale 50
+                 :xform/rotate/inc (v3:vec 0 0 0.1)
                  :world/options args
                  :world/level level)))
     (make-entity (render mesh)
@@ -50,9 +54,7 @@
 (defun test2 ()
   (make-entity (camera))
   (make-entity (render sprite)
+    :xform/rotate/inc (v3:vec 0 0 0.1)
     :sprite/file "sprites.png"
     :sprite/name "planet01"
     :render/material 'sprite))
-
-(define-material sprite ()
-  (:shader umbra.sprite:sprite))

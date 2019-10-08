@@ -13,6 +13,7 @@
       (register-uniform-func %render/material k))))
 
 (defun render (entity)
+  (resolve-model entity)
   (when (has-component-p 'render entity)
     (with-slots (%shader %uniforms %funcs %texture-unit-state)
         (render/material entity)

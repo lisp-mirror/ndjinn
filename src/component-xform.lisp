@@ -76,7 +76,4 @@
   (transform-node entity))
 
 (defmethod on-render progn ((entity xform))
-  (with-slots (%xform/model) entity
-    (resolve-model entity)
-    (when (has-component-p 'render entity)
-      (set-uniforms (render/material entity) :model %xform/model))))
+  (set-uniforms (render/material entity) :model (xform/model entity)))

@@ -13,13 +13,12 @@
             %sprite/index (u:href (sprites spritesheet) sprite/name)))))
 
 (defmethod on-render progn ((entity sprite))
-  (when (has-component-p 'render entity)
-    (with-slots (%sprite/spritesheet %sprite/index) entity
-      (set-uniforms (render/material entity)
-                    :sprite.index %sprite/index
-                    :sprite.sampler (texture %sprite/spritesheet)
-                    :opacity 1.0
-                    :alpha-cutoff 0.1)
-      (gl:bind-vertex-array (vao %sprite/spritesheet))
-      (gl:draw-arrays :points 0 1)
-      (gl:bind-vertex-array 0))))
+  (with-slots (%sprite/spritesheet %sprite/index) entity
+    (set-uniforms (render/material entity)
+                  :sprite.index %sprite/index
+                  :sprite.sampler (texture %sprite/spritesheet)
+                  :opacity 1.0
+                  :alpha-cutoff 0.1)
+    (gl:bind-vertex-array (vao %sprite/spritesheet))
+    (gl:draw-arrays :points 0 1)
+    (gl:bind-vertex-array 0)))

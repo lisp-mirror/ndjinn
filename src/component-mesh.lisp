@@ -14,7 +14,6 @@
       (setf %mesh/primitives (primitives mesh)))))
 
 (defmethod on-render progn ((entity mesh))
-  (when (has-component-p 'render entity)
-    (with-slots (%mesh/primitives %mesh/instances) entity
-      (dolist (primitive %mesh/primitives)
-        (funcall (draw-func primitive) %mesh/instances)))))
+  (with-slots (%mesh/primitives %mesh/instances) entity
+    (dolist (primitive %mesh/primitives)
+      (funcall (draw-func primitive) %mesh/instances))))

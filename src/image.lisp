@@ -2,13 +2,12 @@
 
 (defclass image ()
   ((%path :reader path
-          :initarg :path)
+          :initarg :path
+          :initform nil)
    (%width :reader width
            :initarg :width)
    (%height :reader height
             :initarg :height)
-   (%channels :reader channels
-              :initarg :channels)
    (%pixel-format :reader pixel-format
                   :initarg :pixel-format)
    (%pixel-type :reader pixel-type
@@ -16,7 +15,8 @@
    (%internal-format :reader internal-format
                      :initarg :internal-format)
    (%data :reader data
-          :initarg :data)))
+          :initarg :data
+          :initform nil)))
 
 (defun get-image-channel-count (image)
   (ecase (pngload-fast:color-type image)
@@ -41,15 +41,26 @@
         (bit-depth (pngload-fast:bit-depth image)))
     (a:format-symbol :keyword (subseq "RGBA" 0 channel-count) bit-depth :ui)))
 
-(defun read-image (path)
+(defgeneric read-image (path &key &allow-other-keys))
+
+(defmethod read-image ((path string) &key)
   (let* ((resolved-path (resolve-asset-path path))
          (image (pngload-fast:load-file resolved-path :flatten t :flip-y t)))
     (make-instance 'image
                    :path path
                    :width (pngload-fast:width image)
                    :height (pngload-fast:height image)
-                   :channels (get-image-channel-count image)
                    :pixel-format (get-image-pixel-format image)
                    :pixel-type (get-image-pixel-type image)
                    :internal-format (get-image-internal-format image)
                    :data (pngload-fast:data image))))
+
+(defmethod read-image ((path null)
+                       &key width height pixel-format pixel-type
+                         internal-format)
+  (make-instance 'image
+                 :width width
+                 :height height
+                 :pixel-format pixel-format
+                 :pixel-type pixel-type
+                 :internal-format internal-format))

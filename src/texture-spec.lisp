@@ -9,6 +9,12 @@
            :initarg :width)
    (%height :reader height
             :initarg :height)
+   (%pixel-format :reader pixel-format
+                  :initarg :pixel-format)
+   (%pixel-type :reader pixel-type
+                :initarg :pixel-type)
+   (%internal-format :reader internal-format
+                     :initarg :internal-format)
    (%generate-mipmaps-p :reader generate-mipmaps-p
                         :initarg :generate-mipmaps-p)
    (%parameters :reader parameters
@@ -24,6 +30,7 @@
 (defmacro define-texture (name &body body)
   (a:with-gensyms (parameters)
     (destructuring-bind (&key source width height (generate-mipmaps-p t)
+                           pixel-format pixel-type internal-format
                            (min-filter :nearest-mipmap-linear)
                            (mag-filter :linear) (swizzle-r :red)
                            (swizzle-g :green) (swizzle-b :blue)
@@ -44,8 +51,23 @@
                               :source ',source
                               :width ,width
                               :height ,height
+                              :pixel-format ,pixel-format
+                              :pixel-type ,pixel-type
+                              :internal-format ,internal-format
                               :generate-mipmaps-p ,generate-mipmaps-p
                               :parameters ,parameters))))))
 
-(define-texture debug
+(define-texture default
   (:source "debug.png"))
+
+(define-texture framebuffer-color
+  (:min-filter :linear
+   :pixel-format :rgb
+   :pixel-type :unsigned-byte
+   :internal-format :rgb))
+
+(define-texture framebuffer-depth
+  (:min-filter :linear
+   :pixel-format :depth-component
+   :pixel-type :unsigned-byte
+   :internal-format :depth-component))

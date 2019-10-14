@@ -48,6 +48,8 @@
    (:file "shader")
    (:file "shader-default")
    (:file "shader-world")
+   (:file "framebuffer-spec")
+   (:file "framebuffer")
    (:file "material-spec")
    (:file "material")
    (:file "asset")

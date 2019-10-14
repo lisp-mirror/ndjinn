@@ -11,6 +11,8 @@
    (%database :reader database
               :initform (u:dict #'eq))
    (%display :accessor display)
+   (%framebuffers :reader framebuffers
+                  :initform (u:dict #'eq))
    (%input-state :reader input-state
                  :initform (make-instance 'input-state))
    (%materials :reader materials
@@ -29,6 +31,7 @@
     (make-database)
     (prepare-gamepads)
     (make-display)
+    (initialize-framebuffers)
     (initialize-shaders)
     (make-node-tree)
     (test)

@@ -6,9 +6,9 @@
    :index nil))
 
 (defmethod shared-initialize :after ((instance sprite) slot-names
-                                     &key sprite/file sprite/name)
+                                     &key sprite/texture sprite/name)
   (with-slots (%sprite/spritesheet %sprite/name %sprite/index) instance
-    (let ((spritesheet (make-spritesheet sprite/file)))
+    (let ((spritesheet (make-spritesheet sprite/texture)))
       (setf %sprite/spritesheet spritesheet
             %sprite/index (u:href (sprites spritesheet) sprite/name)))))
 

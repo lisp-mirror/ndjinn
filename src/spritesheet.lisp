@@ -10,6 +10,13 @@
    (%vao :reader vao
          :initarg :vao)))
 
+(defun load-spritesheet-spec (texture-name)
+  (u:if-found (texture-spec (find-texture-spec texture-name))
+              (u:safe-read-file-form
+               (resolve-asset-path
+                (make-pathname :defaults (source texture-spec) :type "spec")))
+              (error "Texture ~s has no spritesheet spec file." texture-name)))
+
 (defmethod update-shader-buffer ((object spritesheet) buffer &key)
   (with-slots (%spec %sprites) object
     (loop :with count = (length %spec)
@@ -25,16 +32,12 @@
           :finally (shadow:write-buffer-path buffer :pos pos)
                    (shadow:write-buffer-path buffer :size size))))
 
-(defun make-spritesheet (image-path)
-  (cache-lookup :spritesheet image-path
-    (let* ((spec-file (make-pathname :defaults image-path :type "spec"))
-           (spec (u:safe-read-file-form
-                  (resolve-asset-path spec-file)))
-           (spritesheet (make-instance 'spritesheet
-                                       :spec spec
-                                       :texture image-path
-                                       :vao (gl:gen-vertex-array))))
-      (load-texture image-path)
+(defun make-spritesheet (texture-name)
+  (cache-lookup :spritesheet texture-name
+    (let ((spritesheet (make-instance 'spritesheet
+                                      :spec (load-spritesheet-spec texture-name)
+                                      :texture texture-name
+                                      :vao (gl:gen-vertex-array))))
       (make-shader-buffer :spritesheet 'umbra.sprite:sprite)
       (update-shader-buffer spritesheet :spritesheet)
       spritesheet)))

@@ -51,6 +51,8 @@
    (:file "material-spec")
    (:file "material")
    (:file "asset")
+   (:file "image")
+   (:file "texture-spec")
    (:file "texture")
    (:file "spritesheet")
    (:file "gltf")

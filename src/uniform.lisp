@@ -19,10 +19,10 @@
   (with-slots (%shader %texture-unit-state) material
     (lambda (k v)
       (let ((unit %texture-unit-state)
-            (texture-id (id (load-texture v))))
+            (texture (load-texture v)))
         (incf %texture-unit-state)
         (gl:active-texture unit)
-        (bind-texture unit texture-id)
+        (bind-texture texture unit)
         (shadow:uniform-int %shader k unit)))))
 
 (defun %generate-uniform-func/array (material type)
@@ -34,11 +34,11 @@
   (with-slots (%shader %texture-unit-state) material
     (lambda (k v)
       (loop :with unit-count = (+ %texture-unit-state dimensions)
-            :for texture :in v
-            :for texture-id = (id (load-texture texture))
+            :for texture-name :in v
+            :for texture = (load-texture texture-name)
             :for unit :from %texture-unit-state :to unit-count
             :do (gl:active-texture unit)
-                (bind-texture unit texture-id)
+                (bind-texture texture unit)
             :collect unit :into units
             :finally (incf %texture-unit-state dimensions)
                      (shadow:uniform-int-array %shader k units)))))

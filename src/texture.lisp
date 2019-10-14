@@ -1,99 +1,96 @@
 (in-package #:pyx)
 
 (defclass texture ()
-  ((%path :reader path
-          :initarg :path)
+  ((%spec :reader spec
+          :initarg :spec)
+   (%type :reader texture-type
+          :initarg :type)
    (%id :reader id
         :initarg :id)
-   (%raw-data :reader raw-data
-              :initarg :raw-data)
    (%width :reader width
            :initarg :width)
    (%height :reader height
-            :initarg :height)
-   (%channels :reader channels
-              :initarg :channels)
-   (%pixel-format :reader pixel-format
-                  :initarg :pixel-format)
-   (%pixel-type :reader pixel-type
-                :initarg :pixel-type
-                :initform :unsigned-byte)
-   (%internal-format :reader internal-format
-                     :initarg :internal-format)
-   (%data :reader data
-          :initarg :data)))
+            :initarg :height)))
 
-(defun get-internal-format (pixel-format)
-  (ecase pixel-format
-    (:red :r8)
-    ((:rgb :bgr) :rgb8)
-    ((:rgba :bgra) :rgba8)))
+(defgeneric make-texture (spec source &key &allow-other-keys))
 
-(defun get-image-channel-count (raw-data)
-  (ecase (pngload-fast:color-type raw-data)
-    (:greyscale 1)
-    (:truecolour 3)
-    (:truecolour-alpha 4)))
+(defmethod make-texture (spec (source image) &key)
+  (let* ((id (gl:gen-texture))
+         (texture (make-instance
+                   'texture
+                   :spec spec
+                   :type :texture-2d
+                   :id id
+                   :width (width source)
+                   :height (height source))))
+    (gl:bind-texture :texture-2d id)
+    (gl:tex-image-2d :texture-2d
+                     0
+                     (internal-format source)
+                     (width source)
+                     (height source)
+                     0
+                     (pixel-format source)
+                     (pixel-type source)
+                     (data source))
+    (gl:bind-texture :texture-2d 0)
+    texture))
 
-(defun get-image-pixel-format (raw-data)
-  (ecase (pngload-fast:color-type raw-data)
-    (:greyscale :red)
-    (:truecolour :rgb)
-    (:truecolour-alpha :rgba)))
+(defmethod make-texture (spec (source list) &key)
+  (let* ((id (gl:gen-texture))
+         (layer0 (first source))
+         (texture (make-instance
+                   'texture
+                   :spec spec
+                   :type :texture-2d-array
+                   :id id
+                   :width (width layer0)
+                   :height (height layer0))))
+    (gl:bind-texture :texture-2d-array id)
+    (%gl:tex-storage-3d :texture-2d-array
+                        1
+                        (internal-format layer0)
+                        (width layer0)
+                        (height layer0)
+                        (length source))
+    (loop :for image :in source
+          :for layer :from 0
+          :do (gl:tex-sub-image-3d :texture-2d-array
+                                   0
+                                   0
+                                   0
+                                   layer
+                                   (width image)
+                                   (height image)
+                                   1
+                                   (pixel-format image)
+                                   (pixel-type image)
+                                   (data image)))
+    (gl:bind-texture :texture-2d-array 0)
+    texture))
 
-(defun make-texture (path)
-  (let* ((raw-data (pngload-fast:load-file path :flatten t :flip-y t))
-         (pixel-format (get-image-pixel-format raw-data)))
-    (make-instance 'texture
-                   :path path
-                   :id (gl:gen-texture)
-                   :raw-data raw-data
-                   :width (pngload-fast:width raw-data)
-                   :height (pngload-fast:height raw-data)
-                   :channels (get-image-channel-count raw-data)
-                   :pixel-format pixel-format
-                   :internal-format (get-internal-format pixel-format)
-                   :data (pngload-fast:data raw-data))))
+(defun bind-texture (texture unit)
+  (with-slots (%type %id) texture
+    (gl:active-texture unit)
+    (gl:bind-texture %type %id)))
 
-(defun free-texture-image (texture)
-  (with-slots (%raw-data %data) texture
-    (setf %raw-data nil
-          %data nil)
-    (u:noop)))
+(defun configure-texture (texture)
+  (with-slots (%spec %type %id) texture
+    (gl:bind-texture %type %id)
+    (when (generate-mipmaps-p %spec)
+      (gl:generate-mipmap %type))
+    (u:do-hash (k v (parameters %spec))
+      (gl:texture-parameter %id k v))
+    (gl:bind-texture %type 0)))
 
-(defun store-texture (texture)
-  (unwind-protect
-       (gl:tex-image-2d :texture-2d
-                        0
-                        (internal-format texture)
-                        (width texture)
-                        (height texture)
-                        0
-                        (pixel-format texture)
-                        (pixel-type texture)
-                        (data texture))
-    (free-texture-image texture)))
-
-(defun configure-texture (mipmaps-p min-filter mag-filter)
-  (when mipmaps-p
-    (gl:generate-mipmap :texture-2d))
-  (gl:tex-parameter :texture-2d :texture-min-filter min-filter)
-  (gl:tex-parameter :texture-2d :texture-mag-filter mag-filter))
-
-(defun load-texture (path
-                     &key (mipmaps-p t) (min-filter :linear-mipmap-linear)
-                       (mag-filter :linear))
-  (flet ((%load-file (path)
-           (cache-lookup :texture path
-             (let ((texture (make-texture (resolve-asset-path path))))
-               (gl:bind-texture :texture-2d (id texture))
-               (store-texture texture)
-               (configure-texture mipmaps-p min-filter mag-filter)
-               (gl:bind-texture :texture-2d 0)
-               texture))))
-    (handler-case (%load-file path)
-      (error () (%load-file "debug.png")))))
-
-(defun bind-texture (unit value)
-  (gl:active-texture unit)
-  (gl:bind-texture :texture-2d value))
+(defun load-texture (texture-name)
+  (flet ((%load (source)
+           (etypecase source
+             (string (read-image source))
+             (list (mapcar #'read-image source)))))
+    (let ((spec (find-texture-spec texture-name)))
+      (with-slots (%name %source) spec
+        (cache-lookup :texture %name
+          (let ((texture (make-texture spec (%load %source))))
+            (configure-texture texture)
+            texture))))))

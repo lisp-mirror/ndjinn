@@ -15,7 +15,8 @@
               (u:safe-read-file-form
                (resolve-asset-path
                 (make-pathname :defaults (source texture-spec) :type "spec")))
-              (error "Texture ~s has no spritesheet spec file." texture-name)))
+              (error "Texture ~s has no spritesheet spec file."
+                     (name texture-name))))
 
 (defmethod update-shader-buffer ((object spritesheet) buffer &key)
   (with-slots (%spec %sprites) object

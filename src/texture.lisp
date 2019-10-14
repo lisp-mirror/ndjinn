@@ -88,9 +88,12 @@
            (etypecase source
              (string (read-image source))
              (list (mapcar #'read-image source)))))
-    (let ((spec (find-texture-spec texture-name)))
-      (with-slots (%name %source) spec
-        (cache-lookup :texture %name
-          (let ((texture (make-texture spec (%load %source))))
-            (configure-texture texture)
-            texture))))))
+    (handler-case
+        (let ((spec (find-texture-spec texture-name)))
+          (with-slots (%name %source) spec
+            (cache-lookup :texture %name
+              (let ((texture (make-texture spec (%load %source))))
+                (configure-texture texture)
+                texture))))
+      (error ()
+        (load-texture 'debug)))))

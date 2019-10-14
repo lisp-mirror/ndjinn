@@ -42,16 +42,14 @@
     (a:format-symbol :keyword (subseq "RGBA" 0 channel-count) bit-depth :ui)))
 
 (defun read-image (path)
-  (handler-case
-      (let* ((resolved-path (resolve-asset-path path))
-             (image (pngload-fast:load-file resolved-path :flatten t :flip-y t)))
-        (make-instance 'image
-                       :path path
-                       :width (pngload-fast:width image)
-                       :height (pngload-fast:height image)
-                       :channels (get-image-channel-count image)
-                       :pixel-format (get-image-pixel-format image)
-                       :pixel-type (get-image-pixel-type image)
-                       :internal-format (get-image-internal-format image)
-                       :data (pngload-fast:data image)))
-    (error () (read-image "debug.png"))))
+  (let* ((resolved-path (resolve-asset-path path))
+         (image (pngload-fast:load-file resolved-path :flatten t :flip-y t)))
+    (make-instance 'image
+                   :path path
+                   :width (pngload-fast:width image)
+                   :height (pngload-fast:height image)
+                   :channels (get-image-channel-count image)
+                   :pixel-format (get-image-pixel-format image)
+                   :pixel-type (get-image-pixel-type image)
+                   :internal-format (get-image-internal-format image)
+                   :data (pngload-fast:data image))))

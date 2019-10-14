@@ -37,7 +37,7 @@
                 (proj :mat4)
                 (cell-type :int)
                 (world world-data :ssbo :std-430))
-  (with-slots (mesh/pos mesh/normal mesh/uv1) mesh-attrs
+  (with-slots (mesh/pos mesh/normal) mesh-attrs
     (with-slots (width height) world
       (let* ((normal-mat (transpose (inverse (mat3 (* view model)))))
              (world-normal (normalize (* normal-mat mesh/normal)))
@@ -47,7 +47,6 @@
              (offset (vec3 (- (* coords 2) map-size) 0))
              (model-pos (vec3 (* model (vec4 (+ offset mesh/pos) 1)))))
         (values (* proj view (vec4 model-pos 1))
-                mesh/uv1
                 model-pos
                 world-normal
                 to-camera)))))
@@ -116,8 +115,7 @@
     (1 (generate-texture/wall frag-pos))
     (otherwise (vec3 0))))
 
-(defun world/f ((uv :vec2)
-                (frag-pos :vec3)
+(defun world/f ((frag-pos :vec3)
                 (normal :vec3)
                 (to-camera :vec3)
                 &uniforms
@@ -131,4 +129,4 @@
 
 (define-shader world ()
   (:vertex (world/v mesh-attrs))
-  (:fragment (world/f :vec2 :vec3 :vec3 :vec3)))
+  (:fragment (world/f :vec3 :vec3 :vec3)))

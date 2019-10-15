@@ -12,15 +12,17 @@
   :test #'equal)
 
 (defclass gltf ()
-  ((%buffer :reader buffer
+  ((%name :reader name
+          :initarg :name)
+   (%buffer :reader buffer
             :initarg :buffer)
    (%parse-tree :accessor parse-tree)
    (%json :accessor json)
    (%buffers :accessor buffers)
    (%allocated-views :accessor allocated-views
                      :initform nil)
-   (%primitives :accessor primitives
-                :initform nil)))
+   (%meshes :reader meshes
+            :initform (u:dict #'equalp))))
 
 (defclass gltf-datastream ()
   ((%header :reader header)
@@ -35,6 +37,13 @@
   ((%length :reader chunk-length)
    (%type :reader chunk-type)
    (%data :reader chunk-data)))
+
+(defclass gltf-mesh ()
+  ((%name :reader name
+          :initarg :name)
+   (%primitives :reader primitives
+                :initarg :primitives
+                :initform nil)))
 
 (defclass gltf-primitive ()
   ((%vao :reader vao
@@ -124,12 +133,20 @@
             %chunks (parse-gltf-chunks gltf)))
     datastream))
 
-(defun parse-gltf-file (path)
-  (u:with-binary-input (in path)
-    (let* ((buffer (fast-io:make-input-buffer :stream in))
-           (gltf (make-instance 'gltf :buffer buffer)))
-      (setf (parse-tree gltf) (parse-gltf-datastream gltf))
-      gltf)))
+(defun parse-gltf-meshes (gltf)
+  (loop :for mesh :in (get-gltf-property gltf "meshes")
+        :for index :from 0
+        :for name = (or (get-gltf-property gltf "name" mesh)
+                        (format nil "~a~d" (name gltf) index))
+        :for primitives = (map
+                           'vector
+                           (lambda (x)
+                             (make-gltf-primitive gltf x))
+                           (get-gltf-property gltf "primitives" mesh))
+        :do (setf (u:href (meshes gltf) name)
+                  (make-instance 'gltf-mesh
+                                 :name name
+                                 :primitives primitives))))
 
 (defun get-gltf-component-type (gltf accessor)
   (ecase (get-gltf-property gltf "componentType" accessor)
@@ -262,16 +279,13 @@
       (make-gltf-draw-func primitive)
       primitive)))
 
-(defun load-gltf (path mesh-id)
-  (let ((gltf (parse-gltf-file path)))
-    (dolist (primitive-data (find-gltf-mesh gltf mesh-id))
-      (push (make-gltf-primitive gltf primitive-data) (primitives gltf)))
-    (setf (buffers gltf) nil)
-    gltf))
-
-(defun draw-gltf-primitive (primitive count)
-  (funcall (draw-func primitive) count))
-
-(defun draw-gltf (mesh count)
-  (dolist (primitive (primitives mesh))
-    (draw-gltf-primitive primitive count)))
+(defun load-gltf (path)
+  (u:with-binary-input (in path)
+    (let* ((buffer (fast-io:make-input-buffer :stream in))
+           (gltf (make-instance 'gltf
+                                :name (pathname-name path)
+                                :buffer buffer)))
+      (setf (parse-tree gltf) (parse-gltf-datastream gltf))
+      (parse-gltf-meshes gltf)
+      (setf (buffers gltf) nil)
+      gltf)))

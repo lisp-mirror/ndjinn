@@ -38,14 +38,16 @@
       :node/parent world
       :xform/scale (v3:vec 0.5 0.5 0.1)
       :render/material 'world/floor
-      :mesh/file "floor.glb"
+      :mesh/file "tiles.glb"
+      :mesh/name "floor"
       :mesh/instances (u:href (world/cell-counts world) :floor))
     (make-entity (render mesh)
       :node/parent world
       :xform/translate (v3:vec 0 0 0.75)
       :xform/scale (v3:vec 0.5 0.5 0.75)
       :render/material 'world/wall
-      :mesh/file "wall.glb"
+      :mesh/file "tiles.glb"
+      :mesh/name "wall"
       :mesh/instances (u:href (world/cell-counts world) :wall))))
 
 (defun test ()

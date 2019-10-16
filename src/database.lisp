@@ -15,7 +15,7 @@
   (:method ((uuid uuid))
     (u:href (uuids (database *state*)) uuid))
   (:method ((uuid string))
-    (u:href (uuid (database *state*)) (string->uuid uuid))))
+    (u:href (uuids (database *state*)) (string->uuid uuid))))
 
 (defun find-by-picking-id (id)
   (u:href (picking-id (database *state*)) id))

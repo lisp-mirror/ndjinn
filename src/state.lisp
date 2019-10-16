@@ -34,7 +34,6 @@
     (initialize-framebuffers)
     (initialize-shaders)
     (make-node-tree)
-    (test)
     (log:info :pyx "Started Pyx.")))
 
 (defun run-main-game-loop ()
@@ -53,9 +52,10 @@
   (update-repl)
   (process-queue :recompile))
 
-(defun start (&rest args)
+(defun start (entry-point &rest args)
   (unwind-protect
        (let ((*state* (apply #'make-instance 'state args)))
+         (funcall entry-point)
          (run-main-game-loop))
     (stop)))
 

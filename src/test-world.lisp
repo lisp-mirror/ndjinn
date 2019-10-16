@@ -1,16 +1,5 @@
 (in-package #:pyx)
 
-(define-texture sprites
-  (:source "sprites.png"))
-
-(define-material base ()
-  (:uniforms (:model (m4:id)
-              :view (m4:id)
-              :proj (m4:id))))
-
-(define-material sprite ()
-  (:shader umbra.sprite:sprite))
-
 (define-material world (base)
   (:shader pyx.shader:world
    :uniforms (:light.position (v3:vec 0.1 0.25 -1)
@@ -50,15 +39,7 @@
       :mesh/name "wall"
       :mesh/instances (u:href (world/cell-counts world) :wall))))
 
-(defun test ()
+(defun test/world ()
   (make-entity (camera)
     :camera/mode :isometric)
   (make-world 1 :width 49 :height 49 :seed 1))
-
-(defun test2 ()
-  (make-entity (camera))
-  (make-entity (render sprite)
-    :xform/rotate/inc (v3:vec 0 0 0.1)
-    :sprite/texture 'sprites
-    :sprite/name "planet01"
-    :render/material 'sprite))

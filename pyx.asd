@@ -70,4 +70,7 @@
    (:file "component-sprite")
    (:file "component-mesh")
    (:file "state")
-   (:file "test")))
+   (:file "test-common")
+   (:file "test-sprite")
+   (:file "test-world")
+   (:file "test-deferred-shading")))

@@ -1,8 +1,8 @@
 (in-package #:pyx)
 
 (defclass material-spec ()
-  ((%id :reader id
-        :initarg :id)
+  ((%name :reader name
+          :initarg :name)
    (%master :accessor master
             :initarg :master
             :initform nil)
@@ -24,8 +24,8 @@
           (setf (u:href uniforms k) (copy v))))
       uniforms)))
 
-(defun make-material-spec-uniforms (master-id uniforms)
-  (let* ((master (meta :materials master-id))
+(defun make-material-spec-uniforms (master-name uniforms)
+  (let* ((master (meta :materials master-name))
          (uniforms (or uniforms (u:dict #'eq)))
          (resolved (u:hash-merge (copy-material-spec-uniforms master)
                                  uniforms)))
@@ -35,12 +35,12 @@
 
 (defun update-material-spec-relationships (spec)
   (a:when-let ((master (meta :materials (master spec))))
-    (pushnew (id spec) (slaves master))))
+    (pushnew (name spec) (slaves master))))
 
-(defun make-material-spec (&key id shader uniforms master)
+(defun make-material-spec (&key name shader uniforms master)
   (let* ((uniforms (make-material-spec-uniforms master uniforms))
          (spec (make-instance 'material-spec
-                              :id id
+                              :name name
                               :shader shader
                               :uniforms uniforms
                               :master master)))
@@ -53,17 +53,17 @@
                            :shader shader
                            :uniforms uniforms
                            :master master)
-    (enqueue :recompile (list :material (id spec)))
+    (enqueue :recompile (list :material (name spec)))
     (update-material-spec-relationships spec)
-    (dolist (slave-id (slaves spec))
-      (let ((slave (meta :materials slave-id)))
+    (dolist (slave-name (slaves spec))
+      (let ((slave (meta :materials slave-name)))
         (update-material-spec slave
                               :shader (or shader (shader slave))
                               :uniforms (u:href (uniforms slave) :self)
-                              :master (id spec))))
+                              :master (name spec))))
     spec))
 
-(defmacro define-material (id (&optional master) &body body)
+(defmacro define-material (name (&optional master) &body body)
   (a:with-gensyms (spec master-spec uniforms-table resolved-shader)
     (destructuring-bind (&key shader uniforms) (car body)
       `(progn
@@ -74,13 +74,13 @@
                 (,resolved-shader (or ',shader
                                       (and ,master-spec
                                            (shader ,master-spec)))))
-           (a:if-let ((,spec (meta :materials ',id)))
+           (a:if-let ((,spec (meta :materials ',name)))
              (update-material-spec ,spec
                                    :shader ,resolved-shader
                                    :uniforms ,uniforms-table
                                    :master ',master)
-             (setf (meta :materials ',id)
-                   (make-material-spec :id ',id
+             (setf (meta :materials ',name)
+                   (make-material-spec :name ',name
                                        :shader ,resolved-shader
                                        :uniforms ,uniforms-table
                                        :master ',master))))))))

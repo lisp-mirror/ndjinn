@@ -1,8 +1,8 @@
 (in-package #:pyx)
 
 (defclass material ()
-  ((%id :reader id
-        :initarg :id)
+  ((%name :reader name
+          :initarg :name)
    (%shader :reader shader
             :initarg :shader)
    (%uniforms :reader uniforms
@@ -13,24 +13,24 @@
                         :initform 0)))
 
 (u:define-printer (material stream :type t :identity t)
-  (format stream "~s" (id material)))
+  (format stream "~s" (name material)))
 
-(defun make-material (spec-id)
-  (let ((spec (meta :materials spec-id)))
+(defun make-material (spec-name)
+  (let ((spec (meta :materials spec-name)))
     (unless spec
-      (error "Material ~s not found." spec-id))
+      (error "Material ~s not found." spec-name))
     (let* ((uniforms (copy-material-spec-uniforms spec))
            (material (make-instance 'material
-                                    :id (id spec)
+                                    :name (name spec)
                                     :shader (shader spec)
                                     :uniforms uniforms)))
-      (push material (u:href (materials *state*) spec-id))
+      (push material (u:href (materials *state*) spec-name))
       material)))
 
-(defun update-materials (spec-id)
+(defun update-materials (spec-name)
   (when *state*
-    (let ((spec (meta :materials spec-id)))
-      (dolist (material (u:href (materials *state*) spec-id))
+    (let ((spec (meta :materials spec-name)))
+      (dolist (material (u:href (materials *state*) spec-name))
         (with-slots (%shader %uniforms %funcs) material
           (setf %shader (shader spec)
                 %uniforms (copy-material-spec-uniforms spec))

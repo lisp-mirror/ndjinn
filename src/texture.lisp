@@ -105,14 +105,11 @@
     (error ()
       (load-texture 'default))))
 
-(defun load-framebuffer-texture (framebuffer attachment)
+(defun load-framebuffer-texture (framebuffer attachment texture-name)
   (with-slots (%name %point %width %height) attachment
-    (let ((spec-name (a:format-symbol :pyx "FRAMEBUFFER-~a" (car %point)))
-          (texture-name (a:format-symbol :pyx "FRAMEBUFFER-~a-~a"
-                                         (name framebuffer)
-                                         %name)))
-      (cache-lookup :texture texture-name
-        (let* ((spec (find-texture-spec spec-name))
+    (let ((cached-name (a:symbolicate (name framebuffer) '#:/ %name)))
+      (cache-lookup :texture cached-name
+        (let* ((spec (find-texture-spec texture-name))
                (source (load-texture-source spec
                                             :width (funcall %width)
                                             :height (funcall %height)))

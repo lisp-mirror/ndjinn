@@ -12,8 +12,8 @@
 (defclass framebuffer-attachment-spec ()
   ((%name :reader name
           :initarg :name)
-   (%type :reader attachment-type
-          :initarg :type)
+   (%buffer :reader buffer
+            :initarg :buffer)
    (%point :reader point
            :initarg :point)
    (%width :reader width
@@ -26,11 +26,11 @@
            (lambda ()
              (or value
                  (cfg (a:format-symbol :keyword "WINDOW-~a" dimension))))))
-    (destructuring-bind (name &key point (type :render-buffer) width height)
+    (destructuring-bind (name &key point (buffer :render-buffer) width height)
         spec
       (make-instance 'framebuffer-attachment-spec
                      :name name
-                     :type type
+                     :buffer (a:ensure-list buffer)
                      :point point
                      :width (generate-size-func :width width)
                      :height (generate-size-func :height height)))))

@@ -59,15 +59,3 @@
 
 (define-texture default
   (:source "debug.png"))
-
-(define-texture framebuffer-color
-  (:min-filter :linear
-   :pixel-format :rgb
-   :pixel-type :unsigned-byte
-   :internal-format :rgb))
-
-(define-texture framebuffer-depth
-  (:min-filter :linear
-   :pixel-format :depth-component
-   :pixel-type :unsigned-byte
-   :internal-format :depth-component16))

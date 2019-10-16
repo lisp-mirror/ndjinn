@@ -91,20 +91,28 @@
       buffer-id)))
 
 (defun framebuffer-attach/texture (framebuffer attachment)
-  (with-slots (%point) attachment
-    (let* ((target (framebuffer-mode->target (mode framebuffer)))
-           (buffer-id (id (load-framebuffer-texture framebuffer attachment)))
-           (point (framebuffer-attachment-point->gl %point)))
-      (with-framebuffer (framebuffer)
-        (%gl:framebuffer-texture target point buffer-id 0)
-        (ensure-framebuffer-complete framebuffer target buffer-id point))
-      (setf (u:href (attachments framebuffer) point) buffer-id)
-      buffer-id)))
+  (with-slots (%name %buffer %point) attachment
+    (destructuring-bind (type &optional texture-name) %buffer
+      (declare (ignore type))
+      (unless texture-name
+        (error "Framebuffer ~s attachment ~s uses a texture buffer without a ~
+                texture name."
+               (name framebuffer)
+               %name))
+      (let* ((target (framebuffer-mode->target (mode framebuffer)))
+             (buffer-id (id (load-framebuffer-texture
+                             framebuffer attachment texture-name)))
+             (point (framebuffer-attachment-point->gl %point)))
+        (with-framebuffer (framebuffer)
+          (%gl:framebuffer-texture target point buffer-id 0)
+          (ensure-framebuffer-complete framebuffer target buffer-id point))
+        (setf (u:href (attachments framebuffer) point) buffer-id)
+        buffer-id))))
 
 (defun framebuffer-attach (framebuffer attachment-name)
   (let* ((spec (spec framebuffer))
          (attachment (find-framebuffer-attachment-spec spec attachment-name)))
-    (ecase (attachment-type attachment)
+    (ecase (car (buffer attachment))
       (:render-buffer (framebuffer-attach/render-buffer framebuffer attachment))
       (:texture (framebuffer-attach/texture framebuffer attachment)))))
 

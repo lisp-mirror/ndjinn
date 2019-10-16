@@ -70,4 +70,4 @@
   (:min-filter :linear
    :pixel-format :depth-component
    :pixel-type :unsigned-byte
-   :internal-format :depth-component))
+   :internal-format :depth-component16))

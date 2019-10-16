@@ -1,5 +1,7 @@
 (in-package #:pyx.examples)
 
+;;;TODO: This example is not complete yet.
+
 (pyx:define-texture gbuffer/position/normal
   (:min-filter :nearest
    :mag-filter :nearest

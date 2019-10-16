@@ -1,6 +1,6 @@
-(in-package #:pyx)
+(in-package #:pyx.examples)
 
-(define-texture gbuffer/position/normal
+(pyx:define-texture gbuffer/position/normal
   (:min-filter :nearest
    :mag-filter :nearest
    :pixel-format :rgb
@@ -9,7 +9,7 @@
    :generate-mipmaps-p nil
    :source nil))
 
-(define-texture gbuffer/albedo/specular
+(pyx:define-texture gbuffer/albedo/specular
   (:min-filter :nearest
    :mag-filter :nearest
    :pixel-format :rgba
@@ -18,7 +18,7 @@
    :generate-mipmaps-p nil
    :source nil))
 
-(define-framebuffer gbuffer ()
+(pyx:define-framebuffer gbuffer ()
   (position :buffer (:texture gbuffer/position/normal)
             :point (:color 0))
   (normal :buffer (:texture gbuffer/position/normal)

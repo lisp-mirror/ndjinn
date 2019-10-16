@@ -1,8 +1,7 @@
 (in-package #:pyx)
 
 (define-component render (:after xform :before sprite)
-  (:shader nil
-   :material nil))
+  (:material nil))
 
 (defmethod shared-initialize :after ((instance render) slot-names &key)
   (with-slots (%render/material) instance

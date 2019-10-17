@@ -11,9 +11,7 @@
    (%shader :reader shader
             :initarg :shader)
    (%uniforms :reader uniforms
-              :initform (u:dict #'eq
-                                :self (u:dict #'eq)
-                                :resolved (u:dict #'eq)))))
+              :initform (make-nested-dict #'eq :self :resolved))))
 
 (defun find-material-spec-master (spec)
   (let* ((master-name (master spec))

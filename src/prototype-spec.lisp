@@ -9,9 +9,9 @@
    (%slaves :accessor slaves
             :initform nil)
    (%component-types :reader component-types
-                     :initform (u:dict #'eq :self nil :resolved nil))
+                     :initform (make-nested-dict #'eq :self :resolved))
    (%component-args :reader component-args
-                    :initform (u:dict #'eq :self nil :resolved nil))))
+                    :initform (make-nested-dict #'eq :self :resolved))))
 
 (defun find-prototype-spec-master (spec)
   (let* ((master-name (master spec))

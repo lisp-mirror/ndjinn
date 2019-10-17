@@ -13,15 +13,13 @@
 (defun make-thread-pool ()
   (let* ((worker-count (cfg :threads))
          (thread-pool (make-instance 'thread-pool :worker-count worker-count)))
-    (setf lparallel:*kernel* (lparallel:make-kernel
-                              worker-count
-                              ;; :bindings '((*state* . *state*))
-                              )
+    (setf lparallel:*kernel* (lparallel:make-kernel worker-count)
           *thread-pool* thread-pool)))
 
 (defun destroy-thread-pool ()
-  (lparallel:end-kernel :wait t)
-  (setf *thread-pool* nil))
+  (when (and (boundp '*thread-pool*) *thread-pool*)
+    (setf *thread-pool* nil))
+  (lparallel:end-kernel :wait t))
 
 (defun ensure-channel (purpose)
   (let ((channels (channels *thread-pool*)))
@@ -32,30 +30,32 @@
     (a:ensure-gethash purpose queues (lparallel.queue:make-queue))))
 
 (defun submit-job (purpose job &optional (priority :default))
-  (let ((channel (ensure-channel purpose))
-        (lparallel:*task-priority* priority)
-        (lparallel:*task-category* purpose))
-    (lparallel:submit-task channel job)))
+  (when (and (boundp '*thread-pool*) *thread-pool*)
+    (let ((channel (ensure-channel purpose))
+          (lparallel:*task-priority* priority)
+          (lparallel:*task-category* purpose))
+      (lparallel:submit-task channel job))))
 
 (defun get-job-results (purpose)
-  (let ((channel (ensure-channel purpose)))
-    (lparallel:receive-result channel)))
+  (when (and (boundp '*thread-pool*) *thread-pool*)
+    (let ((channel (ensure-channel purpose)))
+      (lparallel:receive-result channel))))
 
 (defun kill-jobs (purpose)
   (lparallel:kill-tasks purpose))
 
 (defun enqueue (purpose data)
-  (when *thread-pool*
+  (when (and (boundp '*thread-pool*) *thread-pool*)
     (let ((queue (ensure-queue purpose)))
       (lparallel.queue:push-queue data queue))))
 
 (defun dequeue (purpose)
-  (when *thread-pool*
+  (when (and (boundp '*thread-pool*) *thread-pool*)
     (let ((queue (ensure-queue purpose)))
       (lparallel.queue:pop-queue queue))))
 
 (defun queue-empty-p (purpose)
-  (when *thread-pool*
+  (when (and (boundp '*thread-pool*) *thread-pool*)
     (let ((queue (ensure-queue purpose)))
       (lparallel.queue:queue-empty-p queue))))
 

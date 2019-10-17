@@ -28,23 +28,6 @@
           :collect (a:format-symbol :keyword "~a/~a" type k)
           :collect v)))
 
-(defun resolve-prototype-component-types (master-spec types)
-  (let ((master-types (when master-spec
-                        (u:href (component-types master-spec) :self))))
-    (sort (remove-duplicates (append types master-types)) #'string<)))
-
-(defun resolve-prototype-component-args (master-spec args)
-  (let ((master-args (when master-spec
-                       (u:href (component-args master-spec) :self))))
-    (u:alist->plist
-     (sort
-      (append
-       (u:plist->alist args)
-       (u:plist->alist
-        (apply #'u:plist-remove master-args (u:plist-keys args))))
-      #'string<
-      :key #'car))))
-
 (defun update-prototype-spec-relationships (spec)
   (a:when-let ((master (meta :prototypes (master spec))))
     (pushnew (name spec) (slaves master))))
@@ -52,16 +35,30 @@
 (defun update-prototype-spec-tables (spec types args)
   (with-slots (%component-types %component-args) spec
     (let* ((master-spec (find-prototype-spec-master spec))
-           (self-types (sort types #'string<))
-           (resolved-types (resolve-prototype-component-types
-                            master-spec types))
-           (self-args (u:alist->plist
-                       (sort (u:plist->alist args) #'string< :key #'car)))
-           (resolved-args (resolve-prototype-component-args master-spec args)))
-      (setf (u:href %component-types :self) self-types
-            (u:href %component-types :resolved) resolved-types
-            (u:href %component-args :self) self-args
-            (u:href %component-args :resolved) resolved-args))))
+           (self-types (apply #'u:dict #'eq types))
+           (resolved-types (u:hash-merge
+                            (if master-spec
+                                (u:href (component-types master-spec) :resolved)
+                                (u:dict #'eq))
+                            self-types))
+           (self-args (apply #'u:dict #'eq args))
+           (resolved-args (u:hash-merge
+                           (if master-spec
+                               (u:href (component-args master-spec) :resolved)
+                               (u:dict #'eq))
+                           self-args)))
+      (clrhash (u:href %component-types :self))
+      (clrhash (u:href %component-types :resolved))
+      (clrhash (u:href %component-args :self))
+      (clrhash (u:href %component-args :resolved))
+      (u:do-hash (k v self-types)
+        (setf (u:href %component-types :self k) v))
+      (u:do-hash (k v resolved-types)
+        (setf (u:href %component-types :resolved k) v))
+      (u:do-hash (k v self-args)
+        (setf (u:href %component-args :self k) v))
+      (u:do-hash (k v resolved-args)
+        (setf (u:href %component-args :resolved k) v)))))
 
 (defun make-prototype-spec (name master-name types args)
   (let ((spec (make-instance 'prototype-spec :name name :master master-name)))
@@ -80,8 +77,8 @@
         (update-prototype-spec
          slave
          %name
-         (u:href (component-types slave) :self)
-         (u:href (component-args slave) :self))))))
+         (u:hash->plist (u:href (component-types slave) :self))
+         (u:hash->plist (u:href (component-args slave) :self)))))))
 
 (defmacro define-prototype (name (&optional master) &body body)
   (a:with-gensyms (spec)

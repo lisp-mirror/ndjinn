@@ -40,9 +40,9 @@
            (resolved (u:hash-merge (copy-material-spec-uniforms master-spec)
                                    self)))
       (clrhash (u:href %uniforms :self))
+      (clrhash (u:href %uniforms :resolved))
       (u:do-hash (k v self)
         (setf (u:href %uniforms :self k) v))
-      (clrhash (u:href %uniforms :resolved))
       (u:do-hash (k v resolved)
         (setf (u:href %uniforms :resolved k) v)))))
 
@@ -50,9 +50,9 @@
   (a:when-let ((master (meta :materials (master spec))))
     (pushnew (name spec) (slaves master))))
 
-(defun make-material-spec (name master shader uniforms)
+(defun make-material-spec (name master-name shader uniforms)
   (let ((spec (make-instance 'material-spec :name name
-                                            :master master
+                                            :master master-name
                                             :shader shader)))
     (update-material-spec-uniforms spec uniforms)
     (update-material-spec-relationships spec)

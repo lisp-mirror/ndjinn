@@ -37,30 +37,30 @@
   (a:when-let ((master (meta :materials (master spec))))
     (pushnew (name spec) (slaves master))))
 
-(defun make-material-spec (&key name shader uniforms master)
+(defun make-material-spec (&key name master shader uniforms)
   (let* ((uniforms (make-material-spec-uniforms master uniforms))
          (spec (make-instance 'material-spec
                               :name name
+                              :master master
                               :shader shader
-                              :uniforms uniforms
-                              :master master)))
+                              :uniforms uniforms)))
     (update-material-spec-relationships spec)
     spec))
 
-(defun update-material-spec (spec &key shader uniforms master)
+(defun update-material-spec (spec &key master shader uniforms)
   (let ((uniforms (make-material-spec-uniforms master uniforms)))
     (reinitialize-instance spec
+                           :master master
                            :shader shader
-                           :uniforms uniforms
-                           :master master)
+                           :uniforms uniforms)
     (enqueue :recompile (list :material (name spec)))
     (update-material-spec-relationships spec)
     (dolist (slave-name (slaves spec))
       (let ((slave (meta :materials slave-name)))
         (update-material-spec slave
-                              :shader (or shader (shader slave))
-                              :uniforms (u:href (uniforms slave) :self)
-                              :master (name spec))))
+                              :master (name spec)
+                              :shader (or (shader slave) shader)
+                              :uniforms (u:href (uniforms slave) :self))))
     spec))
 
 (defmacro define-material (name (&optional master) &body body)
@@ -76,11 +76,11 @@
                                            (shader ,master-spec)))))
            (a:if-let ((,spec (meta :materials ',name)))
              (update-material-spec ,spec
+                                   :master ',master
                                    :shader ,resolved-shader
-                                   :uniforms ,uniforms-table
-                                   :master ',master)
+                                   :uniforms ,uniforms-table)
              (setf (meta :materials ',name)
                    (make-material-spec :name ',name
+                                       :master ',master
                                        :shader ,resolved-shader
-                                       :uniforms ,uniforms-table
-                                       :master ',master))))))))
+                                       :uniforms ,uniforms-table))))))))

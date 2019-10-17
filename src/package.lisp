@@ -18,6 +18,7 @@
   (:export
    #:define-framebuffer
    #:define-material
+   #:define-prototype
    #:define-texture)
   ;; entity protocol
   (:export

@@ -27,7 +27,7 @@
       (push material (u:href (materials *state*) spec-name))
       material)))
 
-(defun update-materials (spec-name)
+(defun recompile-materials (spec-name)
   (when *state*
     (let ((spec (meta :materials spec-name)))
       (dolist (material (u:href (materials *state*) spec-name))

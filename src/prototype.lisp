@@ -1,6 +1,6 @@
 (in-package #:pyx)
 
-(defclass prototype-spec ()
+(defclass prototype ()
   ((%name :reader name
           :initarg :name)
    (%master :accessor master
@@ -13,14 +13,14 @@
    (%component-args :reader component-args
                     :initform (make-nested-dict #'eq :self :resolved))))
 
-(defun find-prototype-spec-master (spec)
-  (let* ((master-name (master spec))
-         (master-spec (meta :prototypes master-name)))
-    (when (and master-name (not master-spec))
+(defun find-prototype-master (prototype)
+  (let* ((master-name (master prototype))
+         (master (meta :prototypes master-name)))
+    (when (and master-name (not master))
       (error "Prototype ~s inherits from the unknown master ~s."
-             (name spec)
+             (name prototype)
              master-name))
-    master-spec))
+    master))
 
 (defun generate-prototype-component-args (component-spec)
   (destructuring-bind (type . args) component-spec
@@ -28,23 +28,23 @@
           :collect (a:format-symbol :keyword "~a/~a" type k)
           :collect v)))
 
-(defun update-prototype-spec-relationships (spec)
-  (a:when-let ((master (meta :prototypes (master spec))))
-    (pushnew (name spec) (slaves master))))
+(defun update-prototype-relationships (prototype)
+  (a:when-let ((master (meta :prototypes (master prototype))))
+    (pushnew (name prototype) (slaves master))))
 
-(defun update-prototype-spec-tables (spec types args)
-  (with-slots (%component-types %component-args) spec
-    (let* ((master-spec (find-prototype-spec-master spec))
+(defun update-prototype-tables (prototype types args)
+  (with-slots (%component-types %component-args) prototype
+    (let* ((master (find-prototype-master prototype))
            (self-types (apply #'u:dict #'eq types))
            (resolved-types (u:hash-merge
-                            (if master-spec
-                                (u:href (component-types master-spec) :resolved)
+                            (if master
+                                (u:href (component-types master) :resolved)
                                 (u:dict #'eq))
                             self-types))
            (self-args (apply #'u:dict #'eq args))
            (resolved-args (u:hash-merge
-                           (if master-spec
-                               (u:href (component-args master-spec) :resolved)
+                           (if master
+                               (u:href (component-args master) :resolved)
                                (u:dict #'eq))
                            self-args)))
       (clrhash (u:href %component-types :self))
@@ -60,34 +60,33 @@
       (u:do-hash (k v resolved-args)
         (setf (u:href %component-args :resolved k) v)))))
 
-(defun make-prototype-spec (name master-name types args)
-  (let ((spec (make-instance 'prototype-spec :name name :master master-name)))
-    (update-prototype-spec-tables spec types args)
-    (update-prototype-spec-relationships spec)
-    spec))
+(defun make-prototype (name master-name types args)
+  (let ((prototype (make-instance 'prototype :name name :master master-name)))
+    (update-prototype-tables prototype types args)
+    (update-prototype-relationships prototype)
+    prototype))
 
-(defun update-prototype-spec (spec master-name types args)
-  (with-slots (%name %master) spec
+(defun update-prototype (prototype master-name types args)
+  (with-slots (%name %master %slaves) prototype
     (setf %master master-name)
-    (update-prototype-spec-tables spec types args)
-    (enqueue :recompile (list :prototype %name))
-    (update-prototype-spec-relationships spec)
-    (dolist (slave-name (slaves spec))
+    (update-prototype-tables prototype types args)
+    (update-prototype-relationships prototype)
+    (dolist (slave-name %slaves)
       (let ((slave (meta :prototypes slave-name)))
-        (update-prototype-spec
+        (update-prototype
          slave
          %name
          (u:hash->plist (u:href (component-types slave) :self))
          (u:hash->plist (u:href (component-args slave) :self)))))))
 
 (defmacro define-prototype (name (&optional master) &body body)
-  (a:with-gensyms (spec)
+  (a:with-gensyms (prototype)
     (let ((types (mapcar #'car body))
           (args `(list ,@(mapcan #'generate-prototype-component-args body))))
       `(progn
          (unless (meta :prototypes)
            (setf (meta :prototypes) (u:dict #'eq)))
-         (a:if-let ((,spec (meta :prototypes ',name)))
-           (update-prototype-spec ,spec ',master ',types ,args)
+         (a:if-let ((,prototype (meta :prototypes ',name)))
+           (update-prototype ,prototype ',master ',types ,args)
            (setf (meta :prototypes ',name)
-                 (make-prototype-spec ',name ',master ',types ,args)))))))
+                 (make-prototype ',name ',master ',types ,args)))))))

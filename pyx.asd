@@ -69,7 +69,7 @@
    (:file "component-world")
    (:file "component-sprite")
    (:file "component-mesh")
-   (:file "prototype-spec")
+   (:file "prototype")
    (:file "state")
    (:file "example-common")
    (:file "example-sprite")

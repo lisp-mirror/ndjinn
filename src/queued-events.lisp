@@ -23,4 +23,4 @@
 
 (define-event-handler :recompile :shader recompile-shaders)
 
-(define-event-handler :recompile :material update-materials)
+(define-event-handler :recompile :material recompile-materials)

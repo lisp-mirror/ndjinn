@@ -11,7 +11,18 @@
    (%shader :reader shader
             :initarg :shader)
    (%uniforms :reader uniforms
-              :initarg :uniforms)))
+              :initform (u:dict #'eq
+                                :self (u:dict #'eq)
+                                :resolved (u:dict #'eq)))))
+
+(defun find-material-spec-master (spec)
+  (let* ((master-name (master spec))
+         (master-spec (meta :materials master-name)))
+    (when (and master-name (not master-spec))
+      (error "Material ~s inherits from the unknown master ~s."
+             (name spec)
+             master-name))
+    master-spec))
 
 (defun copy-material-spec-uniforms (spec)
   (let ((uniforms (u:dict #'eq)))
@@ -24,63 +35,64 @@
           (setf (u:href uniforms k) (copy v))))
       uniforms)))
 
-(defun make-material-spec-uniforms (master-name uniforms)
-  (let* ((master (meta :materials master-name))
-         (uniforms (or uniforms (u:dict #'eq)))
-         (resolved (u:hash-merge (copy-material-spec-uniforms master)
-                                 uniforms)))
-    (u:dict #'eq
-            :self uniforms
-            :resolved resolved)))
+(defun update-material-spec-uniforms (spec uniforms)
+  (with-slots (%uniforms) spec
+    (let* ((master-spec (find-material-spec-master spec))
+           (self (apply #'u:dict #'eq uniforms))
+           (resolved (u:hash-merge (copy-material-spec-uniforms master-spec)
+                                   self)))
+      (clrhash (u:href %uniforms :self))
+      (u:do-hash (k v self)
+        (setf (u:href %uniforms :self k) v))
+      (clrhash (u:href %uniforms :resolved))
+      (u:do-hash (k v resolved)
+        (setf (u:href %uniforms :resolved k) v)))))
 
 (defun update-material-spec-relationships (spec)
   (a:when-let ((master (meta :materials (master spec))))
     (pushnew (name spec) (slaves master))))
 
-(defun make-material-spec (&key name master shader uniforms)
-  (let* ((uniforms (make-material-spec-uniforms master uniforms))
-         (spec (make-instance 'material-spec
-                              :name name
-                              :master master
-                              :shader shader
-                              :uniforms uniforms)))
+(defun make-material-spec (name master shader uniforms)
+  (let ((spec (make-instance 'material-spec :name name
+                                            :master master
+                                            :shader shader)))
+    (update-material-spec-uniforms spec uniforms)
     (update-material-spec-relationships spec)
     spec))
 
-(defun update-material-spec (spec &key master shader uniforms)
-  (let ((uniforms (make-material-spec-uniforms master uniforms)))
-    (reinitialize-instance spec
-                           :master master
-                           :shader shader
-                           :uniforms uniforms)
-    (enqueue :recompile (list :material (name spec)))
+(defun update-material-spec (spec master-name shader uniforms)
+  (with-slots (%name %master %shader) spec
+    (setf %master master-name
+          %shader shader)
+    (update-material-spec-uniforms spec uniforms)
+    (enqueue :recompile (list :material %name))
     (update-material-spec-relationships spec)
     (dolist (slave-name (slaves spec))
       (let ((slave (meta :materials slave-name)))
-        (update-material-spec slave
-                              :master (name spec)
-                              :shader (or (shader slave) shader)
-                              :uniforms (u:href (uniforms slave) :self))))
-    spec))
+        (update-material-spec
+         slave
+         %name
+         (or (shader slave) shader)
+         (u:hash->plist (u:href (uniforms slave) :self)))))))
 
 (defmacro define-material (name (&optional master) &body body)
-  (a:with-gensyms (spec master-spec uniforms-table resolved-shader)
+  (a:with-gensyms (spec master-spec resolved-shader)
     (destructuring-bind (&key shader uniforms) (car body)
       `(progn
          (unless (meta :materials)
            (setf (meta :materials) (u:dict #'eq)))
          (let* ((,master-spec (meta :materials ',master))
-                (,uniforms-table (u:dict #'eq ,@uniforms))
                 (,resolved-shader (or ',shader
                                       (and ,master-spec
                                            (shader ,master-spec)))))
+
            (a:if-let ((,spec (meta :materials ',name)))
              (update-material-spec ,spec
-                                   :master ',master
-                                   :shader ,resolved-shader
-                                   :uniforms ,uniforms-table)
+                                   ',master
+                                   ,resolved-shader
+                                   (list ,@uniforms))
              (setf (meta :materials ',name)
-                   (make-material-spec :name ',name
-                                       :master ',master
-                                       :shader ,resolved-shader
-                                       :uniforms ,uniforms-table))))))))
+                   (make-material-spec ',name
+                                       ',master
+                                       ,resolved-shader
+                                       (list ,@uniforms)))))))))

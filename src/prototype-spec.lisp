@@ -9,10 +9,8 @@
    (%slaves :accessor slaves
             :initform nil)
    (%component-types :reader component-types
-                     :initarg :component-types
                      :initform (u:dict #'eq :self nil :resolved nil))
    (%component-args :reader component-args
-                    :initarg :component-args
                     :initform (u:dict #'eq :self nil :resolved nil))))
 
 (defun find-prototype-spec-master (spec)

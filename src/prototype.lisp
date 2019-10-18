@@ -9,7 +9,7 @@
    (%slaves :accessor slaves
             :initform nil)
    (%component-types :reader component-types
-                     :initform (make-nested-dict #'eq :self :resolved))
+                     :initform (u:dict #'eq :self nil :resolved nil))
    (%component-args :reader component-args
                     :initform (make-nested-dict #'eq :self :resolved))))
 
@@ -35,26 +35,24 @@
 (defun update-prototype-tables (prototype types args)
   (with-slots (%component-types %component-args) prototype
     (let* ((master (find-prototype-master prototype))
-           (self-types (apply #'u:dict #'eq types))
-           (resolved-types (u:hash-merge
-                            (if master
-                                (u:href (component-types master) :resolved)
-                                (u:dict #'eq))
-                            self-types))
+           (self-types (sort types #'string<))
+           (resolved-types (sort
+                            (remove-duplicates
+                             (append
+                              self-types
+                              (when master
+                                (u:href (component-types master) :resolved))))
+                            #'string<))
            (self-args (apply #'u:dict #'eq args))
            (resolved-args (u:hash-merge
                            (if master
                                (u:href (component-args master) :resolved)
                                (u:dict #'eq))
                            self-args)))
-      (clrhash (u:href %component-types :self))
-      (clrhash (u:href %component-types :resolved))
       (clrhash (u:href %component-args :self))
       (clrhash (u:href %component-args :resolved))
-      (u:do-hash (k v self-types)
-        (setf (u:href %component-types :self k) v))
-      (u:do-hash (k v resolved-types)
-        (setf (u:href %component-types :resolved k) v))
+      (setf (u:href %component-types :self) self-types
+            (u:href %component-types :resolved) resolved-types)
       (u:do-hash (k v self-args)
         (setf (u:href %component-args :self k) v))
       (u:do-hash (k v resolved-args)
@@ -76,7 +74,7 @@
         (update-prototype
          slave
          %name
-         (u:hash->plist (u:href (component-types slave) :self))
+         (u:href (component-types slave) :self)
          (u:hash->plist (u:href (component-args slave) :self)))))))
 
 (defmacro define-prototype (name (&optional master) &body body)

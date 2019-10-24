@@ -19,14 +19,14 @@
                                       :id (gl:gen-framebuffer)
                                       :name %name
                                       :mode %mode)))
-      (setf (u:href (framebuffers *state*) %name) framebuffer)
+      (setf (u:href (framebuffers (database *state*)) %name) framebuffer)
       framebuffer)))
 
 (defun delete-framebuffer (framebuffer)
   (gl:delete-framebuffers (list (id framebuffer))))
 
 (defun find-framebuffer (name)
-  (u:href (framebuffers *state*) name))
+  (u:href (framebuffers (database *state*)) name))
 
 (defun framebuffer-mode->target (mode)
   (ecase mode

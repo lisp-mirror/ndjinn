@@ -11,7 +11,7 @@
   (with-slots (%mesh/file %mesh/name %mesh/index %mesh/primitive) instance
     (assert %mesh/file)
     (assert %mesh/name)
-    (let* ((gltf (cache-lookup :mesh %mesh/file
+    (let* ((gltf (resource-lookup :mesh %mesh/file
                    (load-gltf (resolve-asset-path %mesh/file))))
            (mesh (u:href (meshes gltf) %mesh/name)))
       (unless mesh

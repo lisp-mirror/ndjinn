@@ -13,9 +13,9 @@
        (error "Releases must be deployed on SBCL to be able to load assets.")
        (asdf:system-relative-pathname (asdf:find-system :pyx) path))))
 
-(defmacro cache-lookup (type key &body body)
+(defmacro resource-lookup (type key &body body)
   (a:with-gensyms (table value found-p)
-    `(symbol-macrolet ((,table (u:href (cache *state*) ,type)))
+    `(symbol-macrolet ((,table (u:href (resources *state*) ,type)))
        (u:mvlet ((,value ,found-p ,table))
          (unless ,found-p
            (setf ,table (u:dict #'equalp))))

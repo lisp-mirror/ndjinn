@@ -1,12 +1,19 @@
 (in-package #:pyx)
 
 (defclass database ()
-  ((%uuids :reader uuids
-           :initform (u:dict #'eq))
+  ((%frame-buffers :reader framebuffers
+                   :initform (u:dict #'eq))
+   (%materials :reader materials
+               :initform (u:dict #'eq))
+   (%picking-ids :reader picking-id
+                 :initform (u:dict #'eq))
    (%released-picking-ids :accessor released-picking-ids
                           :initform nil)
-   (%picking-ids :reader picking-id
-                 :initform (u:dict #'eq))))
+   (%shaders :reader shaders)
+   (%shader-buffer-bindings :reader shader-buffer-bindings
+                            :initform 0)
+   (%uuids :reader uuids
+           :initform (u:dict #'eq))))
 
 (defun make-database ()
   (setf (slot-value *state* '%database) (make-instance 'database)))

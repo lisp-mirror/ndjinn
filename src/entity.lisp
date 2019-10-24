@@ -1,15 +1,16 @@
 (in-package #:pyx)
 
+(defun %make-entity (components args)
+  (let ((entity (apply #'make-mixin components (u:hash->plist args))))
+    (dolist (type components)
+      (register-entity-flow-event
+       :component-add-hook
+       (lambda () (on-component-added entity type))))
+    entity))
+
 (defmacro make-entity ((&rest components) &body body)
-  (a:with-gensyms (entity component-type)
-    (let ((components (compute-component-order components)))
-      `(let ((,entity (apply #'make-mixin ',components (list ,@body))))
-         (dolist (,component-type ',components)
-           (register-entity-flow-event
-            :component-add-hook
-            (lambda ()
-              (on-component-added ,entity ,component-type))))
-         ,entity))))
+  (let ((components (compute-component-order components)))
+    `(%make-entity ',components (u:plist->hash (list ,@body) :test #'eq))))
 
 (defun register-entity-flow-event (event-type hook)
   (enqueue :entity-flow (list event-type hook)))

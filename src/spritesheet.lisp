@@ -34,7 +34,7 @@
                    (shadow:write-buffer-path buffer :size size))))
 
 (defun make-spritesheet (texture-name)
-  (cache-lookup :spritesheet texture-name
+  (resource-lookup :spritesheet texture-name
     (let ((spritesheet (make-instance 'spritesheet
                                       :spec (load-spritesheet-spec texture-name)
                                       :texture texture-name

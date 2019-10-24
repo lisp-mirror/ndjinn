@@ -7,7 +7,7 @@
   (with-slots (%render/material) instance
     (unless %render/material
       (error "Entity ~s does not have a material specified." instance))
-    (setf %render/material (make-material %render/material))
+    (setf %render/material (ensure-material %render/material))
     (u:do-hash-keys (k (uniforms %render/material))
       (register-uniform-func %render/material k))))
 

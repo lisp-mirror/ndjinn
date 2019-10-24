@@ -24,13 +24,18 @@
                                     :name (name spec)
                                     :shader (shader spec)
                                     :uniforms uniforms)))
-      (push material (u:href (materials *state*) spec-name))
+      (push material (u:href (materials (database *state*)) spec-name))
       material)))
+
+(defun ensure-material (material/spec)
+  (etypecase material/spec
+    (material material/spec)
+    (symbol (make-material material/spec))))
 
 (defun recompile-materials (spec-name)
   (when *state*
     (let ((spec (meta :materials spec-name)))
-      (dolist (material (u:href (materials *state*) spec-name))
+      (dolist (material (u:href (materials (database *state*)) spec-name))
         (with-slots (%shader %uniforms %funcs) material
           (setf %shader (shader spec)
                 %uniforms (copy-material-spec-uniforms spec))

@@ -1,9 +1,7 @@
 (in-package #:pyx)
 
 (defclass state ()
-  ((%cache :reader cache
-           :initform (u:dict #'eq))
-   (%camera :reader camera
+  ((%camera :reader camera
             :initform nil)
    (%clock :reader clock
            :initarg :clock)
@@ -11,30 +9,26 @@
    (%database :reader database
               :initform (u:dict #'eq))
    (%display :accessor display)
-   (%framebuffers :reader framebuffers
-                  :initform (u:dict #'eq))
    (%input-state :reader input-state
                  :initform (make-instance 'input-state))
-   (%materials :reader materials
-               :initform (u:dict #'eq))
    (%node-tree :reader node-tree)
+   (%resources :reader resources
+               :initform (u:dict #'eq))
    (%running-p :accessor running-p
-               :initform t)
-   (%shaders :reader shaders)))
+               :initform t)))
 
-(defmethod initialize-instance :after ((instance state) &rest args
-                                       &key &allow-other-keys)
-  (let ((*state* instance))
-    (setup-repl)
-    (apply #'load-config args)
-    (make-thread-pool)
-    (make-database)
-    (prepare-gamepads)
-    (make-display)
-    (initialize-framebuffers)
-    (initialize-shaders)
-    (make-node-tree)
-    (log:info :pyx "Started Pyx.")))
+(defun initialize-engine (entry-point)
+  (log:info :pyx "Loading ~a..." (cfg :game-title))
+  (setup-repl)
+  (make-thread-pool)
+  (make-database)
+  (prepare-gamepads)
+  (make-display)
+  (initialize-framebuffers)
+  (initialize-shaders)
+  (make-node-tree)
+  (load-prefab entry-point)
+  (log:info :pyx "Finished loading ~a." (cfg :game-title)))
 
 (defun run-main-game-loop ()
   (make-clock)
@@ -54,8 +48,9 @@
 
 (defun start (entry-point &rest args)
   (unwind-protect
-       (let ((*state* (apply #'make-instance 'state args)))
-         (funcall entry-point)
+       (let ((*state* (make-instance 'state)))
+         (apply #'load-config args)
+         (initialize-engine entry-point)
          (run-main-game-loop))
     (stop)))
 
@@ -65,4 +60,4 @@
   (when *state*
     (shutdown-gamepads)
     (setf (running-p *state*) nil)
-    (log:info :pyx "Stopped Pyx.")))
+    (log:info :pyx "Stopped ~a." (cfg :game-title))))

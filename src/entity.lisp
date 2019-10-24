@@ -21,14 +21,18 @@
    (lambda ()
      (apply #'reinitialize-instance entity :allow-other-keys t args))))
 
-(defun remove-entity (entity &key reparent-children-p)
+(defun delete-entity (entity &key reparent-children-p)
+  (when (node/root-p entity)
+    (error "Cannot remove the root entity."))
   (register-entity-flow-event
    :entity-remove
    (lambda ()
      (let ((parent (node/parent entity)))
-       (when reparent-children-p
-         (dolist (child (node/children entity))
-           (add-child child :parent parent)))
+       (dolist (child (node/children entity))
+         (if reparent-children-p
+             (add-child child :parent parent)
+             (delete-entity child)))
+       (remove-mutable-components entity)
        (a:deletef (node/children parent) entity)))))
 
 (defgeneric on-update (entity)

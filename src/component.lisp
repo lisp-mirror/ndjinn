@@ -66,3 +66,8 @@
        (lambda ()
          (let ((entity (remove-mixin-class entity component-type)))
            (on-component-removed entity component-type))))))
+
+(defun remove-mutable-components (entity)
+  (dolist (component (get-mixin-class-names entity))
+    (unless (member component '(node xform))
+      (remove-component entity component))))

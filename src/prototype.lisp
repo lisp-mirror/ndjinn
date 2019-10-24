@@ -13,6 +13,9 @@
    (%component-args :reader component-args
                     :initform (make-nested-dict #'eq :self :resolved))))
 
+(u:define-printer (prototype stream)
+  (format stream "~s" (name prototype)))
+
 (defun find-prototype-master (prototype)
   (let* ((master-name (master prototype))
          (master (meta :prototypes master-name)))
@@ -43,39 +46,45 @@
                               (when master
                                 (u:href (component-types master) :resolved))))
                             #'string<))
-           (self-args (apply #'u:dict #'eq args))
            (resolved-args (u:hash-merge
                            (if master
                                (u:href (component-args master) :resolved)
                                (u:dict #'eq))
-                           self-args)))
+                           args)))
       (clrhash (u:href %component-args :self))
       (clrhash (u:href %component-args :resolved))
       (setf (u:href %component-types :self) self-types
             (u:href %component-types :resolved) resolved-types)
-      (u:do-hash (k v self-args)
+      (u:do-hash (k v args)
         (setf (u:href %component-args :self k) v))
       (u:do-hash (k v resolved-args)
         (setf (u:href %component-args :resolved k) v)))))
 
 (defun make-prototype (name master-name types args)
   (let ((prototype (make-instance 'prototype :name name :master master-name)))
-    (update-prototype-tables prototype types args)
-    (update-prototype-relationships prototype)
+    (update-prototype prototype master-name types args)
     prototype))
 
 (defun update-prototype (prototype master-name types args)
-  (with-slots (%name %master %slaves) prototype
-    (setf %master master-name)
-    (update-prototype-tables prototype types args)
-    (update-prototype-relationships prototype)
-    (dolist (slave-name %slaves)
-      (let ((slave (meta :prototypes slave-name)))
-        (update-prototype
-         slave
-         %name
-         (u:href (component-types slave) :self)
-         (u:hash->plist (u:href (component-args slave) :self)))))))
+  (flet ((thunk-args (args)
+           (let ((args (apply #'u:dict #'eq args)))
+             (u:do-hash (k v args)
+               (setf (u:href args k) (lambda () v)))
+             args)))
+    (with-slots (%name %master %slaves) prototype
+      (setf %master master-name)
+      (update-prototype-tables
+       prototype
+       types
+       (thunk-args args))
+      (update-prototype-relationships prototype)
+      (dolist (slave-name %slaves)
+        (let ((slave (meta :prototypes slave-name)))
+          (update-prototype
+           slave
+           %name
+           (u:href (component-types slave) :self)
+           (u:hash->plist (u:href (component-args slave) :self))))))))
 
 (defmacro define-prototype (name (&optional master) &body body)
   (a:with-gensyms (prototype)

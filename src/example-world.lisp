@@ -18,28 +18,29 @@
 (pyx:define-material world/wall (world)
   (:uniforms (:cell-type 1)))
 
-(defun make-world (level &rest args)
-  (let ((world (pyx:make-entity (pyx:world)
-                 :xform/scale 50
-                 :world/options args
-                 :world/level level)))
-    (pyx:make-entity (pyx:render pyx:mesh)
-      :node/parent world
-      :xform/scale (v3:vec 0.5 0.5 0.1)
-      :render/material 'world/floor
-      :mesh/file "tiles.glb"
-      :mesh/name "floor"
-      :mesh/instances (u:href (pyx:world/cell-counts world) :floor))
-    (pyx:make-entity (pyx:render pyx:mesh)
-      :node/parent world
-      :xform/translate (v3:vec 0 0 0.75)
-      :xform/scale (v3:vec 0.5 0.5 0.75)
-      :render/material 'world/wall
-      :mesh/file "tiles.glb"
-      :mesh/name "wall"
-      :mesh/instances (u:href (pyx:world/cell-counts world) :wall))))
+(pyx:define-prototype tile ()
+  (pyx:mesh :file "tiles.glb"))
 
-(defun world ()
-  (pyx:make-entity (pyx:camera)
-    :camera/mode :isometric)
-  (make-world 1 :width 49 :height 49 :seed 1))
+(pyx:define-prototype tile/floor (tile)
+  (pyx:xform :scale (v3:vec 0.5 0.5 0.1))
+  (pyx:mesh :name "floor")
+  (pyx:render :material 'world/floor))
+
+(pyx:define-prototype tile/wall (tile)
+  (pyx:xform :translate (v3:vec 0 0 0.75)
+             :scale (v3:vec 0.5 0.5 0.75))
+  (pyx:mesh :name "wall")
+  (pyx:render :material 'world/wall))
+
+(pyx:define-prototype world ()
+  (pyx:xform :scale 50)
+  (pyx:world :width 49 :height 49 :level 1))
+
+(pyx:define-prefab world-scene ()
+  (camera (:template camera/isometric))
+  (world (:template world)
+         :world/seed 1
+         (floor (:template tile/floor)
+                :mesh/instances (@ world :tiles/floor))
+         (wall (:template tile/wall)
+               :mesh/instances (@ world :tiles/wall))))

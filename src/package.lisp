@@ -3,6 +3,7 @@
 (defpackage #:pyx
   (:local-nicknames (#:a #:alexandria)
                     (#:u #:golden-utils)
+                    (#:ff #:filtered-functions)
                     (#:log #:verbose)
                     (#:v2 #:origin.vec2)
                     (#:v3 #:origin.vec3)
@@ -18,6 +19,9 @@
   (:export
    #:define-framebuffer
    #:define-material
+   #:define-prefab
+   #:define-query
+   #:define-query-types
    #:define-prototype
    #:define-texture)
   ;; entity protocol
@@ -49,5 +53,5 @@
                     (#:m4 #:origin.mat4))
   (:use #:cl)
   (:export
-   #:sprite
-   #:world))
+   #:sprite-scene
+   #:world-scene))

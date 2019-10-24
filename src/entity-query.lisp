@@ -1,5 +1,10 @@
 (in-package #:pyx)
 
+(ff:define-filtered-function %entity-query (entity query)
+  (:method (entity query)
+    (error "Entity ~s has no defined query parameter: ~s." entity query))
+  (:filters (:query (list #'identity (%entity-filter entity)))))
+
 (defgeneric %entity-filter (entity))
 
 (defmacro define-query-types (entity &body body)
@@ -10,10 +15,5 @@
 
 (defmacro define-query ((entity component) (query parameter) &body body)
   `(defmethod %entity-query :filter :query
-       ((,query (eql ',parameter)) (,entity ,component))
+       ((,entity ,component) (,query (eql ',parameter)))
      ,@body))
-
-(ff:define-filtered-function %entity-query (query entity)
-  (:method (query entity)
-    (error "Entity ~s has no defined query parameter: ~s." entity query))
-  (:filters (:query (%entity-filter entity))))

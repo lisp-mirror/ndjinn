@@ -13,6 +13,7 @@
                #:closer-mop
                #:dungen
                #:fast-io
+               #:filtered-functions
                #:golden-utils
                #:jsown
                #:lparallel
@@ -60,6 +61,7 @@
    (:file "gltf")
    (:file "mixin")
    (:file "entity")
+   (:file "entity-query")
    (:file "component")
    (:file "component-identify")
    (:file "component-node")
@@ -70,6 +72,8 @@
    (:file "component-sprite")
    (:file "component-mesh")
    (:file "prototype")
+   (:file "prefab-node")
+   (:file "prefab")
    (:file "state")
    (:file "example-common")
    (:file "example-sprite")

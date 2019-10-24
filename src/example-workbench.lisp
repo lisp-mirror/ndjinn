@@ -3,29 +3,12 @@
 ;;; This is not a real example. It just serves as a workbench for engine
 ;;; development.
 
-(pyx:define-prototype world ()
-  (pyx:xform :scale 50)
-  (pyx:world :options nil
-             :level 1))
+;; TODO: add link/copy to prefab node options
 
-(pyx:define-prototype tile ()
-  (pyx:mesh :file "tiles.glb"))
+;; TODO: attempt to live recompile prefabs, and also when its template
+;; prefab/prototype is recompiled if link is true
 
-(pyx:define-prototype tile/floor (tile)
-  (pyx:xform :scale (v3:vec 0.5 0.5 0.1))
-  (pyx:mesh :name "floor")
-  (pyx:render :material 'world/floor))
+;; TODO: We might have to keep a table of prefab instances in core-state
+;; Then we can track all UUIDs and live recompile them
 
-(pyx:define-prototype tile/wall (tile)
-  (pyx:xform :translate (v3:vec 0 0 0.75)
-             :scale (v3:vec 0.5 0.5 0.75))
-  (pyx:mesh :name "wall")
-  (pyx:render :material 'world/wall))
-
-;; (define-prefab foo ()
-;;   ((world world
-;;           :xform/scale 50)
-;;    ((floors tile/floor
-;;             :mesh/instances (u:href (pyx:world/cell-counts world) :floor)))
-;;    ((walls tile/wall
-;;            :mesh/instances (u:href (pyx:world/cell-counts world) :wall)))))
+;; TODO: Refactor prefab code

@@ -13,6 +13,12 @@
    :cell-counts (u:dict #'eq)
    :metadata nil))
 
+(pyx::define-query-types world
+  (:cell-count (:tiles/wall :tiles/floor :tiles/door-v :tiles/door-h)))
+
+(pyx::define-query (entity world) (parameter :cell-count)
+  (u:href (world/cell-counts entity) parameter))
+
 (defun analyze-world (world data)
   (with-slots (%world/cell-counts) world
     (with-accessors ((width dungen:stage-width)

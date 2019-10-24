@@ -11,6 +11,8 @@
                                    data)
      (funcall ,@(when func `(#',func)) data)))
 
+(define-event-handler :entity-flow :prefab-create)
+
 (define-event-handler :entity-flow :component-add)
 
 (define-event-handler :entity-flow :component-add-hook)

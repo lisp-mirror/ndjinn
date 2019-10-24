@@ -4,7 +4,7 @@
   (with-slots (%shaders) (database *state*)
     (setf %shaders (shadow:load-shaders
                     (lambda (x)
-                      (enqueue :recompile (list :shader x)))))))
+                      (enqueue :recompile (list :shaders x)))))))
 
 (defun recompile-shaders (program-names)
   (shadow:recompile-shaders program-names)

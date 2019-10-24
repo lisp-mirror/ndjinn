@@ -32,7 +32,7 @@
     (material material/spec)
     (symbol (make-material material/spec))))
 
-(defun recompile-materials (spec-name)
+(defun recompile-material (spec-name)
   (when *state*
     (let ((spec (meta :materials spec-name)))
       (dolist (material (u:href (materials (database *state*)) spec-name))

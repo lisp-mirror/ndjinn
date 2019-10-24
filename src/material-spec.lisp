@@ -63,8 +63,8 @@
     (setf %master master-name
           %shader shader)
     (update-material-spec-uniforms spec uniforms)
-    (enqueue :recompile (list :material %name))
     (update-material-spec-relationships spec)
+    (enqueue :recompile (list :material %name))
     (dolist (slave-name (slaves spec))
       (let ((slave (meta :materials slave-name)))
         (update-material-spec

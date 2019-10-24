@@ -116,3 +116,10 @@
                (texture (make-texture spec source)))
           (configure-texture texture)
           texture)))))
+
+(defun recompile-texture (spec-name)
+  (when *state*
+    (a:when-let ((texture (u:href (resources *state*) :texture spec-name)))
+      (gl:delete-texture (id texture))
+      (remhash spec-name (u:href (resources *state*) :texture))
+      (load-texture spec-name))))

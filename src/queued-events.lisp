@@ -23,6 +23,8 @@
 
 (define-event-handler :entity-flow :entity-remove)
 
-(define-event-handler :recompile :shader recompile-shaders)
+(define-event-handler :recompile :shaders recompile-shaders)
 
-(define-event-handler :recompile :material recompile-materials)
+(define-event-handler :recompile :texture recompile-texture)
+
+(define-event-handler :recompile :material recompile-material)

@@ -6,12 +6,6 @@
 (pyx:define-material sprite ()
   (:shader umbra.sprite:sprite))
 
-(pyx:define-texture sprites
-  (:source "sprites.png"))
-
-(pyx:define-material sprite ()
-  (:shader umbra.sprite:sprite))
-
 (pyx:define-prototype sprite ()
   (pyx:sprite :texture 'sprites)
   (pyx:render :material 'sprite))

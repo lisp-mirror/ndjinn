@@ -26,6 +26,21 @@
 (defun compute-all-components-order ()
   (compute-component-order (u:hash-keys (meta :component-order))))
 
+(defun compute-component-args (component-type)
+  (let* ((class (c2mop:ensure-finalized (find-class component-type)))
+         (class-args (a:mappend #'c2mop:slot-definition-initargs
+                                (c2mop:class-slots class)))
+         (instance-lambda-list (c2mop:method-lambda-list
+                                (first
+                                 (c2mop:compute-applicable-methods-using-classes
+                                  #'reinitialize-instance
+                                  (list class)))))
+         (instance-args (mapcar
+                         (lambda (x)
+                           (u:make-keyword (car (a:ensure-list x))))
+                         (rest (member '&key instance-lambda-list)))))
+    (union class-args instance-args)))
+
 (defmacro define-component (type (&key before after) &body body)
   `(u:eval-always
      (defclass ,type ()

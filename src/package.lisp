@@ -17,16 +17,27 @@
    #:stop)
   ;; definitions
   (:export
+   #:define-component
    #:define-framebuffer
    #:define-material
    #:define-prefab
+   #:define-prototype
    #:define-query
    #:define-query-types
-   #:define-prototype
    #:define-texture)
   ;; entity protocol
   (:export
-   #:make-entity)
+   #:delete-entity
+   #:make-entity
+   #:modify-entity
+   #:on-entity-deleted)
+  ;; component protocol
+  (:export
+   #:add-component
+   #:has-component-p
+   #:on-component-added
+   #:on-component-removed
+   #:remove-component)
   ;; component types
   (:export
    #:camera
@@ -36,11 +47,7 @@
    #:render
    #:sprite
    #:world
-   #:xform)
-  ;; component api: world
-  (:export
-   #:world/cell-counts)
-  )
+   #:xform))
 
 (defpackage #:pyx.shader
   (:use #:shadow.glsl #:umbra.common))

@@ -21,6 +21,12 @@
    (lambda ()
      (apply #'reinitialize-instance entity :allow-other-keys t args))))
 
+(defgeneric on-entity-deleted (entity)
+  (:method (entity))
+  (:method :after (entity)
+    (deregister-prefab-entity entity)
+    (remove-mutable-components entity)))
+
 (defun delete-entity (entity &key reparent-children-p)
   (when (node/root-p entity)
     (error "Cannot remove the root entity."))
@@ -32,7 +38,7 @@
          (if reparent-children-p
              (add-child child :parent parent)
              (delete-entity child)))
-       (remove-mutable-components entity)
+       (on-entity-deleted entity)
        (a:deletef (node/children parent) entity)))))
 
 (defgeneric on-update (entity)

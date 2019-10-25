@@ -2,7 +2,8 @@
 
 (define-component identify (:before node)
   (:uuid (make-uuid)
-   :picking-id nil))
+   :picking-id nil
+   :prefab nil))
 
 (defmethod on-component-added (entity (component (eql 'identify)))
   (with-slots (%uuids %picking-ids) (database *state*)

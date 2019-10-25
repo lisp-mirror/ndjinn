@@ -7,6 +7,8 @@
                :initform (u:dict #'eq))
    (%picking-ids :reader picking-id
                  :initform (u:dict #'eq))
+   (%prefabs :reader prefabs
+             :initform (u:dict #'eq))
    (%released-picking-ids :accessor released-picking-ids
                           :initform nil)
    (%shaders :reader shaders)

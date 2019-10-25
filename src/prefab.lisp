@@ -70,7 +70,7 @@
               args))))
 
 (defun make-prefab-factory (prefab entities)
-  (with-slots (%nodes %root) prefab
+  (with-slots (%name %nodes %root) prefab
     (lambda (&key parent)
       (let ((parent (or parent (node-tree *state*))))
         (u:do-hash (path node %nodes)
@@ -78,13 +78,23 @@
                                   entities parent node))
                      (entity (%make-entity types args)))
             (setf (u:href entities path) entity)))
-        (u:href entities (path %root))))))
+        (let ((root (u:href entities (path %root))))
+          (push root (u:href (prefabs (database *state*)) %name))
+          (setf (identify/prefab root) %name)
+          root)))))
 
 (defun load-prefab (name)
   (register-entity-flow-event
    :prefab-create
    (lambda ()
      (funcall (func (find-prefab name))))))
+
+(defun deregister-prefab-entity (entity)
+  (a:when-let* ((prefab (identify/prefab entity))
+                (table (prefabs (database *state*))))
+    (a:deletef (u:href table prefab) entity)
+    (unless (u:href table prefab)
+      (remhash prefab table))))
 
 (defmacro wrap-prefab-reference-lookup (prefab-name entities &body body)
   `(flet ((ref (path)

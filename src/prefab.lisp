@@ -32,9 +32,9 @@
   (let (success-p)
     (unwind-protect
          (with-slots (%name %root %nodes %func) prefab
-           (setf %root (u:href %nodes (list %name)))
            (resolve-prefab-nodes prefab)
-           (setf %func (make-prefab-factory prefab entities)
+           (setf %root (u:href %nodes (list %name))
+                 %func (make-prefab-factory prefab entities)
                  success-p t))
       (when success-p
         (setf (meta :prefabs (name prefab)) prefab)))))
@@ -97,16 +97,16 @@
       (remhash prefab table))))
 
 (defmacro wrap-prefab-reference-lookup (prefab-name entities &body body)
-  `(flet ((ref (path)
+  `(flet ((%ref (path)
             (when path
               (u:href ,entities path))))
      (macrolet ((,(a:symbolicate "@") (&rest path/query)
                   (let* ((path (cons ',prefab-name path/query))
                          (query (car (last path/query))))
                     (if (keywordp query)
-                        `(%entity-query (ref ',(butlast path)) ,query)
-                        `(ref ',path)))))
-       (ref nil)
+                        `(%entity-query (%ref ',(butlast path)) ,query)
+                        `(%ref ',path)))))
+       (%ref nil)
        ,@body)))
 
 (defmacro define-prefab (name options &body body)

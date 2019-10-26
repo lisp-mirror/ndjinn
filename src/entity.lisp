@@ -25,7 +25,7 @@
   (:method (entity))
   (:method :after (entity)
     (deregister-prefab-entity entity)
-    (remove-mutable-components entity)))
+    (remove-components entity)))
 
 (defun delete-entity (entity &key reparent-children-p)
   (when (node/root-p entity)

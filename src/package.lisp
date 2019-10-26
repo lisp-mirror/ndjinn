@@ -37,7 +37,8 @@
    #:has-component-p
    #:on-component-added
    #:on-component-removed
-   #:remove-component)
+   #:remove-component
+   #:remove-components)
   ;; component types
   (:export
    #:camera

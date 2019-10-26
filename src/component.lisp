@@ -9,8 +9,8 @@
                         (lambda (x) (cl-graph:in-cycle-p graph x)))))))
     (let ((graph (cl-graph:make-graph 'cl-graph:graph-container
                                       :default-edge-type :directed))
-          (types (list* 'identify 'node 'xform types)))
-      (u:do-hash (type order (meta :component-order))
+          (types (append (meta :components :static) types)))
+      (u:do-hash (type order (meta :components :order))
         (cl-graph:add-vertex graph type)
         (destructuring-bind (&key before after) order
           (dolist (x before)
@@ -24,7 +24,7 @@
        (mapcar #'cl-graph:element (cl-graph:topological-sort graph))))))
 
 (defun compute-all-components-order ()
-  (compute-component-order (u:hash-keys (meta :component-order))))
+  (compute-component-order (u:hash-keys (meta :components :order))))
 
 (defun compute-component-args (component-type)
   (let* ((class (c2mop:ensure-finalized (find-class component-type)))
@@ -51,13 +51,18 @@
               :collect `(,slot :accessor ,accessor
                                :initarg ,initarg
                                :initform ,value)))
+     (unless (meta :components)
+       (setf (meta :components) (u:dict #'eq :order (u:dict #'eq) :static nil)))
      (defmethod has-component-p ((type (eql ',type)) entity)
        (typep entity ',type))
-     (unless (meta :component-order)
-       (setf (meta :component-order) (u:dict #'eq)))
-     (setf (meta :component-order ',type)
+     (setf (meta :components :order ',type)
            (list :before ',(a:ensure-list before)
                  :after ',(a:ensure-list after)))))
+
+(defmacro define-component/static (type (&key before after) &body body)
+  `(progn
+     (define-component ,type (:before ,before :after ,after) ,@body)
+     (pushnew ',type (meta :components :static))))
 
 (defgeneric on-component-added (entity component-type)
   (:method (entity component-type)))
@@ -73,16 +78,15 @@
        (on-component-added entity component-type)))))
 
 (defun remove-component (entity component-type)
-  (if (member component-type '(node xform))
-      (error "The ~s component is immutable and cannot be removed."
-             component-type)
+  (if (member component-type (meta :components :static))
+      (error "Component ~s is static and cannot be removed." component-type)
       (register-entity-flow-event
        :component-remove
        (lambda ()
          (let ((entity (remove-mixin-class entity component-type)))
            (on-component-removed entity component-type))))))
 
-(defun remove-mutable-components (entity)
+(defun remove-components (entity)
   (dolist (component (get-mixin-class-names entity))
-    (unless (member component '(node xform))
+    (unless (member component (meta :components :static))
       (remove-component entity component))))

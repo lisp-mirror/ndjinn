@@ -1,6 +1,6 @@
 (in-package #:pyx)
 
-(define-component xform (:after node)
+(define-component/static xform (:after node)
   (:translation (make-translate-state)
    :rotation (make-rotate-state)
    :scaling (make-scale-state)

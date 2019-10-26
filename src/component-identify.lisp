@@ -1,9 +1,33 @@
 (in-package #:pyx)
 
-(define-component identify (:before node)
+(define-component/static identify (:before node)
   (:uuid (make-uuid)
    :picking-id nil
    :prefab nil))
+
+(defgeneric find-by-uuid (uuid)
+  (:method ((uuid uuid))
+    (u:href (uuids (database *state*)) uuid))
+  (:method ((uuid string))
+    (u:href (uuids (database *state*)) (string->uuid uuid))))
+
+(defun find-by-picking-id (id)
+  (u:href (picking-id (database *state*)) id))
+
+(defun generate-picking-id ()
+  (with-slots (%database) *state*
+    (let* ((table (picking-id %database))
+           (id-count (hash-table-count table)))
+      (if (zerop id-count)
+          0
+          (or (pop (released-picking-ids %database))
+              id-count)))))
+
+(defun release-picking-id (id)
+  (with-slots (%picking-ids %released-picking-ids) (database *state*)
+    (remhash id %picking-ids)
+    (push id %released-picking-ids)
+    (setf %released-picking-ids (sort (copy-seq %released-picking-ids) #'<))))
 
 (defmethod on-component-added (entity (component (eql 'identify)))
   (with-slots (%uuids %picking-ids) (database *state*)
@@ -15,9 +39,8 @@
       (setf %identify/picking-id (generate-picking-id)
             (u:href %picking-ids %identify/picking-id) entity))))
 
-(defmethod on-component-removed (entity (component (eql 'identify)))
-  (with-slots (%uuids %picking-ids %released-picking-ids) (database *state*)
+(defmethod on-entity-deleted ((entity identify))
+  (with-slots (%uuids) (database *state*)
     (with-slots (%identify/uuid %identify/picking-id) entity
       (remhash %identify/uuid %uuids)
-      (remhash %identify/picking-id %picking-ids)
-      (push %identify/picking-id %released-picking-ids))))
+      (release-picking-id %identify/picking-id))))

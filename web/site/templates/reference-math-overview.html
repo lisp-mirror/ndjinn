@@ -1,0 +1,104 @@
+{% extends "reference.html" %}
+
+{% block reference %}
+
+<h2>Game Math: Overview</h2>
+<p>
+  Pyx includes a high-performance game math library called Origin. Its design
+  was carefully constructed to provide a good balance between performance,
+  convenience, and portability. This guide is a high-level overview of the math
+  library internal to Pyx. It is not intended to be a thorough math primer, nor
+  is it intended to cover all aspects of the library's usage. The entire API is
+  documented in the <a href="/reference/math/api">API Reference</a>.
+</p>
+
+<div id="page-menu">
+  <h3>Topics</h3>
+  <ul>
+    <li><a href="#types">Types</a></li>
+    <li><a href="#precision">Precision</a></li>
+    <li><a href="#efficiency">Efficiency</a></li>
+    <li><a href="#additional-features">Additional Features</a></li>
+  </ul>
+</div>
+
+<div id="types" class="ref-topic">
+  <h3>Types</h3>
+  <p>
+    Origin includes data structures representing various vector, matrix, and
+    quaternion types, and defines many mathematical operations you can perform
+    on them. The following math concepts are well supported:
+    <ul>
+      <li>Vectors (2D, 3D, and 4D)</li>
+      <li>Square Matrices (2x2, 3x3, and 4x4)</li>
+      <li>Quaternions</li>
+    </ul>
+  </p>
+</div>
+
+<div id="precision" class="ref-topic">
+  <h3>Precision</h3>
+  <p>
+    For efficiency, Origin uses single-precision 32-bit floating point numbers
+    for all math types.
+  </p>
+  <p>
+    Integral types are not supported, as extra bounds checking would need to
+    occur to prevent overflow for some operations, and would be difficult to
+    present to a game developer conveniently without the possibility of runtime
+    errors that may manifest themselves in production.
+  </p>
+  <p>
+    Double-precision 64-bit floating point variants are also not supported. We
+    found that it is rarely ever the case that you will need this extra
+    precision when writing games. Additionally, it can be a performance trap, as
+    the data needs to be efficiently handed off to GPU hardware. This
+    restriction may be lifted at a later date, for where these rare cases when
+    double-precision floats would be useful.
+  </p>
+</div>
+
+<div id="efficiency" class="ref-topic">
+  <h3>Efficiency</h3>
+  <p>
+    Origin has been carefully designed to efficiently perform all operations,
+    while still providing convenience for programmers and portability across all
+    operating systems and hardware platforms where Pyx is supported. To allow
+    this, it is implemented in native code using Pyx's host language, and does
+    not rely on foreign libraries or SIMD instructions which both have
+    portability concerns.
+  </p>
+  <p>
+    In practice, math types are typically allocated once ahead of time, and then
+    in-place operations that do not allocate memory at runtime can be performed
+    on them. As a convenience, all operations also have allocating versions for
+    when you do want to write the result into a new object in memory, but they
+    are not used very often. For more information about the in-place and
+    allocating operations, see
+    <a href="/reference/math/syntax#operations">Syntax: Operations</a>.
+  </p>
+</div>
+
+<div id="additional-features" class="ref-topic">
+  <h3>Additional Features</h3>
+  <p>
+    In addition to math types and functions for performing mathematical
+    operations on them, Origin also supports additional conveniences for game
+    developers:
+    <ul>
+      <li>Swizzling</li>
+      <p>To seamlessly integrate with the OpenGL Shading Language (GLSL), Origin
+        also allows "swizzling" operations on vector types.
+      </p>
+      <li>Shaping</li>
+      <p>
+        Also known as "easing" or non-linear interpolation, Origin allows a
+        means to describe a numeric value given a ratio of completeness, with
+        several different functions that alter the overall shape of the movement
+        over time.
+      </p>
+    </ul>
+  </p>
+</div>
+
+{% endblock reference %}

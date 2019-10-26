@@ -1,0 +1,48 @@
+(PROGN
+ (DEFMETHOD MAKE-TABLE ((NAME (EQL :USER)))
+   (DATAFLY.DB:EXECUTE
+    (SQL:CREATE-TABLE (USER :IF-NOT-EXISTS T)
+        ((ID ':TYPE 'INTEGER ':PRIMARY-KEY 'T)
+         (NAME ':TYPE '(:STRING 16) ':UNIQUE 'T ':NOT-NULL 'T)
+         (PASSWORD ':TYPE '(:STRING 266) ':UNIQUE 'T ':NOT-NULL 'T)
+         (EMAIL ':TYPE '(:STRING 128) ':UNIQUE 'T ':NOT-NULL 'T)
+         (ACTIVATION-TOKEN ':TYPE 'INTEGER ':NOT-NULL 'T)
+         (LOGIN-TOKEN ':TYPE 'INTEGER)
+         (TIME-CREATED ':TYPE 'INTEGER ':NOT-NULL 'T)
+         (TIME-SIGN-IN ':TYPE 'INTEGER) (DISABLED-P ':TYPE 'BOOLEAN)
+         (ADMIN-P ':TYPE 'BOOLEAN))
+      (SQL:FOREIGN-KEY :ACTIVATION-TOKEN :REFERENCES '(:TOKEN :ID) :ON-DELETE
+                       :CASCADE)
+      (SQL:FOREIGN-KEY :LOGIN-TOKEN :REFERENCES '(:TOKEN :ID) :ON-DELETE
+                       :CASCADE))))
+ (UNLESS (MEMBER :USER *DATABASE-TABLES*)
+   (A:APPENDF *DATABASE-TABLES* '(:USER)))
+ (DATAFLY.MODEL:DEFMODEL (USER (:PREDICATE NIL) (:COPIER NIL)
+                          (:INFLATE (ACTIVATION-TOKEN)
+                           (LAMBDA (#:VALUE912)
+                             (GET-ROW
+                              (SQL:SELECT :*
+                                (SQL:FROM :TOKEN)
+                                (SQL:WHERE (:= :ID #:VALUE912)))
+                              :AS 'TOKEN)))
+                          (:INFLATE (LOGIN-TOKEN)
+                           (LAMBDA (#:VALUE913)
+                             (GET-ROW
+                              (SQL:SELECT :*
+                                (SQL:FROM :TOKEN)
+                                (SQL:WHERE (:= :ID #:VALUE913)))
+                              :AS 'TOKEN)))
+                          (:INFLATE (TIME-CREATED) #'INT->TIME)
+                          (:INFLATE (TIME-SIGN-IN) #'INT->TIME)
+                          (:INFLATE (DISABLED-P) #'INT->BOOL)
+                          (:INFLATE (ADMIN-P) #'INT->BOOL))
+   ID
+   NAME
+   PASSWORD
+   EMAIL
+   ACTIVATION-TOKEN
+   LOGIN-TOKEN
+   TIME-CREATED
+   TIME-SIGN-IN
+   DISABLED-P
+   ADMIN-P))

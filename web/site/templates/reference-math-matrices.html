@@ -1,0 +1,329 @@
+{% extends "reference.html" %}
+
+{% block reference %}
+
+<h2>Game Math: Matrices</h2>
+<p>
+  A matrix is a set of components arranged into rows and columns, and form the
+  basis of all modern computer graphics. For more information about matrices,
+  see
+  <a href="https://en.wikipedia.org/wiki/Matrix_(mathematics)#Analysis_and_geometry"
+     target="_blank">this Wikipedia entry</a>. Origin supports 2x2, 3x3, and 4x4
+  square matrices.
+</p>
+
+<div id="page-menu">
+  <h3>Topics</h3>
+  <ul>
+    <li><a href="#initialization">Initialization</a></li>
+    <li><a href="#accessors">Accessors</a></li>
+    <li><a href="#assignment">Assignment</a></li>
+    <li><a href="#constants">Constants</a></li>
+    <li><a href="#arithmetic">Arithmetic</a></li>
+    <li><a href="#boolean-operations">Boolean Operations</a></li>
+    <li><a href="#matrix-operations">Matrix Operations</a></li>
+    <li><a href="#other-operations">Other Operations</a></li>
+  </ul>
+</div>
+
+<div id="initialization" class="ref-topic">
+  <h3>Initialization</h3>
+  <p>
+    A new matrix can be initialized using the <code>MAT</code> function with a
+    package qualifier prefixed corresponding to the desired dimensions:
+  </p>
+  <div class="code-block">
+    <pre><code class="lisp">(m2:mat 1 2 3 4)
+(m3:mat 1 2 3 4 5 6 7 8 9)
+(m4:mat 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16)</code></pre>
+  </div>
+  <p>
+    The above code listing is an example of how to initialize a 2x2, 3x3, and
+    4x4 matrix, respectively. The resulting matrices will have each component
+    automatically coerced to a single-precision 32-bit floating point number.
+    All arguments are required for each component. That is, to create a 3x3
+    matrix, all 9 arguments (3 for each column) must be supplied.
+  </p>
+  <p>
+    Additionally, 2 convenient matrix construction function are also provided.
+    To construct a matrix with all components initialized with a value of 0, use
+    <code>ZERO</code>. To construct an identity matrix, use <code>ID</code>:
+  </p>
+  <div class="code-block">
+    <pre><code class="lisp">;; A freshly-allocated 3x3 zero matrix
+(m3:zero)
+
+;; A freshly-allocated 4x4 identity matrix
+(m4:id)</code></pre>
+  </div>
+</div>
+
+<div id="accessors" class="ref-topic">
+  <h3>Accessors</h3>
+  <p>
+    Origin provides two ways to access the components of a matrix: an array and
+    macro style. Both of these styles allow getting and setting (via
+    <code>SETF</code>) a component.
+    <ul>
+      <li>Array style</li>
+      <p>
+        Matrices are represented in memory as 1-dimensional arrays with a
+        column-major ordering, so you can access their components just as you
+        would with any other array using <code>AREF</code>. The following table
+        shows how array indices map to each component of a 3x3 matrix:
+      </p>
+      <table>
+        <tr>
+          <th>Array Index</th>
+          <th>Column</th>
+          <th>Row</th>
+        </tr>
+        <tr>
+          <td>0</td>
+          <td>0</td>
+          <td>0</td>
+        </tr>
+        <tr>
+          <td>1</td>
+          <td>0</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>0</td>
+          <td>2</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>1</td>
+          <td>0</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>1</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>1</td>
+          <td>2</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>2</td>
+          <td>0</td>
+        </tr>
+        <tr>
+          <td>7</td>
+          <td>2</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <td>8</td>
+          <td>2</td>
+          <td>2</td>
+        </tr>
+      </table>
+      <li>Macro style</li>
+      <p>
+        The macro style is the most flexible, and most concise when more complex
+        operations need to be performed. It is recommended over the array style,
+        as it often results in easy to understand code, and mitigates errors
+        that can occur by incorrectly indexing linear array elements.
+      </p>
+      <div class="code-block">
+        <pre><code class="lisp">(m4:with-components ((a (m4:id)))
+  a13)</code></pre>
+      </div>
+      <p>
+        The above will access the component of a 4x4 matrix located at row 1 and
+        column 3. It works by concatenating the name you give it (here
+        <code>A</code>), followed by a row number, followed by a column number
+        (both 0-indexed). You can also work with multiple 4x4 matrices at the
+        same time, such as:
+      </p>
+      <div class="code-block">
+        <pre><code class="lisp">(m4:with-components ((a (m4:id))
+                     (b (m4:id)))
+  (values a00 b30))</code></pre>
+      </div>
+      <p>
+        Additionally, it can be quite handy to nest <code>WITH-COMPONENTS</code>
+        of varying matrix dimensions, in order to have a body that can concisely
+        access the components of many different matrices of varying types. For
+        example:
+      </p>
+      <div class="code-block">
+        <pre><code class="lisp">(m4:with-components ((a (m4:id))
+                     (b (m4:id)))
+  (m2:with-components ((c (m2:mat 1 2 3 4))
+                       (d (m2:mat 5 6 7 8)))
+    (values a00 b30 c01 d10)))</code></pre>
+      </div>
+    </ul>
+  </p>
+</div>
+
+<div id="assignment" class="ref-topic">
+  <h3>Assignment</h3>
+  <p>
+    Both of the above matrix accessor styles also supports assignment with
+    <code>SETF</code>, and works exactly as you would expect.
+  </p>
+</div>
+
+<div id="constants" class="ref-topic">
+  <h3>Constants</h3>
+  <p>
+    A constant named <code>+ZERO+</code> for a pre-allocated zero matrix exists
+    for each of the three matrix types. This is useful for when you need a
+    read-only matrix with a zero value for each component.
+  </p>
+  <p>
+    A constant named <code>+ID+</code> representing an identity matrix (all
+    components having a value of 0, except the components along the main
+    diagonal having a value of 1).
+  </p>
+  <div class="message">
+    <p>
+      <i class="fa fa-exclamation"></i>
+      Important
+    </p>
+    You should not attempt to modify these constants, as no checks are performed
+    to prevent this from happening. This should <i>never</i> be passed as the
+    first argument to an in-place operator (denoted by the <code>!</code>
+    suffix).
+  </div>
+</div>
+
+<div id="arithmetic" class="ref-topic">
+  <h3>Arithmetic</h3>
+  <p>
+    Component-wise arithmetic for addition, subtraction, multiplication, and
+    division is supported for both allocating and in-place operations. The
+    following code provides examples of each for 3x3 matrices:
+    <div class="code-block">
+      <pre><code class="lisp">;; Addition (allocating)
+(m3:+ mat-a mat-b)
+
+;; Addition (in-place)
+(m3:+! mat-c mat-a mat-b)
+
+;; Subtraction (allocating)
+(m3:- mat-a mat-b)
+
+;; Subtraction (in-place)
+(m3:-! mat-c mat-a mat-b)
+
+;; Multiplication (allocating)
+(m3:* mat-a mat-b)
+
+;; Multiplication (in-place)
+(m3:*! mat-c mat-a mat-b)
+
+;; Division (allocating)
+(m3:/ mat-a mat-b)
+
+;; Division (in-place)
+(m3:/! mat-c mat-a mat-b)</code></pre>
+    </div>
+  </p>
+</div>
+
+<div id="boolean-operations" class="ref-topic">
+  <h3>Boolean Operations</h3>
+  <p>
+    There exists a variety of boolean operations for matrices. These differ from
+    most other matrix operations in that they return a boolean true or false
+    value, rather than a matrix object. The following table outlines the
+    available boolean operations, using 3x3 matrices for the examples:
+  </p>
+  <table>
+    <tr>
+      <th>Operator</th>
+      <th>Example</th>
+      <th>Description</th>
+    </tr>
+    <tr>
+      <td><code>ZERO-P</code></td>
+      <td><code>(m3:zero-p mat)</code></td>
+      <td>Checks whether <code>MAT</code> has each component set to 0.</td>
+    </tr>
+    <tr>
+      <td><code>ID-P</code></td>
+      <td><code>(m3:id-p mat)</code></td>
+      <td>Checks whether <code>MAT</code> is an identity matrix.</td>
+    </tr>
+    <tr>
+      <td><code>=</code></td>
+      <td><code>(m3:= mat-a mat-b)</code></td>
+      <td>
+        Checks whether <code>MAT-A</code> and <code>MAT-B</code> have
+        component values that are the same.
+      </td>
+    </tr>
+    <tr>
+      <td><code>~</code></td>
+      <td><code>(m3:~ mat-a mat-b)</code></td>
+      <td>
+        Checks whether <code>MAT-A</code> and <code>MAT-B</code> have
+        component values that are nearly the same (within a tolerance of 10⁻⁷).
+      </td>
+    </tr>
+    <tr>
+      <td><code>ORTHOGONAL-P</code></td>
+      <td><code>(m3:orthogonal-p mat)</code></td>
+      <td>
+        Checks whether <code>MAT</code> is an orthogonal matrix (rows and
+        columns are orthogonal unit vectors).
+      </td>
+    </tr>
+    <tr>
+      <td><code>DIAGONAL-P</code></td>
+      <td><code>(m3:diagonal-p mat)</code></td>
+      <td>
+        Checks whether <code>MAT</code> is a diagonal matrix (all components
+        that are not along the main diagonal have a value of 0).
+      </td>
+    </tr>
+  </table>
+</div>
+
+<div id="matrix-operations" class="ref-topic">
+  <h3>Matrix Operations</h3>
+  <p>
+    There are many functions that are commonly applied to matrices.
+  </p>
+  <p>
+    The <code>ROTATE</code> function will rotate a matrix around a vector of
+    Euler angles in radians. The following will rotate a 4x4 matrix around the Y
+    axis by 90 degrees:
+  </p>
+  <div class="code-block">
+    <pre><code class="lisp">(m4:rotate mat (v3:vec 0 (/ pi 2) 0))</code></pre>
+  </div>
+  <p>
+    The <code>SCALE</code> function will scale a matrix. The following will
+    perform a uniform scaling of 5 to a 3x3 matrix:
+  </p>
+  <div class="code-block">
+    <pre><code class="lisp">(m3:scale mat (v2:vec 5 5))</code></pre>
+  </div>
+  <p>The <code>TRANSPOSE</code> function will transpose a matrix.</p>
+  <p>
+    The <code>SET-PROJECTION/ORTHOGRAPHIC</code> and
+    <code>SET-PROJECTION/PERSPECTIVE</code> functions will create orthographic
+    and perspective projection matrices, respectively.
+  </p>
+</div>
+
+<div id="other-operations" class="ref-topic">
+  <h3>Other Operations</h3>
+  <p>
+    Origin supports many other operations that can be performed with matrices.
+    Please refer to the non-exhaustive
+    <a href="/reference/math/api">API Reference</a> for more information.
+  </p>
+</div>
+
+{% endblock reference %}

@@ -1,0 +1,48 @@
+{% extends "layout-full.html" %}
+
+{% block get-started-selected %}
+id="selected"
+{% endblock get-started-selected %}
+
+{% block main %}
+<p>
+  Pyx is not yet ready for normal developers to write games with, but it is in
+  active development and we are getting closer to our first public release with
+  each day passing. Therefor, some manual installation and configuration is
+  necessary to get up and running.
+</p>
+<p>
+  Additionally, some familiarity with the Common Lisp programming language is
+  required, as well as the installation of a code editor that supports the
+  interactive workflow of the language, and any additional tooling
+  infrastructure.
+</p>
+<h2>Getting Familiar with Common Lisp</h2>
+<p>We recommend picking up a Common Lisp book and learning more about this truly
+  powerful language. There are many great resources available. If you are on a
+  tight budget, we recommend reading
+  <a href="http://www.gigamonkeys.com/book/" target="_blank">
+    Practical Common Lisp</a> for free online. Additionally,
+  <a href="https://lispcookbook.github.io/cl-cookbook/" target="_blank">
+    The Common Lisp Cookbook</a> is another free valuable resource.
+</p>
+<h2>Installing a Development Environment for Common Lisp</h2>
+<p>
+  Pyx requires a code editor with rich interactive development support for
+  Common Lisp. Currently, we can only recommend Emacs to fill this role. For a
+  quick and painless pre-configured version of Emacs with Common Lisp support,
+  there is
+  <a href="https://shinmera.github.io/portacle/" target="_blank">Portacle</a>.
+  For more information on getting up and running with Common Lisp, consult the
+  <a href="https://lispcookbook.github.io/cl-cookbook/editor-support.html"
+     target="_blank">Getting started</a>
+  and
+  <a href="https://lispcookbook.github.io/cl-cookbook/editor-support.html"
+     target="_blank">Editor support</a>
+  sections of
+  <a href="https://lispcookbook.github.io/cl-cookbook/" target="_blank">
+    The Common Lisp Cookbook</a>.
+</p>
+<p>
+</p>
+{% endblock main %}

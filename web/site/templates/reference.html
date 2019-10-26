@@ -1,0 +1,22 @@
+{% extends "layout-split.html" %}
+
+{% block reference-selected %}
+id="selected"
+{% endblock reference-selected %}
+
+{% block side %}
+<h1>Table of Contents</h1>
+<h2>Game Math</h2>
+<ul>
+  <li><a href="/reference/math/overview">Overview</a></li>
+  <li><a href="/reference/math/syntax">Syntax</a></li>
+  <li><a href="/reference/math/vectors">Vectors</a></li>
+  <li><a href="/reference/math/matrices">Matrices</a></li>
+  <li><a href="/reference/math/quaternions">Quaternions</a></li>
+</ul>
+{% endblock side %}
+
+{% block main %}
+<h1>Reference</h1>
+{% block reference %}TODO{% endblock reference %}
+{% endblock main %}

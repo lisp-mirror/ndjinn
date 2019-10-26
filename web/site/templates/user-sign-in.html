@@ -1,0 +1,21 @@
+{% extends "layout-full.html" %}
+
+{% block main %}
+<h1>Sign In</h1>
+<form action="/user/sign-in" method="post">
+  <input name="_csrf_token" type="hidden" value="{{csrf-token}}">
+  <label for="name">User Name</label>
+  <input name="name" value="{{name}}" required>
+  <label for="password">Password</label>
+  <input name="password" type="password" value="{{password}}" required>
+  <button class="btn btn-med btn2" type="submit">
+    Sign In
+  </button>
+</form>
+<p>
+  If you don't have an account yet, you can
+  <span>
+    <a href="/user/register">register here</a>.
+  </span>
+</p>
+{% endblock main %}

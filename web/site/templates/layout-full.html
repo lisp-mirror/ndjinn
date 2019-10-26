@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div id="main">
+  {% include "base-messages.html" %}
+  <h1>{{ section }}</h1>
+  {% block main %}
+  {% endblock main %}
+</div>
+{% endblock content %}

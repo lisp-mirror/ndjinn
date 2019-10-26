@@ -1,0 +1,20 @@
+{% extends "layout-full.html" %}
+
+{% block main %}
+<h1>Activate Account</h1>
+<form action="/user/activate" method="post">
+  <input name="_csrf_token" type="hidden" value="{{csrf-token}}">
+  <label for="email">Email Address</label>
+  <input name="email" value="{{email}}" required>
+  <label for="code">Activation Code</label>
+  <input name="code" value="{{code}}" required>
+  <button class="btn btn-med btn2" type="submit">
+    Activate
+  </button>
+</form>
+<p>
+  If you haven't received an activation code in your mailbox,
+  <a href="/user/activate/resend-code">click here</a>
+  to try sending it again.
+</p>
+{% endblock main %}

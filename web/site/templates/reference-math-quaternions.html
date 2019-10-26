@@ -1,0 +1,200 @@
+{% extends "reference.html" %}
+
+{% block reference %}
+
+<h2>Game Math: Quaternions</h2>
+<p>
+  A quaternion is a set of components that can be used to represent a
+  3-dimensional rotation. For more information about quaternions, see
+  <a href="https://en.wikipedia.org/wiki/Quaternion" target="_blank">
+    this Wikipedia entry</a>.
+</p>
+
+<div id="page-menu">
+  <h3>Topics</h3>
+  <ul>
+    <li><a href="#initialization">Initialization</a></li>
+    <li><a href="#accessors">Accessors</a></li>
+    <li><a href="#assignment">Assignment</a></li>
+    <li><a href="#constants">Constants</a></li>
+    <li><a href="#conversion">Conversion</a></li>
+    <li><a href="#manipulation">Manipulation</a></li>
+    <li><a href="#other-operations">Other Operations</a></li>
+  </ul>
+</div>
+
+<div id="initialization" class="ref-topic">
+  <h3>Initialization</h3>
+  <p>
+    A new quaternion can be initialized using the <code>Q:QUAT</code> function:
+    <div class="code-block">
+      <pre><code class="lisp">(q:quat 1 0 0 0)</code></pre>
+    </div>
+  </p>
+  <p>
+    The above code listing is an example of how to initialize a quaternion. The
+    resulting quaternion will have each component automatically coerced to a
+    single-precision 32-bit floating point number. All four arguments for the W,
+    X, Y, and Z components must be supplied to <code>QUAT</code>.
+  </p>
+  <p>
+    Additionally, 2 convenient quaternion construction function are also
+    provided. To construct a quaternion with all components initialized with a
+    value of 0, use <code>ZERO</code>. To construct an identity quaternion, use
+    <code>ID</code>:
+  </p>
+  <div class="code-block">
+    <pre><code class="lisp">;; A freshly-allocated zero quaternion
+(q:zero)
+
+;; A freshly-allocated identity quaternion
+(q:id)</code></pre>
+  </div>
+  <div class="message">
+    <p>
+      <i class="fa fa-info"></i>
+      Note
+    </p>
+    Only a unit quaternion describes a 3D rotation.
+  </div>
+</div>
+
+<div id="accessors" class="ref-topic">
+  <h3>Accessors</h3>
+  <p>
+    Origin provides three ways to access the components of a quaternion: a
+    functional, array, and macro style. Each of these styles allows both getting
+    and setting (via <code>SETF</code>) a component.
+    <ul>
+      <li>Functional style</li>
+      <p>
+        The functional style allows you to access a component of a quaternion by
+        calling a function denoting the component position into the quaternion.
+        For example, to access the component in the Z position of a quaternion,
+        you would use the <code>Q:Z</code> function, such as <code>(q:z (q:quat
+        1 2 3 4))</code>, which would return <code>4.0</code>.
+      </p>
+      <p>
+        Functional accessors exist for the other 3 components of a quaternion.
+      </p>
+      <li>Array style</li>
+      <p>
+        Quaternions are represented in memory as arrays, so you can access their
+        components just as you would with any other array. For example, to
+        access the W component of a quaternion, you could issue <code>(aref
+        (q:id) 0)</code>, which would return <code>1.0</code>, since
+        the W component is the first component of the array (0-indexed).
+      </p>
+      <li>Macro style</li>
+      <p>
+        The macro style is the most flexible, and most concise when more complex
+        operations need to be performed. It is recommended especially when
+        dealing with multiple quaternions at the same time.
+      </p>
+      <div class="code-block">
+        <pre><code class="lisp">(q:with-components ((a (q:id)))
+  aw)</code></pre>
+      </div>
+      <p>
+        The above will access the W component of the quaternion, and returns
+        <code>1.0</code>. It works by concatenating the name you give it (here
+        <code>A</code>) and the component name (here <code>W</code>). You can
+        also work with multiple quaternions at the same time, such as:
+      </p>
+      <div class="code-block">
+        <pre><code class="lisp">(q:with-components ((a (q:id))
+                    (b (q:id)))
+  (values az bw))</code></pre>
+      </div>
+    </ul>
+  </p>
+</div>
+
+<div id="assignment" class="ref-topic">
+  <h3>Assignment</h3>
+  <p>
+    Each of the above quaternion accessor styles also supports assignment with
+    <code>SETF</code>, and works exactly as you would expect.
+  </p>
+</div>
+
+<div id="constants" class="ref-topic">
+  <h3>Constants</h3>
+  <p>
+    A constant named <code>+ZERO+</code> for a pre-allocated zero quaternion
+    exists. This is useful for when you need a read-only quaternion with a zero
+    value for each component.
+  </p>
+  <p>
+    A constant named <code>+ID+</code> representing an identity quaternion (the
+    W component having a value of 1, and the rest having a value of 0).
+  </p>
+  <div class="message">
+    <p>
+      <i class="fa fa-exclamation"></i>
+      Important
+    </p>
+    You should not attempt to modify these constants, as no checks are performed
+    to prevent this from happening. This should <i>never</i> be passed as the
+    first argument to an in-place operator (denoted by the <code>!</code>
+    suffix).
+  </div>
+</div>
+
+<div id="conversion" class="ref-topic">
+  <h3>Conversion</h3>
+  <p>
+    There are a variety of functions for converting a quaternion to and from
+    other types.
+  </p>
+  <p>
+    To copy the imaginary parts of a quaternion (the X, Y, and Z components)
+    into a 3D vector, use <code>Q:TO-VEC3</code>. Similarly,
+    <code>Q:FROM-VEC3</code> will perform the reverse operation.
+  </p>
+  <p>
+    To copy both the real and imaginary parts of a quaternion into a 4D vector,
+    use <code>Q:TO-VEC4</code>. Similarly, <code>Q:FROM-VEC4</code> will perform
+    the reverse operation.
+  </p>
+  <p>
+    To convert a quaternion to a 3x3 rotation matrix, use
+    <code>Q:TO-MAT3</code>. Similarly, <code>Q:FROM-MAT3</code> will perform the
+    reverse operation. There also exists <code>Q:TO-MAT4</code> and
+    <code>Q:FROM-MAT4</code> for converting to and from a 4x4 transformation
+    matrix.
+  </p>
+</div>
+
+<div id="manipulation" class="ref-topic">
+  <h3>Manipulation</h3>
+  <p>
+    Two quaternions can be multiplied together to combine their rotations. For
+    example, the following quaternion represents a rotation of <code>PI/2</code>
+    radians around the Y axis. When multiplied with itself, it constructs a new
+    quaternion representing a rotation of <code>PI</code> radians
+    around the Y axis.
+  </p>
+  <div class="code-block">
+    <pre><code class="lisp">(let ((quat (q:quat (/ pi 2) 0 1 0)))
+  (q:* quat quat))</code></pre>
+  </div>
+  <p>
+    Two quaternions can have a spherical linear interpolation applied on them,
+    which produces a smooth transition between rotations:
+  </p>
+  <div class="code-block">
+    <pre><code class="lisp">(q:slerp quat-a quat-b 0.5)</code></pre>
+  </div>
+</div>
+
+<div id="other-operations" class="ref-topic">
+  <h3>Other Operations</h3>
+  <p>
+    Origin supports many other operations that can be performed with
+    quaternions. Please refer to the non-exhaustive
+    <a href="/reference/math/api">API Reference</a> for more information.
+  </p>
+</div>
+
+{% endblock reference %}

@@ -9,9 +9,8 @@
    (%func :reader func)))
 
 (defun find-prefab (name)
-  (a:if-let ((prefab (meta :prefabs name)))
-    prefab
-    (error "Prefab ~s not found." name)))
+  (or (meta :prefabs name)
+      (error "Prefab ~s not found." name)))
 
 (defun reset-prefab (prefab)
   (with-slots (%root %nodes) prefab
@@ -101,8 +100,8 @@
             (when path
               (u:href ,entities path))))
      (macrolet ((,(a:symbolicate "@") (&rest path/query)
-                  (let* ((path (cons ',prefab-name path/query))
-                         (query (car (last path/query))))
+                  (let ((path (cons ',prefab-name path/query))
+                        (query (car (last path/query))))
                     (if (keywordp query)
                         `(%entity-query (%ref ',(butlast path)) ,query)
                         `(%ref ',path)))))

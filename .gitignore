@@ -1,1 +1,3 @@
-web/site/access.log
+**/web/site/access.log
+**/web/site/database.db
+**/web/site/site.lisp

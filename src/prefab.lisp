@@ -85,11 +85,11 @@
           (setf (identify/prefab root) %name)
           root)))))
 
-(defun load-prefab (name)
+(defun load-prefab (name &key parent)
   (register-entity-flow-event
    :prefab-create
    (lambda ()
-     (funcall (func (find-prefab name))))))
+     (funcall (func (find-prefab name)) :parent parent))))
 
 (defun deregister-prefab-entity (entity)
   (a:when-let* ((prefab (identify/prefab entity))
@@ -121,7 +121,17 @@
            (setf ,@(mapcan
                     (lambda (x) (parse-prefab/data prefab x))
                     (list (list* name options body))))
-           (parse-prefab ,prefab ,entities))))))
+           (parse-prefab ,prefab ,entities)
+           (update-prefab-entities ,prefab))))))
+
+(defun update-prefab-entities (prefab)
+  (enqueue :recompile (list :prefab (name prefab))))
+
+(defun recompile-prefab (name)
+  (dolist (entity (u:href (prefabs (database *state*)) name))
+    (let ((parent (node/parent entity)))
+      (deregister-prefab-entity entity)
+      (load-prefab name :parent parent))))
 
 ;;; Prefab nodes
 

@@ -28,3 +28,5 @@
 (define-event-handler :recompile :texture recompile-texture)
 
 (define-event-handler :recompile :material recompile-material)
+
+(define-event-handler :recompile :prefab recompile-prefab)

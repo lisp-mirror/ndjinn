@@ -33,15 +33,14 @@
     (symbol (make-material material/spec))))
 
 (defun recompile-material (spec-name)
-  (when *state*
-    (let ((spec (meta :materials spec-name)))
-      (dolist (material (u:href (materials (database *state*)) spec-name))
-        (with-slots (%shader %uniforms %funcs) material
-          (setf %shader (shader spec)
-                %uniforms (copy-material-spec-uniforms spec))
-          (u:do-hash-keys (k %uniforms)
-            (unless (u:href %funcs k)
-              (register-uniform-func material k)))
-          (u:do-hash-keys (k %funcs)
-            (unless (u:href %uniforms k)
-              (remhash k %funcs))))))))
+  (let ((spec (meta :materials spec-name)))
+    (dolist (material (u:href (materials (database *state*)) spec-name))
+      (with-slots (%shader %uniforms %funcs) material
+        (setf %shader (shader spec)
+              %uniforms (copy-material-spec-uniforms spec))
+        (u:do-hash-keys (k %uniforms)
+          (unless (u:href %funcs k)
+            (register-uniform-func material k)))
+        (u:do-hash-keys (k %funcs)
+          (unless (u:href %uniforms k)
+            (remhash k %funcs)))))))

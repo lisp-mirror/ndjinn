@@ -6,6 +6,11 @@
    (%root :reader root)
    (%nodes :reader nodes
            :initform (u:dict #'equal))
+   (%factory :reader factory)))
+
+(defclass prefab-factory ()
+  ((%entities :reader entities
+              :initform (u:dict #'equal))
    (%func :reader func)))
 
 (u:define-printer (prefab stream)
@@ -30,13 +35,13 @@
   (u:do-hash-values (node (nodes prefab))
     (resolve-prefab-node-args node (template node))))
 
-(defun parse-prefab (prefab entities)
+(defun parse-prefab (prefab)
   (let (success-p)
     (unwind-protect
-         (with-slots (%name %root %nodes %func) prefab
+         (with-slots (%name %root %nodes %factory) prefab
            (resolve-prefab-nodes prefab)
            (setf %root (u:href %nodes (list %name))
-                 %func (make-prefab-factory prefab entities)
+                 %factory (make-prefab-factory prefab)
                  success-p t))
       (when success-p
         (setf (meta :prefabs (name prefab)) prefab)))))
@@ -45,39 +50,43 @@
   (flet ((thunk-args (args)
            (loop :for (k v) :on args :by #'cddr
                  :collect k
-                 :collect `(lambda () ,v))))
+                 :collect `(lambda (factory)
+                             (declare (ignorable factory))
+                             ,v))))
     (let ((data (parse-prefab-node-data data)))
       (destructuring-bind (name options args children) data
         (let ((path `(,@parent ,name)))
           `((u:href (nodes ,prefab) ',path)
             (make-prefab-node ,prefab
                               ',path
-                              ',options
-                              (list ,@(thunk-args args)))
+                              ,(when options `',options)
+                              ,(when args `(list ,@(thunk-args args))))
             ,@(mapcan
                (lambda (x)
                  (parse-prefab/data prefab x path))
                children)))))))
 
-(defun resolve-prefab-entity-components (entity-table prefab-parent node)
-  (let ((args (u:dict #'eq)))
+(defun resolve-prefab-entity-components (factory prefab-parent node)
+  (let ((entities (entities factory))
+        (args (u:dict #'eq)))
     (with-slots (%parent %component-types %component-args) node
       (u:do-hash (k v (u:href %component-args :resolved))
-        (setf (u:href args k) (funcall v)))
+        (setf (u:href args k) (funcall v factory)))
       (setf (u:href args :node/parent)
             (if %parent
-                (u:href entity-table (path %parent))
+                (u:href entities (path %parent))
                 prefab-parent))
       (values (u:href %component-types :resolved)
               args))))
 
-(defun make-prefab-factory (prefab entities)
+(defun make-prefab-factory-func (prefab)
   (with-slots (%name %nodes %root) prefab
-    (lambda (&key parent)
-      (let ((parent (or parent (node-tree *state*))))
+    (lambda (factory &key parent)
+      (let ((entities (entities factory))
+            (parent (or parent (node-tree *state*))))
         (u:do-hash (path node %nodes)
           (u:mvlet* ((types args (resolve-prefab-entity-components
-                                  entities parent node))
+                                  factory parent node))
                      (entity (%make-entity types args)))
             (setf (u:href entities path) entity)))
         (let ((root (u:href entities (path %root))))
@@ -85,11 +94,18 @@
           (setf (identify/prefab root) %name)
           root)))))
 
+(defun make-prefab-factory (prefab)
+  (let ((factory (make-instance 'prefab-factory)))
+    (with-slots (%func) factory
+      (setf %func (make-prefab-factory-func prefab)))
+    factory))
+
 (defun load-prefab (name &key parent)
   (register-entity-flow-event
    :prefab-create
    (lambda ()
-     (funcall (func (find-prefab name)) :parent parent))))
+     (let ((factory (factory (find-prefab name))))
+       (funcall (func factory) factory :parent parent)))))
 
 (defun deregister-prefab-entity (entity)
   (a:when-let* ((prefab (identify/prefab entity))
@@ -98,31 +114,34 @@
     (unless (u:href table prefab)
       (remhash prefab table))))
 
-(defmacro wrap-prefab-reference-lookup (prefab-name entities &body body)
-  `(flet ((%ref (path)
-            (when path
-              (u:href ,entities path))))
+(defmacro wrap-prefab-reference-lookup (prefab-name &body body)
+  `(flet ((%ref (factory path)
+            (u:href (entities factory) path)))
      (macrolet ((,(a:symbolicate "@") (&rest path/query)
                   (let ((path (cons ',prefab-name path/query))
                         (query (car (last path/query))))
                     (if (keywordp query)
-                        `(%entity-query (%ref ',(butlast path)) ,query)
-                        `(%ref ',path)))))
-       (%ref nil)
+                        `(%entity-query (%ref factory ',(butlast path)) ,query)
+                        `(%ref factory ',path)))))
+       (lambda (factory)
+         (%ref factory nil))
        ,@body)))
 
 (defmacro define-prefab (name options &body body)
-  (a:with-gensyms (prefab entities)
-    `(let ((,entities (u:dict #'equal)))
-       (wrap-prefab-reference-lookup ,name ,entities
-         (unless (meta :prefabs)
-           (setf (meta :prefabs) (u:dict #'eq)))
-         (let ((,prefab (make/reset-prefab ',name)))
+  (a:with-gensyms (prefab)
+    `(progn
+       (unless (meta :prefabs)
+         (setf (meta :prefabs) (u:dict #'eq)))
+       (let ((,prefab (make/reset-prefab ',name)))
+         (wrap-prefab-reference-lookup ,name
            (setf ,@(mapcan
                     (lambda (x) (parse-prefab/data prefab x))
                     (list (list* name options body))))
-           (parse-prefab ,prefab ,entities)
-           (update-prefab-entities ,prefab))))))
+           (update-prefab ,prefab))))))
+
+(defun update-prefab (prefab)
+  (parse-prefab prefab)
+  (update-prefab-entities prefab))
 
 (defun update-prefab-entities (prefab)
   (enqueue :recompile (list :prefab (name prefab))))
@@ -130,7 +149,7 @@
 (defun recompile-prefab (name)
   (dolist (entity (u:href (prefabs (database *state*)) name))
     (let ((parent (node/parent entity)))
-      (deregister-prefab-entity entity)
+      (delete-entity entity)
       (load-prefab name :parent parent))))
 
 ;;; Prefab nodes
@@ -142,6 +161,8 @@
             :initarg :parent)
    (%template :reader template
               :initarg :template)
+   (%links :accessor links
+           :initform nil)
    (%component-types :reader component-types
                      :initform (u:dict #'eq :self nil
                                             :remove nil
@@ -182,12 +203,14 @@
     (cons (find-prefab-node template-spec path))))
 
 (defun make-prefab-node (prefab path options args)
-  (destructuring-bind (&key template add remove &allow-other-keys) options
+  (destructuring-bind (&key template add remove link &allow-other-keys) options
     (let ((node (make-instance 'prefab-node
                                :path path
                                :template (parse-node-template path template)
                                :parent (u:href (nodes prefab) (butlast path)))))
-      (with-slots (%component-types %component-args) node
+      (with-slots (%template %component-types %component-args) node
+        (when link
+          (pushnew (name prefab) (links %template)))
         (setf (u:href %component-types :self) (sort add #'string<)
               (u:href %component-types :remove) (sort remove #'string<)
               (u:href %component-args :self) (u:plist->hash args :test #'eq))

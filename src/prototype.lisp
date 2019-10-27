@@ -8,6 +8,8 @@
             :initform nil)
    (%slaves :accessor slaves
             :initform nil)
+   (%links :accessor links
+           :initform nil)
    (%component-types :reader component-types
                      :initform (u:dict #'eq :self nil :resolved nil))
    (%component-args :reader component-args
@@ -69,15 +71,19 @@
   (flet ((thunk-args (args)
            (let ((args (apply #'u:dict #'eq args)))
              (u:do-hash (k v args)
-               (setf (u:href args k) (lambda () v)))
+               (setf (u:href args k) (lambda (&optional factory)
+                                       (declare (ignorable factory))
+                                       v)))
              args)))
-    (with-slots (%name %master %slaves) prototype
+    (with-slots (%name %master %slaves %links) prototype
       (setf %master master-name)
       (update-prototype-tables
        prototype
        types
        (thunk-args args))
       (update-prototype-relationships prototype)
+      (dolist (name %links)
+        (update-prefab (meta :prefabs name)))
       (dolist (slave-name %slaves)
         (let ((slave (meta :prototypes slave-name)))
           (update-prototype

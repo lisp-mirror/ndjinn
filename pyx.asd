@@ -72,7 +72,6 @@
    (:file "component-sprite")
    (:file "component-mesh")
    (:file "prototype")
-   (:file "prefab-node")
    (:file "prefab")
    (:file "state")
    (:file "example-common")

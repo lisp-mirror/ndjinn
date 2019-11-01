@@ -1,11 +1,28 @@
 (in-package #:pyx)
 
-(defun %make-entity (components args)
-  (let ((entity (apply #'make-mixin components (u:hash->plist args))))
-    (dolist (type components)
-      (register-entity-flow-event
-       :component-add-hook
-       (lambda () (on-component-added entity type))))
+(defun get-entity-slots (component-types)
+  (mapcan
+   (lambda (x)
+     (mapcar
+      #'c2mop:slot-definition-name
+      (c2mop:class-slots (find-class x))))
+   component-types))
+
+(defun make-entity-class (components)
+  (make-mixin-class (make-mixin-class-list components)))
+
+(defun register-entity (entity components)
+  (dolist (type components)
+    (register-entity-flow-event
+     :component-add-hook
+     (lambda ()
+       (on-component-added entity type)))))
+
+(defun %make-entity (components &optional args)
+  (let* ((class (make-entity-class components))
+         (entity (apply #'make-instance class
+                        (when args (u:hash->plist args)))))
+    (register-entity entity components)
     entity))
 
 (defmacro make-entity ((&rest components) &body body)

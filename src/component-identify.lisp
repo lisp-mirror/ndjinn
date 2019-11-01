@@ -26,7 +26,7 @@
 (defun release-picking-id (id)
   (with-slots (%picking-ids %released-picking-ids) (database *state*)
     (remhash id %picking-ids)
-    (push id %released-picking-ids)
+    (pushnew id %released-picking-ids)
     (setf %released-picking-ids (sort (copy-seq %released-picking-ids) #'<))))
 
 (defmethod on-component-added (entity (component (eql 'identify)))

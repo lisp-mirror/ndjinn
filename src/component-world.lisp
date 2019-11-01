@@ -56,6 +56,9 @@
 
 (defun make-world-data (world options)
   (let ((data (apply #'dungen:make-stage options)))
+    ;; TODO: This is going to incf SHADER-BUFFER-BINDINGS in the database
+    ;; whenever we recompile a prefab or add a new world component. We have to
+    ;; think about how not to exhaust binding points.
     (make-shader-buffer :world 'pyx.shader:world)
     (update-shader-buffer world :world :data data)
     data))

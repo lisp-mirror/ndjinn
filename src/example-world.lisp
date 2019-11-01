@@ -36,11 +36,14 @@
   (pyx:xform :scale 50)
   (pyx:world :width 49 :height 49 :level 1))
 
+(pyx:define-prefab world (:template world)
+  :world/seed 1
+  (floor (:template tile/floor)
+         :mesh/instances (@ world :tiles/floor))
+  (wall (:template tile/wall)
+        :mesh/instances (@ world :tiles/wall)))
+
 (pyx:define-prefab world-scene ()
-  (camera (:template camera/isometric))
-  (world (:template world)
-         :world/seed 1
-         (floor (:template tile/floor)
-                :mesh/instances (@ world :tiles/floor))
-         (wall (:template tile/wall)
-               :mesh/instances (@ world :tiles/wall))))
+  (camera (:template camera/isometric)
+          :camera/mode :isometric)
+  (world (:template (world))))

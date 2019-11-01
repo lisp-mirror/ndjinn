@@ -40,14 +40,14 @@
   (with-slots (%incremental) (xform/scaling entity)
     (setf %incremental incremental)))
 
-(defmethod initialize-instance :after ((instance xform)
-                                       &key
-                                         (xform/translate (v3:zero))
-                                         (xform/translate/inc (v3:zero))
-                                         (xform/rotate (q:id))
-                                         (xform/rotate/inc (q:id))
-                                         (xform/scale (v3:one))
-                                         (xform/scale/inc (v3:zero)))
+(defmethod shared-initialize :after ((instance xform) slot-names
+                                     &key
+                                       (xform/translate (v3:zero))
+                                       (xform/translate/inc (v3:zero))
+                                       (xform/rotate (q:id))
+                                       (xform/rotate/inc (q:id))
+                                       (xform/scale (v3:one))
+                                       (xform/scale/inc (v3:zero)))
   (initialize-translation instance xform/translate)
   (initialize-translation/inc instance xform/translate/inc)
   (initialize-rotation instance xform/rotate)

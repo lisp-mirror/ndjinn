@@ -8,10 +8,8 @@
             :initform nil)
    (%slaves :accessor slaves
             :initform nil)
-   (%links :accessor links
-           :initform nil)
    (%component-types :reader component-types
-                     :initform (u:dict #'eq :self nil :resolved nil))
+                     :initform (u:dict #'eq))
    (%component-args :reader component-args
                     :initform (make-nested-dict #'eq :self :resolved))))
 
@@ -68,29 +66,17 @@
     prototype))
 
 (defun update-prototype (prototype master-name types args)
-  (flet ((thunk-args (args)
-           (let ((args (apply #'u:dict #'eq args)))
-             (u:do-hash (k v args)
-               (setf (u:href args k) (lambda (&optional factory)
-                                       (declare (ignorable factory))
-                                       v)))
-             args)))
-    (with-slots (%name %master %slaves %links) prototype
-      (setf %master master-name)
-      (update-prototype-tables
-       prototype
-       types
-       (thunk-args args))
-      (update-prototype-relationships prototype)
-      (dolist (name %links)
-        (update-prefab (meta :prefabs name)))
-      (dolist (slave-name %slaves)
-        (let ((slave (meta :prototypes slave-name)))
-          (update-prototype
-           slave
-           %name
-           (u:href (component-types slave) :self)
-           (u:hash->plist (u:href (component-args slave) :self))))))))
+  (with-slots (%name %master %slaves) prototype
+    (setf %master master-name)
+    (update-prototype-tables prototype types (apply #'u:dict #'eq args))
+    (update-prototype-relationships prototype)
+    (dolist (slave-name %slaves)
+      (let ((slave (meta :prototypes slave-name)))
+        (update-prototype
+         slave
+         %name
+         (u:href (component-types slave) :self)
+         (u:hash->plist (u:href (component-args slave) :self)))))))
 
 (defmacro define-prototype (name (&optional master) &body body)
   (a:with-gensyms (prototype)

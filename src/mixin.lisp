@@ -50,10 +50,6 @@
           (make-mixin-class classes))
       (car classes)))
 
-(defun make-mixin (classes &rest args)
-  (let ((class (make-mixin-class (make-mixin-class-list classes))))
-    (apply #'make-instance class args)))
-
 (defun add-mixin-class (mixin class &rest args)
   (let ((class (ensure-mixin-class
                 (make-mixin-class-list

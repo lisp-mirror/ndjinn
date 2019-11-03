@@ -20,3 +20,6 @@
       (shadow:bind-buffer name %shader-buffer-bindings))))
 
 (defgeneric update-shader-buffer (object buffer &key))
+
+(defun delete-shader-buffer (name)
+  (shadow:delete-buffer name))

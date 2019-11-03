@@ -39,7 +39,7 @@
       (setf %identify/picking-id (generate-picking-id)
             (u:href %picking-ids %identify/picking-id) entity))))
 
-(defmethod on-entity-deleted ((entity identify))
+(defmethod on-entity-deleted progn ((entity identify))
   (with-slots (%uuids) (database *state*)
     (with-slots (%identify/uuid %identify/picking-id) entity
       (remhash %identify/uuid %uuids)

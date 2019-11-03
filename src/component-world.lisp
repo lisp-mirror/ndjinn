@@ -10,8 +10,7 @@
    :door-rate 0.5
    :cycle-factor 0.5
    :level nil
-   :cell-counts (u:dict #'eq)
-   :metadata nil))
+   :cell-counts (u:dict #'eq)))
 
 (pyx::define-query-types world
   (:cell-count (:tiles/wall :tiles/floor :tiles/door-v :tiles/door-h)))
@@ -54,8 +53,9 @@
       (shadow:write-buffer-path buffer :cells/door/v doors/v)
       (shadow:write-buffer-path buffer :cells/door/h doors/h))))
 
-(defun make-world-data (world options)
-  (let ((data (apply #'dungen:make-stage options)))
+(defun make-world-data (world)
+  (let* ((options (u:href (resources *state*) :world (world/level world)))
+         (data (apply #'dungen:make-stage options)))
     ;; TODO: This is going to incf SHADER-BUFFER-BINDINGS in the database
     ;; whenever we recompile a prefab or add a new world component. We have to
     ;; think about how not to exhaust binding points.
@@ -66,7 +66,7 @@
 (defmethod shared-initialize :after ((instance world) slot-names &key)
   (with-slots (%world/width %world/height %world/seed %world/density
                %world/room-extent %world/wild-factor %world/door-rate
-               %world/cycle-factor %world/level %world/metadata)
+               %world/cycle-factor %world/level)
       instance
     (let ((options `(:width ,%world/width
                      :height ,%world/height
@@ -76,4 +76,8 @@
                      :wild-factor ,%world/wild-factor
                      :door-rate ,%world/door-rate
                      :cycle-factor ,%world/cycle-factor)))
-      (setf %world/metadata (make-world-data instance options)))))
+      (resource-lookup :world %world/level options)
+      (make-world-data instance))))
+
+(defmethod on-entity-deleted progn ((entity world))
+  (delete-shader-buffer :world))

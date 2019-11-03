@@ -39,8 +39,9 @@
      (apply #'reinitialize-instance entity :allow-other-keys t args))))
 
 (defgeneric on-entity-deleted (entity)
-  (:method (entity))
-  (:method :after (entity)
+  (:method-combination progn)
+  (:method :around (entity)
+    (call-next-method)
     (deregister-prefab-entity entity)
     (remove-components entity)))
 
@@ -50,13 +51,15 @@
   (register-entity-flow-event
    :entity-remove
    (lambda ()
-     (let ((parent (node/parent entity)))
-       (dolist (child (node/children entity))
-         (if reparent-children-p
-             (add-child child :parent parent)
-             (delete-entity child)))
-       (on-entity-deleted entity)
-       (a:deletef (node/children parent) entity)))))
+     (labels ((%delete (entity)
+                (let ((parent (node/parent entity)))
+                  (dolist (child (node/children entity))
+                    (if reparent-children-p
+                        (add-child child :parent parent)
+                        (%delete child)))
+                  (on-entity-deleted entity)
+                  (a:deletef (node/children parent) entity))))
+       (%delete entity)))))
 
 (defgeneric on-update (entity)
   (:method-combination progn)

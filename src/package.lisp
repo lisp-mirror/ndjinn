@@ -19,6 +19,8 @@
   (:export
    #:define-component
    #:define-framebuffer
+   #:define-geometry
+   #:define-geometry-layout
    #:define-material
    #:define-prefab
    #:define-prototype

@@ -33,7 +33,7 @@
 
 (defun update-prototype-relationships (prototype)
   (a:when-let ((master (meta :prototypes (master prototype))))
-    (pushnew (name prototype) (slaves master))))
+    (pushnew (cons :prototype (name prototype)) (slaves master))))
 
 (defun update-prototype-tables (prototype types args)
   (with-slots (%component-types %component-args) prototype
@@ -70,13 +70,16 @@
     (setf %master master-name)
     (update-prototype-tables prototype types (apply #'u:dict #'eq args))
     (update-prototype-relationships prototype)
-    (dolist (slave-name %slaves)
-      (let ((slave (meta :prototypes slave-name)))
-        (update-prototype
-         slave
-         %name
-         (u:href (component-types slave) :self)
-         (u:hash->plist (u:href (component-args slave) :self)))))))
+    (dolist (spec %slaves)
+      (destructuring-bind (type . name) spec
+        (case type
+          (:prototype
+           (let* ((slave (meta :prototypes name))
+                  (types (u:href (component-types slave) :self))
+                  (args (u:hash->plist (u:href (component-args slave) :self))))
+             (update-prototype slave %name types args)))
+          (:prefab
+           (update-prefab-subtree (meta :prefabs name))))))))
 
 (defmacro define-prototype (name (&optional master) &body body)
   (a:with-gensyms (prototype)

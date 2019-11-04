@@ -8,6 +8,10 @@
    (%root :reader root)
    (%nodes :reader nodes
            :initform (u:dict #'equal))
+   (%masters :accessor masters
+             :initform nil)
+   (%slaves :accessor slaves
+            :initform nil)
    (%factory :reader factory
              :initarg :factory)))
 

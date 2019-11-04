@@ -20,6 +20,20 @@
     (unless (u:href table prefab)
       (remhash prefab table))))
 
+(defun update-prefab-subtree (prefab)
+  (parse-prefab prefab)
+  (enqueue :recompile (list :prefab (name prefab)))
+  (dolist (spec (slaves prefab))
+    (destructuring-bind (type . name) spec
+      (ecase type
+        (:prefab
+         (let ((slave (meta :prefabs name)))
+           (clrhash (nodes slave))
+           (update-prefab-subtree slave)))
+        (:prototype (error "Programming error: A prototype cannot be a slave ~
+                            of a prefab. This should never happen. Please ~
+                            report this as a bug."))))))
+
 (defmacro define-prefab (name options &body body)
   (a:with-gensyms (prefab data)
     `(let ((,data (preprocess-prefab-data ,name ,options ,body)))
@@ -29,5 +43,4 @@
            (reset-prefab ',name ,data)
            (make-prefab ',name ,data))
        (let ((,prefab (meta :prefabs ',name)))
-         (parse-prefab ,prefab)
-         (enqueue :recompile (list :prefab ',name))))))
+         (update-prefab-subtree ,prefab)))))

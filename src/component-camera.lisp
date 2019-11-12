@@ -15,11 +15,23 @@
 (defun set-camera-projection (entity)
   (%set-camera-projection entity (camera/mode entity)))
 
+(defmethod %set-camera-projection ((entity camera) (mode (eql :perspective)))
+  (with-slots (%camera/projection %camera/fov-y %camera/zoom %camera/clip-near
+               %camera/clip-far)
+      entity
+    (m4:set-projection/perspective! %camera/projection
+                                    (/ %camera/fov-y %camera/zoom)
+                                    (/ (cfg :window-width)
+                                       (cfg :window-height))
+                                    %camera/clip-near
+                                    %camera/clip-far)))
+
 (defmethod %set-camera-projection ((entity camera) (mode (eql :orthographic)))
-  (with-slots (%camera/projection %camera/clip-near %camera/clip-far) entity
-    (let* ((zoom (camera/zoom entity))
-           (w (/ (cfg :window-width) zoom 2))
-           (h (/ (cfg :window-height) zoom 2)))
+  (with-slots (%camera/projection %camera/zoom %camera/clip-near
+               %camera/clip-far)
+      entity
+    (let ((w (/ (cfg :window-width) %camera/zoom 2))
+          (h (/ (cfg :window-height) %camera/zoom 2)))
       (m4:set-projection/orthographic!
        %camera/projection (- w) w (- h) h %camera/clip-near
        %camera/clip-far))))

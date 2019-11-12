@@ -28,7 +28,7 @@
 
 (pyx:define-prototype tile/wall (tile)
   (pyx:xform :translate (v3:vec 0 0 0.75)
-             :scale (v3:vec 0.5 0.5 0.75))
+             :scale (v3:vec 0.5 0.5 1.5))
   (pyx:mesh :name "wall")
   (pyx:render :material 'world/wall))
 

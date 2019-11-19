@@ -9,8 +9,8 @@
    :wild-factor 0.25
    :door-rate 0.5
    :cycle-factor 0.5
-   :level nil
-   :cell-counts (u:dict #'eq)))
+   :cell-counts (u:dict #'eq)
+   :options nil))
 
 (pyx::define-query-types world
   (:cell-count (:tiles/wall :tiles/floor :tiles/door-v :tiles/door-h)))
@@ -43,9 +43,10 @@
               (u:href %world/cell-counts :tiles/door/h) (length doors/h))
         (values walls floors doors/v doors/h)))))
 
-(defmethod update-shader-buffer ((object world) buffer &key data)
-  (with-slots (%world/width %world/height) object
-    (u:mvlet ((walls floors doors/v doors/h (analyze-world object data)))
+(defmethod update-shader-buffer ((object world) buffer)
+  (with-slots (%world/width %world/height %world/options) object
+    (u:mvlet* ((data (apply #'dungen:make-stage %world/options))
+               (walls floors doors/v doors/h (analyze-world object data)))
       (shadow:write-buffer-path buffer :width (list %world/width))
       (shadow:write-buffer-path buffer :height (list %world/height))
       (shadow:write-buffer-path buffer :cells/floor floors)
@@ -53,31 +54,22 @@
       (shadow:write-buffer-path buffer :cells/door/v doors/v)
       (shadow:write-buffer-path buffer :cells/door/h doors/h))))
 
-(defun make-world-data (world)
-  (let* ((options (u:href (resources *state*) :world (world/level world)))
-         (data (apply #'dungen:make-stage options)))
-    ;; TODO: This is going to incf SHADER-BUFFER-BINDINGS in the database
-    ;; whenever we recompile a prefab or add a new world component. We have to
-    ;; think about how not to exhaust binding points.
-    (make-shader-buffer :world 'pyx.shader:world)
-    (update-shader-buffer world :world :data data)
-    data))
-
 (defmethod shared-initialize :after ((instance world) slot-names &key)
   (with-slots (%world/width %world/height %world/seed %world/density
                %world/room-extent %world/wild-factor %world/door-rate
-               %world/cycle-factor %world/level)
+               %world/cycle-factor %world/options)
       instance
-    (let ((options `(:width ,%world/width
-                     :height ,%world/height
-                     :seed ,%world/seed
-                     :density ,%world/density
-                     :room-extent ,%world/room-extent
-                     :wild-factor ,%world/wild-factor
-                     :door-rate ,%world/door-rate
-                     :cycle-factor ,%world/cycle-factor)))
-      (resource-lookup :world %world/level options)
-      (make-world-data instance))))
+    (setf %world/options `(:width ,%world/width
+                           :height ,%world/height
+                           :seed ,%world/seed
+                           :density ,%world/density
+                           :room-extent ,%world/room-extent
+                           :wild-factor ,%world/wild-factor
+                           :door-rate ,%world/door-rate
+                           :cycle-factor ,%world/cycle-factor))
+    (resource-lookup :world %world/options
+      (make-shader-buffer :world %world/options 'pyx.shader:world)
+      (update-shader-buffer instance %world/options))))
 
 (defmethod on-entity-deleted progn ((entity world))
-  (delete-shader-buffer :world))
+  (delete-shader-buffer (world/options entity)))

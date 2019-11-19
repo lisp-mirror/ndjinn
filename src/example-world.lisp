@@ -34,7 +34,7 @@
 
 (pyx:define-prototype world ()
   (pyx:xform :scale 50)
-  (pyx:world :width 49 :height 49 :level 1))
+  (pyx:world :width 49 :height 49))
 
 (pyx:define-prefab world (:template world)
   :world/seed 1

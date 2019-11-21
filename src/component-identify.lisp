@@ -18,10 +18,8 @@
   (with-slots (%database) *state*
     (let* ((table (picking-id %database))
            (id-count (hash-table-count table)))
-      (if (zerop id-count)
-          0
-          (or (pop (released-picking-ids %database))
-              id-count)))))
+      (or (pop (released-picking-ids %database))
+          id-count))))
 
 (defun release-picking-id (id)
   (with-slots (%picking-ids %released-picking-ids) (database *state*)

@@ -13,7 +13,9 @@
                           :initform nil)
    (%shaders :reader shaders)
    (%shader-buffer-bindings :reader shader-buffer-bindings
-                            :initform 0)
+                            :initform (u:dict #'equalp))
+   (%released-shader-buffer-bindings :accessor released-shader-buffer-bindings
+                                     :initform nil)
    (%uuids :reader uuids
            :initform (u:dict #'eq))))
 

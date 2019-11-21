@@ -18,8 +18,8 @@
               (error "Texture ~s has no spritesheet spec file."
                      (name texture-name))))
 
-(defmethod update-shader-buffer ((object spritesheet) buffer)
-  (with-slots (%spec %sprites) object
+(defmethod update-shader-buffer ((object spritesheet))
+  (with-slots (%spec %texture %sprites) object
     (loop :with count = (length %spec)
           :with pos = (make-array count)
           :with size = (make-array count)
@@ -30,15 +30,15 @@
                   (setf (aref pos i) (v2:vec x y)
                         (aref size i) (v2:vec w h)
                         (u:href %sprites id) i)))
-          :finally (shadow:write-buffer-path buffer :pos pos)
-                   (shadow:write-buffer-path buffer :size size))))
+          :finally (shadow:write-buffer-path %texture :pos pos)
+                   (shadow:write-buffer-path %texture :size size))))
 
 (defun make-spritesheet (texture-name)
-  (resource-lookup :spritesheet texture-name
+  (resource-lookup 'spritesheet texture-name
     (let ((spritesheet (make-instance 'spritesheet
                                       :spec (load-spritesheet-spec texture-name)
                                       :texture texture-name
                                       :vao (gl:gen-vertex-array))))
-      (make-shader-buffer :spritesheet texture-name 'umbra.sprite:sprite)
-      (update-shader-buffer spritesheet texture-name)
+      (make-shader-buffer texture-name :spritesheet 'umbra.sprite:sprite)
+      (update-shader-buffer spritesheet)
       spritesheet)))

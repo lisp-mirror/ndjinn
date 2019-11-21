@@ -39,6 +39,7 @@
    (:file "database")
    (:file "queued-events")
    (:file "display")
+   (:file "gpu-query")
    (:file "input-keyboard")
    (:file "input-mouse")
    (:file "input-gamepad")

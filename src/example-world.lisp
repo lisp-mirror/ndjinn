@@ -27,13 +27,13 @@
   (pyx:render :material 'world/floor))
 
 (pyx:define-prototype tile/wall (tile)
-  (pyx:xform :translate (v3:vec 0 0 0.75)
-             :scale (v3:vec 0.5 0.5 1.5))
+  (pyx:xform :translate (v3:vec 0 0 1.25)
+             :scale (v3:vec 0.5 0.5 1.25))
   (pyx:mesh :name "wall")
   (pyx:render :material 'world/wall))
 
 (pyx:define-prototype world ()
-  (pyx:xform :scale 50)
+  (pyx:xform :scale 40)
   (pyx:world :width 49 :height 49))
 
 (pyx:define-prefab world (:template world)

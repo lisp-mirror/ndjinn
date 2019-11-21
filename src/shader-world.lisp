@@ -81,32 +81,38 @@
           (vec3 (+ ambient diffuse specular)))))))
 
 (defun generate-texture/floor ((frag-pos :vec3))
-  (let* ((base-1 (vec3 (+ (* 0.25 (umbra.noise:perlin-surflet (* frag-pos 0.024)))
+  (let* ((base-1 (vec3 (+ (* 0.3 (umbra.noise:perlin-surflet
+                                  (* frag-pos 0.024)))
                           (* 0.4 (umbra.noise:cellular-fast (* frag-pos 0.08)))
                           (* 0.4 (umbra.noise:cellular-fast (* frag-pos 0.06)))
-                          (* 0.3 (umbra.noise:simplex-perlin (* frag-pos 0.5))))))
+                          (* 0.3 (umbra.noise:simplex-perlin
+                                  (* frag-pos 0.5))))))
          (base-1 (umbra.color:set-brightness base-1 -0.4))
          (base-1 (umbra.color:set-gamma base-1 3))
-         (base-1 (umbra.color:set-contrast base-1 0.9))
+         (base-1 (umbra.color:set-contrast base-1 0.8))
          (base-2 (vec3 (umbra.noise:simplex-perlin (* frag-pos 0.0088))))
-         (base-2 (umbra.color:set-contrast base-2 0.24))
+         (base-2 (umbra.color:set-contrast base-2 0.34))
          (base (mix base-1 base-2 0.5))
-         (base-color (* base (vec3 0 0.17 0.29)))
-         (base-color (umbra.color:set-saturation base-color 0.7))
-         (base-color (umbra.color:set-contrast base-color 1.3)))
+         (base-color (* base (vec3 0.17 0.27 0.39)))
+         (base-color (umbra.color:set-saturation base-color 0.8))
+         (base-color (umbra.color:set-contrast base-color 1.6)))
     (+ base base-color)))
 
 (defun generate-texture/wall ((frag-pos :vec3))
-  (let* ((base-1 (vec3 (+ (* 0.45 (umbra.noise:simplex-perlin (vec3 (* frag-pos 0.18))))
-                          (* 0.55 (umbra.noise:cellular-fast (vec3 (* frag-pos 0.044)))))))
-         (base-2 (vec3 (* 0.8 (umbra.noise:simplex-perlin (vec3 (* frag-pos 0.0028))))))
-         (base-2 (umbra.color:set-contrast base-2 0.58))
-         (base (mix base-1 base-2 0.5))
-         (base-color (umbra.color:set-saturation (* base (vec3 0 0.21 0.29)) 0.84))
-         (base-color (umbra.color:set-contrast base-color 1.2)))
+  (let* ((base-1 (vec3 (+ (* 0.45 (umbra.noise:simplex-perlin
+                                   (vec3 (* frag-pos 0.24))))
+                          (* 0.55 (umbra.noise:cellular-fast
+                                   (vec3 (* frag-pos 0.084)))))))
+         (base-2 (vec3 (* 0.65 (umbra.noise:simplex-perlin
+                                (vec3 (* frag-pos 0.0024))))))
+         (base-2 (umbra.color:set-contrast base-2 0.45))
+         (base (mix base-1 base-2 0.55))
+         (base-color (umbra.color:set-saturation
+                      (* base (vec3 0 0.21 0.29)) 0.74))
+         (base-color (umbra.color:set-contrast base-color 1.15)))
     (umbra.color:set-contrast
      (+ base base-color)
-     1.5)))
+     1.55)))
 
 (defun generate-texture ((cell-type :int)
                          (frag-pos :vec3))

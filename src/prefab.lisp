@@ -30,9 +30,9 @@
          (let ((slave (meta :prefabs name)))
            (clrhash (nodes slave))
            (update-prefab-subtree slave)))
-        (:prototype (error "Programming error: A prototype cannot be a slave ~
-                            of a prefab. This should never happen. Please ~
-                            report this as a bug."))))))
+        (:prototype
+         (error "Programming error: A prototype cannot be a slave of a prefab. ~
+                 This should never happen. Please report this as a bug."))))))
 
 (defmacro define-prefab (name options &body body)
   (a:with-gensyms (prefab data)

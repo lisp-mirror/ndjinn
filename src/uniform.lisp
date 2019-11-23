@@ -1,11 +1,11 @@
 (in-package #:pyx)
 
 (defun register-uniform-func (material uniform)
-  (with-slots (%id %shader %uniforms %funcs) material
+  (with-slots (%name %shader %uniforms %funcs) material
     (let ((program (shadow:find-program %shader)))
       (unless (u:href (shadow:uniforms program) uniform)
         (error "Material ~s has the uniform ~s but shader ~s does not use it."
-               %id uniform %shader))
+               %name uniform %shader))
       (let* ((type (u:href (shadow:uniforms program) uniform :type))
              (func (generate-uniform-func material type)))
         (setf (u:href %funcs uniform) func)))))

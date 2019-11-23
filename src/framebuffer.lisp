@@ -125,7 +125,8 @@
     (u:href (attachments framebuffer) point)))
 
 (defun initialize-framebuffers ()
-  (u:do-hash-values (spec (meta :framebuffers))
-    (let ((framebuffer (make-framebuffer spec)))
-      (u:do-hash-values (attachment (attachments spec))
-        (framebuffer-attach framebuffer (name attachment))))))
+  (when (meta :framebuffers)
+    (u:do-hash-values (spec (meta :framebuffers))
+      (let ((framebuffer (make-framebuffer spec)))
+        (u:do-hash-values (attachment (attachments spec))
+          (framebuffer-attach framebuffer (name attachment)))))))

@@ -11,6 +11,7 @@
                #:cl-graph
                #:cl-opengl
                #:closer-mop
+               #:doubly-linked-list
                #:dungen
                #:fast-io
                #:filtered-functions
@@ -54,6 +55,7 @@
    (:file "framebuffer")
    (:file "material-spec")
    (:file "material")
+   (:file "action")
    (:file "asset")
    (:file "image")
    (:file "texture-spec")

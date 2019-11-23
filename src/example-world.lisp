@@ -1,5 +1,7 @@
 (in-package #:pyx.examples)
 
+;;; materials
+
 (pyx:define-material world (base)
   (:shader pyx.shader:world
    :uniforms (:light.position (v3:vec 0.1 0.25 -1)
@@ -17,6 +19,8 @@
 
 (pyx:define-material world/wall (world)
   (:uniforms (:cell-type 1)))
+
+;;; prototypes
 
 (pyx:define-prototype tile ()
   (pyx:mesh :file "tiles.glb"))
@@ -36,6 +40,8 @@
   (pyx:xform :scale 40)
   (pyx:world :width 49 :height 49))
 
+;;; prefabs
+
 (pyx:define-prefab world (:template world)
   :world/seed 1
   (floor (:template tile/floor)
@@ -47,3 +53,48 @@
   (camera (:template camera/isometric)
           :camera/mode :isometric)
   (world (:template (world))))
+
+;;;
+
+(pyx:define-animation translate ()
+  (:axis :z
+   :offset 1.0))
+
+(defclass animation/translate () ())
+
+(defun foo (bar)
+  (eq (class-name (class-of bar))))
+
+(filtered-functions:define-filtered-function on-animation-update (animation)
+  (:filters (:update #'foo)))
+
+(defmethod on-animation-update ((animation translate)))
+
+(defmacro define-animation-hook (animation hook-type &body body)
+  (let ((hook-types '(:insert :update :finish)))
+    (unless (member hook-type hook-types)
+      (error "Hook type must be one of: ~{~s~^, ~}" hook-types))
+    `(progn
+       (defmethod ,(a:format-symbol :pyx "ON-ANIMATION-~a" hook-type)
+           ((,animation ,(a:symbolicate '#:animation/ animation)))
+         ,@body))))
+
+(define-animation-hook translate :update)
+
+;;;
+
+Suppose I have a wrapper over defclass like:
+
+(define-foo blah ...)
+
+that expands to
+
+(defclass foo/blah () ...)
+
+and I want to write a method that accepts an instance of foo/blah but with a signature like
+
+(defmethod whatever :filter :some-filter ((foo blah)) ...)
+
+and the dispatching function that i write somehow resolves the class foo/blah from the blah specializer
+
+the idea is the user never writes the foo/blah symbol, only the blah part, but they want to define methods specializing on the correct class without knowing what the expansion of define-foo does.

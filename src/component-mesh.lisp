@@ -1,16 +1,21 @@
 (in-package #:pyx)
 
-(define-component mesh (:after render)
-  (:file nil
-   :primitive nil
-   :name nil
-   :index 0
-   :instances 1))
+(define-component mesh ()
+  ((%mesh/file :reader mesh/file
+               :initarg :mesh/file)
+   (%mesh/name :reader mesh/name
+               :initarg :mesh/name)
+   (%mesh/index :reader mesh/index
+                :initarg :mesh/index
+                :initform 0)
+   (%mesh/instances :reader mesh/instances
+                    :initarg :mesh/instances
+                    :initform 1)
+   (%mesh/primitive :reader mesh/primitive))
+  (:sorting :after render))
 
 (defmethod shared-initialize :after ((instance mesh) slot-names &key)
   (with-slots (%mesh/file %mesh/name %mesh/index %mesh/primitive) instance
-    (assert %mesh/file)
-    (assert %mesh/name)
     (let* ((gltf (resource-lookup :mesh %mesh/file
                    (load-gltf (resolve-asset-path %mesh/file))))
            (mesh (u:href (meshes gltf) %mesh/name)))

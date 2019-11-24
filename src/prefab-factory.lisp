@@ -38,7 +38,7 @@
   (with-slots (%name %root %factory) prefab
     (let ((root (u:href (entities %factory) (path %root))))
       (push root (u:href (prefabs (database *state*)) %name))
-      (setf (identify/prefab root) %name)
+      (setf (slot-value root '%node/prefab) %name)
       root)))
 
 (defun build-prefab-factory (prefab)

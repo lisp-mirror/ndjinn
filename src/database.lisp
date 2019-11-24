@@ -5,7 +5,7 @@
                   :initform (u:dict #'eq))
    (%materials :reader materials
                :initform (u:dict #'eq))
-   (%picking-ids :reader picking-id
+   (%picking-ids :reader picking-ids
                  :initform (u:dict #'eq))
    (%prefabs :reader prefabs
              :initform (u:dict #'eq))

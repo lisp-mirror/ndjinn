@@ -1,16 +1,34 @@
 (in-package #:pyx)
 
-(define-component world (:before mesh :after render)
-  (:width 49
-   :height 49
-   :seed (dungen:make-seed)
-   :density 0.5
-   :room-extent 11
-   :wild-factor 0.25
-   :door-rate 0.5
-   :cycle-factor 0.5
-   :cell-counts (u:dict #'eq)
-   :buffer-name nil))
+(define-component world ()
+  ((%world/width :reader world/width
+                 :initarg :world/width
+                 :initform 149)
+   (%world/height :reader world/height
+                  :initarg :world/height
+                  :initform 149)
+   (%world/seed :reader world/seed
+                :initarg :world/seed
+                :initform (dungen:make-seed))
+   (%world/density :reader world/density
+                   :initarg :world/density
+                   :initform 0.5)
+   (%world/room-extent :reader world/room-extent
+                       :initarg :world/room-extent
+                       :initform 11)
+   (%world/wild-factor :reader world/wild-factor
+                       :initarg :world/wild-factor
+                       :initform 0.25)
+   (%world/door-rate :reader world/door-rate
+                     :initarg :world/door-rate
+                     :initform 0.5)
+   (%world/cycle-factor :reader world/cycle-factor
+                        :initarg :world/cycle-factor
+                        :initform 0.5)
+   (%world/cell-counts :reader world/cell-counts
+                       :initform (u:dict #'eq))
+   (%world/buffer-name :reader world/buffer-name))
+  (:sorting :before mesh :after render))
 
 (pyx::define-query-types world
   (:cell-count (:tiles/wall :tiles/floor :tiles/door-v :tiles/door-h)))

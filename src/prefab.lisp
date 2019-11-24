@@ -14,7 +14,7 @@
       (load-prefab name :parent parent))))
 
 (defun deregister-prefab-entity (entity)
-  (a:when-let* ((prefab (identify/prefab entity))
+  (a:when-let* ((prefab (node/prefab entity))
                 (table (prefabs (database *state*))))
     (a:deletef (u:href table prefab) entity)
     (unless (u:href table prefab)

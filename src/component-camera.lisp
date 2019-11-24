@@ -1,16 +1,35 @@
 (in-package #:pyx)
 
-(define-component camera (:before render :after xform)
-  (:active-p t
-   :view (m4:id)
-   :projection (m4:id)
-   :mode :orthographic
-   :clip-near -10000.0
-   :clip-far 10000.0
-   :fov-y 45.0
-   :zoom 1
-   :target nil
-   :target-z-axis-p nil))
+(define-component camera ()
+  ((%camera/active-p :reader camera/active-p
+                     :initarg :camera/active-p
+                     :initform t)
+   (%camera/mode :reader camera/mode
+                 :initarg :camera/mode
+                 :initform :perspective)
+   (%camera/clip-near :reader camera/clip-near
+                      :initarg :camera/clip-near
+                      :initform 0)
+   (%camera/clip-far :reader camera/clip-far
+                     :initarg :camera/clip-far
+                     :initform 1024)
+   (%camera/fov-y :reader camera/fov-y
+                  :initarg :camera/fov-y
+                  :initform 45f0)
+   (%camera/zoom :reader camera/zoom
+                 :initarg :camera/zoom
+                 :initform 1)
+   (%camera/target :reader camera/target
+                   :initarg :camera/target
+                   :initform nil)
+   (%camera/target-z-axis-p :reader camera/target-z-axis-p
+                            :initarg :camera/target-z-axis-p
+                            :initform nil)
+   (%camera/view :reader camera/view
+                 :initform (m4:id))
+   (%camera/projection :reader camera/projection
+                       :initform (m4:id)))
+  (:sorting :before render :after xform))
 
 (defun set-camera-projection (entity)
   (%set-camera-projection entity (camera/mode entity)))

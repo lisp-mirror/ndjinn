@@ -1,11 +1,18 @@
 (in-package #:pyx)
 
-(define-component/static xform (:after node)
-  (:translation (make-translate-state)
-   :rotation (make-rotate-state)
-   :scaling (make-scale-state)
-   :local (m4:id)
-   :model (m4:id)))
+(define-component xform ()
+  ((%xform/translation :reader xform/translation
+                       :initform (make-translate-state))
+   (%xform/rotation :reader xform/rotation
+                    :initform (make-rotate-state))
+   (%xform/scaling :reader xform/scaling
+                   :initform (make-scale-state))
+   (%xform/local :reader xform/local
+                 :initform (m4:id))
+   (%xform/model :reader xform/model
+                 :initform (m4:id)))
+  (:sorting :after node)
+  (:static t))
 
 (defun initialize-translation (entity current)
   (with-slots (%current %previous) (xform/translation entity)

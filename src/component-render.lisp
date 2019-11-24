@@ -1,19 +1,19 @@
 (in-package #:pyx)
 
-(define-component render (:after xform :before sprite)
-  (:material nil))
+(define-component render ()
+  ((%render/material :reader render/material
+                     :initarg :render/material))
+  (:sorting :after xform :before sprite))
 
 (defmethod shared-initialize :after ((instance render) slot-names &key)
   (with-slots (%render/material) instance
-    (unless %render/material
-      (error "Entity ~s does not have a material specified." instance))
     (setf %render/material (ensure-material %render/material))
     (u:do-hash-keys (k (uniforms %render/material))
       (register-uniform-func %render/material k))))
 
 (defun render (entity)
   (resolve-model entity)
-  (when (has-component-p 'render entity)
+  (when (has-component-p entity 'render)
     (with-slots (%shader %uniforms %funcs %texture-unit-state)
         (render/material entity)
       (shadow:with-shader %shader

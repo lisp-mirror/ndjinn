@@ -1,9 +1,12 @@
 (in-package #:pyx)
 
-(define-component/static identify (:before node)
-  (:uuid (make-uuid)
-   :picking-id nil
-   :prefab nil))
+(define-component identify ()
+  ((%identify/uuid :reader identify/uuid
+                   :initform (make-uuid))
+   (%identify/picking-id :reader identify/picking-id
+                         :initform (generate-picking-id)))
+  (:sorting :before node)
+  (:static t))
 
 (defgeneric find-by-uuid (uuid)
   (:method ((uuid uuid))
@@ -12,11 +15,11 @@
     (u:href (uuids (database *state*)) (string->uuid uuid))))
 
 (defun find-by-picking-id (id)
-  (u:href (picking-id (database *state*)) id))
+  (u:href (picking-ids (database *state*)) id))
 
 (defun generate-picking-id ()
   (with-slots (%database) *state*
-    (let* ((table (picking-id %database))
+    (let* ((table (picking-ids %database))
            (id-count (hash-table-count table)))
       (or (pop (released-picking-ids %database))
           id-count))))
@@ -34,8 +37,7 @@
                   (error "Entity ~s has a UUID collision with object ~s."
                          entity found)
                   (setf (u:href %uuids %identify/uuid) entity))
-      (setf %identify/picking-id (generate-picking-id)
-            (u:href %picking-ids %identify/picking-id) entity))))
+      (setf (u:href %picking-ids %identify/picking-id) entity))))
 
 (defmethod on-entity-deleted progn ((entity identify))
   (with-slots (%uuids) (database *state*)

@@ -41,28 +41,29 @@
                          (rest (member '&key instance-lambda-list)))))
     (union class-args instance-args)))
 
-(defmacro define-component (type (&key before after) &body body)
-  `(u:eval-always
-     (defclass ,type ()
-       ,(loop :for (key value) :on (car body) :by #'cddr
-              :for accessor = (a:symbolicate type '#:/ key)
-              :for slot = (a:symbolicate '#:% accessor)
-              :for initarg = (a:make-keyword accessor)
-              :collect `(,slot :accessor ,accessor
-                               :initarg ,initarg
-                               :initform ,value)))
-     (unless (meta :components)
-       (setf (meta :components) (u:dict #'eq :order (u:dict #'eq) :static nil)))
-     (defmethod has-component-p ((type (eql ',type)) entity)
-       (typep entity ',type))
-     (setf (meta :components :order ',type)
-           (list :before ',(a:ensure-list before)
-                 :after ',(a:ensure-list after)))))
+(defmacro define-component (name super-classes slots &rest options)
+  (let ((sorting (cdr (find :sorting options :key #'car)))
+        (static (cdr (find :static options :key #'car)))
+        (class-options (remove-if
+                        (lambda (x) (find x '(:sorting :static)))
+                        options
+                        :key #'car)))
+    (destructuring-bind (&key before after) sorting
+      (declare (ignorable before after))
+      `(u:eval-always
+         (defclass ,name ,super-classes ,slots ,@class-options)
+         (unless (meta :components)
+           (setf (meta :components) (u:dict #'eq
+                                            :order (u:dict #'eq)
+                                            :static nil)))
+         (setf (meta :components :order ',name)
+               '(:before ,(a:ensure-list before)
+                 :after ,(a:ensure-list after)))
+         ,@(when (eq (car static) t)
+             `((pushnew ',name (meta :components :static))))))))
 
-(defmacro define-component/static (type (&key before after) &body body)
-  `(progn
-     (define-component ,type (:before ,before :after ,after) ,@body)
-     (pushnew ',type (meta :components :static))))
+(defun has-component-p (entity type)
+  (typep entity type))
 
 (defgeneric on-component-added (entity component-type)
   (:method (entity component-type)))

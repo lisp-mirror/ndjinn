@@ -1,9 +1,18 @@
 (in-package #:pyx)
 
-(define-component/static node (:before xform)
-  (:root-p nil
-   :parent nil
-   :children nil))
+(define-component node ()
+  ((%node/root-p :reader node/root-p
+                 :initarg :node/root-p
+                 :initform nil)
+   (%node/parent :reader node/parent
+                 :initarg :node/parent
+                 :initform nil)
+   (%node/children :accessor node/children
+                   :initform nil)
+   (%node/prefab :reader node/prefab
+                 :initform nil))
+  (:sorting :before xform)
+  (:static t))
 
 (defun add-child (entity &key parent)
   (with-slots (%node/parent %node/children) entity

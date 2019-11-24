@@ -15,6 +15,7 @@
     (sdl2:gl-create-context %window)
     (gl:enable :depth-test :blend :multisample :cull-face)
     (gl:blend-func :src-alpha :one-minus-src-alpha)
+    (gl:depth-func :lequal)
     (u:noop)))
 
 (defun make-window (display)

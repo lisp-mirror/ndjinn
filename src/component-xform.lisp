@@ -117,3 +117,15 @@
 
 (defmethod on-render progn ((entity xform))
   (set-uniforms (render/material entity) :model (xform/model entity)))
+
+(defun translate-entity (entity vec &optional replace-p)
+  (with-slots (%current) (xform/translation entity)
+    (v3:+! %current (if replace-p v3:+zero+ %current) vec)))
+
+(defun rotate-entity (entity vec &optional replace-p)
+  (with-slots (%current) (xform/rotation entity)
+    (q:rotate-euler! %current (if replace-p q:+id+ %current) vec)))
+
+(defun scale-entity (entity vec &optional replace-p)
+  (with-slots (%current) (xform/scaling entity)
+    (v3:+! %current (if replace-p v3:+zero+ %current) vec)))

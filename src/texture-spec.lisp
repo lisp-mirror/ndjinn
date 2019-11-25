@@ -59,7 +59,7 @@
   (a:with-gensyms (spec parameters)
     (destructuring-bind (&key source width height (generate-mipmaps-p t)
                            pixel-format pixel-type internal-format
-                           (min-filter :nearest-mipmap-linear)
+                           (min-filter :linear-mipmap-linear)
                            (mag-filter :linear) (swizzle-r :red)
                            (swizzle-g :green) (swizzle-b :blue)
                            (swizzle-a :alpha))

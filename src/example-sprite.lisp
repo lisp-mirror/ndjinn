@@ -18,20 +18,26 @@
   (pyx:sprite :duration 0.5
               :repeat-p t))
 
+(pyx:define-groups ()
+  (background :draw-order 0)
+  (ships :draw-order 1))
+
 (pyx:define-prefab sprite-scene ()
   (camera (:template camera/orthographic)
           :camera/clip-near 0
           :camera/clip-far 16)
-  (ship (:add-types (xform))
+  (ship ()
+        :group/name 'ships
         :xform/scale 1.2
-        :xform/translate (v3:vec 0 -150 0)
-        (ship-body (:template sprite)
-                   :sprite/name "ship29")
-        (ship-exhaust (:template animated-sprite)
-                      :xform/translate (v3:vec 0 -140 0)
-                      :sprite/name "exhaust03-01"
-                      :sprite/frames 8
-                      :animate/sequence 'sprite))
+        :xform/translate (v3:vec 0 -120 0)
+        (body (:template sprite)
+              :sprite/name "ship29")
+        (exhaust (:template animated-sprite)
+                 :xform/translate (v3:vec 0 -142 0)
+                 :sprite/name "exhaust03-01"
+                 :sprite/frames 8
+                 :animate/sequence 'sprite))
   (planet (:template sprite)
+          :group/name 'background
           :xform/scale 2
           :sprite/name "planet02"))

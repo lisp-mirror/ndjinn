@@ -11,16 +11,17 @@
     (u:do-hash-keys (k (uniforms %render/material))
       (register-uniform-func %render/material k))))
 
-(defun render (entity)
-  (resolve-model entity)
-  (when (has-component-p entity 'render)
-    (with-slots (%shader %uniforms %funcs %texture-unit-state)
-        (render/material entity)
-      (shadow:with-shader %shader
-        (u:do-hash (k v %uniforms)
-          (funcall (u:href %funcs k) k v))
-        (on-render entity)
-        (setf %texture-unit-state 0)))))
+(defun render-frame ()
+  (map nil #'render-entity (draw-order-entities (database *state*))))
+
+(defun render-entity (entity)
+  (with-slots (%shader %uniforms %funcs %texture-unit-state)
+      (render/material entity)
+    (shadow:with-shader %shader
+      (u:do-hash (k v %uniforms)
+        (funcall (u:href %funcs k) k v))
+      (on-render entity)
+      (setf %texture-unit-state 0))))
 
 (defmethod on-render progn ((entity render))
   (a:when-let ((camera (camera *state*)))

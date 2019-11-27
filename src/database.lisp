@@ -16,6 +16,12 @@
                             :initform (u:dict #'equalp))
    (%released-shader-buffer-bindings :accessor released-shader-buffer-bindings
                                      :initform nil)
+   (%groups :reader groups
+            :initform (u:dict #'eq))
+   (%draw-order-groups :accessor draw-order-groups
+                       :initform '(default))
+   (%draw-order-entities :reader draw-order-entities
+                         :initform nil)
    (%uuids :reader uuids
            :initform (u:dict #'eq))))
 

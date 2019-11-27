@@ -25,6 +25,7 @@
    #:define-framebuffer
    #:define-geometry
    #:define-geometry-layout
+   #:define-groups
    #:define-material
    #:define-prefab
    #:define-prototype
@@ -49,6 +50,7 @@
   (:export
    #:animate
    #:camera
+   #:group
    #:identify
    #:mesh
    #:node
@@ -60,7 +62,11 @@
   (:export
    #:sprite
    #:fade
-   #:rotate))
+   #:rotate)
+  ;; groups
+  (:export
+   #:group-join
+   #:group-leave))
 
 (defpackage #:pyx.shader
   (:use #:shadow.glsl #:umbra.common))

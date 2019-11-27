@@ -37,6 +37,7 @@
       (clock-tick)
       (process-queue :entity-flow)
       (handle-events)
+      (map-nodes #'resolve-model)
       (update-display)
       ;; TODO: Remove this later when possible
       (when (input-enter-p :key :escape)

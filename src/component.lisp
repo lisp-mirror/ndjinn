@@ -43,7 +43,7 @@
 
 (defmacro define-component (name super-classes slots &rest options)
   (let ((sorting (cdr (find :sorting options :key #'car)))
-        (static (cdr (find :static options :key #'car)))
+        (static (cadr (find :static options :key #'car)))
         (class-options (remove-if
                         (lambda (x) (find x '(:sorting :static)))
                         options
@@ -59,7 +59,9 @@
          (setf (meta :components :order ',name)
                '(:before ,(a:ensure-list before)
                  :after ,(a:ensure-list after)))
-         ,@(when (eq (car static) t)
+         (unless (typep ',static 'boolean)
+           (error ":STATIC must be one of T or NIL."))
+         ,@(when (eq static t)
              `((pushnew ',name (meta :components :static))))))))
 
 (defun has-component-p (entity type)

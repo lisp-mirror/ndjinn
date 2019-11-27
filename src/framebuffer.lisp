@@ -46,6 +46,9 @@
   (mapcar
    (lambda (x)
      (let ((attachment (find-framebuffer-attachment-spec (spec framebuffer) x)))
+       (unless attachment
+         (error "Attachment name ~s not found for framebuffer ~s."
+                x (name framebuffer)))
        (framebuffer-attachment-point->gl (point attachment))))
    attachment-names))
 

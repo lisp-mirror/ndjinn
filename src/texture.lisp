@@ -96,7 +96,7 @@
 
 (defun load-texture (texture-name)
   (handler-case
-      (resource-lookup :texture texture-name
+      (resource-lookup 'texture texture-name
         (let* ((spec (find-texture-spec texture-name))
                (source (load-texture-source spec))
                (texture (make-texture spec source)))
@@ -108,7 +108,7 @@
 (defun load-framebuffer-texture (framebuffer attachment texture-name)
   (with-slots (%name %point %width %height) attachment
     (let ((cached-name (a:symbolicate (name framebuffer) '#:/ %name)))
-      (resource-lookup :texture cached-name
+      (resource-lookup 'texture cached-name
         (let* ((spec (find-texture-spec texture-name))
                (source (load-texture-source spec
                                             :width (funcall %width)
@@ -118,7 +118,7 @@
           texture)))))
 
 (defun recompile-texture (spec-name)
-  (a:when-let ((texture (u:href (resources *state*) :texture spec-name)))
+  (a:when-let ((texture (u:href (resources *state*) 'texture spec-name)))
     (gl:delete-texture (id texture))
-    (remhash spec-name (u:href (resources *state*) :texture))
+    (remhash spec-name (u:href (resources *state*) 'texture))
     (load-texture spec-name)))

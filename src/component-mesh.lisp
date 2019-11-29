@@ -16,7 +16,7 @@
 
 (defmethod shared-initialize :after ((instance mesh) slot-names &key)
   (with-slots (%mesh/file %mesh/name %mesh/index %mesh/primitive) instance
-    (let* ((gltf (resource-lookup :mesh %mesh/file
+    (let* ((gltf (resource-lookup 'mesh %mesh/file
                    (load-gltf (resolve-asset-path %mesh/file))))
            (mesh (u:href (meshes gltf) %mesh/name)))
       (unless mesh

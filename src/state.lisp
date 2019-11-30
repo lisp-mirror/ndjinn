@@ -20,6 +20,7 @@
 (defun initialize-engine (entry-point)
   (log:info :pyx "Loading ~a..." (cfg :game-title))
   (setup-repl)
+  (rng/init)
   (make-thread-pool)
   (make-database)
   (prepare-gamepads)
@@ -44,7 +45,7 @@
         (stop)))))
 
 (defun run-periodic-tasks ()
-  (update-repl)
+  #-pyx.release (update-repl)
   (process-queue :recompile))
 
 (defun start (entry-point &rest args)

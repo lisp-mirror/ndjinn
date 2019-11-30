@@ -35,3 +35,14 @@
           (y motion-states) y
           (dx motion-states) dx
           (dy motion-states) dy)))
+
+(defun get-mouse-position ()
+  (let ((state (u:href (states (input-state *state*)) '(:mouse :motion))))
+    (with-slots (x y dx dy) state
+      (values x y dx dy))))
+
+(defun get-mouse-scroll (axis)
+  (let ((states (states (input-state *state*))))
+    (ecase axis
+      (:horizontal (u:href states '(:mouse :scroll-horizontal)))
+      (:vertical (u:href states '(:mouse :scroll-vertical))))))

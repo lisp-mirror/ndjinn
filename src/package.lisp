@@ -15,7 +15,8 @@
   ;; engine
   (:export
    #:start
-   #:stop)
+   #:stop
+   #:deploy)
   ;; definitions
   (:export
    #:define-animation-sequence
@@ -32,6 +33,17 @@
    #:define-query
    #:define-query-types
    #:define-texture)
+  ;; input
+  (:export
+   #:get-gamepad-analog
+   #:get-mouse-position
+   #:get-mouse-scroll
+   #:input-enabled-p
+   #:input-enter-p
+   #:input-exit-p
+   #:on-gamepad-analog-move
+   #:on-gamepad-attach
+   #:on-gamepad-detach)
   ;; entity protocol
   (:export
    #:delete-entity

@@ -59,30 +59,37 @@
           (:x (u:map-domain -32767 32767 -1 1 clamped))
           (:y (u:map-domain -32767 32767 1 -1 clamped))))))
 
-(defmethod %get-gamepad-analog ((deadzone-type (eql :axial)) analog-state)
-  (with-slots (%x %y %deadzone) analog-state
-    (v2:with-components ((v (v2:vec %x %y)))
-      (values vx vy))))
+(defgeneric get-gamepad-analog (deadzone-type input))
 
-(defmethod %get-gamepad-analog ((deadzone-type (eql :radial)) analog-state)
-  (with-slots (%x %y %deadzone) analog-state
-    (v2:with-components ((v (v2:vec %x %y)))
-      (if (< (v2:length v) %deadzone)
-          (values 0.0 0.0)
-          (values vx vy)))))
+(defmethod get-gamepad-analog ((deadzone-type (eql :axial)) input)
+  (u:if-found (state (u:href (states (input-state *state*)) input))
+              (with-slots (%x %y %deadzone) state
+                (v2:with-components ((v (v2:vec %x %y)))
+                  (values vx vy)))
+              (values 0.0 0.0)))
 
-(defmethod %get-gamepad-analog ((deadzone-type (eql :radial-scaled))
-                                analog-state)
-  (with-slots (%x %y %deadzone) analog-state
-    (v2:with-components ((v (v2:vec %x %y)))
-      (let ((length (v2:length v)))
-        (if (< length %deadzone)
-            (values 0.0 0.0)
-            (progn
-              (v2:scale! v
-                         (v2:normalize v)
-                         (/ (- length %deadzone) (- 1 %deadzone)))
-              (values vx vy)))))))
+(defmethod get-gamepad-analog ((deadzone-type (eql :radial)) input)
+  (u:if-found (state (u:href (states (input-state *state*)) input))
+              (with-slots (%x %y %deadzone) state
+                (v2:with-components ((v (v2:vec %x %y)))
+                  (if (< (v2:length v) %deadzone)
+                      (values 0.0 0.0)
+                      (values vx vy))))
+              (values 0.0 0.0)))
+
+(defmethod get-gamepad-analog ((deadzone-type (eql :radial-scaled)) input)
+  (u:if-found (state (u:href (states (input-state *state*)) input))
+              (with-slots (%x %y %deadzone) state
+                (v2:with-components ((v (v2:vec %x %y)))
+                  (let ((length (v2:length v)))
+                    (if (< length %deadzone)
+                        (values 0.0 0.0)
+                        (progn
+                          (v2:scale! v
+                                     (v2:normalize v)
+                                     (/ (- length %deadzone) (- 1 %deadzone)))
+                          (values vx vy))))))
+              (values 0.0 0.0)))
 
 (defun on-gamepad-attach (index)
   (with-slots (%gamepad-instances %gamepad-ids) (input-state *state*)
@@ -139,8 +146,3 @@
 (defun get-gamepad-name (id)
   (let ((gamepad (u:href (gamepad-ids (input-state *state*)) id)))
     (name gamepad)))
-
-(defun get-gamepad-analog (input)
-  (u:if-found (state (u:href (states (input-state *state*)) input))
-              (%get-gamepad-analog :radial-scaled state)
-              (values 0.0 0.0)))

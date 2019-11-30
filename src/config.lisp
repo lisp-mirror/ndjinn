@@ -7,7 +7,7 @@
                               :game-title "Pyx Engine"
                               :release nil
                               :threads 8
-                              :vsync t
+                              :vsync nil
                               :window-width 1280
                               :window-height 720)
                       (apply #'u:dict #'eq args))))

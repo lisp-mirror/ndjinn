@@ -1,5 +1,5 @@
 (asdf:defsystem #:pyx
-  :description ""
+  :description "A professional-quality game engine with an emphasis on productivity."
   :author ("Michael Fiano <mail@michaelfiano.com>")
   :maintainer "Michael Fiano <mail@michaelfiano.com>"
   :license "MIT"
@@ -22,6 +22,7 @@
                #:pngload-fast
                #:sdl2
                #:shadow
+               #:trivial-features
                #:uiop
                #:umbra
                #:verbose)

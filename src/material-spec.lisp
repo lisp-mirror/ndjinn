@@ -12,8 +12,8 @@
             :initarg :shader)
    (%uniforms :reader uniforms
               :initform (make-nested-dict #'eq :self :resolved))
-   (%target :reader target
-            :initarg :target)))
+   (%output :reader output
+            :initarg :output)))
 
 (defun find-material-spec-master (spec)
   (let* ((master-name (master spec))
@@ -52,20 +52,20 @@
   (a:when-let ((master (meta :materials (master spec))))
     (pushnew (name spec) (slaves master))))
 
-(defun make-material-spec (name master-name shader uniforms target)
+(defun make-material-spec (name master-name shader uniforms output)
   (let ((spec (make-instance 'material-spec :name name
                                             :master master-name
                                             :shader shader
-                                            :target target)))
+                                            :output output)))
     (update-material-spec-uniforms spec uniforms)
     (update-material-spec-relationships spec)
     spec))
 
-(defun update-material-spec (spec master-name shader uniforms target)
-  (with-slots (%name %master %shader %target) spec
+(defun update-material-spec (spec master-name shader uniforms output)
+  (with-slots (%name %master %shader %output) spec
     (setf %master master-name
           %shader shader
-          %target target)
+          %output output)
     (update-material-spec-uniforms spec uniforms)
     (update-material-spec-relationships spec)
     (enqueue :recompile (list :material %name))
@@ -76,11 +76,11 @@
          %name
          (or (shader slave) shader)
          (u:hash->plist (u:href (uniforms slave) :self))
-         (target slave))))))
+         (output slave))))))
 
 (defmacro define-material (name (&optional master) &body body)
   (a:with-gensyms (spec master-spec resolved-shader)
-    (destructuring-bind (&key shader target uniforms) (car body)
+    (destructuring-bind (&key shader output uniforms) (car body)
       `(progn
          (unless (meta :materials)
            (setf (meta :materials) (u:dict #'eq)))
@@ -94,10 +94,10 @@
                                    ',master
                                    ,resolved-shader
                                    (list ,@uniforms)
-                                   ',target)
+                                   ',output)
              (setf (meta :materials ',name)
                    (make-material-spec ',name
                                        ',master
                                        ,resolved-shader
                                        (list ,@uniforms)
-                                       ',target))))))))
+                                       ',output))))))))

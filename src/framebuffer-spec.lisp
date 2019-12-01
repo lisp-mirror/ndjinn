@@ -21,6 +21,12 @@
    (%height :reader height
             :initarg :height)))
 
+(defun framebuffer-mode->target (mode)
+  (ecase mode
+    (:read :read-framebuffer)
+    (:write :draw-framebuffer)
+    (:read/write :framebuffer)))
+
 (defun make-framebuffer-attachment-spec (spec)
   (flet ((generate-size-func (dimension value)
            (lambda ()

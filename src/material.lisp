@@ -9,8 +9,8 @@
               :initarg :uniforms)
    (%framebuffer :reader framebuffer
                  :initarg :framebuffer)
-   (%attachments :reader attachments
-                 :initarg :attachments)
+   (%output :reader output
+            :initarg :output)
    (%funcs :reader funcs
            :initform (u:dict #'eq))
    (%texture-unit-state :accessor texture-unit-state
@@ -33,25 +33,25 @@
                                         :name (name spec)
                                         :shader (shader spec)
                                         :uniforms uniforms)))
-      (resolve-material-target material)
+      (resolve-material-output material)
       (push material (u:href (materials (database *state*)) spec-name))
       material)))
 
-(defun resolve-material-target (material)
-  (with-slots (%name %framebuffer %attachments) material
+(defun resolve-material-output (material)
+  (with-slots (%name %framebuffer %output) material
     (let ((spec (meta :materials %name)))
       (destructuring-bind (&optional framebuffer-name attachment-names)
-          (target spec)
+          (output spec)
         (let* ((framebuffer (find-framebuffer framebuffer-name))
-               (attachments (framebuffer-attachment-names->points
-                             framebuffer
-                             attachment-names)))
+               (output (framebuffer-attachment-names->points
+                        framebuffer
+                        attachment-names)))
           (when (and framebuffer-name (not framebuffer))
             (error "Material ~s uses unknown framebuffer ~s."
                    (name spec)
                    framebuffer-name))
           (setf %framebuffer framebuffer
-                %attachments attachments))))))
+                %output output))))))
 
 (defun recompile-material (spec-name)
   (let ((spec (meta :materials spec-name)))
@@ -59,7 +59,7 @@
       (with-slots (%shader %uniforms %funcs) material
         (setf %shader (shader spec)
               %uniforms (copy-material-spec-uniforms spec))
-        (resolve-material-target material)
+        (resolve-material-output material)
         (u:do-hash-keys (k %uniforms)
           (unless (u:href %funcs k)
             (register-uniform-func material k)))

@@ -15,13 +15,15 @@
   (map nil #'render-entity (draw-order-entities (database *state*))))
 
 (defun render-entity (entity)
-  (with-slots (%shader %uniforms %funcs %texture-unit-state)
+  (with-slots (%framebuffer %output %shader %uniforms %funcs
+               %texture-unit-state)
       (render/material entity)
-    (shadow:with-shader %shader
-      (u:do-hash (k v %uniforms)
-        (funcall (u:href %funcs k) k v))
-      (on-render entity)
-      (setf %texture-unit-state 0))))
+    (with-framebuffer %framebuffer (:output %output)
+      (shadow:with-shader %shader
+        (u:do-hash (k v %uniforms)
+          (funcall (u:href %funcs k) k v))
+        (on-render entity)
+        (setf %texture-unit-state 0)))))
 
 (defmethod on-render progn ((entity render))
   (a:when-let ((camera (camera *state*)))

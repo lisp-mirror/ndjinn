@@ -7,18 +7,19 @@
           :initarg :name)
    (%id :reader id
         :initarg :id)
-   (%mode :reader mode
-          :initarg :mode)
+   (%target :reader target
+            :initarg :target)
    (%attachments :reader attachments
                  :initform (u:dict))))
 
 (defun make-framebuffer (spec)
   (with-slots (%name %mode) spec
-    (let ((framebuffer (make-instance 'framebuffer
-                                      :spec spec
-                                      :id (gl:gen-framebuffer)
-                                      :name %name
-                                      :mode %mode)))
+    (let* ((target (framebuffer-mode->target %mode))
+           (framebuffer (make-instance 'framebuffer
+                                       :spec spec
+                                       :id (gl:gen-framebuffer)
+                                       :name %name
+                                       :target target)))
       (setf (u:href (framebuffers (database *state*)) %name) framebuffer)
       framebuffer)))
 
@@ -27,12 +28,6 @@
 
 (defun find-framebuffer (name)
   (u:href (framebuffers (database *state*)) name))
-
-(defun framebuffer-mode->target (mode)
-  (ecase mode
-    (:read :read-framebuffer)
-    (:write :draw-framebuffer)
-    (:read/write :framebuffer)))
 
 (defun framebuffer-attachment-point->gl (point)
   (destructuring-bind (type &optional (index 0)) (a:ensure-list point)
@@ -67,50 +62,56 @@
       (error "Error attaching ~a as attachment ~a of framebuffer ~a: ~a"
              buffer attachment (name framebuffer) result))))
 
-(defmacro with-framebuffer ((framebuffer) &body body)
+(defmacro with-framebuffer (framebuffer (&key mode output) &body body)
   (a:with-gensyms (target)
-    `(let ((,target (framebuffer-mode->target (mode ,framebuffer))))
-       (gl:bind-framebuffer ,target (id ,framebuffer))
-       ,@body
-       (gl:bind-framebuffer ,target 0))))
+    `(if ,framebuffer
+         (let ((,target ,(if mode
+                             (framebuffer-mode->target mode)
+                             `(target ,framebuffer))))
+           (gl:bind-framebuffer ,target (id ,framebuffer))
+           ,@(when output
+               `((gl:draw-buffers ,output)))
+           ,@body
+           (gl:bind-framebuffer ,target 0))
+         ,@body)))
 
 (defun framebuffer-attach/render-buffer (framebuffer attachment)
-  (with-slots (%point %width %height) attachment
-    (let* ((framebuffer-target (framebuffer-mode->target (mode framebuffer)))
-           (internal-format (framebuffer-point->render-buffer-format %point))
-           (point (framebuffer-attachment-point->gl %point))
-           (buffer-id (gl:gen-renderbuffer))
-           (width (funcall %width))
-           (height (funcall %height)))
-      (gl:bind-renderbuffer :renderbuffer buffer-id)
-      (gl:renderbuffer-storage :renderbuffer internal-format width height)
-      (gl:bind-renderbuffer :renderbuffer 0)
-      (with-framebuffer (framebuffer)
-        (gl:framebuffer-renderbuffer
-         framebuffer-target point :renderbuffer buffer-id)
-        (ensure-framebuffer-complete
-         framebuffer framebuffer-target buffer-id point))
-      (setf (u:href (attachments framebuffer) point) buffer-id)
-      buffer-id)))
+  (with-slots (%id %target %attachments) framebuffer
+    (with-slots (%point %width %height) attachment
+      (let* ((point (framebuffer-attachment-point->gl %point))
+             (internal-format (framebuffer-point->render-buffer-format %point))
+             (buffer-id (gl:gen-renderbuffer))
+             (width (funcall %width))
+             (height (funcall %height)))
+        (gl:bind-renderbuffer :renderbuffer buffer-id)
+        (gl:renderbuffer-storage :renderbuffer internal-format width height)
+        (gl:bind-renderbuffer :renderbuffer 0)
+        (gl:bind-framebuffer %target %id)
+        (gl:framebuffer-renderbuffer %target point :renderbuffer buffer-id)
+        (ensure-framebuffer-complete framebuffer %target buffer-id point)
+        (gl:bind-framebuffer %target 0)
+        (setf (u:href %attachments point) buffer-id)
+        buffer-id))))
 
 (defun framebuffer-attach/texture (framebuffer attachment)
-  (with-slots (%name %buffer %point) attachment
-    (destructuring-bind (type &optional texture-name) %buffer
-      (declare (ignore type))
-      (unless texture-name
-        (error "Framebuffer ~s attachment ~s uses a texture buffer without a ~
+  (with-slots (%id %target %attachments) framebuffer
+    (with-slots (%name %buffer %point) attachment
+      (destructuring-bind (type &optional texture-name) %buffer
+        (declare (ignore type))
+        (unless texture-name
+          (error "Framebuffer ~s attachment ~s uses a texture buffer without a ~
                 texture name."
-               (name framebuffer)
-               %name))
-      (let* ((target (framebuffer-mode->target (mode framebuffer)))
-             (buffer-id (id (load-framebuffer-texture
-                             framebuffer attachment texture-name)))
-             (point (framebuffer-attachment-point->gl %point)))
-        (with-framebuffer (framebuffer)
-          (%gl:framebuffer-texture target point buffer-id 0)
-          (ensure-framebuffer-complete framebuffer target buffer-id point))
-        (setf (u:href (attachments framebuffer) point) buffer-id)
-        buffer-id))))
+                 (name framebuffer)
+                 %name))
+        (let* ((buffer-id (id (load-framebuffer-texture
+                               framebuffer attachment texture-name)))
+               (point (framebuffer-attachment-point->gl %point)))
+          (gl:bind-framebuffer %target %id)
+          (%gl:framebuffer-texture %target point buffer-id 0)
+          (ensure-framebuffer-complete framebuffer %target buffer-id point)
+          (gl:bind-framebuffer %target 0)
+          (setf (u:href %attachments point) buffer-id)
+          buffer-id)))))
 
 (defun framebuffer-attach (framebuffer attachment-name)
   (let* ((spec (spec framebuffer))
@@ -119,11 +120,10 @@
       (:render-buffer (framebuffer-attach/render-buffer framebuffer attachment))
       (:texture (framebuffer-attach/texture framebuffer attachment)))))
 
-(defun find-framebuffer-texture-id (framebuffer-name attachment-name)
+(defun find-framebuffer-buffer-id (framebuffer-name attachment-name)
   (let* ((framebuffer (find-framebuffer framebuffer-name))
          (spec (spec framebuffer))
-         (attachment (find-framebuffer-attachment-spec
-                      spec attachment-name))
+         (attachment (find-framebuffer-attachment-spec spec attachment-name))
          (point (framebuffer-attachment-point->gl (point attachment))))
     (u:href (attachments framebuffer) point)))
 

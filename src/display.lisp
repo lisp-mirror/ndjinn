@@ -13,8 +13,9 @@
                        :multisamplebuffers 1
                        :multisamplesamples 4)
     (sdl2:gl-create-context %window)
-    (gl:enable :depth-test :blend :multisample :cull-face)
     (gl:blend-func :src-alpha :one-minus-src-alpha)
+    (apply #'gl:enable +gl-capabilities/enabled+)
+    (apply #'gl:disable +gl-capabilities/disabled+)
     (gl:depth-func :lequal)
     (u:noop)))
 

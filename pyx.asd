@@ -31,6 +31,7 @@
   :components
   ((:file "package")
    (:file "common")
+   (:file "constants")
    (:file "metadata")
    (:file "threading")
    (:file "interactive-development")

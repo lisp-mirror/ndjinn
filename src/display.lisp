@@ -33,7 +33,7 @@
     (make-window display)
     (make-opengl-context display)
     (sdl2:gl-set-swap-interval (if (cfg :vsync) 1 0))
-    (setf (display *state*) display)
+    (setf (slot-value *state* '%display) display)
     display))
 
 (defun kill-display ()

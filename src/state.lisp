@@ -8,7 +8,7 @@
    (%config :reader config)
    (%database :reader database
               :initform (u:dict #'eq))
-   (%display :accessor display)
+   (%display :reader display)
    (%input-state :reader input-state
                  :initform (make-instance 'input-state))
    (%node-tree :reader node-tree)
@@ -61,5 +61,5 @@
   (destroy-thread-pool)
   (when *state*
     (shutdown-gamepads)
-    (setf (running-p *state*) nil)
+    (setf (slot-value *state* '%running-p) nil)
     (log:info :pyx "Stopped ~a." (cfg :game-title))))

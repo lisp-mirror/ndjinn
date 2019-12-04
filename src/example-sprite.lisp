@@ -5,7 +5,10 @@
 
 (pyx:define-material sprite ()
   (:shader umbra.sprite:sprite
-   :uniforms (:opacity 1.0)))
+   :uniforms (:opacity 1.0)
+   :depth-mode :lequal
+   :features (:enable ()
+              :disable ())))
 
 (pyx:define-prototype sprite ()
   (pyx:sprite :texture 'sprites)

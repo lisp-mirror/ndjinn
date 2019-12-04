@@ -1,37 +1,38 @@
 (in-package #:pyx)
 
 (defun register-uniform-func (material uniform)
-  (with-slots (%name %shader %uniforms %funcs) material
-    (let ((program (shadow:find-program %shader)))
-      (unless (u:href (shadow:uniforms program) uniform)
-        (error "Material ~s has the uniform ~s but shader ~s does not use it."
-               %name uniform %shader))
-      (let* ((type (u:href (shadow:uniforms program) uniform :type))
-             (func (generate-uniform-func material type)))
-        (setf (u:href %funcs uniform) func)))))
+  (with-slots (%uniforms %funcs) material
+    (with-slots (%name %shader) (spec material)
+      (let ((program (shadow:find-program %shader)))
+        (unless (u:href (shadow:uniforms program) uniform)
+          (error "Material ~s has the uniform ~s but shader ~s does not use it."
+                 %name uniform %shader))
+        (let* ((type (u:href (shadow:uniforms program) uniform :type))
+               (func (generate-uniform-func material type)))
+          (setf (u:href %funcs uniform) func))))))
 
 (defun %generate-uniform-func (material type)
   (let ((func (a:format-symbol :shadow "UNIFORM-~a" type)))
     (lambda (k v)
-      (funcall func (shader material) k v))))
+      (funcall func (shader (spec material)) k v))))
 
 (defun %generate-uniform-func/sampler (material)
-  (with-slots (%shader %texture-unit-state) material
+  (with-slots (%spec %texture-unit-state) material
     (lambda (k v)
       (let ((unit %texture-unit-state)
             (texture (load-texture v)))
         (incf %texture-unit-state)
         (gl:active-texture unit)
         (bind-texture texture unit)
-        (shadow:uniform-int %shader k unit)))))
+        (shadow:uniform-int (shader %spec) k unit)))))
 
 (defun %generate-uniform-func/array (material type)
   (let ((func (a:format-symbol :shadow "UNIFORM-~a-ARRAY" type)))
     (lambda (k v)
-      (funcall func (shader material) k v))))
+      (funcall func (shader (spec material)) k v))))
 
 (defun %generate-uniform-func/sampler-array (material dimensions)
-  (with-slots (%shader %texture-unit-state) material
+  (with-slots (%spec %texture-unit-state) material
     (lambda (k v)
       (loop :with unit-count = (+ %texture-unit-state dimensions)
             :for texture-name :in v
@@ -41,7 +42,7 @@
                 (bind-texture texture unit)
             :collect unit :into units
             :finally (incf %texture-unit-state dimensions)
-                     (shadow:uniform-int-array %shader k units)))))
+                     (shadow:uniform-int-array (shader %spec) k units)))))
 
 (defun generate-uniform-func (material type-spec)
   (flet ((resolve-type (type-spec)

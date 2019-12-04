@@ -13,10 +13,10 @@
                        :multisamplebuffers 1
                        :multisamplesamples 4)
     (sdl2:gl-create-context %window)
-    (gl:blend-func :src-alpha :one-minus-src-alpha)
     (apply #'gl:enable +gl-capabilities/enabled+)
     (apply #'gl:disable +gl-capabilities/disabled+)
-    (gl:depth-func :lequal)
+    (apply #'gl:blend-func +gl-blend-mode+)
+    (gl:depth-func +gl-depth-mode+)
     (u:noop)))
 
 (defun make-window (display)
@@ -39,7 +39,7 @@
 (defun kill-display ()
   (when (and *state* (display *state*))
     (sdl2:destroy-window (window (display *state*)))
-    (setf (display *state*) nil))
+    (setf (slot-value *state* '%display) nil))
   (sdl2:sdl-quit))
 
 (defun clear-screen ()

@@ -15,3 +15,8 @@
       :sample-coverage :sample-shading :sample-mask :scissor-test :stencil-test
       :texture-cube-map-seamless :program-point-size)
   :test #'equal)
+
+(a:define-constant +gl-blend-mode+ '(:src-alpha :one-minus-src-alpha)
+  :test #'equal)
+
+(a:define-constant +gl-depth-mode+ :less)

@@ -12,6 +12,14 @@
             :initarg :shader)
    (%uniforms :reader uniforms
               :initform (make-nested-dict #'eq :self :resolved))
+   (%blend-mode :reader blend-mode
+                :initarg :blend-mode)
+   (%depth-mode :reader depth-mode
+                :initarg :depth-mode)
+   (%features/enabled :reader features/enabled
+                      :initarg :features/enabled)
+   (%features/disabled :reader features/disabled
+                       :initarg :features/disabled)
    (%output :reader output
             :initarg :output)))
 
@@ -52,52 +60,84 @@
   (a:when-let ((master (meta :materials (master spec))))
     (pushnew (name spec) (slaves master))))
 
-(defun make-material-spec (name master-name shader uniforms output)
-  (let ((spec (make-instance 'material-spec :name name
-                                            :master master-name
-                                            :shader shader
-                                            :output output)))
-    (update-material-spec-uniforms spec uniforms)
-    (update-material-spec-relationships spec)
-    spec))
+(defun make-material-spec (name &rest args)
+  (destructuring-bind (&key master shader uniforms blend-mode depth-mode
+                         features output)
+      args
+    (destructuring-bind (&key enable disable) features
+      (let* ((master-spec (meta :materials master))
+             (shader (or shader (and master-spec (shader master-spec))))
+             (blend-mode (or blend-mode +gl-blend-mode+))
+             (depth-mode (or depth-mode +gl-depth-mode+))
+             (features/enabled (set-difference
+                                enable +gl-capabilities/enabled+))
+             (features/disabled (set-difference
+                                 disable +gl-capabilities/disabled+)))
+        (symbol-macrolet ((spec (meta :materials name)))
+          (if spec
+              (apply #'update-material-spec spec
+                     :shader shader
+                     :blend-mode blend-mode
+                     :depth-mode depth-mode
+                     :features/enabled features/enabled
+                     :features/disabled features/disabled
+                     args)
+              (progn
+                (setf spec (make-instance 'material-spec
+                                          :name name
+                                          :master master
+                                          :shader shader
+                                          :blend-mode blend-mode
+                                          :depth-mode depth-mode
+                                          :features/enabled features/enabled
+                                          :features/disabled features/disabled
+                                          :output output))
+                (update-material-spec-uniforms spec uniforms)
+                (update-material-spec-relationships spec))))))))
 
-(defun update-material-spec (spec master-name shader uniforms output)
-  (with-slots (%name %master %shader %output) spec
-    (setf %master master-name
-          %shader shader
-          %output output)
-    (update-material-spec-uniforms spec uniforms)
-    (update-material-spec-relationships spec)
-    (enqueue :recompile (list :material %name))
-    (dolist (slave-name (slaves spec))
-      (let ((slave (meta :materials slave-name)))
-        (update-material-spec
-         slave
-         %name
-         (or (shader slave) shader)
-         (u:hash->plist (u:href (uniforms slave) :self))
-         (output slave))))))
+(defun update-material-spec (spec &rest args)
+  (destructuring-bind (&key master shader uniforms blend-mode depth-mode
+                         features/enabled features/disabled output
+                       &allow-other-keys)
+      args
+    (with-slots (%name %master %shader %blend-mode %depth-mode %features/enabled
+                 %features/disabled %output)
+        spec
+      (setf %master master
+            %shader shader
+            %blend-mode blend-mode
+            %depth-mode depth-mode
+            %features/enabled features/enabled
+            %features/disabled features/disabled
+            %output output)
+      (update-material-spec-uniforms spec uniforms)
+      (update-material-spec-relationships spec)
+      (enqueue :recompile (list :material %name))
+      (dolist (slave-name (slaves spec))
+        (let ((slave (meta :materials slave-name)))
+          (update-material-spec
+           slave
+           :master %name
+           :shader (or (shader slave) shader)
+           :uniforms (u:hash->plist (u:href (uniforms slave) :self))
+           :blend-mode (blend-mode slave)
+           :depth-mode (depth-mode slave)
+           :features/enabled (features/enabled slave)
+           :features/disabled (features/disabled slave)
+           :output (output slave)))))))
 
 (defmacro define-material (name (&optional master) &body body)
-  (a:with-gensyms (spec master-spec resolved-shader)
-    (destructuring-bind (&key shader output uniforms) (car body)
-      `(progn
-         (unless (meta :materials)
-           (setf (meta :materials) (u:dict #'eq)))
-         (let* ((,master-spec (meta :materials ',master))
-                (,resolved-shader (or ',shader
-                                      (and ,master-spec
-                                           (shader ,master-spec)))))
-
-           (a:if-let ((,spec (meta :materials ',name)))
-             (update-material-spec ,spec
-                                   ',master
-                                   ,resolved-shader
-                                   (list ,@uniforms)
-                                   ',output)
-             (setf (meta :materials ',name)
-                   (make-material-spec ',name
-                                       ',master
-                                       ,resolved-shader
-                                       (list ,@uniforms)
-                                       ',output))))))))
+  (destructuring-bind (&key shader uniforms blend-mode depth-mode features
+                         output)
+      (car body)
+    `(progn
+       (unless (meta :materials)
+         (setf (meta :materials) (u:dict #'eq)))
+       (make-material-spec ',name
+                           :master ',master
+                           :shader ',shader
+                           :uniforms (list ,@uniforms)
+                           :blend-mode ',blend-mode
+                           :depth-mode ',depth-mode
+                           :features ',features
+                           :output ',output))))

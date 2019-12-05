@@ -24,23 +24,16 @@
   (parse-prefab prefab)
   (enqueue :recompile (list :prefab (name prefab)))
   (dolist (spec (slaves prefab))
-    (destructuring-bind (type . name) spec
-      (ecase type
-        (:prefab
-         (let ((slave (meta :prefabs name)))
-           (clrhash (nodes slave))
-           (update-prefab-subtree slave)))
-        (:prototype
-         (error "Programming error: A prototype cannot be a slave of a prefab. ~
-                 This should never happen. Please report this as a bug."))))))
+    (let ((slave (meta :prefabs spec)))
+      (clrhash (nodes slave))
+      (update-prefab-subtree slave))))
 
 (defmacro define-prefab (name options &body body)
-  (a:with-gensyms (prefab data)
+  (a:with-gensyms (data)
     `(let ((,data (preprocess-prefab-data ,name ,options ,body)))
        (unless (meta :prefabs)
          (setf (meta :prefabs) (u:dict #'eq)))
        (if (meta :prefabs ',name)
            (reset-prefab ',name ,data)
            (make-prefab ',name ,data))
-       (let ((,prefab (meta :prefabs ',name)))
-         (update-prefab-subtree ,prefab)))))
+       (update-prefab-subtree (meta :prefabs ',name)))))

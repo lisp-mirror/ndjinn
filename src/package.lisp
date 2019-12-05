@@ -29,7 +29,6 @@
    #:define-groups
    #:define-material
    #:define-prefab
-   #:define-prototype
    #:define-query
    #:define-query-types
    #:define-texture)

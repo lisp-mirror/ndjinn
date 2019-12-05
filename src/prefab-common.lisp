@@ -92,13 +92,9 @@
 (defun make-prefab-factory (name)
   (make-instance 'prefab-factory :prefab-name name))
 
-(defgeneric find-prefab-node-template (spec path)
-  (:method :around (spec path)
-    (or (call-next-method)
+(defun find-prefab-node-template (spec path)
+  (let* ((spec (a:ensure-list spec))
+         (prefab (meta :prefabs (first spec))))
+    (or (and prefab (u:href (nodes prefab) spec))
         (error "Template ~{~a~^/~} not found for prefab node ~{~a~^/~}."
-               (a:ensure-list spec) path)))
-  (:method ((spec cons) path)
-    (let ((prefab (meta :prefabs (first spec))))
-      (and prefab (u:href (nodes prefab) spec))))
-  (:method ((spec symbol) path)
-    (meta :prototypes spec)))
+               (a:ensure-list spec) path))))

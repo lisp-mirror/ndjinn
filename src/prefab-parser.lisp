@@ -46,8 +46,8 @@
       (setf %root (u:href %nodes (list %name))))))
 
 ;;; Parse prefab node templates. This iterates through all explicit nodes and
-;;; assigns the prototype or node template to its template slot if one is
-;;; specified in its options.
+;;; assigns the node template to its template slot if one is specified in its
+;;; options.
 
 (defun parse-prefab-node-templates (prefab)
   (u:do-hash-values (node (nodes prefab))
@@ -92,27 +92,19 @@
           (populate (u:href (nodes prefab) (path node)) template))))))
 
 ;;; Record the dependencies of a prefab. This iterates over all nodes and if it
-;;; uses a template, adds the current prefab name to the template's prefab or
-;;; prototype slave list, and also adds the template's prefab name to the
-;;; current prefab's master list. Additionally, we track any dependencies that
-;;; have been removed since the last definition compile, and removes from the
-;;; slaves and masters accordingly. This gives us information needed to be able
-;;; to live recompile a prefab or prototype and have the changes apply
-;;; transitively to its children.
+;;; uses a template, adds the current prefab name to the template's slave list,
+;;; and also adds the template's prefab name to the current prefab's master
+;;; list. Additionally, we track any dependencies that have been removed since
+;;; the last definition compile, and removes from the slaves and masters
+;;; accordingly. This gives us information needed to be able to live recompile a
+;;; prefab and have the changes apply transitively to its children.
 
 (defgeneric record-prefab-template-dependency (prefab template)
   (:method ((prefab prefab) (template null)))
   (:method ((prefab prefab) (template prefab-node))
     (let ((template-prefab (prefab template)))
-      (pushnew (cons :prefab (name prefab)) (slaves template-prefab)
-               :test #'equal)
-      (pushnew (cons :prefab (name template-prefab)) (masters prefab)
-               :test #'equal)))
-  (:method ((prefab prefab) (template prototype))
-    (pushnew (cons :prefab (name prefab)) (slaves template)
-             :test #'equal)
-    (pushnew (cons :prototype (name template)) (masters prefab)
-             :test #'equal)))
+      (pushnew (name prefab) (slaves template-prefab))
+      (pushnew (name template-prefab) (masters prefab)))))
 
 (defun record-prefab-dependencies (prefab)
   (let ((old-masters (masters prefab)))
@@ -120,24 +112,20 @@
     (u:do-hash-values (node (nodes prefab))
       (record-prefab-template-dependency prefab (template node)))
     (dolist (master-spec old-masters)
-      (destructuring-bind (type . name) master-spec
-        (let ((master (ecase type
-                        (:prefab (meta :prefabs name))
-                        (:prototype (meta :prototypes name)))))
-          (unless (find master-spec (masters prefab) :test #'equal)
-            (a:deletef (slaves master) (cons :prefab (name prefab))
-                       :test #'equal)))))))
+      (let ((master (meta :prefabs master-spec)))
+        (unless (find master-spec (masters prefab))
+          (a:deletef (slaves master) (name prefab)))))))
 
 ;;; Resolve the component types of all nodes. This iterates over all nodes and
 ;;; combines the specified types of that node with the resolved types of its
-;;; template. Node types are specified with the node options :ADD-TYPES and
-;;; :REMOVE-TYPES, which is a list of symbols denoting the names of components.
-;;; The resolution process is as follows: First, get all of the final resolved
-;;; component types of the node's template if it has one. Then, delete the
-;;; component types given by :REMOVE-TYPES. Then, add the component types given
-;;; by :ADD-TYPES. Then, add in any required types that are missing that all
-;;; nodes must possess. Finally, sort the resulting list of types topologically
-;;; in the order the game engine uses them.
+;;; template. Node types are specified with the node options :ADD and :REMOVE,
+;;; which is a list of symbols denoting the names of components. The resolution
+;;; process is as follows: First, get all of the final resolved component types
+;;; of the node's template if it has one. Then, delete the component types given
+;;; by :REMOVE. Then, add the component types given by :ADD. Then, add in any
+;;; required types that are missing that all nodes must possess. Finally, sort
+;;; the resulting list of types topologically in the order the game engine uses
+;;; them.
 
 (defun resolve-prefab-component-types (prefab)
   (u:do-hash-values (node (nodes prefab))
@@ -145,15 +133,15 @@
       (let ((types (when %template
                      (copy-seq
                       (u:href (component-types %template) :resolved)))))
-        (destructuring-bind (&key add-types remove-types &allow-other-keys)
+        (destructuring-bind (&key add remove &allow-other-keys)
             %options
-          (dolist (type remove-types)
+          (dolist (type remove)
             (a:deletef types type))
-          (dolist (type add-types)
+          (dolist (type add)
             (pushnew type types))
           (let ((types (compute-component-order types)))
-            (setf (u:href %component-types :self) add-types
-                  (u:href %component-types :removed) remove-types
+            (setf (u:href %component-types :self) add
+                  (u:href %component-types :removed) remove
                   (u:href %component-types :resolved) types)))))))
 
 ;;; Resolve the component arguments of all nodes. This iterates over all nodes

@@ -8,19 +8,13 @@
          (lambda (x) (subseq path 0 (mismatch path x)))
          (u:href (references node) %prefab-name))))))
 
-(defun find-prefab-reference/node (factory path)
+(defun find-prefab-reference (factory path)
   (with-slots (%current-node %entities) factory
     (let* ((nodes (nodes (prefab (template %current-node))))
            (new-path (transform-prefab-reference factory (u:href nodes path))))
       (or (u:href %entities new-path)
           (error "Failed to find reference ~{~a~^/~} for node ~{~a~^/~}."
                  path (path %current-node))))))
-
-(defun find-prefab-reference (factory path)
-  (with-slots (%current-node %entities) factory
-    (etypecase (template %current-node)
-      (prototype (u:href %entities path))
-      (prefab-node (find-prefab-reference/node factory path)))))
 
 (defun generate-prefab-reference-func (path/query)
   (lambda (factory)

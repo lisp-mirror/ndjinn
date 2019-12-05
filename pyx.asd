@@ -90,7 +90,6 @@
    (:file "component-sprite")
    (:file "component-mesh")
    (:file "component-group")
-   (:file "prototype")
    (:file "prefab-common")
    (:file "prefab-factory")
    (:file "prefab-parser")

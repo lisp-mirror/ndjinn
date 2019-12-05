@@ -8,7 +8,7 @@
 (defun make-opengl-context (display)
   (with-slots (%window) display
     (sdl2:gl-set-attrs :context-major-version 4
-                       :context-minor-version 3
+                       :context-minor-version 5
                        :context-profile-mask 1
                        :multisamplebuffers 1
                        :multisamplesamples 4)

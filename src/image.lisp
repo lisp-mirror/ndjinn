@@ -39,7 +39,9 @@
 (defun get-image-internal-format (image)
   (let ((channel-count (get-image-channel-count image))
         (bit-depth (pngload-fast:bit-depth image)))
-    (a:format-symbol :keyword (subseq "RGBA" 0 channel-count) bit-depth :ui)))
+    (a:format-symbol :keyword "~a~d"
+                     (subseq "RGBA" 0 channel-count)
+                     bit-depth)))
 
 (defgeneric read-image (path &key &allow-other-keys))
 

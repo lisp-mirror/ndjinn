@@ -2,7 +2,7 @@
 
 (defclass geometry ()
   ((%id :reader id
-        :initform (gl:gen-vertex-array))
+        :initform (gl:create-vertex-array))
    (%layout :reader layout
             :initarg :layout)
    (%buffers :reader buffers)

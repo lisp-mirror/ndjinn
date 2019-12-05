@@ -22,7 +22,6 @@
       (let ((unit %texture-unit-state)
             (texture (load-texture v)))
         (incf %texture-unit-state)
-        (gl:active-texture unit)
         (bind-texture texture unit)
         (shadow:uniform-int (shader %spec) k unit)))))
 
@@ -38,8 +37,7 @@
             :for texture-name :in v
             :for texture = (load-texture texture-name)
             :for unit :from %texture-unit-state :to unit-count
-            :do (gl:active-texture unit)
-                (bind-texture texture unit)
+            :do (bind-texture texture unit)
             :collect unit :into units
             :finally (incf %texture-unit-state dimensions)
                      (shadow:uniform-int-array (shader %spec) k units)))))

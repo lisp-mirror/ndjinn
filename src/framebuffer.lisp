@@ -17,14 +17,11 @@
     (let* ((target (framebuffer-mode->target %mode))
            (framebuffer (make-instance 'framebuffer
                                        :spec spec
-                                       :id (gl:gen-framebuffer)
+                                       :id (gl/create-framebuffer)
                                        :name %name
                                        :target target)))
       (setf (u:href (framebuffers (database *state*)) %name) framebuffer)
       framebuffer)))
-
-(defun delete-framebuffer (framebuffer)
-  (gl:delete-framebuffers (list (id framebuffer))))
 
 (defun find-framebuffer (name)
   (u:href (framebuffers (database *state*)) name))
@@ -57,20 +54,22 @@
       (:depth/stencil :depth24-stencil8))))
 
 (defun ensure-framebuffer-complete (framebuffer target buffer attachment)
-  (let ((result (gl:check-framebuffer-status target)))
-    (unless (member result '(:framebuffer-complete :framebuffer-complete-oes))
-      (error "Error attaching ~a as attachment ~a of framebuffer ~a: ~a"
-             buffer attachment (name framebuffer) result))))
+  (with-slots (%id %name) framebuffer
+    (let ((result (%gl:check-named-framebuffer-status %id target)))
+      (unless (member result '(:framebuffer-complete :framebuffer-complete-oes))
+        (error "Error attaching ~a as attachment ~a of framebuffer ~a: ~a"
+               buffer attachment %name result)))))
 
 (defmacro with-framebuffer (framebuffer (&key mode output) &body body)
-  (a:with-gensyms (target)
+  (a:with-gensyms (id target)
     `(if ,framebuffer
-         (let ((,target ,(if mode
+         (let ((,id (id ,framebuffer))
+               (,target ,(if mode
                              (framebuffer-mode->target mode)
                              `(target ,framebuffer))))
-           (gl:bind-framebuffer ,target (id ,framebuffer))
            ,@(when output
-               `((gl:draw-buffers ,output)))
+               `((gl/named-framebuffer-draw-buffers ,id ,output)))
+           (gl:bind-framebuffer ,target ,id)
            ,@body
            (gl:bind-framebuffer ,target 0))
          ,@body)))
@@ -80,16 +79,12 @@
     (with-slots (%point %width %height) attachment
       (let* ((point (framebuffer-attachment-point->gl %point))
              (internal-format (framebuffer-point->render-buffer-format %point))
-             (buffer-id (gl:gen-renderbuffer))
+             (buffer-id (gl/create-renderbuffer))
              (width (funcall %width))
              (height (funcall %height)))
-        (gl:bind-renderbuffer :renderbuffer buffer-id)
-        (gl:renderbuffer-storage :renderbuffer internal-format width height)
-        (gl:bind-renderbuffer :renderbuffer 0)
-        (gl:bind-framebuffer %target %id)
-        (gl:framebuffer-renderbuffer %target point :renderbuffer buffer-id)
+        (%gl:named-renderbuffer-storage buffer-id internal-format width height)
+        (%gl:named-framebuffer-renderbuffer %id point :renderbuffer buffer-id)
         (ensure-framebuffer-complete framebuffer %target buffer-id point)
-        (gl:bind-framebuffer %target 0)
         (setf (u:href %attachments point) buffer-id)
         buffer-id))))
 
@@ -106,10 +101,8 @@
         (let* ((buffer-id (id (load-framebuffer-texture
                                framebuffer attachment texture-name)))
                (point (framebuffer-attachment-point->gl %point)))
-          (gl:bind-framebuffer %target %id)
-          (%gl:framebuffer-texture %target point buffer-id 0)
+          (%gl:named-framebuffer-texture %id point buffer-id 0)
           (ensure-framebuffer-complete framebuffer %target buffer-id point)
-          (gl:bind-framebuffer %target 0)
           (setf (u:href %attachments point) buffer-id)
           buffer-id)))))
 

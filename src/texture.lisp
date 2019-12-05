@@ -15,7 +15,7 @@
 (defgeneric make-texture (spec source))
 
 (defmethod make-texture (spec (source image))
-  (let* ((id (gl:gen-texture))
+  (let* ((id (gl:create-texture :texture-2d))
          (texture (make-instance
                    'texture
                    :spec spec
@@ -23,21 +23,26 @@
                    :id id
                    :width (width source)
                    :height (height source))))
-    (gl:bind-texture :texture-2d id)
-    (gl:tex-image-2d :texture-2d
-                     0
-                     (internal-format source)
-                     (width source)
-                     (height source)
-                     0
-                     (pixel-format source)
-                     (pixel-type source)
-                     (data source))
-    (gl:bind-texture :texture-2d 0)
+    (%gl:texture-storage-2d id
+                            1
+                            (internal-format source)
+                            (width source)
+                            (height source))
+    (when (data source)
+      (gl/texture-sub-image-2d
+       id
+       0
+       0
+       0
+       (width source)
+       (height source)
+       (pixel-format source)
+       (pixel-type source)
+       (data source)))
     texture))
 
 (defmethod make-texture (spec (source list))
-  (let* ((id (gl:gen-texture))
+  (let* ((id (gl:create-texture :texture-2d-array))
          (layer0 (first source))
          (texture (make-instance
                    'texture
@@ -46,42 +51,36 @@
                    :id id
                    :width (width layer0)
                    :height (height layer0))))
-    (gl:bind-texture :texture-2d-array id)
-    (%gl:tex-storage-3d :texture-2d-array
-                        1
-                        (internal-format layer0)
-                        (width layer0)
-                        (height layer0)
-                        (length source))
+    (%gl:texture-storage-3d id
+                            1
+                            (internal-format layer0)
+                            (width layer0)
+                            (height layer0)
+                            (length source))
     (loop :for image :in source
           :for layer :from 0
-          :do (gl:tex-sub-image-3d :texture-2d-array
-                                   0
-                                   0
-                                   0
-                                   layer
-                                   (width image)
-                                   (height image)
-                                   1
-                                   (pixel-format image)
-                                   (pixel-type image)
-                                   (data image)))
-    (gl:bind-texture :texture-2d-array 0)
+          :do (gl/texture-sub-image-3d id
+                                       0
+                                       0
+                                       0
+                                       layer
+                                       (width image)
+                                       (height image)
+                                       1
+                                       (pixel-format image)
+                                       (pixel-type image)
+                                       (data image)))
     texture))
 
 (defun bind-texture (texture unit)
-  (with-slots (%type %id) texture
-    (gl:active-texture unit)
-    (gl:bind-texture %type %id)))
+  (%gl:bind-texture-unit unit (id texture)))
 
 (defun configure-texture (texture)
-  (with-slots (%spec %type %id) texture
-    (gl:bind-texture %type %id)
+  (with-slots (%spec %id) texture
     (when (generate-mipmaps-p %spec)
-      (gl:generate-mipmap %type))
+      (gl:generate-texture-mipmap %id))
     (u:do-hash (k v (parameters %spec))
-      (gl:texture-parameter %id k v))
-    (gl:bind-texture %type 0)))
+      (gl:texture-parameter %id k v))))
 
 (defun load-texture-source (spec &key width height)
   (etypecase (source spec)

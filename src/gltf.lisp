@@ -270,7 +270,7 @@
 
 (defun make-gltf-primitive (gltf data)
   (let ((primitive (make-instance 'gltf-primitive
-                                  :vao (gl:gen-vertex-array)
+                                  :vao (gl:create-vertex-array)
                                   :mode (get-gltf-primitive-mode gltf data))))
     (with-slots (%index-buffer %draw-func) primitive
       (gl:bind-vertex-array (vao primitive))

@@ -35,6 +35,7 @@
    (:file "metadata")
    (:file "threading")
    (:file "interactive-development")
+   (:file "opengl")
    (:file "uuid")
    (:file "binary-parser")
    (:file "config")

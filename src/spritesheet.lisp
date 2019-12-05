@@ -38,7 +38,7 @@
     (let ((spritesheet (make-instance 'spritesheet
                                       :spec (load-spritesheet-spec texture-name)
                                       :texture texture-name
-                                      :vao (gl:gen-vertex-array))))
+                                      :vao (gl:create-vertex-array))))
       (make-shader-buffer texture-name :spritesheet 'umbra.sprite:sprite)
       (update-shader-buffer spritesheet)
       spritesheet)))

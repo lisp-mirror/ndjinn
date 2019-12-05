@@ -16,7 +16,7 @@
    :mag-filter :nearest
    :pixel-format :rgba
    :pixel-type :unsigned-byte
-   :internal-format :rgba
+   :internal-format :rgba8
    :generate-mipmaps-p nil
    :source nil))
 

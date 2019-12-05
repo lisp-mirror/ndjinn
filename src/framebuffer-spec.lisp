@@ -5,6 +5,9 @@
           :initarg :name)
    (%mode :reader mode
           :initarg :mode)
+   (%clear-color :reader clear-color
+                 :initarg :clear-color)
+   (%clear-buffers :reader clear-buffers)
    (%attachments :reader attachments
                  :initarg :attachments
                  :initform (u:dict))))
@@ -44,9 +47,21 @@
 (defun find-framebuffer-attachment-spec (framebuffer attachment-name)
   (u:href (attachments framebuffer) attachment-name))
 
-(defmacro define-framebuffer (name (&key (mode :read/write)) &body body)
+(defmacro define-framebuffer (name (&key
+                                      (mode :read/write)
+                                      (clear-color (v4:vec 0 0 0 1))
+                                      (clear-buffers '(:color :depth)))
+                              &body body)
   (a:with-gensyms (spec)
-    `(let ((,spec (make-instance 'framebuffer-spec :name ',name :mode ,mode)))
+    `(let ((,spec (make-instance 'framebuffer-spec
+                                 :name ',name
+                                 :mode ,mode
+                                 :clear-color ,clear-color)))
+       (setf (slot-value ,spec '%clear-buffers)
+             (mapcar
+              (lambda (x)
+                (a:format-symbol :keyword "~a-BUFFER" x))
+              ',clear-buffers))
        (unless (meta :framebuffers)
          (setf (meta :framebuffers) (u:dict #'eq)))
        ,@(mapcar

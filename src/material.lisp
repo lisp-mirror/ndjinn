@@ -22,22 +22,11 @@
     (material material/spec)
     (symbol (make-material material/spec))))
 
-(defun make-material (spec-name)
-  (a:if-let ((spec (meta :materials spec-name)))
-    (u:mvlet* ((uniforms (copy-material-spec-uniforms spec))
-               (material (make-instance 'material
-                                        :spec spec
-                                        :uniforms uniforms)))
-      (resolve-material-output material)
-      (push material (u:href (materials (database *state*)) spec-name))
-      material)
-    (error "Material ~s not found." spec-name)))
-
-(defun resolve-material-output (material)
+(defun ensure-material-framebuffer (material)
   (with-slots (%spec %framebuffer %output) material
     (destructuring-bind (&optional framebuffer-name attachment-names)
         (output %spec)
-      (let* ((framebuffer (find-framebuffer framebuffer-name))
+      (let* ((framebuffer (ensure-framebuffer framebuffer-name))
              (output (framebuffer-attachment-names->points
                       framebuffer
                       attachment-names)))
@@ -48,12 +37,23 @@
         (setf %framebuffer framebuffer
               %output output)))))
 
+(defun make-material (spec-name)
+  (a:if-let ((spec (meta :materials spec-name)))
+    (u:mvlet* ((uniforms (copy-material-spec-uniforms spec))
+               (material (make-instance 'material
+                                        :spec spec
+                                        :uniforms uniforms)))
+      (ensure-material-framebuffer material)
+      (push material (u:href (materials (database *state*)) spec-name))
+      material)
+    (error "Material ~s not found." spec-name)))
+
 (defun recompile-material (spec-name)
   (let ((spec (meta :materials spec-name)))
     (dolist (material (u:href (materials (database *state*)) spec-name))
       (with-slots (%uniforms %funcs) material
         (setf %uniforms (copy-material-spec-uniforms spec))
-        (resolve-material-output material)
+        (ensure-material-framebuffer material)
         (u:do-hash-keys (k %uniforms)
           (unless (u:href %funcs k)
             (register-uniform-func material k)))

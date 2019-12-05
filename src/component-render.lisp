@@ -12,6 +12,7 @@
       (register-uniform-func %render/material k))))
 
 (defun render-frame ()
+  (clear-screen)
   (map nil #'render-entity (draw-order-entities (database *state*))))
 
 (defun render-entity (entity)

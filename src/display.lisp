@@ -43,7 +43,9 @@
   (sdl2:sdl-quit))
 
 (defun clear-screen ()
-  (with-slots (%clock) *state*
+  (with-slots (%clock %database) *state*
+    (clear-framebuffers)
+    (gl:bind-framebuffer :framebuffer 0)
     (multiple-value-call #'gl:clear-color
       (if (cfg :debug)
           (values (* 0.25 (abs (sin (clock-current-time %clock)))) 0 0 1)
@@ -53,7 +55,6 @@
 (defun update-display ()
   (with-slots (%clock %display %running-p) *state*
     (when %running-p
-      (clear-screen)
       (render-frame)
       (sdl2:gl-swap-window (window %display))
       (incf (clock-frame-count %clock)))))

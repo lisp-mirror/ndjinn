@@ -10,21 +10,34 @@
    (%target :reader target
             :initarg :target)
    (%attachments :reader attachments
-                 :initform (u:dict))))
+                 :initform (u:dict))
+   (%clear-color :reader clear-color
+                 :initarg :clear-color)
+   (%clear-buffers :reader clear-buffers
+                   :initarg :clear-buffers)))
 
 (defun make-framebuffer (spec)
-  (with-slots (%name %mode) spec
+  (with-slots (%name %mode %attachments) spec
     (let* ((target (framebuffer-mode->target %mode))
            (framebuffer (make-instance 'framebuffer
                                        :spec spec
                                        :id (gl/create-framebuffer)
                                        :name %name
-                                       :target target)))
+                                       :target target
+                                       :clear-color (clear-color spec)
+                                       :clear-buffers (clear-buffers spec))))
+      (u:do-hash-values (attachment %attachments)
+        (framebuffer-attach framebuffer (name attachment)))
       (setf (u:href (framebuffers (database *state*)) %name) framebuffer)
       framebuffer)))
 
 (defun find-framebuffer (name)
   (u:href (framebuffers (database *state*)) name))
+
+(defun ensure-framebuffer (name)
+  (a:when-let ((spec (meta :framebuffers name)))
+    (or (find-framebuffer name)
+        (make-framebuffer spec))))
 
 (defun framebuffer-attachment-point->gl (point)
   (destructuring-bind (type &optional (index 0)) (a:ensure-list point)
@@ -64,15 +77,14 @@
   (a:with-gensyms (id target)
     `(if ,framebuffer
          (let ((,id (id ,framebuffer))
-               (,target ,(if mode
-                             (framebuffer-mode->target mode)
-                             `(target ,framebuffer))))
-           ,@(when output
-               `((gl/named-framebuffer-draw-buffers ,id ,output)))
+               (,target (if ,mode
+                            (framebuffer-mode->target ,mode)
+                            (target ,framebuffer))))
+           ,@(when output `((gl/named-framebuffer-draw-buffers ,id ,output)))
            (gl:bind-framebuffer ,target ,id)
-           ,@body
+           (progn ,@body)
            (gl:bind-framebuffer ,target 0))
-         ,@body)))
+         (progn ,@body))))
 
 (defun framebuffer-attach/render-buffer (framebuffer attachment)
   (with-slots (%id %target %attachments) framebuffer
@@ -120,9 +132,9 @@
          (point (framebuffer-attachment-point->gl (point attachment))))
     (u:href (attachments framebuffer) point)))
 
-(defun initialize-framebuffers ()
-  (when (meta :framebuffers)
-    (u:do-hash-values (spec (meta :framebuffers))
-      (let ((framebuffer (make-framebuffer spec)))
-        (u:do-hash-values (attachment (attachments spec))
-          (framebuffer-attach framebuffer (name attachment)))))))
+(defun clear-framebuffers ()
+  (u:do-hash-values (framebuffer (framebuffers (database *state*)))
+    (v4:with-components ((v (clear-color framebuffer)))
+      (with-framebuffer framebuffer ()
+        (gl:clear-color vx vy vz vw)
+        (apply #'gl:clear (clear-buffers framebuffer))))))

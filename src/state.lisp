@@ -25,7 +25,6 @@
   (make-database)
   (prepare-gamepads)
   (make-display)
-  (initialize-framebuffers)
   (initialize-shaders)
   (make-node-tree)
   (load-prefab entry-point)

@@ -10,7 +10,7 @@
    (%target :reader target
             :initarg :target)
    (%attachments :reader attachments
-                 :initform (u:dict))
+                 :initform (u:dict #'eq))
    (%clear-color :reader clear-color
                  :initarg :clear-color)
    (%clear-buffers :reader clear-buffers

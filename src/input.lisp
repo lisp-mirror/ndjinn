@@ -2,9 +2,9 @@
 
 (defclass input-state ()
   ((%gamepad-instances :reader gamepad-instances
-                       :initform (u:dict))
+                       :initform (u:dict #'eq))
    (%gamepad-ids :accessor gamepad-ids
-                 :initform (u:dict))
+                 :initform (u:dict #'eq))
    (%detached-gamepads :accessor detached-gamepads
                        :initform nil)
    (%entering :accessor entering
@@ -12,10 +12,11 @@
    (%exiting :accessor exiting
              :initform nil)
    (%states :reader states
-            :initform (u:dict #'equal
-                              '(:mouse :motion) (make-instance 'mouse-motion-state)
-                              '(:mouse :scroll-horizontal) 0
-                              '(:mouse :scroll-vertical) 0))))
+            :initform (u:dict
+                       #'equal
+                       '(:mouse :motion) (make-instance 'mouse-motion-state)
+                       '(:mouse :scroll-horizontal) 0
+                       '(:mouse :scroll-vertical) 0))))
 
 (defclass input-button-states ()
   ((%enter :accessor enter

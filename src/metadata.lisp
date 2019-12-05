@@ -1,6 +1,6 @@
 (in-package #:pyx)
 
-(defvar *metadata* (u:dict))
+(defvar *metadata* (u:dict #'eq))
 
 (defun meta (&rest keys)
   (if keys

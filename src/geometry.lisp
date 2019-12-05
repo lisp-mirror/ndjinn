@@ -7,7 +7,7 @@
             :initarg :layout)
    (%buffers :reader buffers)
    (%buffer-names :reader buffer-names
-                  :initform (u:dict))
+                  :initform (u:dict #'eq))
    (%primitive :reader primitive
                :initarg :primitive)
    (%vertex-count :reader vertex-count
@@ -48,7 +48,7 @@
       body
     `(progn
        (unless (meta :geometry)
-         (setf (meta :geometry) (u:dict)))
+         (setf (meta :geometry) (u:dict #'eq)))
        (setf (meta :geometry ',name)
              (make-geometry-func ',layout
                                  :primitive ',primitive

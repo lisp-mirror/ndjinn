@@ -13,7 +13,7 @@
            :initarg :count)))
 
 (defun make-geometry-attributes (spec)
-  (let ((attrs (u:dict))
+  (let ((attrs (u:dict #'eq))
         (order))
     (dolist (attribute spec)
       (destructuring-bind (name &key normalize (type :float) (out-type type)

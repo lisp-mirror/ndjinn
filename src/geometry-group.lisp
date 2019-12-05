@@ -17,7 +17,7 @@
 (defclass geometry-group/interleaved (group) ())
 
 (defun make-geometry-groups (spec)
-  (let ((groups (u:dict))
+  (let ((groups (u:dict #'eq))
         (order))
     (dolist (group spec)
       (destructuring-bind (name (&key (format 'interleaved) (divisor 0))

@@ -17,7 +17,7 @@
   (a:with-gensyms (groups order)
     `(u:mvlet ((,groups ,order (make-geometry-groups ',body)))
        (unless (meta :geometry-layouts)
-         (setf (meta :geometry-layouts) (u:dict)))
+         (setf (meta :geometry-layouts) (u:dict #'eq)))
        (setf (meta :geometry-layouts ',name)
              (make-instance 'geometry-layout
                             :name ',name

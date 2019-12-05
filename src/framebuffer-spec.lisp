@@ -10,7 +10,7 @@
    (%clear-buffers :reader clear-buffers)
    (%attachments :reader attachments
                  :initarg :attachments
-                 :initform (u:dict))))
+                 :initform (u:dict #'eq))))
 
 (defclass framebuffer-attachment-spec ()
   ((%name :reader name

@@ -50,10 +50,13 @@
            :sprite/frames 8
            :animate/sequence 'sprite))
 
-(pyx:define-prefab sprite-scene ()
+(pyx:define-prefab sprite-example ()
   (camera (:template camera)
           :camera/mode :orthographic
           :camera/clip-near 0
           :camera/clip-far 16)
   (planet (:template planet))
   (ship (:template ship)))
+
+(pyx:define-scene sprite ()
+  (:prefab sprite-example))

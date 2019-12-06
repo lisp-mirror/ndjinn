@@ -6,6 +6,9 @@
    (%clock :reader clock
            :initarg :clock)
    (%config :reader config)
+   (%current-scene :reader current-scene)
+   (%scenes :reader scenes
+            :initform (u:dict #'eq))
    (%database :reader database
               :initform (u:dict #'eq))
    (%display :reader display)
@@ -17,7 +20,7 @@
    (%running-p :accessor running-p
                :initform t)))
 
-(defun initialize-engine (entry-point)
+(defun initialize-engine (scene-name)
   (log:info :pyx "Loading ~a..." (cfg :game-title))
   (setup-repl)
   (rng/init)
@@ -27,7 +30,7 @@
   (make-display)
   (initialize-shaders)
   (make-node-tree)
-  (load-prefab entry-point)
+  (load-scene scene-name)
   (log:info :pyx "Finished loading ~a." (cfg :game-title)))
 
 (defun run-main-game-loop ()
@@ -47,11 +50,11 @@
   #-pyx.release (update-repl)
   (process-queue :recompile))
 
-(defun start (entry-point &rest args)
+(defun start (scene-name &rest args)
   (unwind-protect
        (let ((*state* (make-instance 'state)))
          (apply #'load-config args)
-         (initialize-engine entry-point)
+         (initialize-engine scene-name)
          (run-main-game-loop))
     (stop)))
 

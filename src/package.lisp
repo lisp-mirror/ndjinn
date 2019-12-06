@@ -31,6 +31,7 @@
    #:define-prefab
    #:define-query
    #:define-query-types
+   #:define-scene
    #:define-texture)
   ;; input
   (:export
@@ -91,5 +92,5 @@
    (#:m4 #:origin.mat4))
   (:use #:cl)
   (:export
-   #:sprite-scene
-   #:world-scene))
+   #:sprite
+   #:world))

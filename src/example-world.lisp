@@ -48,9 +48,12 @@
   (wall (:template tile/wall)
         :mesh/instances (@ world :tiles/wall)))
 
-(pyx:define-prefab world-scene ()
+(pyx:define-prefab world-example ()
   (camera (:template camera)
           :camera/mode :isometric
           :camera/clip-near -1000
           :camera/clip-far 1000)
   (world (:template world)))
+
+(pyx:define-scene world ()
+  (:prefab world-example))

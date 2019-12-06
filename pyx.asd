@@ -98,6 +98,7 @@
    (:file "group-spec")
    (:file "animation")
    (:file "animation-states")
+   (:file "scene-spec")
    (:file "state")
    (:file "example-common")
    (:file "example-sprite")

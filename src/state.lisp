@@ -4,7 +4,8 @@
   ((%clock :reader clock
            :initarg :clock)
    (%config :reader config)
-   (%current-scene :reader current-scene)
+   (%current-scene :reader current-scene
+                   :initform nil)
    (%scenes :reader scenes
             :initform (u:dict #'eq))
    (%framebuffers :reader framebuffers
@@ -27,7 +28,7 @@
   (prepare-gamepads)
   (make-display)
   (initialize-shaders)
-  (load-scene scene-name)
+  (switch-scene scene-name)
   (log:info :pyx "Finished loading ~a." (cfg :game-title)))
 
 (defun run-main-game-loop ()

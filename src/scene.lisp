@@ -30,12 +30,19 @@
   (let ((spec (meta :scenes scene-name)))
     (unless spec
       (error "Scene ~s is not defined." scene-name))
-    (let ((scene (make-instance 'scene :spec spec)))
+    (let ((current (current-scene *state*))
+          (scene (make-instance 'scene :spec spec)))
       (setf (u:href (scenes *state*) scene-name) scene
             (slot-value *state* '%current-scene) scene)
       (make-node-tree scene)
       (dolist (prefab (prefabs spec))
-        (load-prefab prefab)))))
+        (load-prefab prefab))
+      (setf (slot-value *state* '%current-scene) current)
+      scene)))
+
+(defun switch-scene (scene-name)
+  (let ((scene (load-scene scene-name)))
+    (setf (slot-value *state* '%current-scene) scene)))
 
 (defun recompile-scene (name)
   (with-slots (%spec %prefabs) (current-scene *state*)

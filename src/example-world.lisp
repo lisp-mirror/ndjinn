@@ -56,4 +56,4 @@
   (world (:template world)))
 
 (pyx:define-scene world ()
-  (:prefab world-example))
+  (:prefabs (world-example)))

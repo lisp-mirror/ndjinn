@@ -44,13 +44,13 @@
                                         :spec spec
                                         :uniforms uniforms)))
       (ensure-material-framebuffer material)
-      (push material (u:href (materials (database *state*)) spec-name))
+      (push material (u:href (materials (current-scene *state*)) spec-name))
       material)
     (error "Material ~s not found." spec-name)))
 
 (defun recompile-material (spec-name)
   (let ((spec (meta :materials spec-name)))
-    (dolist (material (u:href (materials (database *state*)) spec-name))
+    (dolist (material (u:href (materials (current-scene *state*)) spec-name))
       (with-slots (%uniforms %funcs) material
         (setf %uniforms (copy-material-spec-uniforms spec))
         (ensure-material-framebuffer material)

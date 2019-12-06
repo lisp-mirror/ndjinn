@@ -30,3 +30,5 @@
 (define-event-handler :recompile :material recompile-material)
 
 (define-event-handler :recompile :prefab recompile-prefab)
+
+(define-event-handler :recompile :scene recompile-scene)

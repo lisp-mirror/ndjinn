@@ -83,7 +83,7 @@
 
 (defmethod on-component-added (entity (component (eql 'camera)))
   (when (camera/active-p entity)
-    (setf (slot-value *state* '%camera) entity))
+    (setf (slot-value (current-scene *state*) '%camera) entity))
   (set-camera-projection entity))
 
 (defmethod on-update progn ((entity camera))

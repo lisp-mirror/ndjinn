@@ -3,37 +3,27 @@
 (defclass scene-spec ()
   ((%name :reader name
           :initarg :name)
-   (%prefab :reader prefab
-            :initarg :prefab)
+   (%prefabs :reader prefabs
+             :initarg :prefabs)
    (%pipeline :reader pipeline
               :initarg :pipeline)))
 
+(defun update-scene-spec (name prefabs pipeline)
+  (with-slots (%prefabs %pipeline) (meta :scenes name)
+    (setf %prefabs prefabs
+          %pipeline pipeline)
+    (enqueue :recompile (list :scene name))))
+
 (defmacro define-scene (name options &body body)
   (declare (ignore options))
-  (destructuring-bind (&key prefab (pipeline '(default))) (car body)
+  (destructuring-bind (&key prefabs (pipeline '(default))) (car body)
     `(progn
        (unless (meta :scenes)
          (setf (meta :scenes) (u:dict #'eq)))
-       (setf (meta :scenes ',name)
-             (make-instance 'scene-spec
-                            :name ',name
-                            :prefab ',prefab
-                            :pipeline ',pipeline)))))
-
-;;;
-
-(defclass scene ()
-  ((%spec :reader spec
-          :initarg :spec)))
-
-(u:define-printer (scene stream)
-  (format stream "~s" (name (spec scene))))
-
-(defun load-scene (scene-name)
-  (let ((spec (meta :scenes scene-name)))
-    (unless spec
-      (error "Scene ~s is not defined." scene-name))
-    (let ((scene (make-instance 'scene :spec spec)))
-      (setf (u:href (scenes *state*) scene-name) scene
-            (slot-value *state* '%current-scene) scene)
-      (load-prefab (prefab spec)))))
+       (if (meta :scenes ',name)
+           (update-scene-spec ',name ',prefabs ',pipeline)
+           (setf (meta :scenes ',name)
+                 (make-instance 'scene-spec
+                                :name ',name
+                                :prefabs ',prefabs
+                                :pipeline ',pipeline))))))

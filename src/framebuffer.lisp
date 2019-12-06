@@ -28,11 +28,11 @@
                                        :clear-buffers (clear-buffers spec))))
       (u:do-hash-values (attachment %attachments)
         (framebuffer-attach framebuffer (name attachment)))
-      (setf (u:href (framebuffers (database *state*)) %name) framebuffer)
+      (setf (u:href (framebuffers *state*) %name) framebuffer)
       framebuffer)))
 
 (defun find-framebuffer (name)
-  (u:href (framebuffers (database *state*)) name))
+  (u:href (framebuffers *state*) name))
 
 (defun ensure-framebuffer (name)
   (a:when-let ((spec (meta :framebuffers name)))
@@ -133,7 +133,7 @@
     (u:href (attachments framebuffer) point)))
 
 (defun clear-framebuffers ()
-  (u:do-hash-values (framebuffer (framebuffers (database *state*)))
+  (u:do-hash-values (framebuffer (framebuffers *state*))
     (v4:with-components ((v (clear-color framebuffer)))
       (with-framebuffer framebuffer ()
         (gl:clear-color vx vy vz vw)

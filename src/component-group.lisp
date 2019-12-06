@@ -22,7 +22,7 @@
 (defun group-join (entity group-name)
   (with-slots (%group/name) entity
     (let ((group-name (or group-name 'default)))
-      (symbol-macrolet ((entities (u:href (groups (database *state*))
+      (symbol-macrolet ((entities (u:href (groups (current-scene *state*))
                                           group-name)))
         (check-group group-name)
         (group-leave entity %group/name)
@@ -36,13 +36,13 @@
   (with-slots (%group/name) entity
     (let ((group-name (or group-name 'default)))
       (check-group group-name)
-      (a:deletef (u:href (groups (database *state*)) group-name) entity)
-      (a:deletef (draw-order-entities (database *state*)) entity)
+      (a:deletef (u:href (groups (current-scene *state*)) group-name) entity)
+      (a:deletef (draw-order-entities (current-scene *state*)) entity)
       (setf %group/name 'default)
       (sort-group-entities))))
 
 (defun insert-draw-order-group (group-name)
-  (with-slots (%draw-order-groups) (database *state*)
+  (with-slots (%draw-order-groups) (current-scene *state*)
     (unless (find group-name %draw-order-groups)
       (let ((groups (cons group-name (copy-seq %draw-order-groups))))
         (setf %draw-order-groups
@@ -51,7 +51,7 @@
 
 (defun sort-group-entities ()
   (with-slots (%groups %draw-order-groups %draw-order-entities)
-      (database *state*)
+      (current-scene *state*)
     (let (entities)
       (dolist (group-name %draw-order-groups)
         (dolist (entity (u:href %groups group-name))

@@ -1,20 +1,19 @@
 (in-package #:pyx)
 
 (defclass state ()
-  ((%camera :reader camera
-            :initform nil)
-   (%clock :reader clock
+  ((%clock :reader clock
            :initarg :clock)
    (%config :reader config)
    (%current-scene :reader current-scene)
    (%scenes :reader scenes
             :initform (u:dict #'eq))
-   (%database :reader database
-              :initform (u:dict #'eq))
+   (%framebuffers :reader framebuffers
+                  :initform (u:dict #'eq))
    (%display :reader display)
    (%input-state :reader input-state
                  :initform (make-instance 'input-state))
-   (%node-tree :reader node-tree)
+   (%shaders :reader shaders
+             :initform (make-instance 'shaders))
    (%resources :reader resources
                :initform (u:dict #'eq))
    (%running-p :accessor running-p
@@ -25,11 +24,9 @@
   (setup-repl)
   (rng/init)
   (make-thread-pool)
-  (make-database)
   (prepare-gamepads)
   (make-display)
   (initialize-shaders)
-  (make-node-tree)
   (load-scene scene-name)
   (log:info :pyx "Finished loading ~a." (cfg :game-title)))
 

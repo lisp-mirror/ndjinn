@@ -16,20 +16,20 @@
 
 (defun add-child (entity &key parent)
   (with-slots (%node/parent %node/children) entity
-    (setf %node/parent (or parent (node-tree *state*)))
+    (setf %node/parent (or parent (node-tree (current-scene *state*))))
     (push entity (node/children %node/parent))
     (dolist (child %node/children)
       (add-child child :parent entity))))
 
 (defun map-nodes (func &optional parent)
-  (let ((parent (or parent (node-tree *state*))))
+  (let ((parent (or parent (node-tree (current-scene *state*)))))
     (funcall func parent)
     (dolist (child (node/children parent))
       (map-nodes func child))))
 
-(defun make-node-tree ()
+(defun make-node-tree (scene)
   (let ((root (make-entity () :node/root-p t)))
-    (setf (slot-value *state* '%node-tree) root)))
+    (setf (slot-value scene '%node-tree) root)))
 
 (defmethod on-component-added (entity (component (eql 'node)))
   (unless (node/root-p entity)

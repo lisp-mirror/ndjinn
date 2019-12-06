@@ -43,7 +43,7 @@
   (sdl2:sdl-quit))
 
 (defun clear-screen ()
-  (with-slots (%clock %database) *state*
+  (with-slots (%clock) *state*
     (clear-framebuffers)
     (gl:bind-framebuffer :framebuffer 0)
     (multiple-value-call #'gl:clear-color

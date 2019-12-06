@@ -59,4 +59,4 @@
   (ship (:template ship)))
 
 (pyx:define-scene sprite ()
-  (:prefab sprite-example))
+  (:prefabs (sprite-example)))

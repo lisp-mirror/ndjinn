@@ -13,7 +13,7 @@
 
 (defun render-frame ()
   (clear-screen)
-  (map nil #'render-entity (draw-order-entities (database *state*))))
+  (map nil #'render-entity (draw-order-entities (current-scene *state*))))
 
 (defun render-entity (entity)
   (with-slots (%spec %framebuffer %output %uniforms %funcs %texture-unit-state)
@@ -33,7 +33,7 @@
       (apply #'gl:disable %features/disabled)
       (apply #'gl:blend-func %blend-mode)
       (gl:depth-func %depth-mode)
-      (a:when-let ((camera (camera *state*)))
+      (a:when-let ((camera (camera (current-scene *state*))))
         (set-uniforms material
                       :view (camera/view camera)
                       :proj (camera/projection camera)))

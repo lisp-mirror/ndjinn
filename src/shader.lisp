@@ -1,17 +1,20 @@
 (in-package #:pyx)
 
 (defclass shaders ()
-  ((%table :reader table)
+  ((%table :reader table
+           :initarg :table)
    (%buffer-bindings :reader buffer-bindings
                      :initform (u:dict #'equalp))
    (%released-buffer-bindings :accessor released-buffer-bindings
                               :initform nil)))
 
 (defun initialize-shaders ()
-  (with-slots (%table) (shaders *state*)
-    (setf %table (shadow:load-shaders
-                  (lambda (x)
-                    (enqueue :recompile (list :shaders x)))))))
+  (let* ((table (shadow:load-shaders
+                 (lambda (x)
+                   (enqueue :recompile (list :shaders x)))))
+         (shaders (make-instance 'shaders
+                                 :table table)))
+    (setf (slot-value *state* '%shaders) shaders)))
 
 (defun recompile-shaders (program-names)
   (shadow:recompile-shaders program-names)

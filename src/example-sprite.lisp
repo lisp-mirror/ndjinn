@@ -58,5 +58,7 @@
   (planet (:template planet))
   (ship (:template ship)))
 
+;;; scene
+
 (pyx:define-scene sprite ()
   (:prefabs (sprite-example)))

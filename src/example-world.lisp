@@ -55,5 +55,7 @@
           :camera/clip-far 1000)
   (world (:template world)))
 
+;;; scene
+
 (pyx:define-scene world ()
   (:prefabs (world-example)))

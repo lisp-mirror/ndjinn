@@ -13,8 +13,7 @@
    (%display :reader display)
    (%input-state :reader input-state
                  :initform (make-instance 'input-state))
-   (%shaders :reader shaders
-             :initform (make-instance 'shaders))
+   (%shaders :reader shaders)
    (%resources :reader resources
                :initform (u:dict #'eq))
    (%running-p :accessor running-p

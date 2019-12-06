@@ -12,7 +12,7 @@
     (let ((group-name (or %group/name (group/name %node/parent) 'default)))
       (group-join entity group-name))))
 
-(defmethod on-component-removed (entity (component (eql 'group)))
+(defmethod on-entity-deleted progn ((entity group))
   (group-leave entity (group/name entity)))
 
 (defun check-group (group-name)
@@ -37,6 +37,7 @@
     (let ((group-name (or group-name 'default)))
       (check-group group-name)
       (a:deletef (u:href (groups (database *state*)) group-name) entity)
+      (a:deletef (draw-order-entities (database *state*)) entity)
       (setf %group/name 'default)
       (sort-group-entities))))
 

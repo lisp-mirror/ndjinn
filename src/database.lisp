@@ -20,7 +20,7 @@
             :initform (u:dict #'eq))
    (%draw-order-groups :accessor draw-order-groups
                        :initform '(default))
-   (%draw-order-entities :reader draw-order-entities
+   (%draw-order-entities :accessor draw-order-entities
                          :initform nil)
    (%uuids :reader uuids
            :initform (u:dict #'eq))))

@@ -11,11 +11,19 @@
 (u:define-printer (scene-spec stream)
   (format stream "~s" (name scene-spec)))
 
+(defun make-scene-spec (name prefabs pipeline)
+  (let ((scene-spec (make-instance 'scene-spec :name name)))
+    (setf (meta :scenes name) scene-spec)
+    (update-scene-spec name prefabs pipeline)
+    scene-spec))
+
 (defun update-scene-spec (name prefabs pipeline)
-  (with-slots (%prefabs %pipeline) (meta :scenes name)
-    (setf %prefabs prefabs
-          %pipeline (find-pipeline-spec pipeline))
-    (enqueue :recompile (list :scene name))))
+  (let ((pipeline (find-pipeline-spec pipeline)))
+    (with-slots (%prefabs %pipeline) (meta :scenes name)
+      (setf %prefabs prefabs
+            %pipeline pipeline)
+      (pushnew name (scenes pipeline))
+      (enqueue :recompile (list :scene name)))))
 
 (defmacro define-scene (name options &body body)
   (declare (ignore options))
@@ -25,8 +33,4 @@
          (setf (meta :scenes) (u:dict #'eq)))
        (if (meta :scenes ',name)
            (update-scene-spec ',name ',prefabs ',pipeline)
-           (setf (meta :scenes ',name)
-                 (make-instance 'scene-spec
-                                :name ',name
-                                :prefabs ',prefabs
-                                :pipeline (find-pipeline-spec ',pipeline)))))))
+           (make-scene-spec ',name ',prefabs ',pipeline)))))

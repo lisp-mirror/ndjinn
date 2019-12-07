@@ -8,7 +8,9 @@
    (%pass-options :reader pass-options
                   :initarg :pass-options)
    (%draw-order :reader draw-order
-                :initarg :draw-order)))
+                :initarg :draw-order)
+   (%scenes :accessor scenes
+            :initform nil)))
 
 (u:define-printer (pipeline-spec stream)
   (format stream "~s" (name pipeline-spec)))
@@ -18,10 +20,29 @@
       (error "Pipeline ~s is not defined." name)))
 
 (defun update-pipeline-spec (name pass-order pass-options draw-order)
-  (with-slots (%pass-order %pass-options %draw-order) (meta :pipelines name)
+  (with-slots (%pass-order %pass-options %draw-order %scenes)
+      (meta :pipelines name)
     (setf %pass-order pass-order
           %pass-options pass-options
-          %draw-order draw-order)))
+          %draw-order draw-order)
+    (dolist (scene %scenes)
+      (unless (eq name (name (pipeline (meta :scenes scene))))
+        (a:deletef %scenes scene)))
+    (enqueue :recompile (list :pipeline name))))
+
+(defun make-pipeline-spec (name pass-order pass-options draw-order)
+  (let ((pipeline-spec (make-instance 'pipeline-spec :name name)))
+    (setf (meta :pipelines name) pipeline-spec)
+    (update-pipeline-spec name pass-order pass-options draw-order)
+    pipeline-spec))
+
+(u:eval-always
+  (defun preprocess-pipeline-passes (passes)
+    (when passes
+      `(list
+        ,@(loop :for (k v) :on passes :by #'cddr
+                :collect k
+                :collect `(list ,@v))))))
 
 (defun parse-pipeline-passes (passes)
   (loop :with table = (u:dict #'eq)
@@ -45,13 +66,11 @@
         :do (setf (u:href table item) i)
         :finally (return table)))
 
-(u:eval-always
-  (defun preprocess-pipeline-passes (passes)
-    (when passes
-      `(list
-        ,@(loop :for (k v) :on passes :by #'cddr
-                :collect k
-                :collect `(list ,@v))))))
+(defun recompile-pipeline (name)
+  (let ((pipeline (meta :pipelines name))
+        (scene (current-scene *state*)))
+    (dolist (pass (pass-order pipeline))
+      (sort-draw-order scene pass))))
 
 (defmacro define-pipeline (name options &body body)
   (declare (ignore options))
@@ -70,12 +89,10 @@
                                        ,pass-order
                                        ,pass-options
                                        ,draw-order-table)
-                 (setf (meta :pipelines ',name)
-                       (make-instance 'pipeline-spec
-                                      :name ',name
-                                      :pass-order ,pass-order
-                                      :pass-options ,pass-options
-                                      :draw-order ,draw-order-table)))))))))
+                 (make-pipeline-spec ',name
+                                     ,pass-order
+                                     ,pass-options
+                                     ,draw-order-table))))))))
 
 (define-pipeline :default ()
   (:passes (:default)

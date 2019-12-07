@@ -8,10 +8,11 @@
          (integerp y)
          (< x y))))
 
-(defun draw-order-sort (order)
-  (stable-sort (copy-seq order)
-               #'draw-order-comparator
-               :key (lambda (x) (render/order (car x)))))
+(defun sort-draw-order (scene pass)
+  (symbol-macrolet ((order (u:href (draw-order scene) pass)))
+    (setf order (stable-sort (copy-seq order)
+                             #'draw-order-comparator
+                             :key (lambda (x) (render/order (car x)))))))
 
 (defun register-draw-order (entity material)
   (let ((scene (current-scene *state*))
@@ -20,7 +21,7 @@
       (unless (find entity order :key #'car)
         (a:appendf order (list (cons entity material))))
       (push pass (render/passes entity))
-      (setf order (draw-order-sort order)))))
+      (sort-draw-order scene pass))))
 
 (defun deregister-draw-order (entity)
   (let ((order (draw-order (current-scene *state*))))

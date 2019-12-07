@@ -31,4 +31,6 @@
 
 (define-event-handler :recompile :prefab recompile-prefab)
 
+(define-event-handler :recompile :pipeline recompile-pipeline)
+
 (define-event-handler :recompile :scene recompile-scene)

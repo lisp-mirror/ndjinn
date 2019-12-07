@@ -59,7 +59,7 @@
 
 (pyx:define-pipeline world ()
   (:passes (:default)
-   :order (:default)))
+   :draw-order (:default)))
 
 ;;; scene
 

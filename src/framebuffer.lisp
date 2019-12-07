@@ -8,11 +8,7 @@
    (%target :reader target
             :initarg :target)
    (%attachments :reader attachments
-                 :initform (u:dict #'eq))
-   (%clear-color :reader clear-color
-                 :initarg :clear-color)
-   (%clear-buffers :reader clear-buffers
-                   :initarg :clear-buffers)))
+                 :initform (u:dict #'eq))))
 
 (u:define-printer (framebuffer stream)
   (format stream "~s" (name (spec framebuffer))))
@@ -23,9 +19,7 @@
            (framebuffer (make-instance 'framebuffer
                                        :spec spec
                                        :id (gl/create-framebuffer)
-                                       :target target
-                                       :clear-color (clear-color spec)
-                                       :clear-buffers (clear-buffers spec))))
+                                       :target target)))
       (u:do-hash-values (attachment %attachments)
         (framebuffer-attach framebuffer (name attachment)))
       (setf (u:href (framebuffers *state*) %name) framebuffer)
@@ -131,10 +125,3 @@
          (attachment (find-framebuffer-attachment-spec spec attachment-name))
          (point (framebuffer-attachment-point->gl (point attachment))))
     (u:href (attachments framebuffer) point)))
-
-(defun clear-framebuffers ()
-  (u:do-hash-values (framebuffer (framebuffers *state*))
-    (v4:with-components ((v (clear-color framebuffer)))
-      (with-framebuffer framebuffer ()
-        (gl:clear-color vx vy vz vw)
-        (apply #'gl:clear (clear-buffers framebuffer))))))

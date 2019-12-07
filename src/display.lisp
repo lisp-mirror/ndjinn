@@ -42,16 +42,6 @@
     (setf (slot-value *state* '%display) nil))
   (sdl2:sdl-quit))
 
-(defun clear-screen ()
-  (with-slots (%clock) *state*
-    (clear-framebuffers)
-    (gl:bind-framebuffer :framebuffer 0)
-    (multiple-value-call #'gl:clear-color
-      (if (cfg :debug)
-          (values (* 0.25 (abs (sin (clock-current-time %clock)))) 0 0 1)
-          (values 0 0 0 1)))
-    (gl:clear :color-buffer :depth-buffer)))
-
 (defun update-display ()
   (with-slots (%clock %display %running-p) *state*
     (when %running-p

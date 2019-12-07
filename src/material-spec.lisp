@@ -25,6 +25,9 @@
    (%output :reader output
             :initarg :output)))
 
+(u:define-printer (material-spec stream)
+  (format stream "~s" (name material-spec)))
+
 (defun find-material-spec-master (spec)
   (let* ((master-name (master spec))
          (master-spec (meta :materials master-name)))

@@ -20,6 +20,9 @@
    (%parameters :reader parameters
                 :initarg :parameters)))
 
+(u:define-printer (texture-spec stream)
+  (format stream "~s" (name texture-spec)))
+
 (defun find-texture-spec (texture-name)
   (u:if-found (spec (meta :textures texture-name))
               (values spec

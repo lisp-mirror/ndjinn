@@ -24,6 +24,9 @@
    (%height :reader height
             :initarg :height)))
 
+(u:define-printer (framebuffer-spec stream)
+  (format stream "~s" (name framebuffer-spec)))
+
 (defun framebuffer-mode->target (mode)
   (ecase mode
     (:read :read-framebuffer)

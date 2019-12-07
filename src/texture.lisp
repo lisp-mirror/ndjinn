@@ -12,6 +12,9 @@
    (%height :reader height
             :initarg :height)))
 
+(u:define-printer (texture stream)
+  (format stream "~s" (name (spec texture))))
+
 (defgeneric make-texture (spec source))
 
 (defmethod make-texture (spec (source image))
@@ -106,7 +109,7 @@
 
 (defun load-framebuffer-texture (framebuffer attachment texture-name)
   (with-slots (%name %point %width %height) attachment
-    (let ((cached-name (a:symbolicate (name framebuffer) '#:/ %name)))
+    (let ((cached-name (a:symbolicate (name (spec framebuffer)) '#:/ %name)))
       (resource-lookup 'texture cached-name
         (let* ((spec (find-texture-spec texture-name))
                (source (load-texture-source spec

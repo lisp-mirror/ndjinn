@@ -8,6 +8,9 @@
    (%order :reader order
            :initarg :order)))
 
+(u:define-printer (pipeline-spec stream)
+  (format stream "~s" (name pipeline-spec)))
+
 (defun find-pipeline-spec (name)
   (or (meta :pipelines name)
       (error "Pipeline ~s is not defined." name)))

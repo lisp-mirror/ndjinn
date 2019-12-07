@@ -3,8 +3,6 @@
 (defclass framebuffer ()
   ((%spec :reader spec
           :initarg :spec)
-   (%name :reader name
-          :initarg :name)
    (%id :reader id
         :initarg :id)
    (%target :reader target
@@ -16,13 +14,15 @@
    (%clear-buffers :reader clear-buffers
                    :initarg :clear-buffers)))
 
+(u:define-printer (framebuffer stream)
+  (format stream "~s" (name (spec framebuffer))))
+
 (defun make-framebuffer (spec)
   (with-slots (%name %mode %attachments) spec
     (let* ((target (framebuffer-mode->target %mode))
            (framebuffer (make-instance 'framebuffer
                                        :spec spec
                                        :id (gl/create-framebuffer)
-                                       :name %name
                                        :target target
                                        :clear-color (clear-color spec)
                                        :clear-buffers (clear-buffers spec))))

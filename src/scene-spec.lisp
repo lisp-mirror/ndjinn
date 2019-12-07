@@ -8,6 +8,9 @@
    (%pipeline :reader pipeline
               :initarg :pipeline)))
 
+(u:define-printer (scene-spec stream)
+  (format stream "~s" (name scene-spec)))
+
 (defun update-scene-spec (name prefabs pipeline)
   (with-slots (%prefabs %pipeline) (meta :scenes name)
     (setf %prefabs prefabs

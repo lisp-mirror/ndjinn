@@ -26,8 +26,8 @@
 (defun compute-all-components-order ()
   (compute-component-order (u:hash-keys (meta :components :order))))
 
-(defun compute-component-args (component-type)
-  (let* ((class (c2mop:ensure-finalized (find-class component-type)))
+(defun compute-component-args (type)
+  (let* ((class (c2mop:ensure-finalized (find-class type)))
          (class-args (a:mappend #'c2mop:slot-definition-initargs
                                 (c2mop:class-slots class)))
          (instance-lambda-list (c2mop:method-lambda-list
@@ -67,27 +67,27 @@
 (defun has-component-p (entity type)
   (typep entity type))
 
-(defgeneric on-component-added (entity component-type)
-  (:method (entity component-type)))
+(defgeneric on-component-added (entity type)
+  (:method (entity type)))
 
-(defgeneric on-component-removed (entity component-type)
-  (:method (entity component-type)))
+(defgeneric on-component-removed (entity type)
+  (:method (entity type)))
 
-(defun add-component (entity component-type &rest args)
+(defun add-component (entity type &rest args)
   (register-entity-flow-event
    :component-add
    (lambda ()
-     (let ((entity (apply #'add-mixin-class entity component-type args)))
-       (on-component-added entity component-type)))))
+     (let ((entity (apply #'add-mixin-class entity type args)))
+       (on-component-added entity type)))))
 
-(defun remove-component (entity component-type)
-  (if (member component-type (meta :components :static))
-      (error "Component ~s is static and cannot be removed." component-type)
+(defun remove-component (entity type)
+  (if (member type (meta :components :static))
+      (error "Component ~s is static and cannot be removed." type)
       (register-entity-flow-event
        :component-remove
        (lambda ()
-         (let ((entity (remove-mixin-class entity component-type)))
-           (on-component-removed entity component-type))))))
+         (on-component-removed entity type)
+         (remove-mixin-class entity type)))))
 
 (defun remove-components (entity)
   (dolist (component (get-mixin-class-names entity))

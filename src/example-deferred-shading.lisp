@@ -20,7 +20,8 @@
    :generate-mipmaps-p nil
    :source nil))
 
-(pyx:define-framebuffer gbuffer ()
+(pyx:define-framebuffer gbuffer (:clear-color (v4:vec 0 0 0 1)
+                                 :clear-buffers (:color :depth))
   (position :buffer (:texture gbuffer/position/normal)
             :point (:color 0))
   (normal :buffer (:texture gbuffer/position/normal)

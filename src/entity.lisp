@@ -1,12 +1,12 @@
 (in-package #:pyx)
 
-(defun get-entity-slots (component-types)
+(defun get-entity-slots (types)
   (mapcan
    (lambda (x)
      (mapcar
       #'c2mop:slot-definition-name
       (c2mop:class-slots (find-class x))))
-   component-types))
+   types))
 
 (defun make-entity-class (components)
   (make-mixin-class (make-mixin-class-list components)))
@@ -42,8 +42,8 @@
   (:method-combination progn)
   (:method :around (entity)
     (call-next-method)
-    (deregister-prefab-entity entity)
-    (remove-components entity)))
+    (remove-components entity)
+    (deregister-prefab-entity entity)))
 
 (defun delete-entity (entity &key reparent-children-p)
   (when (node/root-p entity)

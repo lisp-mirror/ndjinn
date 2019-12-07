@@ -29,14 +29,14 @@
                                :add (pyx:render))
   :xform/scale (v3:vec 0.5 0.5 0.1)
   :mesh/name "floor"
-  :render/material 'world/floor)
+  :render/materials '(world/floor))
 
 (pyx:define-prefab tile/wall (:template tile
                               :add (pyx:render))
   :xform/translate (v3:vec 0 0 1.25)
   :xform/scale (v3:vec 0.5 0.5 1.25)
   :mesh/name "wall"
-  :render/material 'world/wall)
+  :render/materials '(world/wall))
 
 (pyx:define-prefab world (:add (pyx:world))
   :xform/scale 40
@@ -55,7 +55,14 @@
           :camera/clip-far 1000)
   (world (:template world)))
 
+;;; pipeline
+
+(pyx:define-pipeline world ()
+  (:passes (:default)
+   :order (:default)))
+
 ;;; scene
 
 (pyx:define-scene world ()
-  (:prefabs (world-example)))
+  (:pipeline world
+   :prefabs (world-example)))

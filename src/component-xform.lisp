@@ -117,7 +117,7 @@
   (transform-node entity))
 
 (defmethod on-render progn ((entity xform))
-  (set-uniforms (render/material entity) :model (xform/model entity)))
+  (set-uniforms (render/current-material entity) :model (xform/model entity)))
 
 (defun translate-entity (entity vec &optional replace-p)
   (with-slots (%current) (xform/translation entity)

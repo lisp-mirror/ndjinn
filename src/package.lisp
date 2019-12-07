@@ -26,8 +26,8 @@
    #:define-framebuffer
    #:define-geometry
    #:define-geometry-layout
-   #:define-groups
    #:define-material
+   #:define-pipeline
    #:define-prefab
    #:define-query
    #:define-query-types
@@ -74,11 +74,7 @@
   (:export
    #:sprite
    #:fade
-   #:rotate)
-  ;; groups
-  (:export
-   #:group-join
-   #:group-leave))
+   #:rotate))
 
 (defpackage #:pyx.shader
   (:use #:shadow.glsl #:umbra.common))

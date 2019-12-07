@@ -11,12 +11,12 @@
 (defun update-scene-spec (name prefabs pipeline)
   (with-slots (%prefabs %pipeline) (meta :scenes name)
     (setf %prefabs prefabs
-          %pipeline pipeline)
+          %pipeline (find-pipeline-spec pipeline))
     (enqueue :recompile (list :scene name))))
 
 (defmacro define-scene (name options &body body)
   (declare (ignore options))
-  (destructuring-bind (&key prefabs (pipeline '(default))) (car body)
+  (destructuring-bind (&key prefabs (pipeline :default)) (car body)
     `(progn
        (unless (meta :scenes)
          (setf (meta :scenes) (u:dict #'eq)))
@@ -26,4 +26,4 @@
                  (make-instance 'scene-spec
                                 :name ',name
                                 :prefabs ',prefabs
-                                :pipeline ',pipeline))))))
+                                :pipeline (find-pipeline-spec ',pipeline)))))))

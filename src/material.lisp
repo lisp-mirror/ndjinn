@@ -17,10 +17,15 @@
 (u:define-printer (material stream :type t :identity t)
   (format stream "~s" (name (spec material))))
 
-(defun ensure-material (material/spec)
-  (etypecase material/spec
-    (material material/spec)
-    (symbol (make-material material/spec))))
+(defun register-materials (entity)
+  (let (materials)
+    (dolist (spec (render/materials entity))
+      (let ((material (make-material spec)))
+        (u:do-hash-keys (k (uniforms material))
+          (register-uniform-func material k))
+        (register-draw-order entity material)
+        (push material materials)))
+    materials))
 
 (defun ensure-material-framebuffer (material)
   (with-slots (%spec %framebuffer %output) material

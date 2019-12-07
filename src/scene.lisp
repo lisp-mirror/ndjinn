@@ -8,12 +8,8 @@
    (%node-tree :reader node-tree)
    (%materials :reader materials
                :initform (u:dict #'eq))
-   (%groups :reader groups
-            :initform (u:dict #'eq))
-   (%draw-order-groups :accessor draw-order-groups
-                       :initform '(default))
-   (%draw-order-entities :accessor draw-order-entities
-                         :initform nil)
+   (%draw-order :reader draw-order
+                :initform (u:dict #'eq))
    (%picking-ids :reader picking-ids
                  :initform (u:dict #'eq))
    (%released-picking-ids :accessor released-picking-ids

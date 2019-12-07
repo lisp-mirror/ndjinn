@@ -20,6 +20,8 @@
                       :initarg :features/enabled)
    (%features/disabled :reader features/disabled
                        :initarg :features/disabled)
+   (%pass :reader pass
+          :initarg :pass)
    (%output :reader output
             :initarg :output)))
 
@@ -62,7 +64,7 @@
 
 (defun make-material-spec (name &rest args)
   (destructuring-bind (&key master shader uniforms blend-mode depth-mode
-                         features output)
+                         features pass output)
       args
     (destructuring-bind (&key enable disable) features
       (let* ((master-spec (meta :materials master))
@@ -72,7 +74,8 @@
              (features/enabled (set-difference
                                 enable +gl-capabilities/enabled+))
              (features/disabled (set-difference
-                                 disable +gl-capabilities/disabled+)))
+                                 disable +gl-capabilities/disabled+))
+             (pass (or pass :default)))
         (symbol-macrolet ((spec (meta :materials name)))
           (if spec
               (apply #'update-material-spec spec
@@ -81,6 +84,7 @@
                      :depth-mode depth-mode
                      :features/enabled features/enabled
                      :features/disabled features/disabled
+                     :pass pass
                      args)
               (progn
                 (setf spec (make-instance 'material-spec
@@ -91,17 +95,18 @@
                                           :depth-mode depth-mode
                                           :features/enabled features/enabled
                                           :features/disabled features/disabled
+                                          :pass pass
                                           :output output))
                 (update-material-spec-uniforms spec uniforms)
                 (update-material-spec-relationships spec))))))))
 
 (defun update-material-spec (spec &rest args)
   (destructuring-bind (&key master shader uniforms blend-mode depth-mode
-                         features/enabled features/disabled output
+                         features/enabled features/disabled pass output
                        &allow-other-keys)
       args
     (with-slots (%name %master %shader %blend-mode %depth-mode %features/enabled
-                 %features/disabled %output)
+                 %features/disabled %pass %output)
         spec
       (setf %master master
             %shader shader
@@ -109,6 +114,7 @@
             %depth-mode depth-mode
             %features/enabled features/enabled
             %features/disabled features/disabled
+            %pass pass
             %output output)
       (update-material-spec-uniforms spec uniforms)
       (update-material-spec-relationships spec)
@@ -118,17 +124,18 @@
           (update-material-spec
            slave
            :master %name
-           :shader (or (shader slave) shader)
+           :shader (or (shader slave) %shader)
            :uniforms (u:hash->plist (u:href (uniforms slave) :self))
-           :blend-mode (blend-mode slave)
-           :depth-mode (depth-mode slave)
-           :features/enabled (features/enabled slave)
-           :features/disabled (features/disabled slave)
-           :output (output slave)))))))
+           :blend-mode (or (blend-mode slave) %blend-mode)
+           :depth-mode (or (depth-mode slave) %depth-mode)
+           :features/enabled (or (features/enabled slave) %features/enabled)
+           :features/disabled (or (features/disabled slave) %features/disabled)
+           :pass (or (pass slave) %pass)
+           :output (or (output slave) %output)))))))
 
 (defmacro define-material (name (&optional master) &body body)
   (destructuring-bind (&key shader uniforms blend-mode depth-mode features
-                         output)
+                         pass output)
       (car body)
     `(progn
        (unless (meta :materials)
@@ -140,4 +147,5 @@
                            :blend-mode ',blend-mode
                            :depth-mode ',depth-mode
                            :features ',features
+                           :pass ',pass
                            :output ',output))))

@@ -1,23 +1,39 @@
 (in-package #:pyx)
 
 (define-component render ()
-  ((%render/material :reader render/material
-                     :initarg :render/material))
+  ((%render/materials :reader render/materials
+                      :initarg :render/materials)
+   (%render/order :reader render/order
+                  :initarg :render/order
+                  :initform :default)
+   (%render/current-material :accessor render/current-material
+                             :initform nil)
+   (%render/passes :accessor render/passes
+                   :initform nil))
   (:sorting :after xform :before sprite))
 
 (defmethod shared-initialize :after ((instance render) slot-names &key)
-  (with-slots (%render/material) instance
-    (setf %render/material (ensure-material %render/material))
-    (u:do-hash-keys (k (uniforms %render/material))
-      (register-uniform-func %render/material k))))
+  (with-slots (%render/materials) instance
+    (setf %render/materials (register-materials instance))))
+
+(defmethod on-component-removed (entity (type (eql 'render)))
+  (deregister-draw-order entity))
 
 (defun render-frame ()
-  (clear-screen)
-  (map nil #'render-entity (draw-order-entities (current-scene *state*))))
+  (let ((scene-spec (spec (current-scene *state*))))
+    (clear-screen)
+    (map nil #'render-pass (passes (pipeline scene-spec)))))
+
+(defun render-pass (pass)
+  (a:when-let* ((scene (current-scene *state*))
+                (order (u:href (draw-order scene) pass)))
+    (loop :for (entity . material) :in order
+          :do (setf (render/current-material entity) material)
+              (render-entity entity))))
 
 (defun render-entity (entity)
   (with-slots (%spec %framebuffer %output %uniforms %funcs %texture-unit-state)
-      (render/material entity)
+      (render/current-material entity)
     (with-framebuffer %framebuffer (:output %output)
       (shadow:with-shader (shader %spec)
         (u:do-hash (k v %uniforms)
@@ -26,7 +42,7 @@
         (setf %texture-unit-state 0)))))
 
 (defmethod on-render :around ((entity render))
-  (let ((material (render/material entity)))
+  (let ((material (render/current-material entity)))
     (with-slots (%features/enabled %features/disabled %blend-mode %depth-mode)
         (spec material)
       (apply #'gl:enable %features/enabled)

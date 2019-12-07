@@ -28,3 +28,15 @@
   (cffi:with-foreign-object (renderbuffer '%gl:uint 1)
     (%gl:create-renderbuffers 1 renderbuffer)
     (cffi:mem-aref renderbuffer '%gl:uint 0)))
+
+(defmacro with-opengl-state ((enable disable blend-mode depth-mode) &body body)
+  `(progn
+     (apply #'gl:enable ,enable)
+     (apply #'gl:disable ,disable)
+     (apply #'gl:blend-func ,blend-mode)
+     (gl:depth-func ,depth-mode)
+     ,@body
+     (apply #'gl:enable ,disable)
+     (apply #'gl:disable ,enable)
+     (apply #'gl:blend-func +gl-blend-mode+)
+     (gl:depth-func +gl-depth-mode+)))

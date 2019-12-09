@@ -88,5 +88,6 @@
    (#:m4 #:origin.mat4))
   (:use #:cl)
   (:export
+   #:texture
    #:sprite
    #:world))

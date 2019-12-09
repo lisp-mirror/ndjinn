@@ -89,5 +89,6 @@
   (:use #:cl)
   (:export
    #:texture
+   #:mesh
    #:sprite
    #:world))

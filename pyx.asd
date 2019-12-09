@@ -103,6 +103,7 @@
    (:file "state")
    (:file "example-common")
    (:file "example-texture")
+   (:file "example-mesh")
    (:file "example-sprite")
    (:file "example-world")
    (:file "example-deferred-shading")

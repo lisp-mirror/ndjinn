@@ -12,7 +12,7 @@
 (defun default/f ((uv :vec2)
                   &uniforms
                   (sampler :sampler-2d))
-  (texture sampler uv))
+  (texture sampler (vec2 (.x uv) (- 1 (.y uv)))))
 
 (define-shader default ()
   (:vertex (default/v mesh-attrs))

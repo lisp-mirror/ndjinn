@@ -61,11 +61,11 @@
       (:depth/stencil :depth24-stencil8))))
 
 (defun ensure-framebuffer-complete (framebuffer target buffer attachment)
-  (with-slots (%id %name) framebuffer
+  (with-slots (%spec %id) framebuffer
     (let ((result (%gl:check-named-framebuffer-status %id target)))
       (unless (member result '(:framebuffer-complete :framebuffer-complete-oes))
-        (error "Error attaching ~a as attachment ~a of framebuffer ~a: ~a"
-               buffer attachment %name result)))))
+        (error "Error attaching ~a as attachment ~s of framebuffer ~s: ~a"
+               buffer attachment (name %spec) result)))))
 
 (defmacro with-framebuffer (framebuffer (&key mode output) &body body)
   (a:with-gensyms (id target)

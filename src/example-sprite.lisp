@@ -2,7 +2,7 @@
 
 ;;; textures
 
-(pyx:define-texture sprites
+(pyx:define-texture sprites ()
   (:source "sprites.png"))
 
 ;;; materials

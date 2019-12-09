@@ -12,10 +12,10 @@
   (format stream "~s" (name scene-spec)))
 
 (defun make-scene-spec (name prefabs pipeline)
-  (let ((scene-spec (make-instance 'scene-spec :name name)))
-    (setf (meta :scenes name) scene-spec)
+  (let ((spec (make-instance 'scene-spec :name name)))
+    (setf (meta :scenes name) spec)
     (update-scene-spec name prefabs pipeline)
-    scene-spec))
+    spec))
 
 (defun update-scene-spec (name prefabs pipeline)
   (let ((pipeline (find-pipeline-spec pipeline)))

@@ -40,13 +40,16 @@
   (defun preprocess-pipeline-passes (passes)
     (when passes
       `(list
-        ,@(loop :for (k v) :on passes :by #'cddr
-                :collect k
-                :collect `(list ,@v))))))
+        ,@(mapcar
+           (lambda (x)
+             (if (listp x)
+                 `(list ',(car x) ,@(rest x))
+                 `(list ',x)))
+           passes)))))
 
 (defun parse-pipeline-passes (passes)
   (loop :with table = (u:dict #'eq)
-        :for (name options) :on passes :by #'cddr
+        :for (name . options) :in passes
         :collect name :into order
         :do (destructuring-bind (&key clear-color clear-buffers) options
               (let* ((clear-color (or clear-color (v4:vec 0 0 0 1)))

@@ -32,22 +32,17 @@
 
 (defun make-texture-spec (name source width height pixel-format pixel-type
                           internal-format generate-mipmaps-p parameters)
-  (make-instance 'texture-spec
-                 :name name
-                 :source source
-                 :width width
-                 :height height
-                 :pixel-format pixel-format
-                 :pixel-type pixel-type
-                 :internal-format internal-format
-                 :generate-mipmaps-p generate-mipmaps-p
-                 :parameters parameters))
+  (let ((spec (make-instance 'texture-spec :name name)))
+    (setf (meta :textures name) spec)
+    (update-texture-spec name source width height pixel-format pixel-type
+                         internal-format generate-mipmaps-p parameters)
+    spec))
 
-(defun update-texture-spec (spec source width height pixel-format pixel-type
+(defun update-texture-spec (name source width height pixel-format pixel-type
                             internal-format generate-mipmaps-p parameters)
   (with-slots (%name %source %width %height %pixel-format %pixel-type
                %internal-format %generate-mipmaps-p %parameters)
-      spec
+      (meta :textures name)
     (setf %source source
           %width width
           %height height
@@ -58,9 +53,10 @@
           %parameters parameters)
     (enqueue :recompile (list :texture %name))))
 
-(defmacro define-texture (name &body body)
-  (a:with-gensyms (spec parameters)
-    (destructuring-bind (&key source width height (generate-mipmaps-p t)
+(defmacro define-texture (name options &body body)
+  (declare (ignore options))
+  (a:with-gensyms (parameters)
+    (destructuring-bind (&key source width height (generate-mipmaps t)
                            pixel-format pixel-type internal-format
                            (min-filter :linear-mipmap-linear)
                            (mag-filter :linear) (swizzle-r :red)
@@ -76,14 +72,13 @@
                                   :texture-swizzle-a ,swizzle-a)))
          (unless (meta :textures)
            (setf (meta :textures) (u:dict #'eq)))
-         (a:if-let ((,spec (meta :textures ',name)))
-           (update-texture-spec ,spec ',source ,width ,height ,pixel-format
-                                ,pixel-type ,internal-format ,generate-mipmaps-p
-                                ,parameters)
-           (setf (meta :textures ',name)
-                 (make-texture-spec ',name ',source ,width ,height ,pixel-format
-                                    ,pixel-type ,internal-format
-                                    ,generate-mipmaps-p ,parameters)))))))
+         (if (meta :textures ',name)
+             (update-texture-spec ',name ',source ,width ,height ,pixel-format
+                                  ,pixel-type ,internal-format
+                                  ,generate-mipmaps ,parameters)
+             (make-texture-spec ',name ',source ,width ,height
+                                ,pixel-format ,pixel-type ,internal-format
+                                ,generate-mipmaps ,parameters))))))
 
 (define-texture default
   (:source "debug.png"))

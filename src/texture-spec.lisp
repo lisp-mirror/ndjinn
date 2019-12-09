@@ -80,5 +80,5 @@
                                 ,pixel-format ,pixel-type ,internal-format
                                 ,generate-mipmaps ,parameters))))))
 
-(define-texture default
+(define-texture default ()
   (:source "debug.png"))

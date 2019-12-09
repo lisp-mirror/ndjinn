@@ -9,16 +9,16 @@
                  :initform :perspective)
    (%camera/clip-near :reader camera/clip-near
                       :initarg :camera/clip-near
-                      :initform 0)
+                      :initform 0.1)
    (%camera/clip-far :reader camera/clip-far
                      :initarg :camera/clip-far
                      :initform 1024)
    (%camera/fov-y :reader camera/fov-y
                   :initarg :camera/fov-y
-                  :initform 45f0)
+                  :initform 90f0)
    (%camera/zoom :reader camera/zoom
                  :initarg :camera/zoom
-                 :initform 1)
+                 :initfor 1)
    (%camera/target :reader camera/target
                    :initarg :camera/target
                    :initform nil)
@@ -81,10 +81,12 @@
     (setf %camera/zoom (a:clamp (+ %camera/zoom (/ direction 2)) 1 10))
     (set-camera-projection entity)))
 
-(defmethod on-component-added (entity (component (eql 'camera)))
-  (when (camera/active-p entity)
-    (setf (slot-value (current-scene *state*) '%camera) entity))
-  (set-camera-projection entity))
-
 (defmethod on-update progn ((entity camera))
   (set-camera-view entity))
+
+(defmethod on-component-added (entity (component (eql 'camera)))
+  (with-slots (%camera/fov-y) entity
+    (when (camera/active-p entity)
+      (setf (slot-value (current-scene *state*) '%camera) entity))
+    (setf %camera/fov-y (* %camera/fov-y (/ pi 180)))
+    (set-camera-projection entity)))

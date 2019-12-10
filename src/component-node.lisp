@@ -31,6 +31,8 @@
   (let ((root (make-entity () :node/root-p t)))
     (setf (slot-value scene '%node-tree) root)))
 
-(defmethod on-component-added (entity (component (eql 'node)))
-  (unless (node/root-p entity)
-    (add-child entity :parent (node/parent entity))))
+;;; entity hooks
+
+(define-hook :entity-create (entity node)
+  (unless node/root-p
+    (add-child entity :parent node/parent)))

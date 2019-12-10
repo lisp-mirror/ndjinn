@@ -113,12 +113,6 @@
       (resolve-local entity (clock-interpolation-factor (clock *state*)))
       (m4:*! %xform/model (xform/model %node/parent) %xform/local))))
 
-(defmethod on-update progn ((entity xform))
-  (transform-node entity))
-
-(defmethod on-render progn ((entity xform))
-  (set-uniforms (render/current-material entity) :model (xform/model entity)))
-
 (defun translate-entity (entity vec &optional replace-p)
   (with-slots (%current) (xform/translation entity)
     (v3:+! %current (if replace-p v3:+zero+ %current) vec)))
@@ -130,3 +124,11 @@
 (defun scale-entity (entity vec &optional replace-p)
   (with-slots (%current) (xform/scaling entity)
     (v3:+! %current (if replace-p v3:+zero+ %current) vec)))
+
+;;; entity hooks
+
+(define-hook :entity-update (entity xform)
+  (transform-node entity))
+
+(define-hook :entity-render (entity xform)
+  (set-uniforms (render/current-material entity) :model xform/model))

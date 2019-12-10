@@ -23,6 +23,8 @@
 (u:define-printer (texture-spec stream)
   (format stream "~s" (name texture-spec)))
 
+(define-event-handler :recompile :texture recompile-texture)
+
 (defun find-texture-spec (texture-name)
   (u:if-found (spec (meta :textures texture-name))
               (values spec

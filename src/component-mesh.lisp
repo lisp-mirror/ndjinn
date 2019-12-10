@@ -11,18 +11,18 @@
    (%mesh/instances :reader mesh/instances
                     :initarg :mesh/instances
                     :initform 1)
-   (%mesh/primitive :reader mesh/primitive))
+   (%mesh/primitive :accessor mesh/primitive))
   (:sorting :after render))
 
-(defmethod shared-initialize :after ((instance mesh) slot-names &key)
-  (with-slots (%mesh/file %mesh/name %mesh/index %mesh/primitive) instance
-    (let* ((gltf (resource-lookup 'mesh %mesh/file
-                   (load-gltf (resolve-asset-path %mesh/file))))
-           (mesh (u:href (meshes gltf) %mesh/name)))
-      (unless mesh
-        (error "Mesh name ~s not found in glTF file ~s." %mesh/name %mesh/file))
-      (setf %mesh/primitive (aref (primitives mesh) %mesh/index)))))
+;;; entity hooks
 
-(defmethod on-render progn ((entity mesh))
-  (with-slots (%mesh/primitive %mesh/instances) entity
-    (funcall (draw-func %mesh/primitive) %mesh/instances)))
+(define-hook :entity-create (entity mesh)
+  (let* ((gltf (resource-lookup 'mesh mesh/file
+                 (load-gltf (resolve-asset-path mesh/file))))
+         (mesh (u:href (meshes gltf) mesh/name)))
+    (unless mesh
+      (error "Mesh name ~s not found in glTF file ~s." mesh/name mesh/file))
+    (setf mesh/primitive (aref (primitives mesh) mesh/index))))
+
+(define-hook :entity-render (entity mesh)
+  (funcall (draw-func mesh/primitive) mesh/instances))

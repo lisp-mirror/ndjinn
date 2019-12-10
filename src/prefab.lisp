@@ -2,7 +2,7 @@
 
 (defun load-prefab (name &key parent)
   (register-entity-flow-event
-   :prefab-create
+   :prefab-created
    (lambda ()
      (let ((factory (factory (meta :prefabs name))))
        (funcall (func factory) :parent parent)))))

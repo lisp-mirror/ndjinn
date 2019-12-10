@@ -14,14 +14,15 @@
                              #'draw-order-comparator
                              :key (lambda (x) (render/order (car x)))))))
 
-(defun register-draw-order (entity material)
-  (let ((scene (current-scene *state*))
-        (pass (pass (spec material))))
-    (symbol-macrolet ((order (u:href (draw-order scene) pass)))
-      (unless (find entity order :key #'car)
-        (a:appendf order (list (cons entity material))))
-      (push pass (render/passes entity))
-      (sort-draw-order scene pass))))
+(defun register-draw-order (entity)
+  (dolist (material (render/materials entity))
+    (let ((scene (current-scene *state*))
+          (pass (pass (spec material))))
+      (symbol-macrolet ((order (u:href (draw-order scene) pass)))
+        (unless (find entity order :key #'car)
+          (a:appendf order (list (cons entity material))))
+        (pushnew pass (render/passes entity))
+        (sort-draw-order scene pass)))))
 
 (defun deregister-draw-order (entity)
   (let ((order (draw-order (current-scene *state*))))

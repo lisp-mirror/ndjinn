@@ -26,6 +26,27 @@
 (defun compute-all-components-order ()
   (compute-component-order (u:hash-keys (meta :components :order))))
 
+(defun compute-component-slots (type)
+  (let ((class (c2mop:ensure-finalized (find-class type))))
+    (mapcar #'c2mop:slot-definition-name (c2mop:class-direct-slots class))))
+
+(defun compute-component-accessors (type)
+  (let* ((class (c2mop:ensure-finalized (find-class type)))
+         (slots (c2mop:class-direct-slots class)))
+    (remove-duplicates
+     (remove-if
+      (lambda (x)
+        (or (null x)
+            (and (not (eq (symbol-package x) *package*))
+                 (not (eq (nth-value 1 (find-symbol (symbol-name x)
+                                                    (symbol-package x)))
+                          :external)))))
+      (a:mappend
+       (lambda (x)
+         (append (c2mop:slot-definition-readers x)
+                 (mapcar #'second (c2mop:slot-definition-writers x))))
+       slots)))))
+
 (defun compute-component-args (type)
   (let* ((class (c2mop:ensure-finalized (find-class type)))
          (class-args (a:mappend #'c2mop:slot-definition-initargs
@@ -67,29 +88,23 @@
 (defun has-component-p (entity type)
   (typep entity type))
 
-(defgeneric on-component-added (entity type)
-  (:method (entity type)))
-
-(defgeneric on-component-removed (entity type)
-  (:method (entity type)))
-
-(defun add-component (entity type &rest args)
+(defun attach-component (entity type &rest args)
   (register-entity-flow-event
-   :component-add
+   :component-attach
    (lambda ()
-     (let ((entity (apply #'add-mixin-class entity type args)))
-       (on-component-added entity type)))))
+     (apply #'add-mixin-class entity type args)
+     (on-component-attach entity type))))
 
-(defun remove-component (entity type)
-  (if (member type (meta :components :static))
-      (error "Component ~s is static and cannot be removed." type)
+(defun detach-component (entity type)
+  (if (find type (meta :components :static))
+      (error "Cannot remove built-in static component: ~s." type)
       (register-entity-flow-event
-       :component-remove
+       :component-detach
        (lambda ()
-         (on-component-removed entity type)
+         (on-component-detach entity type)
          (remove-mixin-class entity type)))))
 
-(defun remove-components (entity)
+(defun detach-components (entity)
   (dolist (component (get-mixin-class-names entity))
-    (unless (member component (meta :components :static))
-      (remove-component entity component))))
+    (unless (find component (meta :components :static))
+      (detach-component entity component))))

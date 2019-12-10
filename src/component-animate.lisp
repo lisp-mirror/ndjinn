@@ -8,10 +8,11 @@
                       :initform nil))
   (:sorting :before (mesh sprite) :after render))
 
-(defmethod shared-initialize :after ((instance animate) slot-names &key)
-  (with-slots (%animate/sequence) instance
-    (a:when-let ((sequence (meta :animation-sequences %animate/sequence)))
-      (funcall sequence instance))))
+;;; entity hooks
 
-(defmethod on-render progn ((entity animate))
+(define-hook :component-attach (instance animate)
+  (a:when-let ((sequence (meta :animation-sequences animate/sequence)))
+    (funcall sequence instance)))
+
+(define-hook :entity-render (entity animate)
   (process-animation-states entity))

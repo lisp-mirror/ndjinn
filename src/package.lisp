@@ -47,17 +47,13 @@
   ;; entity protocol
   (:export
    #:delete-entity
-   #:make-entity
-   #:modify-entity
-   #:on-entity-deleted)
+   #:make-entity)
   ;; component protocol
   (:export
-   #:add-component
-   #:has-component-p
-   #:on-component-added
-   #:on-component-removed
-   #:remove-component
-   #:remove-components)
+   #:attach-component
+   #:detach-component
+   #:detach-components
+   #:has-component-p)
   ;; component types
   (:export
    #:animate

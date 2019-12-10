@@ -13,12 +13,12 @@
    (%camera/clip-far :reader camera/clip-far
                      :initarg :camera/clip-far
                      :initform 1024)
-   (%camera/fov-y :reader camera/fov-y
+   (%camera/fov-y :accessor camera/fov-y
                   :initarg :camera/fov-y
                   :initform 90f0)
    (%camera/zoom :reader camera/zoom
                  :initarg :camera/zoom
-                 :initfor 1)
+                 :initform 1)
    (%camera/target :reader camera/target
                    :initarg :camera/target
                    :initform nil)
@@ -81,12 +81,13 @@
     (setf %camera/zoom (a:clamp (+ %camera/zoom (/ direction 2)) 1 10))
     (set-camera-projection entity)))
 
-(defmethod on-update progn ((entity camera))
-  (set-camera-view entity))
+;;; entity hooks
 
-(defmethod on-component-added (entity (component (eql 'camera)))
-  (with-slots (%camera/fov-y) entity
-    (when (camera/active-p entity)
-      (setf (slot-value (current-scene *state*) '%camera) entity))
-    (setf %camera/fov-y (* %camera/fov-y (/ pi 180)))
-    (set-camera-projection entity)))
+(define-hook :entity-create (entity camera)
+  (when camera/active-p
+    (setf (slot-value (current-scene *state*) '%camera) entity))
+  (setf camera/fov-y (* camera/fov-y (/ pi 180)))
+  (set-camera-projection entity))
+
+(define-hook :entity-update (entity camera)
+  (set-camera-view entity))

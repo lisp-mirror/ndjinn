@@ -1,7 +1,7 @@
 (in-package #:pyx)
 
 (define-component render ()
-  ((%render/materials :reader render/materials
+  ((%render/materials :accessor render/materials
                       :initarg :render/materials)
    (%render/order :reader render/order
                   :initarg :render/order
@@ -11,13 +11,6 @@
    (%render/passes :accessor render/passes
                    :initform nil))
   (:sorting :after xform :before sprite))
-
-(defmethod shared-initialize :after ((instance render) slot-names &key)
-  (with-slots (%render/materials) instance
-    (setf %render/materials (register-materials instance))))
-
-(defmethod on-component-removed (entity (type (eql 'render)))
-  (deregister-draw-order entity))
 
 (defun clear-render-pass (pipeline pass)
   (let ((options (u:href (pass-options pipeline) pass)))
@@ -41,23 +34,29 @@
 (defun render-entity (entity)
   (with-slots (%spec %framebuffer %output %uniforms %funcs %texture-unit-state)
       (render/current-material entity)
-    (with-framebuffer %framebuffer (:output %output)
-      (shadow:with-shader (shader %spec)
-        (u:do-hash (k v %uniforms)
-          (funcall (u:href %funcs k) k v))
-        (on-render entity)
-        (setf %texture-unit-state 0)))))
+    (with-slots (%enabled %disabled %blend-mode %depth-mode) %spec
+      (with-framebuffer %framebuffer (:output %output)
+        (shadow:with-shader (shader %spec)
+          (u:do-hash (k v %uniforms)
+            (funcall (u:href %funcs k) k v))
+          (with-opengl-state (%enabled %disabled %blend-mode %depth-mode)
+            (on-entity-render entity))
+          (on-entity-render entity)
+          (setf %texture-unit-state 0))))))
 
-(defmethod on-render :around ((entity render))
-  (let* ((material (render/current-material entity))
-         (spec (spec material))
-         (enable (features/enabled spec))
-         (disable (features/disabled spec))
-         (blend-mode (blend-mode spec))
-         (depth-mode (depth-mode spec)))
-    (with-opengl-state (enable disable blend-mode depth-mode)
-      (a:when-let ((camera (camera (current-scene *state*))))
-        (set-uniforms material
-                      :view (camera/view camera)
-                      :proj (camera/projection camera)))
-      (call-next-method))))
+;;; entity hooks
+
+(define-hook :entity-create (entity render)
+  (setf render/materials (register-materials entity)))
+
+(define-hook :entity-render (entity render)
+  (a:when-let ((camera (camera (current-scene *state*))))
+    (set-uniforms render/current-material
+                  :view (camera/view camera)
+                  :proj (camera/projection camera))))
+
+(define-hook :component-attach (entity render)
+  (register-draw-order entity))
+
+(define-hook :component-detach (entity render)
+  (deregister-draw-order entity))

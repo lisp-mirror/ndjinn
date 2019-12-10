@@ -195,7 +195,7 @@
 
 (defun make-gltf-buffer (gltf target accessor)
   (let ((buffer-view-index (get-gltf-property gltf "bufferView" accessor)))
-    (unless (member buffer-view-index (allocated-views gltf))
+    (unless (find buffer-view-index (allocated-views gltf))
       (let* ((buffer-view (elt (get-gltf-property gltf "bufferViews")
                                buffer-view-index))
              (index (get-gltf-property gltf "buffer" buffer-view))

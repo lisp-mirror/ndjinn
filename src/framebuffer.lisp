@@ -63,7 +63,7 @@
 (defun ensure-framebuffer-complete (framebuffer target buffer attachment)
   (with-slots (%spec %id) framebuffer
     (let ((result (%gl:check-named-framebuffer-status %id target)))
-      (unless (member result '(:framebuffer-complete :framebuffer-complete-oes))
+      (unless (find result '(:framebuffer-complete :framebuffer-complete-oes))
         (error "Error attaching ~a as attachment ~s of framebuffer ~s: ~a"
                buffer attachment (name %spec) result)))))
 

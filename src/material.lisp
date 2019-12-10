@@ -23,7 +23,6 @@
       (let ((material (make-material spec)))
         (u:do-hash-keys (k (uniforms material))
           (register-uniform-func material k))
-        (register-draw-order entity material)
         (push material materials)))
     materials))
 

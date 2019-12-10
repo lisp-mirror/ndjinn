@@ -27,7 +27,7 @@
                         :initform 0.5)
    (%world/cell-counts :reader world/cell-counts
                        :initform (u:dict #'eq))
-   (%world/buffer-name :reader world/buffer-name))
+   (%world/buffer-name :accessor world/buffer-name))
   (:sorting :before mesh :after render))
 
 (pyx::define-query-types world
@@ -75,24 +75,21 @@
         (shadow:write-buffer-path %world/buffer-name :cells/door/v doors/v)
         (shadow:write-buffer-path %world/buffer-name :cells/door/h doors/h)))))
 
-(defmethod shared-initialize :after ((instance world) slot-names &key)
-  (with-slots (%world/width %world/height %world/seed %world/density
-               %world/room-extent %world/wild-factor %world/door-rate
-               %world/cycle-factor %world/buffer-name)
-      instance
-    (setf %world/buffer-name `(world (:width ,%world/width
-                                      :height ,%world/height
-                                      :seed ,%world/seed
-                                      :density ,%world/density
-                                      :room-extent ,%world/room-extent
-                                      :wild-factor ,%world/wild-factor
-                                      :door-rate ,%world/door-rate
-                                      :cycle-factor ,%world/cycle-factor)))
-    (resource-lookup 'world %world/buffer-name
-      (make-shader-buffer %world/buffer-name :world 'pyx.shader:world)
-      (update-shader-buffer instance))))
+;;; entity hooks
 
-(defmethod on-entity-deleted progn ((entity world))
-  (with-slots (%world/buffer-name) entity
-    (remhash %world/buffer-name (u:href (resources *state*) 'world))
-    (delete-shader-buffer %world/buffer-name)))
+(define-hook :entity-create (entity world)
+  (setf world/buffer-name `(world (:width ,world/width
+                                   :height ,world/height
+                                   :seed ,world/seed
+                                   :density ,world/density
+                                   :room-extent ,world/room-extent
+                                   :wild-factor ,world/wild-factor
+                                   :door-rate ,world/door-rate
+                                   :cycle-factor ,world/cycle-factor)))
+  (resource-lookup 'world world/buffer-name
+    (make-shader-buffer world/buffer-name :world 'pyx.shader:world)
+    (update-shader-buffer entity)))
+
+(define-hook :entity-delete (entity world)
+  (remhash world/buffer-name (u:href (resources *state*) 'world))
+  (delete-shader-buffer world/buffer-name))

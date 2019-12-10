@@ -28,17 +28,17 @@
     (pushnew id %released-picking-ids)
     (setf %released-picking-ids (sort (copy-seq %released-picking-ids) #'<))))
 
-(defmethod on-component-added (entity (component (eql 'identify)))
-  (with-slots (%uuids %picking-ids) (current-scene *state*)
-    (with-slots (%identify/uuid %identify/picking-id) entity
-      (u:if-found (found (u:href %uuids %identify/uuid))
-                  (error "Entity ~s has a UUID collision with object ~s."
-                         entity found)
-                  (setf (u:href %uuids %identify/uuid) entity))
-      (setf (u:href %picking-ids %identify/picking-id) entity))))
+;;; entity hooks
 
-(defmethod on-entity-deleted progn ((entity identify))
+(define-hook :entity-create (entity identify)
+  (with-slots (%uuids %picking-ids) (current-scene *state*)
+    (u:if-found (found (u:href %uuids identify/uuid))
+                (error "Entity ~s has a UUID collision with object ~s."
+                       entity found)
+                (setf (u:href %uuids identify/uuid) entity))
+    (setf (u:href %picking-ids identify/picking-id) entity)))
+
+(define-hook :entity-delete (entity identify)
   (with-slots (%uuids) (current-scene *state*)
-    (with-slots (%identify/uuid %identify/picking-id) entity
-      (remhash %identify/uuid %uuids)
-      (release-picking-id %identify/picking-id))))
+    (remhash identify/uuid %uuids)
+    (release-picking-id identify/picking-id)))

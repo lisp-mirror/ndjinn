@@ -15,6 +15,8 @@
 (u:define-printer (pipeline-spec stream)
   (format stream "~s" (name pipeline-spec)))
 
+(define-event-handler :recompile :pipeline recompile-pipeline)
+
 (defun find-pipeline-spec (name)
   (or (meta :pipelines name)
       (error "Pipeline ~s is not defined." name)))

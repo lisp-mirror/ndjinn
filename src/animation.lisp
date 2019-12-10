@@ -116,7 +116,7 @@
 (defmacro define-animation-state-hook (name entity state hook &body body)
   (let ((hook-types '(:start :finish :update)))
     `(progn
-       (unless (member ,hook ',hook-types)
+       (unless (find ,hook ',hook-types)
          (error "Hook type must be one of: ~{~s~^, ~}" ',hook-types))
        (defmethod ,(a:format-symbol :pyx "%ON-ANIMATION-~a" hook) :filter :state
            (,entity (,state (eql ',name)))

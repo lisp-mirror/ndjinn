@@ -8,6 +8,8 @@
    (%released-buffer-bindings :accessor released-buffer-bindings
                               :initform nil)))
 
+(define-event-handler :recompile :shaders recompile-shaders)
+
 (defun initialize-shaders ()
   (let* ((table (shadow:load-shaders
                  (lambda (x)

@@ -68,6 +68,8 @@
 (u:define-printer (prefab-factory stream)
   (format stream "~s" (prefab-name prefab-factory)))
 
+(define-event-handler :recompile :prefab recompile-prefab)
+
 ;; Create a fresh prefab object. This only creates an instance with the raw data
 ;; needed to begin parsing. NOTE: This is only called if a prefab with the given
 ;; name does not yet exist when defining a prefab.

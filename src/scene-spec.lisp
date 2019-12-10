@@ -11,6 +11,8 @@
 (u:define-printer (scene-spec stream)
   (format stream "~s" (name scene-spec)))
 
+(define-event-handler :recompile :scene recompile-scene)
+
 (defun make-scene-spec (name prefabs pipeline)
   (let ((spec (make-instance 'scene-spec :name name)))
     (setf (meta :scenes name) spec)

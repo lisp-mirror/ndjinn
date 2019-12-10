@@ -18,7 +18,7 @@
     (with-slots (%mixin-class) skeleton
       (when (typep skeleton 'prefab-entity-skeleton)
         (apply #'change-class skeleton %mixin-class args))
-      (register-entity skeleton types))))
+      (register-entity/immediately skeleton types))))
 
 (defun resolve-prefab-entity-args (node parent)
   (with-slots (%prefab %parent %component-args) node

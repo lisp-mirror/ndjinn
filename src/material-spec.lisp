@@ -16,10 +16,10 @@
                 :initarg :blend-mode)
    (%depth-mode :reader depth-mode
                 :initarg :depth-mode)
-   (%features/enabled :reader features/enabled
-                      :initarg :features/enabled)
-   (%features/disabled :reader features/disabled
-                       :initarg :features/disabled)
+   (%enabled :reader enabled
+             :initarg :enabled)
+   (%disabled :reader disabled
+              :initarg :disabled)
    (%pass :reader pass
           :initarg :pass)
    (%output :reader output
@@ -27,6 +27,8 @@
 
 (u:define-printer (material-spec stream)
   (format stream "~s" (name material-spec)))
+
+(define-event-handler :recompile :material recompile-material)
 
 (defun find-material-spec-master (spec)
   (let* ((master-name (master spec))
@@ -74,10 +76,8 @@
              (shader (or shader (and master-spec (shader master-spec))))
              (blend-mode (or blend-mode +gl-blend-mode+))
              (depth-mode (or depth-mode +gl-depth-mode+))
-             (features/enabled (set-difference
-                                enable +gl-capabilities/enabled+))
-             (features/disabled (set-difference
-                                 disable +gl-capabilities/disabled+))
+             (enable (set-difference enable +gl-capabilities/enabled+))
+             (disable (set-difference disable +gl-capabilities/disabled+))
              (pass (or pass :default)))
         (symbol-macrolet ((spec (meta :materials name)))
           (if spec
@@ -85,8 +85,8 @@
                      :shader shader
                      :blend-mode blend-mode
                      :depth-mode depth-mode
-                     :features/enabled features/enabled
-                     :features/disabled features/disabled
+                     :enabled enable
+                     :disabled disable
                      :pass pass
                      args)
               (progn
@@ -96,27 +96,27 @@
                                           :shader shader
                                           :blend-mode blend-mode
                                           :depth-mode depth-mode
-                                          :features/enabled features/enabled
-                                          :features/disabled features/disabled
+                                          :enabled enable
+                                          :disabled disable
                                           :pass pass
                                           :output output))
                 (update-material-spec-uniforms spec uniforms)
                 (update-material-spec-relationships spec))))))))
 
 (defun update-material-spec (spec &rest args)
-  (destructuring-bind (&key master shader uniforms blend-mode depth-mode
-                         features/enabled features/disabled pass output
+  (destructuring-bind (&key master shader uniforms blend-mode depth-mode enabled
+                         disabled pass output
                        &allow-other-keys)
       args
-    (with-slots (%name %master %shader %blend-mode %depth-mode %features/enabled
-                 %features/disabled %pass %output)
+    (with-slots (%name %master %shader %blend-mode %depth-mode %enabled
+                 %disabled %pass %output)
         spec
       (setf %master master
             %shader shader
             %blend-mode blend-mode
             %depth-mode depth-mode
-            %features/enabled features/enabled
-            %features/disabled features/disabled
+            %enabled enabled
+            %disabled disabled
             %pass pass
             %output output)
       (update-material-spec-uniforms spec uniforms)
@@ -131,8 +131,8 @@
            :uniforms (u:hash->plist (u:href (uniforms slave) :self))
            :blend-mode (or (blend-mode slave) %blend-mode)
            :depth-mode (or (depth-mode slave) %depth-mode)
-           :features/enabled (or (features/enabled slave) %features/enabled)
-           :features/disabled (or (features/disabled slave) %features/disabled)
+           :enabled (or (enabled slave) %enabled)
+           :disabled (or (disabled slave) %disabled)
            :pass (or (pass slave) %pass)
            :output (or (output slave) %output)))))))
 

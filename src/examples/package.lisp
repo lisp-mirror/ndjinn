@@ -9,11 +9,12 @@
    (#:m4 #:origin.mat4))
   (:use #:cl)
   (:export
-   #:texture
    #:graph
    #:mesh/1
    #:mesh/2
+   #:noise
    #:sprite
+   #:texture
    #:world))
 
 (defpackage #:pyx.examples.shader

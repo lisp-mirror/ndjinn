@@ -33,7 +33,7 @@
   :camera/clip-near -1000
   :camera/clip-far 1000)
 
-(pyx:define-prefab full-screen-quad (:add (pyx:mesh pyx:render))
+(pyx:define-prefab quad (:add (pyx:mesh pyx:render))
   :mesh/file "plane.glb"
   :mesh/name "plane"
   :render/materials '(quad))

@@ -8,7 +8,7 @@
 
 ;;; prefabs
 
-(pyx:define-prefab graph-example (:template full-screen-quad)
+(pyx:define-prefab graph-example (:template quad)
   :render/materials '(graph))
 
 ;;; scene

@@ -53,8 +53,7 @@
 ;;; pipeline
 
 (pyx:define-pipeline sprite ()
-  (:passes (:default)
-   :draw-order (background ships)))
+  (:draw-order (background ships)))
 
 ;;; scene
 

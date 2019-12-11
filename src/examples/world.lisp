@@ -52,14 +52,7 @@
   (camera (:template camera/isometric))
   (world (:template world)))
 
-;;; pipeline
-
-(pyx:define-pipeline world ()
-  (:passes (:default)
-   :draw-order (:default)))
-
 ;;; scene
 
 (pyx:define-scene world ()
-  (:pipeline world
-   :prefabs (world-example)))
+  (:prefabs (world-example)))

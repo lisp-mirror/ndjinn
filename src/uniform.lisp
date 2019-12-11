@@ -62,10 +62,16 @@
            ((:bool :int :float :vec2 :vec3 :vec4 :mat2 :mat3 :mat4)
             (%generate-uniform-func/array material type))))))))
 
+(defun resolve-uniform-func (funcs key value)
+  (let ((func (u:href funcs key))
+        (value (if (functionp value)
+                   (funcall value)
+                   value)))
+    (funcall func key value)))
+
 (defun set-uniforms (material &rest args)
   (let ((funcs (funcs material)))
     (u:do-plist (k v args)
-      (symbol-macrolet ((func (u:href funcs k)))
-        (unless func
-          (register-uniform-func material k))
-        (funcall func k v)))))
+      (unless (u:href funcs k)
+        (register-uniform-func material k))
+      (resolve-uniform-func funcs k v))))

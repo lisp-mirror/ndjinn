@@ -38,7 +38,7 @@
       (with-framebuffer %framebuffer (:output %output)
         (shadow:with-shader (shader %spec)
           (u:do-hash (k v %uniforms)
-            (funcall (u:href %funcs k) k v))
+            (resolve-uniform-func %funcs k v))
           (with-opengl-state (%enabled %disabled %blend-mode %depth-mode)
             (on-entity-render entity))
           (on-entity-render entity)

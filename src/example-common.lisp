@@ -9,4 +9,17 @@
 
 ;;; prefabs
 
-(pyx:define-prefab camera (:add (pyx:camera)))
+(pyx:define-prefab camera/perspective (:add (pyx:camera))
+  :xform/translate (v3:vec 0 0 50))
+
+(pyx:define-prefab camera/orthographic (:add (pyx:camera))
+  :xform/translate (v3:vec 0 0 1)
+  :camera/mode :orthographic
+  :camera/clip-near 0
+  :camera/clip-far 16)
+
+(pyx:define-prefab camera/isometric (:add (pyx:camera))
+  :xform/translate (v3:vec 0 0 1)
+  :camera/mode :isometric
+  :camera/clip-near -1000
+  :camera/clip-far 1000)

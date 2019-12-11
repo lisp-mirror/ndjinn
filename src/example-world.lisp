@@ -49,10 +49,7 @@
         :mesh/instances (@ world :tiles/wall)))
 
 (pyx:define-prefab world-example ()
-  (camera (:template camera)
-          :camera/mode :isometric
-          :camera/clip-near -1000
-          :camera/clip-far 1000)
+  (camera (:template camera/isometric))
   (world (:template world)))
 
 ;;; pipeline

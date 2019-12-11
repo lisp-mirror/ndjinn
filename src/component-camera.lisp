@@ -15,7 +15,7 @@
                      :initform 1024)
    (%camera/fov-y :accessor camera/fov-y
                   :initarg :camera/fov-y
-                  :initform 90f0)
+                  :initform 45f0)
    (%camera/zoom :reader camera/zoom
                  :initarg :camera/zoom
                  :initform 1)

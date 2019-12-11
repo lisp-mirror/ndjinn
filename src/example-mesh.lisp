@@ -8,19 +8,28 @@
 
 ;;; prefabs
 
-(pyx:define-prefab mesh-example ()
-  (camera (:template camera)
-          :xform/translate (v3:vec 0 0 50)
-          :camera/zoom 1
-          :camera/fov-y 90)
-  (mesh (:add (pyx:mesh pyx:render))
-        :xform/rotate/inc (v3:vec 0 0.01 0)
-        :xform/scale 30
+(pyx:define-prefab mesh (:add (pyx:mesh pyx:render))
+  :xform/rotate (v3:vec (/ pi 2) 0 0)
+  :xform/rotate/inc (v3:vec 0 0 -0.01)
+  :xform/scale 15
+  :render/materials '(mesh))
+
+(pyx:define-prefab mesh/1 ()
+  (camera (:template camera/perspective))
+  (mesh (:template mesh)
         :mesh/file "sphere.glb"
-        :mesh/name "sphere"
-        :render/materials '(mesh)))
+        :mesh/name "sphere"))
+
+(pyx:define-prefab mesh/2 ()
+  (camera (:template camera/perspective))
+  (mesh (:template mesh)
+        :mesh/file "helmet.glb"
+        :mesh/name "helmet"))
 
 ;;; scenes
 
-(pyx:define-scene mesh ()
-  (:prefabs (mesh-example)))
+(pyx:define-scene mesh/1 ()
+  (:prefabs (mesh/1)))
+
+(pyx:define-scene mesh/2 ()
+  (:prefabs (mesh/2)))

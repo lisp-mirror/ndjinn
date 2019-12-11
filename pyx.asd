@@ -107,4 +107,4 @@
    (:file "example-sprite")
    (:file "example-world")
    (:file "example-deferred-shading")
-   (:file "example-workbench")))
+   #++(:file "example-workbench")))

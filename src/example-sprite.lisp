@@ -46,10 +46,7 @@
            :animate/sequence 'sprite))
 
 (pyx:define-prefab sprite-example ()
-  (camera (:template camera)
-          :camera/mode :orthographic
-          :camera/clip-near 0
-          :camera/clip-far 16)
+  (camera (:template camera/orthographic))
   (planet (:template planet))
   (ship (:template ship)))
 

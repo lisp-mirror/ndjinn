@@ -10,10 +10,12 @@
    (#:m4 #:origin.mat4))
   (:use #:cl)
   (:export
+   #:effect/kaleidoscope
+   #:effect/toroidal-trip
    #:effect/truchet
    #:graph
-   #:mesh/1
-   #:mesh/2
+   #:mesh/sphere
+   #:mesh/helmet
    #:noise
    #:sprite
    #:texture

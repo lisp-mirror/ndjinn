@@ -72,6 +72,6 @@
 (defun set-uniforms (material &rest args)
   (let ((funcs (funcs material)))
     (u:do-plist (k v args)
-      (unless (u:href funcs k)
+      (unless (nth-value 1 (u:href funcs k))
         (register-uniform-func material k))
       (resolve-uniform-func funcs k v))))

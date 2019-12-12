@@ -20,3 +20,6 @@
          (unless ,found-p
            (setf ,table (u:dict #'equalp))))
        (a:ensure-gethash ,key ,table (progn ,@body)))))
+
+(defun delete-resource (type key)
+  (remhash key (u:href (resources *state*) type)))

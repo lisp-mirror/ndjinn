@@ -12,7 +12,6 @@
                #:cl-opengl
                #:closer-mop
                #:doubly-linked-list
-               #:dungen
                #:fast-io
                #:filtered-functions
                #:golden-utils
@@ -76,7 +75,6 @@
    (:file "shader")
    (:file "shader-default")
    (:file "shader-quad")
-   (:file "shader-world")
    (:file "mixin")
    (:file "entity-flow")
    (:file "entity-query")
@@ -88,7 +86,6 @@
    (:file "component-render")
    (:file "component-xform")
    (:file "component-camera")
-   (:file "component-world")
    (:file "component-sprite")
    (:file "component-mesh")
    (:file "prefab-common")

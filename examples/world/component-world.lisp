@@ -1,6 +1,6 @@
-(in-package #:pyx)
+(in-package #:pyx.examples)
 
-(define-component world ()
+(pyx:define-component world ()
   ((%world/width :reader world/width
                  :initarg :world/width
                  :initform 149)
@@ -30,10 +30,10 @@
    (%world/buffer-name :accessor world/buffer-name))
   (:sorting :before mesh :after render))
 
-(pyx::define-query-types world
+(pyx:define-query-types world
   (:cell-count (:tiles/wall :tiles/floor :tiles/door-v :tiles/door-h)))
 
-(pyx::define-query (entity world) (parameter :cell-count)
+(pyx:define-query (entity world) (parameter :cell-count)
   (u:href (world/cell-counts entity) parameter))
 
 (defun analyze-world (world data)
@@ -61,7 +61,7 @@
               (u:href %world/cell-counts :tiles/door/h) (length doors/h))
         (values walls floors doors/v doors/h)))))
 
-(defmethod update-shader-buffer ((object world))
+(defmethod pyx:update-shader-buffer ((object world))
   (with-slots (%world/width %world/height %world/buffer-name) object
     (destructuring-bind (type name) %world/buffer-name
       (declare (ignore type))
@@ -77,7 +77,7 @@
 
 ;;; entity hooks
 
-(define-hook :entity-create (entity world)
+(pyx:define-hook :entity-create (entity world)
   (setf world/buffer-name `(world (:width ,world/width
                                    :height ,world/height
                                    :seed ,world/seed
@@ -86,10 +86,10 @@
                                    :wild-factor ,world/wild-factor
                                    :door-rate ,world/door-rate
                                    :cycle-factor ,world/cycle-factor)))
-  (resource-lookup 'world world/buffer-name
-    (make-shader-buffer world/buffer-name :world 'pyx.shader:world)
-    (update-shader-buffer entity)))
+  (pyx:resource-lookup 'world world/buffer-name
+    (pyx:make-shader-buffer world/buffer-name :world 'pyx.examples.shader:world)
+    (pyx:update-shader-buffer entity)))
 
-(define-hook :entity-delete (entity world)
-  (remhash world/buffer-name (u:href (resources *state*) 'world))
-  (delete-shader-buffer world/buffer-name))
+(pyx:define-hook :entity-delete (entity world)
+  (pyx:delete-resource 'world world/buffer-name)
+  (pyx:delete-shader-buffer world/buffer-name))

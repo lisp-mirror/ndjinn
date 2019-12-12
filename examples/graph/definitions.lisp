@@ -8,10 +8,10 @@
 
 ;;; prefabs
 
-(pyx:define-prefab graph-example (:template quad)
+(pyx:define-prefab graph (:template quad)
   :render/materials '(graph))
 
 ;;; scene
 
 (pyx:define-scene graph ()
-  (:prefabs (graph-example)))
+  (:prefabs (graph)))

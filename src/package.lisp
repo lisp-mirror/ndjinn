@@ -29,6 +29,7 @@
    #:define-framebuffer
    #:define-geometry
    #:define-geometry-layout
+   #:define-hook
    #:define-material
    #:define-pipeline
    #:define-prefab
@@ -67,8 +68,16 @@
    #:node
    #:render
    #:sprite
-   #:world
    #:xform)
+  ;; resources
+  (:export
+   #:delete-resource
+   #:resource-lookup)
+  ;; shaders
+  (:export
+   #:delete-shader-buffer
+   #:make-shader-buffer
+   #:update-shader-buffer)
   ;; animation states
   (:export
    #:sprite

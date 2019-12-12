@@ -6,7 +6,8 @@
    (%uniforms :reader uniforms
               :initarg :uniforms)
    (%framebuffer :reader framebuffer
-                 :initarg :framebuffer)
+                 :initarg :framebuffer
+                 :initform nil)
    (%output :reader output
             :initarg :output)
    (%funcs :reader funcs
@@ -30,16 +31,15 @@
   (with-slots (%spec %framebuffer %output) material
     (destructuring-bind (&optional framebuffer-name attachment-names)
         (output %spec)
-      (let* ((framebuffer (ensure-framebuffer framebuffer-name))
-             (output (framebuffer-attachment-names->points
-                      framebuffer
-                      attachment-names)))
-        (when (and framebuffer-name (not framebuffer))
+      (when framebuffer-name
+        (setf %framebuffer (ensure-framebuffer framebuffer-name)
+              %output (framebuffer-attachment-names->points
+                       %framebuffer
+                       attachment-names))
+        (unless %framebuffer
           (error "Material ~s uses unknown framebuffer ~s."
                  (name %spec)
-                 framebuffer-name))
-        (setf %framebuffer framebuffer
-              %output output)))))
+                 framebuffer-name))))))
 
 (defun make-material (spec-name)
   (a:if-let ((spec (meta :materials spec-name)))

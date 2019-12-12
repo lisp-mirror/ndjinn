@@ -61,8 +61,7 @@
 (pyx:define-prefab noise-tile (:template quad)
   :xform/scale (v3:vec 90 90 0))
 
-(pyx:define-prefab noise-example ()
-  (camera (:template camera/orthographic))
+(pyx:define-prefab noise-grid ()
   (perlin-3d (:template noise-tile)
              :xform/translate (v3:vec -540 202.5 0)
              :render/materials '(noise/perlin-3d))
@@ -118,4 +117,4 @@
 ;;; scene
 
 (pyx:define-scene noise ()
-  (:prefabs (noise-example)))
+  (:prefabs (camera/orthographic noise-grid)))

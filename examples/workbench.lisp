@@ -39,10 +39,7 @@
 ;;; prefabs
 
 (pyx:define-prefab test ()
-  (camera (:template camera)
-          :camera/mode :orthographic
-          :camera/clip-near 0
-          :camera/clip-far 16)
+  (camera (:template camera/orthographic))
   (quad (:add (pyx:mesh pyx:render))
         :xform/scale 50
         :mesh/file "plane.glb"

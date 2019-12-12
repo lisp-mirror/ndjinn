@@ -7,18 +7,22 @@
   :source-control (:git "https://github.com/mfiano/pyx.git")
   :bug-tracker "https://github.com/mfiano/pyx/issues"
   :encoding :utf-8
-  :depends-on (#:pyx)
-  :pathname "src/examples"
+  :depends-on (#:pyx
+               #:dungen)
+  :pathname "examples"
   :serial t
   :components
   ((:file "package")
-   (:file "shaders")
    (:file "common")
-   (:file "graph")
-   (:file "mesh")
-   (:file "noise")
-   (:file "sprite")
-   (:file "texture")
-   (:file "world")
-   (:file "deferred-shading")
-   #++(:file "workbench")))
+   (:file "workbench")
+   (:file "deferred-shading/definitions")
+   (:file "graph/shader")
+   (:file "graph/definitions")
+   (:file "mesh/definitions")
+   (:file "noise/shaders")
+   (:file "noise/definitions")
+   (:file "sprite/definitions")
+   (:file "texture/definitions")
+   (:file "world/shader")
+   (:file "world/component-world")
+   (:file "world/definitions")))

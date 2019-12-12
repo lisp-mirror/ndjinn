@@ -45,11 +45,6 @@
            :render/order 'ships
            :animate/sequence 'sprite))
 
-(pyx:define-prefab sprite-example ()
-  (camera (:template camera/orthographic))
-  (planet (:template planet))
-  (ship (:template ship)))
-
 ;;; pipeline
 
 (pyx:define-pipeline sprite ()
@@ -59,4 +54,4 @@
 
 (pyx:define-scene sprite ()
   (:pipeline sprite
-   :prefabs (sprite-example)))
+   :prefabs (camera/orthographic planet ship)))

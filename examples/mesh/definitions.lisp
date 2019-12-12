@@ -14,22 +14,18 @@
   :xform/scale 15
   :render/materials '(mesh))
 
-(pyx:define-prefab mesh/1 ()
-  (camera (:template camera/perspective))
-  (mesh (:template mesh)
-        :mesh/file "sphere.glb"
-        :mesh/name "sphere"))
+(pyx:define-prefab mesh/1 (:template mesh)
+  :mesh/file "sphere.glb"
+  :mesh/name "sphere")
 
-(pyx:define-prefab mesh/2 ()
-  (camera (:template camera/perspective))
-  (mesh (:template mesh)
-        :mesh/file "helmet.glb"
-        :mesh/name "helmet"))
+(pyx:define-prefab mesh/2 (:template mesh)
+  :mesh/file "helmet.glb"
+  :mesh/name "helmet")
 
 ;;; scenes
 
 (pyx:define-scene mesh/1 ()
-  (:prefabs (mesh/1)))
+  (:prefabs (camera/perspective mesh/1)))
 
 (pyx:define-scene mesh/2 ()
-  (:prefabs (mesh/2)))
+  (:prefabs (camera/perspective mesh/2)))

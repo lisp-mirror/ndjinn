@@ -1,20 +1,12 @@
 (in-package #:pyx)
 
-(defun transform-prefab-reference (factory node)
-  (with-slots (%prefab-name %current-node) factory
-    (let ((path (path %current-node)))
-      (when node
-        (find-if
-         (lambda (x) (subseq path 0 (mismatch path x)))
-         (u:href (references node) %prefab-name))))))
-
 (defun find-prefab-reference (factory path)
   (with-slots (%current-node %entities) factory
-    (let* ((nodes (nodes (prefab (template %current-node))))
-           (new-path (transform-prefab-reference factory (u:href nodes path))))
-      (or (u:href %entities new-path)
-          (error "Failed to find reference ~{~a~^/~} for node ~{~a~^/~}."
-                 path (path %current-node))))))
+    (let ((current-path (path %current-node)))
+      (a:if-let ((index (search path current-path)))
+        (u:href %entities (subseq current-path 0 (+ index (length path))))
+        (error "Failed to find reference ~{~a~^/~} for node ~{~a~^/~}."
+               path current-path)))))
 
 (defun generate-prefab-reference-func (path/query)
   (lambda (factory)

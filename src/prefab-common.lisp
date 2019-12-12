@@ -28,8 +28,6 @@
    (%template :reader template
               :initarg :template
               :initform nil)
-   (%references :reader references
-                :initform (u:dict #'eq))
    (%component-types :reader component-types
                      :initform (u:dict #'eq))
    (%component-args :reader component-args

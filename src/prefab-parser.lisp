@@ -13,7 +13,6 @@
            (record-prefab-dependencies prefab)
            (resolve-prefab-component-types prefab)
            (resolve-prefab-component-args prefab)
-           (populate-prefab-references prefab)
            (build-prefab-factory prefab)
            (setf success-p t))
       (unless success-p
@@ -52,16 +51,15 @@
 (defun parse-prefab-node-templates (prefab)
   (u:do-hash-values (node (nodes prefab))
     (with-slots (%path %options %template) node
-      (let ((spec (getf %options :template)))
-        (when spec
-          (setf %template (find-prefab-node-template spec %path)))))))
+      (a:when-let ((spec (getf %options :template)))
+        (setf %template (find-prefab-node-template spec %path))))))
 
 ;;; Populate the prefab with the implicit nodes. Prefab nodes before this step
-;;; that have a node-based template only have a node representing that template.
-;;; This will bring in all of the children nodes of that template node into the
-;;; correct paths. NOTE: This will error instead of attempting a merge, if a
-;;; path for a template's child already exists as an explicit node. This may be
-;;; changed at a later date to employ an intelligent merge strategy.
+;;; that have a template only have a node representing that template. This will
+;;; bring in all of the children nodes of that template node into the correct
+;;; paths. NOTE: This will error instead of attempting a merge, if a path for a
+;;; template's child already exists as an explicit node. This may be changed at
+;;; a later date to employ an intelligent merge strategy.
 
 (defun populate-implicit-prefab-nodes (prefab)
   (flet ((populate (parent template)
@@ -87,9 +85,8 @@
                                             :parent parent
                                             :template node)))))))))
     (u:do-hash-values (node (nodes prefab))
-      (let ((template (template node)))
-        (when (typep template 'prefab-node)
-          (populate (u:href (nodes prefab) (path node)) template))))))
+      (a:when-let ((template (template node)))
+        (populate (u:href (nodes prefab) (path node)) template)))))
 
 ;;; Record the dependencies of a prefab. This iterates over all nodes and if it
 ;;; uses a template, adds the current prefab name to the template's slave list,
@@ -169,18 +166,6 @@
             (error "Component argument ~s is invalid for node ~{~a~^/~}."
                    arg path)))
         (setf (u:href %component-args :resolved) args)))))
-
-;;; Track node references. This iterates over all the nodes of the prefab that
-;;; have a node-based template. It then writes into a table of the referenced
-;;; prefab node containing a mapping of the current prefab to the current node.
-;;; This is required so that any references in a template can be transformed to
-;;; the referencing prefab's node hierarchy.
-
-(defun populate-prefab-references (prefab)
-  (u:do-hash-values (node (nodes prefab))
-    (with-slots (%path %template) node
-      (when (typep %template 'prefab-node)
-        (push %path (u:href (references %template) (name prefab)))))))
 
 ;;; Pre-process the prefab definition body to control its evaluation. This wraps
 ;;; raw s-expressions in LIST, and wraps component arguments in a LAMBDA to be

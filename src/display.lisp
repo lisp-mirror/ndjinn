@@ -2,8 +2,13 @@
 
 (defclass display ()
   ((%window :accessor window)
+   (%resolution :reader resolution
+                :initarg :resolution)
    (%refresh-rate :reader refresh-rate
                   :initarg :refresh-rate)))
+
+(defun get-window-resolution ()
+  (resolution (display *state*)))
 
 (defun make-opengl-context (display)
   (with-slots (%window) display
@@ -19,18 +24,22 @@
     (gl:depth-func +gl-depth-mode+)
     (u:noop)))
 
-(defun make-window (display)
+(defun make-window (display width height)
   (with-slots (%window) display
     (setf %window (sdl2:create-window :title "Pyx"
-                                      :w (cfg :window-width)
-                                      :h (cfg :window-height)
+                                      :w width
+                                      :h height
                                       :flags '(:opengl)))))
 
 (defun make-display ()
   (sdl2:init :everything)
   (let* ((refresh-rate (nth-value 3 (sdl2:get-current-display-mode 0)))
-         (display (make-instance 'display :refresh-rate refresh-rate)))
-    (make-window display)
+         (width (cfg :window-width))
+         (height (cfg :window-height))
+         (display (make-instance 'display
+                                 :refresh-rate refresh-rate
+                                 :resolution (v2:vec width height))))
+    (make-window display width height)
     (make-opengl-context display)
     (sdl2:gl-set-swap-interval (if (cfg :vsync) 1 0))
     (setf (slot-value *state* '%display) display)

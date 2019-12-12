@@ -109,5 +109,5 @@
 
 ;;; public api
 
-(defun total-time ()
+(defun get-total-time ()
   (clock-total-time (clock *state*)))

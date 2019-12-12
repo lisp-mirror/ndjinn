@@ -17,9 +17,10 @@
    #:start
    #:stop
    #:deploy)
-  ;; clock
+  ;; common
   (:export
-   #:total-time)
+   #:get-window-resolution
+   #:get-total-time)
   ;; definitions
   (:export
    #:define-animation-sequence

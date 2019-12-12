@@ -2,7 +2,7 @@
 
 ;;; materials
 
-(pyx:define-material world (base)
+(pyx:define-material world ()
   (:shader pyx.examples.shader:world
    :uniforms (:light.position (v3:vec 0.1 0.25 -1)
               :light.ambient (v4:vec 0.01 0.01 0.01 0.01)

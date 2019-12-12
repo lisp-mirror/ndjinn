@@ -16,6 +16,8 @@
    (:file "common")
    (:file "workbench")
    (:file "deferred-shading/definitions")
+   (:file "effect-truchet/shader")
+   (:file "effect-truchet/definitions")
    (:file "graph/shader")
    (:file "graph/definitions")
    (:file "mesh/definitions")

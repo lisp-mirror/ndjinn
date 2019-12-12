@@ -7,11 +7,6 @@
 
 ;;; materials
 
-(pyx:define-material base ()
-  (:uniforms (:model (m4:id)
-              :view (m4:id)
-              :proj (m4:id))))
-
 (pyx:define-material quad ()
   (:shader pyx.shader:quad
    :uniforms (:sampler 'debug)))

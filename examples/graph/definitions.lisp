@@ -4,7 +4,7 @@
 
 (pyx:define-material graph ()
   (:shader pyx.examples.shader:graph
-   :uniforms (:time #'pyx:total-time)))
+   :uniforms (:time #'pyx:get-total-time)))
 
 ;;; prefabs
 

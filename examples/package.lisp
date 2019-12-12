@@ -4,11 +4,13 @@
   (:local-nicknames
    (#:a #:alexandria)
    (#:u #:golden-utils)
+   (#:v2 #:origin.vec2)
    (#:v3 #:origin.vec3)
    (#:v4 #:origin.vec4)
    (#:m4 #:origin.mat4))
   (:use #:cl)
   (:export
+   #:effect/truchet
    #:graph
    #:mesh/1
    #:mesh/2

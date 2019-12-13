@@ -20,6 +20,7 @@
    (:file "effect-kaleidoscope/definitions")
    (:file "effect-truchet/shader")
    (:file "effect-truchet/definitions")
+   (:file "effect-toroidal-trip/shader")
    (:file "effect-toroidal-trip/definitions")
    (:file "graph/shader")
    (:file "graph/definitions")

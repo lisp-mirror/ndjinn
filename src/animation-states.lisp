@@ -37,7 +37,7 @@
 
 (define-animation-state rotate ()
   (:angle (* pi 2)
-   :axis (v3:vec 0 0 1)))
+   :axis (v3:vec 0f0 0f0 1f0)))
 
 (define-animation-state-hook rotate entity state :update
   (with-slots (%angle %axis %progress) state

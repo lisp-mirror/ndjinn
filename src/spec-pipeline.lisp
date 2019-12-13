@@ -54,7 +54,7 @@
         :for (name . options) :in passes
         :collect name :into order
         :do (destructuring-bind (&key clear-color clear-buffers) options
-              (let* ((clear-color (or clear-color (v4:vec 0 0 0 1)))
+              (let* ((clear-color (or clear-color (v4:vec 0f0 0f0 0f0 1f0)))
                      (clear-buffers (mapcar
                                      (lambda (x)
                                        (a:format-symbol :keyword "~a-BUFFER" x))

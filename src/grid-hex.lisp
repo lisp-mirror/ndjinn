@@ -84,7 +84,7 @@
         :for min = (max (- range) (- (- x) range))
         :for max = (min range (+ (- x) range))
         :do (loop :for y :from min :to max
-                  :for hex = (v3:+ (hex-from-cell grid cell) (v3:vec x y 0))
+                  :for hex = (v3:+ (hex-from-cell grid cell) (v3:vec x y 0f0))
                   :for selected = (hex-to-cell grid hex)
                   :when (grid-cell-p grid selected)
                     :do (push selected cells))

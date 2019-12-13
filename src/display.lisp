@@ -27,15 +27,15 @@
 (defun make-window (display width height)
   (with-slots (%window) display
     (setf %window (sdl2:create-window :title "Pyx"
-                                      :w width
-                                      :h height
+                                      :w (truncate width)
+                                      :h (truncate height)
                                       :flags '(:opengl)))))
 
 (defun make-display ()
   (sdl2:init :everything)
   (let* ((refresh-rate (nth-value 3 (sdl2:get-current-display-mode 0)))
-         (width (cfg :window-width))
-         (height (cfg :window-height))
+         (width (float (cfg :window-width) 1f0))
+         (height (float (cfg :window-height) 1f0))
          (display (make-instance 'display
                                  :refresh-rate refresh-rate
                                  :resolution (v2:vec width height))))

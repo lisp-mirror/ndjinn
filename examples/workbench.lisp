@@ -41,7 +41,7 @@
 (pyx:define-prefab test ()
   (camera (:template camera/orthographic))
   (quad (:add (pyx:mesh pyx:render))
-        :xform/scale 50
+        :xform/scale 50f0
         :mesh/file "plane.glb"
         :mesh/name "plane"
         :render/materials '(quad/pass1)))

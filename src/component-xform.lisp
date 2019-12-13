@@ -40,7 +40,7 @@
   (with-slots (%current %previous) (xform/scaling entity)
     (setf %current (etypecase current
                      (v3:vec current)
-                     (real (v3:vec current current current)))
+                     (single-float (v3:vec current current current)))
           %previous (v3:copy %current))))
 
 (defun initialize-scaling/inc (entity incremental)

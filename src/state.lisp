@@ -38,10 +38,7 @@
       (process-queue :entity-flow)
       (handle-events)
       (map-nodes #'resolve-model)
-      (update-display)
-      ;; TODO: Remove this later when possible
-      (when (input-enter-p :key :escape)
-        (stop)))))
+      (update-display))))
 
 (defun run-periodic-tasks ()
   #-pyx.release (update-repl)

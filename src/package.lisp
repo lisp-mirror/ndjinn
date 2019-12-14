@@ -20,9 +20,15 @@
    #:deploy)
   ;; common
   (:export
+   #:meta
    #:get-window-resolution
    #:get-total-time)
   ;; definitions
+  ;; scenes
+  (:export
+   #:get-current-scene-name
+   #:load-scene
+   #:switch-scene)
   (:export
    #:define-animation-sequence
    #:define-animation-state

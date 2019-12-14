@@ -7,4 +7,4 @@
 ;;; scene
 
 (pyx:define-scene texture ()
-  (:prefabs (texture-example)))
+  (:prefabs (examples texture-example)))

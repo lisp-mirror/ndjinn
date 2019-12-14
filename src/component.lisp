@@ -62,28 +62,29 @@
                          (rest (member '&key instance-lambda-list)))))
     (union class-args instance-args)))
 
-(defmacro define-component (name super-classes slots &rest options)
-  (let ((sorting (cdr (find :sorting options :key #'car)))
-        (static (cadr (find :static options :key #'car)))
-        (class-options (remove-if
-                        (lambda (x) (find x '(:sorting :static)))
-                        options
-                        :key #'car)))
-    (destructuring-bind (&key before after) sorting
-      (declare (ignorable before after))
-      `(u:eval-always
-         (defclass ,name ,super-classes ,slots ,@class-options)
-         (unless (meta :components)
-           (setf (meta :components) (u:dict #'eq
-                                            :order (u:dict #'eq)
-                                            :static nil)))
-         (setf (meta :components :order ',name)
-               '(:before ,(a:ensure-list before)
-                 :after ,(a:ensure-list after)))
-         (unless (typep ',static 'boolean)
-           (error ":STATIC must be one of T or NIL."))
-         ,@(when (eq static t)
-             `((pushnew ',name (meta :components :static))))))))
+(defmacro define-component (name super-classes &body slots/options)
+  (destructuring-bind (&optional slots . options) slots/options
+    (let ((sorting (cdr (find :sorting options :key #'car)))
+          (static (cadr (find :static options :key #'car)))
+          (class-options (remove-if
+                          (lambda (x) (find x '(:sorting :static)))
+                          options
+                          :key #'car)))
+      (destructuring-bind (&key before after) sorting
+        (declare (ignorable before after))
+        `(u:eval-always
+           (defclass ,name ,super-classes ,slots ,@class-options)
+           (unless (meta :components)
+             (setf (meta :components) (u:dict #'eq
+                                              :order (u:dict #'eq)
+                                              :static nil)))
+           (setf (meta :components :order ',name)
+                 '(:before ,(a:ensure-list before)
+                   :after ,(a:ensure-list after)))
+           (unless (typep ',static 'boolean)
+             (error ":STATIC must be one of T or NIL."))
+           ,@(when (eq static t)
+               `((pushnew ',name (meta :components :static)))))))))
 
 (defun has-component-p (entity type)
   (typep entity type))

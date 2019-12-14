@@ -117,4 +117,4 @@
 ;;; scene
 
 (pyx:define-scene noise ()
-  (:prefabs (camera/orthographic noise-grid)))
+  (:prefabs (examples camera/orthographic noise-grid)))

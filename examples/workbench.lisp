@@ -56,4 +56,4 @@
 
 (pyx:define-scene test ()
   (:pipeline test
-   :prefabs (test)))
+   :prefabs (examples test)))

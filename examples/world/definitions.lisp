@@ -49,4 +49,4 @@
 ;;; scene
 
 (pyx:define-scene world ()
-  (:prefabs (camera/isometric world)))
+  (:prefabs (examples camera/isometric world)))

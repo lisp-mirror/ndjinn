@@ -15,4 +15,4 @@
 ;;; scene
 
 (pyx:define-scene effect/toroidal-trip ()
-  (:prefabs (camera/orthographic effect/toroidal-trip)))
+  (:prefabs (examples camera/orthographic effect/toroidal-trip)))

@@ -12,16 +12,7 @@
    (#:q #:origin.quat))
   (:use #:cl)
   (:export
-   #:effect/kaleidoscope
-   #:effect/toroidal-trip
-   #:effect/truchet
-   #:graph
-   #:mesh/sphere
-   #:mesh/helmet
-   #:noise
-   #:sprite
-   #:texture
-   #:world))
+   #:examples))
 
 (defpackage #:pyx.examples.shader
   (:use #:shadow.glsl #:umbra.common))

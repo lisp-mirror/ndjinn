@@ -25,7 +25,8 @@
    (%enabled :accessor enabled
              :initarg :enabled
              :initform nil)
-   (%exit :accessor exit)))
+   (%exit :accessor exit
+          :initform nil)))
 
 (defun input-transition-in (input)
   (let ((input-state (input-state *state*)))
@@ -155,6 +156,7 @@
 
 (defun handle-events ()
   (let ((event (sdl2:new-event)))
+    (perform-input-tasks)
     (unwind-protect
          (loop :until (zerop (sdl2:next-event event :poll))
                :do (dispatch-event event))

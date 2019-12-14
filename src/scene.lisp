@@ -24,6 +24,9 @@
 (u:define-printer (scene stream)
   (format stream "~s" (name (spec scene))))
 
+(defun get-current-scene-name ()
+  (name (spec (current-scene *state*))))
+
 (defun load-scene (scene-name)
   (let ((spec (meta :scenes scene-name)))
     (unless spec

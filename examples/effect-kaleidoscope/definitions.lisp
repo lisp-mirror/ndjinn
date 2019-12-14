@@ -21,4 +21,4 @@
 ;;; scene
 
 (pyx:define-scene effect/kaleidoscope ()
-  (:prefabs (camera/orthographic effect/kaleidoscope)))
+  (:prefabs (examples camera/orthographic effect/kaleidoscope)))

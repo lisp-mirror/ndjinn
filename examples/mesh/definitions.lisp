@@ -25,7 +25,7 @@
 ;;; scenes
 
 (pyx:define-scene mesh/sphere ()
-  (:prefabs (camera/perspective mesh/sphere)))
+  (:prefabs (examples camera/perspective mesh/sphere)))
 
 (pyx:define-scene mesh/helmet ()
-  (:prefabs (camera/perspective mesh/helmet)))
+  (:prefabs (examples camera/perspective mesh/helmet)))

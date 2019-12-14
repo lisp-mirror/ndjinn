@@ -54,4 +54,4 @@
 
 (pyx:define-scene sprite ()
   (:pipeline sprite
-   :prefabs (camera/orthographic planet ship)))
+   :prefabs (examples camera/orthographic planet ship)))

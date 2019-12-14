@@ -3,6 +3,8 @@
 (defclass scene ()
   ((%spec :reader spec
           :initarg :spec)
+   (%loaded-p :accessor loaded-p
+              :initform nil)
    (%camera :reader camera
             :initform nil)
    (%node-tree :reader node-tree)
@@ -27,12 +29,15 @@
     (unless spec
       (error "Scene ~s is not defined." scene-name))
     (let ((current (current-scene *state*))
-          (scene (make-instance 'scene :spec spec)))
+          (scene (or (u:href (scenes *state*) scene-name)
+                     (make-instance 'scene :spec spec))))
       (setf (u:href (scenes *state*) scene-name) scene
             (slot-value *state* '%current-scene) scene)
-      (make-node-tree scene)
-      (dolist (prefab (prefabs spec))
-        (load-prefab prefab))
+      (unless (loaded-p scene)
+        (make-node-tree scene)
+        (dolist (prefab (prefabs spec))
+          (load-prefab prefab))
+        (setf (loaded-p scene) t))
       (setf (slot-value *state* '%current-scene) current)
       scene)))
 

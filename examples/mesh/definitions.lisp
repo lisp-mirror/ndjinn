@@ -9,8 +9,8 @@
 ;;; prefabs
 
 (pyx:define-prefab mesh (:add (pyx:mesh pyx:render))
-  :xform/rotate (v3:vec (float (/ pi 2) 1f0) 0f0 0f0)
-  :xform/rotate/inc (v3:vec 0f0 0f0 -0.01)
+  :xform/rotate (q:orient :local :x math:pi/2)
+  :xform/rotate/velocity (math:make-velocity v3:+forward+ (- math:pi/6))
   :xform/scale 15f0
   :render/materials '(mesh))
 

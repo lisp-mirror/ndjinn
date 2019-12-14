@@ -14,75 +14,59 @@
   (:sorting :after node)
   (:static t))
 
-(defun initialize-translation (entity current)
-  (with-slots (%current %previous) (xform/translation entity)
-    (setf %current current
-          %previous (v3:copy %current))))
+(defun initialize-translation (entity &optional initial velocity)
+  (with-slots (%current %previous %incremental) (xform/translation entity)
+    (when initial
+      (setf %current initial
+            %previous (v3:copy %current)))
+    (when velocity
+      (setf %incremental velocity))))
 
-(defun initialize-translation/inc (entity incremental)
-  (with-slots (%incremental) (xform/translation entity)
-    (setf %incremental incremental)))
+(defun initialize-rotation (entity &optional initial velocity)
+  (with-slots (%current %previous %incremental) (xform/rotation entity)
+    (when initial
+      (setf %current initial
+            %previous (q:copy %current)))
+    (when velocity
+      (setf %incremental velocity))))
 
-(defun initialize-rotation (entity current)
-  (with-slots (%current %previous) (xform/rotation entity)
-    (setf %current (etypecase current
-                     (v3:vec (q:rotate-euler q:+id+ current))
-                     (q:quat current))
-          %previous (q:copy %current))))
-
-(defun initialize-rotation/inc (entity incremental)
-  (with-slots (%incremental) (xform/rotation entity)
-    (setf %incremental (etypecase incremental
-                         (v3:vec (q:rotate-euler q:+id+ incremental))
-                         (q:quat incremental)))))
-
-(defun initialize-scaling (entity current)
-  (with-slots (%current %previous) (xform/scaling entity)
-    (setf %current (etypecase current
-                     (v3:vec current)
-                     (single-float (v3:vec current current current)))
-          %previous (v3:copy %current))))
-
-(defun initialize-scaling/inc (entity incremental)
-  (with-slots (%incremental) (xform/scaling entity)
-    (setf %incremental incremental)))
+(defun initialize-scaling (entity &optional initial velocity)
+  (with-slots (%current %previous %incremental) (xform/scaling entity)
+    (when initial
+      (setf %current (etypecase initial
+                       (v3:vec initial)
+                       (single-float (v3:vec initial initial initial)))
+            %previous (v3:copy %current)))
+    (when velocity
+      (setf %incremental velocity))))
 
 (defmethod shared-initialize :after ((instance xform) slot-names
                                      &key
                                        xform/translate
-                                       xform/translate/inc
+                                       xform/translate/velocity
                                        xform/rotate
-                                       xform/rotate/inc
+                                       xform/rotate/velocity
                                        xform/scale
-                                       xform/scale/inc)
-  (when xform/translate
-    (initialize-translation instance xform/translate))
-  (when xform/translate/inc
-    (initialize-translation/inc instance xform/translate/inc))
-  (when xform/rotate
-    (initialize-rotation instance xform/rotate))
-  (when xform/rotate/inc
-    (initialize-rotation/inc instance xform/rotate/inc))
-  (when xform/scale
-    (initialize-scaling instance xform/scale))
-  (when xform/scale/inc
-    (initialize-scaling/inc instance xform/scale/inc)))
+                                       xform/scale/velocity)
+  (initialize-translation instance xform/translate xform/translate/velocity)
+  (initialize-rotation instance xform/rotate xform/rotate/velocity)
+  (initialize-scaling instance xform/scale xform/scale/velocity))
 
 (defmethod reinitialize-instance :after ((instance xform)
                                          &key
                                            xform/translate
-                                           xform/translate/inc
+                                           xform/translate/velocity
                                            xform/rotate
-                                           xform/rotate/inc
+                                           xform/rotate/velocity
                                            xform/scale
-                                           xform/scale/inc)
+                                           xform/scale/velocity)
   (shared-initialize instance nil
                      :xform/translate xform/translate
-                     :xform/translate/inc xform/translate/inc
+                     :xform/translate/velocity xform/translate/velocity
                      :xform/rotate xform/rotate
-                     :xform/rtoate/inc xform/rotate/inc
+                     :xform/rtoate/velocity xform/rotate/velocity
                      :xform/scale xform/scale
-                     :xform/scale/inc xform/scale/inc))
+                     :xform/scale/velocity xform/scale/velocity))
 
 (defun transform-node (entity)
   (with-slots (%xform/translation %xform/rotation %xform/scaling) entity

@@ -25,7 +25,7 @@
                :initform nil)
    (%interpolation :reader interpolation
                    :initarg :interpolation
-                   :initform 'origin.shaping:linear)))
+                   :initform #'math:linear)))
 
 (u:define-printer (animation-state stream :type nil)
   (format stream "ANIMATION-STATE: ~s" (name animation-state)))

@@ -27,7 +27,7 @@
   (make-instance 'transform-state
                  :current (q:id)
                  :frame (q:id)
-                 :incremental (q:id)
+                 :incremental (v3:zero)
                  :incremental-delta (q:id)
                  :interpolated (q:id)
                  :previous (q:id)))
@@ -61,11 +61,8 @@
 (defun transform-node/quaternion (state delta frame-time)
   (with-slots (%frame %previous %current %incremental-delta %incremental) state
     (q:copy! %previous %current)
-    ;; TODO: fix with slerp
-    (q:normalize! %frame (q:scale! %frame %frame frame-time))
+    (q:slerp! %frame q:+id+ %frame frame-time)
     (q:rotate! %current %current %frame)
-    ;; TODO: fix with slerp
-    (q:normalize! %incremental-delta
-                  (q:scale! %incremental-delta %incremental delta))
+    (math:velocity->rotation! %incremental-delta %incremental delta)
     (q:rotate! %current %current %incremental-delta)
     (q:id! %frame)))

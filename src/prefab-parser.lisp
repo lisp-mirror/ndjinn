@@ -130,11 +130,20 @@
       (let ((types (when %template
                      (copy-seq
                       (u:href (component-types %template) :resolved)))))
-        (destructuring-bind (&key add remove &allow-other-keys)
-            %options
+        (destructuring-bind (&key add remove &allow-other-keys) %options
           (dolist (type remove)
+            (unless (meta :components :order type)
+              (error "Cannot remove component from prefab ~s: component ~s is ~
+                      not a defined component."
+                     (name prefab)
+                     type))
             (a:deletef types type))
           (dolist (type add)
+            (unless (meta :components :order type)
+              (error "Cannot add component to prefab ~s: ~s is not a defined ~
+                      component."
+                     (name prefab)
+                     type))
             (pushnew type types))
           (let ((types (compute-component-order types)))
             (setf (u:href %component-types :self) add

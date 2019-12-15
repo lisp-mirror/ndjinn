@@ -11,6 +11,35 @@
   (:shader pyx.shader:quad
    :uniforms (:sampler 'debug)))
 
+;;; components
+
+(pyx:define-component scene-switcher ()
+  ((%scenes :accessor scenes
+            :initform nil)))
+
+(pyx:define-hook :entity-create (entity scene-switcher)
+  (v:info :pyx "Switched to scene ~a." (pyx:get-current-scene-name)))
+
+(pyx:define-hook :entity-update (entity scene-switcher)
+  (unless scenes
+    (setf scenes (remove-if
+                  (lambda (x)
+                    (or (not (eq (symbol-package x)
+                                 (find-package :pyx.examples)))
+                        (eq x 'examples)))
+                  (sort (u:hash-keys (pyx:meta :scenes)) #'string<))))
+  (let ((index (or (position (pyx:get-current-scene-name) scenes) 0)))
+    (when (= (random 300) 57)
+      (error "foo"))
+    (cond
+      ((pyx:input-exit-p :key :up)
+       (decf index))
+      ((pyx:input-exit-p :key :down)
+       (incf index))
+      ((pyx:input-enter-p :key :escape)
+       (pyx:stop)))
+    (pyx:switch-scene (elt scenes (mod index (length scenes))))))
+
 ;;; prefabs
 
 (pyx:define-prefab camera/perspective (:add (pyx:camera))
@@ -39,27 +68,3 @@
 
 (pyx:define-scene examples ()
   (:prefabs (examples)))
-
-;;; components
-
-(pyx:define-component scene-switcher ()
-  ((%scenes :accessor scenes
-            :initform nil)))
-
-(pyx:define-hook :entity-update (entity scene-switcher)
-  (unless scenes
-    (setf scenes (remove-if
-                  (lambda (x)
-                    (or (not (eq (symbol-package x)
-                                 (find-package :pyx.examples)))
-                        (eq x 'examples)))
-                  (sort (u:hash-keys (pyx:meta :scenes)) #'string<))))
-  (let ((index (or (position (pyx:get-current-scene-name) scenes) 0)))
-    (cond
-      ((pyx:input-exit-p :key :up)
-       (decf index))
-      ((pyx:input-exit-p :key :down)
-       (incf index))
-      ((pyx:input-enter-p :key :escape)
-       (pyx:stop)))
-    (pyx:switch-scene (elt scenes (mod index (length scenes))))))

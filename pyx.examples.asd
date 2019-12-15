@@ -7,8 +7,9 @@
   :source-control (:git "https://github.com/mfiano/pyx.git")
   :bug-tracker "https://github.com/mfiano/pyx/issues"
   :encoding :utf-8
-  :depends-on (#:pyx
-               #:dungen)
+  :depends-on (#:dungen
+               #:pyx
+               #:verbose)
   :pathname "examples"
   :serial t
   :components

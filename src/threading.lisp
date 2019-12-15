@@ -61,8 +61,9 @@
 
 (defun process-queue (purpose)
   (u:while (not (queue-empty-p purpose))
-    (destructuring-bind (event-type data) (dequeue purpose)
-      (handle-queued-event purpose event-type data))))
+    (a:when-let ((dequeued (dequeue purpose)))
+      (destructuring-bind (event-type data) dequeued
+        (handle-queued-event purpose event-type data)))))
 
 (defgeneric handle-queued-event (purpose event-type data)
   (:method (purpose event-type data)

@@ -17,9 +17,10 @@
           *thread-pool* thread-pool)))
 
 (defun destroy-thread-pool ()
+  (lparallel:end-kernel :wait t)
   (when (and (boundp '*thread-pool*) *thread-pool*)
-    (setf *thread-pool* nil))
-  (lparallel:end-kernel :wait t))
+    (setf *thread-pool* nil
+          lparallel:*kernel* nil)))
 
 (defun ensure-channel (purpose)
   (let ((channels (channels *thread-pool*)))
@@ -55,14 +56,15 @@
       (lparallel.queue:pop-queue queue))))
 
 (defun queue-empty-p (purpose)
-  (when (and (boundp '*thread-pool*) *thread-pool*)
-    (let ((queue (ensure-queue purpose)))
-      (lparallel.queue:queue-empty-p queue))))
+  (let ((queue (ensure-queue purpose)))
+    (lparallel.queue:queue-empty-p queue)))
 
 (defun process-queue (purpose)
-  (u:while (not (queue-empty-p purpose))
-    (a:when-let ((dequeued (dequeue purpose)))
-      (destructuring-bind (event-type data) dequeued
+  (u:while (and (boundp '*thread-pool*)
+                *thread-pool*
+                (not (queue-empty-p purpose)))
+    (destructuring-bind (&optional event-type data) (dequeue purpose)
+      (when event-type
         (handle-queued-event purpose event-type data)))))
 
 (defgeneric handle-queued-event (purpose event-type data)

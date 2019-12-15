@@ -78,7 +78,10 @@
              (depth-mode (or depth-mode +gl-depth-mode+))
              (enable (set-difference enable +gl-capabilities/enabled+))
              (disable (set-difference disable +gl-capabilities/disabled+))
-             (pass (or pass :default)))
+             (pass (or pass :default))
+             (framebuffer-spec (meta :framebuffers (first output))))
+        (when framebuffer-spec
+          (pushnew name (materials framebuffer-spec)))
         (symbol-macrolet ((spec (meta :materials name)))
           (if spec
               (apply #'update-material-spec spec

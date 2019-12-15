@@ -7,7 +7,9 @@
           :initarg :mode)
    (%attachments :reader attachments
                  :initarg :attachments
-                 :initform (u:dict #'eq))))
+                 :initform (u:dict #'eq))
+   (%materials :accessor materials
+               :initform nil)))
 
 (defclass framebuffer-attachment-spec ()
   ((%name :reader name
@@ -21,8 +23,10 @@
    (%height :reader height
             :initarg :height)))
 
-(u:define-printer (framebuffer-spec stream)
+(u:define-printer (framebuffer-spec stream :identity t)
   (format stream "~s" (name framebuffer-spec)))
+
+(define-event-handler :recompile :framebuffer recompile-framebuffer)
 
 (defun framebuffer-mode->target (mode)
   (ecase mode
@@ -47,17 +51,28 @@
 (defun find-framebuffer-attachment-spec (framebuffer attachment-name)
   (u:href (attachments framebuffer) attachment-name))
 
+(defun make-framebuffer-spec (name mode attachments)
+  (let ((spec (make-instance 'framebuffer-spec :name name :mode mode)))
+    (setf (meta :framebuffers name) spec)
+    (update-framebuffer-spec name mode attachments)
+    spec))
+
+(defun update-framebuffer-spec (name mode attachments)
+  (with-slots (%mode %attachments %materials) (meta :framebuffers name)
+    (setf %mode mode)
+    (dolist (x attachments)
+      (destructuring-bind (name &key &allow-other-keys) x
+        (setf (u:href %attachments name)
+              (make-framebuffer-attachment-spec x))))
+    (dolist (material %materials)
+      (unless (eq name (first (output (meta :materials material))))
+        (a:deletef %materials material)))
+    (enqueue :recompile (list :framebuffer name))))
+
 (defmacro define-framebuffer (name (&key (mode :read/write)) &body body)
-  (a:with-gensyms (spec)
-    `(let ((,spec (make-instance 'framebuffer-spec
-                                 :name ',name
-                                 :mode ,mode)))
-       (unless (meta :framebuffers)
-         (setf (meta :framebuffers) (u:dict #'eq)))
-       ,@(mapcar
-          (lambda (x)
-            (destructuring-bind (name &key &allow-other-keys) x
-              `(setf (u:href (attachments ,spec) ',name)
-                     (make-framebuffer-attachment-spec ',x))))
-          body)
-       (setf (meta :framebuffers ',name) ,spec))))
+  `(progn
+     (unless (meta :framebuffers)
+       (setf (meta :framebuffers) (u:dict #'eq)))
+     (if (meta :framebuffers ',name)
+         (update-framebuffer-spec ',name ',mode ',body)
+         (make-framebuffer-spec ',name ',mode ',body))))

@@ -33,10 +33,10 @@
     (enqueue :recompile (list :pipeline name))))
 
 (defun make-pipeline-spec (name pass-order pass-options draw-order)
-  (let ((pipeline-spec (make-instance 'pipeline-spec :name name)))
-    (setf (meta :pipelines name) pipeline-spec)
+  (let ((spec (make-instance 'pipeline-spec :name name)))
+    (setf (meta :pipelines name) spec)
     (update-pipeline-spec name pass-order pass-options draw-order)
-    pipeline-spec))
+    spec))
 
 (u:eval-always
   (defun preprocess-pipeline-passes (passes)

@@ -125,3 +125,8 @@
          (attachment (find-framebuffer-attachment-spec spec attachment-name))
          (point (framebuffer-attachment-point->gl (point attachment))))
     (u:href (attachments framebuffer) point)))
+
+(defun recompile-framebuffer (name)
+  (let ((spec (meta :framebuffers name)))
+    (dolist (material (materials spec))
+      (enqueue :recompile (list :material material)))))

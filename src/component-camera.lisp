@@ -64,7 +64,7 @@
                     q:+id+
                     (v3:vec (float (- (asin (/ (sqrt 3)))) 1f0)
                             0f0
-                            (float (/ pi 4) 1f0))))))
+                            math:pi/4)))))
     (%set-camera-projection entity :orthographic)
     (initialize-rotation entity rotation)))
 

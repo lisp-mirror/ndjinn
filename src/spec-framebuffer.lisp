@@ -3,10 +3,8 @@
 (defclass framebuffer-spec ()
   ((%name :reader name
           :initarg :name)
-   (%mode :reader mode
-          :initarg :mode)
+   (%mode :reader mode)
    (%attachments :reader attachments
-                 :initarg :attachments
                  :initform (u:dict #'eq))
    (%materials :accessor materials
                :initform nil)))
@@ -52,7 +50,7 @@
   (u:href (attachments framebuffer) attachment-name))
 
 (defun make-framebuffer-spec (name mode attachments)
-  (let ((spec (make-instance 'framebuffer-spec :name name :mode mode)))
+  (let ((spec (make-instance 'framebuffer-spec :name name)))
     (setf (meta :framebuffers name) spec)
     (update-framebuffer-spec name mode attachments)
     spec))
@@ -65,7 +63,7 @@
         (setf (u:href %attachments name)
               (make-framebuffer-attachment-spec x))))
     (dolist (material %materials)
-      (unless (eq name (first (output (meta :materials material))))
+      (unless (eq name (framebuffer (meta :materials material)))
         (a:deletef %materials material)))
     (enqueue :recompile (list :framebuffer name))))
 

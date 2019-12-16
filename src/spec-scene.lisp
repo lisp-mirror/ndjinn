@@ -3,10 +3,8 @@
 (defclass scene-spec ()
   ((%name :reader name
           :initarg :name)
-   (%prefabs :reader prefabs
-             :initarg :prefabs)
-   (%pipeline :reader pipeline
-              :initarg :pipeline)))
+   (%prefabs :reader prefabs)
+   (%pipeline :reader pipeline)))
 
 (u:define-printer (scene-spec stream)
   (format stream "~s" (name scene-spec)))

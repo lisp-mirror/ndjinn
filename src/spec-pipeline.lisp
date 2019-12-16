@@ -3,12 +3,9 @@
 (defclass pipeline-spec ()
   ((%name :reader name
           :initarg :name)
-   (%pass-order :reader pass-order
-                :initarg :pass-order)
-   (%pass-options :reader pass-options
-                  :initarg :pass-options)
-   (%draw-order :reader draw-order
-                :initarg :draw-order)
+   (%pass-order :reader pass-order)
+   (%pass-options :reader pass-options)
+   (%draw-order :reader draw-order)
    (%scenes :accessor scenes
             :initform nil)))
 

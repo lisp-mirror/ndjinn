@@ -67,14 +67,15 @@
         (error "Error attaching ~a as attachment ~s of framebuffer ~s: ~a"
                buffer attachment (name %spec) result)))))
 
-(defmacro with-framebuffer (framebuffer (&key mode output) &body body)
+(defmacro with-framebuffer (framebuffer (&key mode attachments) &body body)
   (a:with-gensyms (id target)
     `(if ,framebuffer
          (let ((,id (id ,framebuffer))
                (,target (if ,mode
                             (framebuffer-mode->target ,mode)
                             (target ,framebuffer))))
-           ,@(when output `((gl/named-framebuffer-draw-buffers ,id ,output)))
+           ,@(when attachments `((gl/named-framebuffer-draw-buffers
+                                  ,id ,attachments)))
            (gl:bind-framebuffer ,target ,id)
            (progn ,@body)
            (gl:bind-framebuffer ,target 0))

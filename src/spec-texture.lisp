@@ -3,22 +3,14 @@
 (defclass texture-spec ()
   ((%name :reader name
           :initarg :name)
-   (%source :reader source
-            :initarg :source)
-   (%width :reader width
-           :initarg :width)
-   (%height :reader height
-            :initarg :height)
-   (%pixel-format :reader pixel-format
-                  :initarg :pixel-format)
-   (%pixel-type :reader pixel-type
-                :initarg :pixel-type)
-   (%internal-format :reader internal-format
-                     :initarg :internal-format)
-   (%generate-mipmaps-p :reader generate-mipmaps-p
-                        :initarg :generate-mipmaps-p)
-   (%parameters :reader parameters
-                :initarg :parameters)))
+   (%source :reader source)
+   (%width :reader width)
+   (%height :reader height)
+   (%pixel-format :reader pixel-format)
+   (%pixel-type :reader pixel-type)
+   (%internal-format :reader internal-format)
+   (%generate-mipmaps-p :reader generate-mipmaps-p)
+   (%parameters :reader parameters)))
 
 (u:define-printer (texture-spec stream)
   (format stream "~s" (name texture-spec)))
@@ -27,10 +19,8 @@
 
 (defun find-texture-spec (texture-name)
   (u:if-found (spec (meta :textures texture-name))
-              (values spec
-                      t)
-              (values (meta :textures 'debug)
-                      nil)))
+              (values spec t)
+              (meta :textures 'debug)))
 
 (defun make-texture-spec (name source width height pixel-format pixel-type
                           internal-format generate-mipmaps-p parameters)

@@ -49,8 +49,9 @@
     (setf (slot-value *state* '%current-scene) scene)))
 
 (defun recompile-scene (name)
-  (with-slots (%spec %prefabs) (current-scene *state*)
+  (with-slots (%spec %prefabs %loaded-p) (current-scene *state*)
     (when (eq name (name %spec))
       (u:do-hash-values (entities %prefabs)
         (map nil #'delete-entity entities))
+      (setf %loaded-p nil)
       (load-scene name))))

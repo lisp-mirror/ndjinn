@@ -57,3 +57,14 @@
 (pyx:define-scene test ()
   (:pipeline test
    :prefabs (examples test)))
+
+;;;
+
+;; (define-asset-pool pool1 ()
+;;   (:base "data/pool1"))
+
+;; (define-asset-pool pool2 ()
+;;   (:base "data/pool2"))
+
+;; (define-asset foo (pool1)
+;;   (:depends-on ((pool2 ))))

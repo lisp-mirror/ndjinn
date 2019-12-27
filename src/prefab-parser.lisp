@@ -190,8 +190,8 @@
              (destructuring-bind (name options args children)
                  (loop :with (name options . rest) = data
                        :for body :on rest :by #'cddr
-                       :while (keywordp (first body))
                        :for (k v) = body
+                       :while (keywordp (first body))
                        :collect k :into args
                        :collect v :into args
                        :finally (return (list name options args body)))

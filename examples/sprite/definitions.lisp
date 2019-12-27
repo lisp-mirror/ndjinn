@@ -29,7 +29,6 @@
 (pyx:define-prefab planet (:template sprite)
   :xform/scale 2f0
   :sprite/name "planet11"
-  :render/materials '(sprite)
   :render/order 'background)
 
 (pyx:define-prefab ship (:template sprite)

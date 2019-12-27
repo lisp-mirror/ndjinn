@@ -13,21 +13,20 @@
     (setf order (stable-sort
                  (copy-seq order)
                  #'draw-order-comparator
-                 :key (lambda (x) (render/order (car x)))))))
+                 :key #'render/order))))
 
 (defun register-draw-order (entity)
-  (dolist (material (render/materials entity))
-    (let ((scene (current-scene *state*))
-          (pass (pass (spec material))))
+  (let ((scene (current-scene *state*)))
+    (u:do-hash-keys (pass (render/materials entity))
       (symbol-macrolet ((order (u:href (draw-order scene) pass)))
-        (unless (find entity order :key #'car)
-          (push (cons entity material) order))
+        (unless (find entity order)
+          (push entity order))
         (pushnew pass (render/passes entity))
         (sort-draw-order scene pass)))))
 
 (defun deregister-draw-order (entity)
   (let ((order (draw-order (current-scene *state*))))
     (dolist (pass (render/passes entity))
-      (a:deletef (u:href order pass) entity :key #'car)
+      (a:deletef (u:href order pass) entity)
       (unless (u:href order pass)
         (remhash pass order)))))

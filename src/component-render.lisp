@@ -24,10 +24,10 @@
     (map nil #'render-pass (pass-order (pipeline scene-spec)))))
 
 (defun render-pass (pass)
-  (a:when-let* ((scene (current-scene *state*))
-                (order (u:href (draw-order scene) pass)))
+  (a:when-let* ((scene (current-scene *state*)))
     (clear-render-pass (pipeline (spec scene)) pass)
-    (loop :for (entity . material) :in order
+    (loop :for entity :in (u:href (draw-order scene) pass)
+          :for material = (u:href (render/materials entity) pass)
           :do (setf (render/current-material entity) material)
               (render-entity entity))))
 

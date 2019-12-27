@@ -18,12 +18,12 @@
   (format stream "~s" (name (spec material))))
 
 (defun register-materials (entity)
-  (let (materials)
-    (dolist (spec (render/materials entity))
-      (let ((material (make-material spec)))
+  (let ((materials (u:dict #'eq)))
+    (dolist (spec-name (render/materials entity))
+      (let ((material (make-material spec-name)))
         (u:do-hash-keys (k (uniforms material))
           (register-uniform-func material k))
-        (push material materials)))
+        (setf (u:href materials (pass (spec material))) material)))
     materials))
 
 (defun ensure-material-framebuffer (material)

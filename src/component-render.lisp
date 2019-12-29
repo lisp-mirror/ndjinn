@@ -7,9 +7,7 @@
                   :initarg :render/order
                   :initform :default)
    (%render/current-material :accessor render/current-material
-                             :initform nil)
-   (%render/passes :accessor render/passes
-                   :initform nil))
+                             :initform nil))
   (:sorting :after xform :before sprite))
 
 (defun clear-render-pass (pipeline pass)
@@ -24,12 +22,14 @@
     (map nil #'render-pass (pass-order (pipeline scene-spec)))))
 
 (defun render-pass (pass)
-  (a:when-let* ((scene (current-scene *state*)))
+  (a:when-let ((scene (current-scene *state*)))
     (clear-render-pass (pipeline (spec scene)) pass)
-    (loop :for entity :in (u:href (draw-order scene) pass)
-          :for material = (u:href (render/materials entity) pass)
-          :do (setf (render/current-material entity) material)
-              (render-entity entity))))
+    (tree:walk
+     (draw-order scene)
+     (lambda (x)
+       (let ((material (u:href (render/materials x) pass)))
+         (setf (render/current-material x) material)
+         (render-entity x))))))
 
 (defun render-entity (entity)
   (with-slots (%spec %framebuffer %attachment-points %uniforms %funcs

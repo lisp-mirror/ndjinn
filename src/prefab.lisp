@@ -1,11 +1,8 @@
 (in-package #:pyx)
 
 (defun load-prefab (name &key parent)
-  (register-entity-flow-event
-   :prefab-created
-   (lambda ()
-     (let ((factory (factory (meta :prefabs name))))
-       (funcall (func factory) :parent parent)))))
+  (let ((factory (factory (meta :prefabs name))))
+    (funcall (func factory) :parent parent)))
 
 (defun recompile-prefab (name)
   (dolist (entity (u:href (prefabs (current-scene *state*)) name))

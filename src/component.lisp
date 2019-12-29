@@ -90,20 +90,15 @@
   (typep entity type))
 
 (defun attach-component (entity type &rest args)
-  (register-entity-flow-event
-   :component-attach
-   (lambda ()
-     (apply #'add-mixin-class entity type args)
-     (on-component-attach entity type))))
+  (apply #'add-mixin-class entity type args)
+  (on-component-attach entity type))
 
 (defun detach-component (entity type)
   (if (find type (meta :components :static))
       (error "Cannot remove built-in static component: ~s." type)
-      (register-entity-flow-event
-       :component-detach
-       (lambda ()
-         (on-component-detach entity type)
-         (remove-mixin-class entity type)))))
+      (progn
+        (on-component-detach entity type)
+        (remove-mixin-class entity type))))
 
 (defun detach-components (entity)
   (dolist (component (get-mixin-class-names entity))

@@ -1,8 +1,5 @@
 (in-package #:pyx)
 
-(defun register-entity-flow-event (event-type hook)
-  (enqueue :entity-flow (list event-type hook)))
-
 (defun get-entity-flow-hook-parameters (hook entity type)
   (let ((hook-type (a:make-keyword
                     (first
@@ -22,16 +19,6 @@
     `(defmethod ,method progn ,parameters
        (with-accessors ,accessors ,entity
          ,@body))))
-
-(define-event-handler :entity-flow :prefab-created)
-
-(define-event-handler :entity-flow :entity-create)
-
-(define-event-handler :entity-flow :entity-delete)
-
-(define-event-handler :entity-flow :component-attach)
-
-(define-event-handler :entity-flow :component-detach)
 
 ;;; entity flow event hooks
 

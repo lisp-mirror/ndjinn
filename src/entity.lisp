@@ -11,15 +11,10 @@
 (defun make-entity-class (components)
   (make-mixin-class (make-mixin-class-list components)))
 
-(defun register-entity/immediately (entity types)
+(defun register-entity (entity types)
   (on-entity-create entity)
   (dolist (type types)
     (on-component-attach entity type)))
-
-(defun register-entity (entity types)
-  (register-entity-flow-event
-   :entity-create
-   (lambda () (register-entity/immediately entity types))))
 
 (defun %make-entity (types &optional args)
   (let* ((class (make-entity-class types))
@@ -32,20 +27,19 @@
   (let ((components (compute-component-order components)))
     `(%make-entity ',components (u:plist->hash (list ,@body) :test #'eq))))
 
+(defun %delete-entity (entity &key reparent-children-p)
+  (let ((parent (node/parent entity)))
+    (dolist (child (node/children entity))
+      (if reparent-children-p
+          (add-child child :parent parent)
+          (%delete-entity child)))
+    (on-entity-delete entity)
+    (detach-components entity)
+    (deregister-prefab-entity entity)
+    (when parent
+      (a:deletef (node/children parent) entity))))
+
 (defun delete-entity (entity &key reparent-children-p)
   (when (node/root-p entity)
     (error "Cannot remove the root entity."))
-  (register-entity-flow-event
-   :entity-delete
-   (lambda ()
-     (labels ((%delete (entity)
-                (let ((parent (node/parent entity)))
-                  (dolist (child (node/children entity))
-                    (if reparent-children-p
-                        (add-child child :parent parent)
-                        (%delete child)))
-                  (on-entity-delete entity)
-                  (detach-components entity)
-                  (deregister-prefab-entity entity)
-                  (a:deletef (node/children parent) entity))))
-       (%delete entity)))))
+  (%delete-entity entity :reparent-children-p reparent-children-p))

@@ -4,6 +4,7 @@
   (:local-nicknames
    (#:a #:alexandria)
    (#:u #:golden-utils)
+   (#:tree #:cl.lisp.collections.tree)
    (#:ff #:filtered-functions)
    (#:log #:verbose)
    (#:math #:origin)

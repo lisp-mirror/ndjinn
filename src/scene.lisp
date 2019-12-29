@@ -10,8 +10,8 @@
    (%node-tree :reader node-tree)
    (%materials :reader materials
                :initform (u:dict #'eq))
-   (%draw-order :reader draw-order
-                :initform (u:dict #'eq))
+   (%draw-order :accessor draw-order
+                :initform (make-draw-order-tree))
    (%picking-ids :reader picking-ids
                  :initform (u:dict #'eq))
    (%released-picking-ids :accessor released-picking-ids
@@ -49,9 +49,11 @@
     (setf (slot-value *state* '%current-scene) scene)))
 
 (defun recompile-scene (name)
-  (with-slots (%spec %prefabs %loaded-p) (current-scene *state*)
-    (when (eq name (name %spec))
-      (u:do-hash-values (entities %prefabs)
-        (map nil #'delete-entity entities))
-      (setf %loaded-p nil)
-      (load-scene name))))
+  (let ((scene (current-scene *state*)))
+    (with-slots (%spec %prefabs %loaded-p) scene
+      (when (eq name (name %spec))
+        (u:do-hash-values (entities %prefabs)
+          (map nil #'delete-entity entities))
+        (%delete-entity (node-tree scene))
+        (setf %loaded-p nil)
+        (load-scene name)))))

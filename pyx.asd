@@ -8,6 +8,7 @@
   :bug-tracker "https://github.com/mfiano/pyx/issues"
   :encoding :utf-8
   :depends-on (#:alexandria
+               #:cl.lisp.collections
                #:cl-graph
                #:cl-opengl
                #:closer-mop

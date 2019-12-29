@@ -69,10 +69,8 @@
         :finally (return table)))
 
 (defun recompile-pipeline (name)
-  (let ((pipeline (meta :pipelines name))
-        (scene (current-scene *state*)))
-    (dolist (pass (pass-order pipeline))
-      (sort-draw-order scene pass))))
+  (declare (ignore name))
+  (rebuild-draw-order-tree))
 
 (defmacro define-pipeline (name options &body body)
   (declare (ignore options))

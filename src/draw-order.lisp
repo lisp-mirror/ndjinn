@@ -4,29 +4,25 @@
   (let* ((draw-order (draw-order (pipeline (spec (current-scene *state*)))))
          (x (u:href draw-order x))
          (y (u:href draw-order y)))
-    (and (integerp x)
-         (integerp y)
-         (< x y))))
+    (< x y)))
 
-(defun sort-draw-order (scene pass)
-  (symbol-macrolet ((order (u:href (draw-order scene) pass)))
-    (setf order (stable-sort
-                 (copy-seq order)
-                 #'draw-order-comparator
-                 :key #'render/order))))
+(defun rebuild-draw-order-tree ()
+  (let ((new-tree (make-draw-order-tree)))
+    (symbol-macrolet ((tree (draw-order (current-scene *state*))))
+      (tree:walk tree (lambda (x) (tree:insert new-tree x)))
+      (setf tree new-tree))))
+
+(defun make-draw-order-tree ()
+  (tree:make-tree 'tree:avl-tree
+                  :item-type 'render
+                  :key #'render/order
+                  :sort #'draw-order-comparator
+                  :hash-test #'eq))
 
 (defun register-draw-order (entity)
-  (let ((scene (current-scene *state*)))
-    (u:do-hash-keys (pass (render/materials entity))
-      (symbol-macrolet ((order (u:href (draw-order scene) pass)))
-        (unless (find entity order)
-          (push entity order))
-        (pushnew pass (render/passes entity))
-        (sort-draw-order scene pass)))))
+  (let ((order (draw-order (current-scene *state*))))
+    (tree:insert order entity)))
 
 (defun deregister-draw-order (entity)
   (let ((order (draw-order (current-scene *state*))))
-    (dolist (pass (render/passes entity))
-      (a:deletef (u:href order pass) entity)
-      (unless (u:href order pass)
-        (remhash pass order)))))
+    (tree:delete order entity)))

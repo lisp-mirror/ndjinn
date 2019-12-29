@@ -38,8 +38,8 @@
         :finally (return value)))
 
 (defun parse-int/be (buffer byte-count)
-  (let* ((value (parse-uint/be buffer byte-count))
-         (size (* byte-count 8)))
+  (let ((value (parse-uint/be buffer byte-count))
+        (size (* byte-count 8)))
     (logior (* (ldb (byte 1 (1- size)) value)
                (- (expt 2 size)))
             value)))

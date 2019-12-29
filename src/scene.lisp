@@ -21,7 +21,7 @@
    (%uuids :reader uuids
            :initform (u:dict #'eq))))
 
-(u:define-printer (scene stream)
+(u:define-printer (scene stream :identity t)
   (format stream "~s" (name (spec scene))))
 
 (defun get-current-scene-name ()

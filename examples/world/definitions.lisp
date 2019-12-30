@@ -28,14 +28,12 @@
 (pyx:define-prefab tile/floor (:template tile)
   :xform/scale (v3:vec 0.5 0.5 0.1)
   :mesh/name "floor"
-  :mesh/instances (@ world :tiles/floor)
   :render/materials '(world/floor))
 
 (pyx:define-prefab tile/wall (:template tile)
   :xform/translate (v3:vec 0f0 0f0 1.25)
   :xform/scale (v3:vec 0.5 0.5 1.25)
   :mesh/name "wall"
-  :mesh/instances (@ world :tiles/wall)
   :render/materials '(world/wall))
 
 (pyx:define-prefab world (:add (world))
@@ -43,8 +41,10 @@
   :world/width 49
   :world/height 49
   :world/seed 1
-  (floor (:template tile/floor))
-  (wall (:template tile/wall)))
+  (floor (:template tile/floor)
+         :mesh/instances (@ world :tiles/floor))
+  (wall (:template tile/wall)
+        :mesh/instances (@ world :tiles/wall)))
 
 ;;; scene
 

@@ -27,7 +27,10 @@
     (tree:walk
      (draw-order scene)
      (lambda (x)
-       (let ((material (u:href (render/materials x) pass)))
+       ;; TODO: we should have a tree of trees where the outer tree are the
+       ;; sorted passes, and the inner ones are the ordered entities with
+       ;; materials for that pass
+       (a:when-let ((material (u:href (render/materials x) pass)))
          (setf (render/current-material x) material)
          (render-entity x))))))
 

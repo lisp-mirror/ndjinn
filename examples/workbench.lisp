@@ -24,47 +24,43 @@
 
 ;;; materials
 
-(pyx:define-material quad/pass1 ()
+(pyx:define-material test/pass1 ()
   (:output (quad (color))
-   :shader pyx.shader:quad
-   :uniforms (:sampler 'quad/color)
-   :features (:enable (:depth-test))
-   :pass quad))
+   :shader pyx.shader:default
+   :uniforms (:sampler 'debug)
+   :pass pass1))
 
-(pyx:define-material test/quad/pass2 ()
+(pyx:define-material test/pass2 ()
   (:shader pyx.shader:quad
    :uniforms (:sampler 'quad/color)
-   :features (:disable (:depth-test))))
+   :features (:disable (:depth-test))
+   :pass pass2))
 
 ;;; prefabs
 
-(pyx:define-prefab test ()
-  (camera (:template camera/orthographic))
-  (quad (:add (pyx:mesh pyx:render))
-        :xform/scale 50f0
-        :mesh/file "plane.glb"
-        :mesh/name "plane"
-        :render/materials '(quad/pass1)))
+(pyx:define-prefab test/pass1 (:add (pyx:mesh pyx:render))
+  :xform/rotate (q:orient :local :x math:pi/2)
+  :xform/rotate/velocity (math:make-velocity v3:+forward+ (- math:pi/6))
+  :xform/scale 15f0
+  :mesh/file "helmet.glb"
+  :mesh/name "helmet"
+  :render/materials '(test/pass1))
+
+(pyx:define-prefab test/pass2 (:add (pyx:mesh pyx:render))
+  :mesh/file "plane.glb"
+  :mesh/name "plane"
+  :render/materials '(test/pass2))
 
 ;;; pipeline
 
 (pyx:define-pipeline test ()
-  (:passes ((quad :clear-color (v4:vec 0.3 0.3 0.3 1.0)
-                  :clear-buffers '(:color :depth)))))
+  (:passes ((pass1 :clear-color (v4:vec 0.3 0.3 0.3 1.0)
+                   :clear-buffers '(:color :depth))
+            (pass2 :clear-color (v4:one)
+                   :clear-buffers '(:color)))))
 
 ;;; scene
 
 (pyx:define-scene test ()
   (:pipeline test
-   :prefabs (examples test)))
-
-;;;
-
-;; (define-asset-pool pool1 ()
-;;   (:base "data/pool1"))
-
-;; (define-asset-pool pool2 ()
-;;   (:base "data/pool2"))
-
-;; (define-asset foo (pool1)
-;;   (:depends-on ((pool2 ))))
+   :prefabs (examples camera/perspective test/pass1 test/pass2)))

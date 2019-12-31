@@ -74,8 +74,9 @@
                (,target (if ,mode
                             (framebuffer-mode->target ,mode)
                             (target ,framebuffer))))
-           ,@(when attachments `((gl/named-framebuffer-draw-buffers
-                                  ,id ,attachments)))
+           ,@(when attachments
+               `((gl/named-framebuffer-draw-buffers
+                  ,id ,attachments)))
            (gl:bind-framebuffer ,target ,id)
            (progn ,@body)
            (gl:bind-framebuffer ,target 0))

@@ -42,7 +42,6 @@
             (resolve-uniform-func %funcs k v))
           (with-opengl-state (%enabled %disabled %blend-mode %depth-mode)
             (on-entity-render entity))
-          (on-entity-render entity)
           (setf %texture-unit-state 0))))))
 
 ;;; entity hooks

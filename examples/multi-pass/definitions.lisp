@@ -4,7 +4,8 @@
 
 (pyx:define-texture multi-pass/color ()
   (:min-filter :linear
-   :internal-format :rgb8
+   :pixel-format :rgba
+   :internal-format :rgba8
    :generate-mipmaps nil))
 
 ;;; framebuffers
@@ -39,7 +40,7 @@
 
 (pyx:define-render-pass multi-pass/pass1 ()
   (:framebuffer multi-pass
-   :clear-color (v4:vec 0.1 0.1 0.1 1.0)))
+   :clear-color (v4:vec 0.1 0.1 0.1 0.0)))
 
 (pyx:define-render-pass multi-pass/pass2 ()
   (:clear-buffers (:color)))

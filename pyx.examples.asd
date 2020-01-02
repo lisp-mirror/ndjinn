@@ -32,4 +32,6 @@
    (:file "texture/definitions")
    (:file "world/shader")
    (:file "world/component-world")
-   (:file "world/definitions")))
+   (:file "world/definitions")
+   (:file "multi-pass/shader")
+   (:file "multi-pass/definitions")))

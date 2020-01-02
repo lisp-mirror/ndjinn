@@ -25,6 +25,13 @@
 (u:define-printer (avl-tree-node stream :identity t :type nil)
   (format stream "AVL-TREE-NODE"))
 
+(u:fn-> avl-tree-node-p ((or avl-tree-node null)) (or avl-tree-node null))
+(declaim (inline avl-tree-node-p))
+(defun avl-tree-node-p (node)
+  (declare (optimize speed))
+  (unless (and node (eq node (avl-tree-sentinel (avl-tree-node-tree node))))
+    node))
+
 (u:fn-> avl-tree-valid-p (avl-tree) boolean)
 (defun avl-tree-valid-p (tree)
   (declare (optimize speed))
@@ -43,13 +50,6 @@
                    (%check (avl-tree-node-right node) sorter)))
                t))
       (%check (avl-tree-root tree) (avl-tree-sorter tree)))))
-
-(u:fn-> avl-tree-node-p ((or avl-tree-node null)) (or avl-tree-node null))
-(declaim (inline avl-tree-node-p))
-(defun avl-tree-node-p (node)
-  (declare (optimize speed))
-  (unless (and node (eq node (avl-tree-sentinel (avl-tree-node-tree node))))
-    node))
 
 (u:fn-> make-avl-tree (&key (:item-type symbol)
                             (:key function)

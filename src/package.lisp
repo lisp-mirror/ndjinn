@@ -39,10 +39,10 @@
    #:define-geometry-layout
    #:define-hook
    #:define-material
-   #:define-pipeline
    #:define-prefab
    #:define-query
    #:define-query-types
+   #:define-render-pass
    #:define-scene
    #:define-texture)
   ;; input

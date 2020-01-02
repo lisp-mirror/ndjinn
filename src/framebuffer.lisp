@@ -98,7 +98,7 @@
 
 (defun framebuffer-attach/texture (framebuffer attachment)
   (with-slots (%id %target %attachments) framebuffer
-    (with-slots (%name %buffer %point) attachment
+    (with-slots (%name %buffer %point %width %height) attachment
       (destructuring-bind (type &optional texture-name) %buffer
         (declare (ignore type))
         (unless texture-name
@@ -106,9 +106,10 @@
                 texture name."
                  (name framebuffer)
                  %name))
-        (let* ((buffer-id (id (load-framebuffer-texture
-                               framebuffer attachment texture-name)))
-               (point (framebuffer-attachment-point->gl %point)))
+        (let ((buffer-id (id (load-texture texture-name
+                                           :width (funcall %width)
+                                           :height (funcall %height))))
+              (point (framebuffer-attachment-point->gl %point)))
           (%gl:named-framebuffer-texture %id point buffer-id 0)
           (ensure-framebuffer-complete framebuffer %target buffer-id point)
           (setf (u:href %attachments point) buffer-id)

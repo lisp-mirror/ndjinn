@@ -1,7 +1,7 @@
 (in-package #:pyx)
 
 (defun draw-order-comparator (x y)
-  (let* ((draw-order (draw-order (pipeline (spec (current-scene *state*)))))
+  (let* ((draw-order (draw-order (spec (current-scene *state*))))
          (x (u:href draw-order x))
          (y (u:href draw-order y)))
     (< x y)))

@@ -10,26 +10,23 @@
                              :initform nil))
   (:sorting :after xform :before sprite))
 
-(defun clear-render-pass (pipeline pass)
-  (let ((options (u:href (pass-options pipeline) pass)))
-    (destructuring-bind (&key clear-color clear-buffers) options
-      (v4:with-components ((v clear-color))
+(defun clear-render-pass (pass-name)
+  (let ((pass (u:href (pass-table (spec (current-scene *state*))) pass-name)))
+    (with-framebuffer (find-framebuffer (framebuffer pass)) ()
+      (v4:with-components ((v (clear-color pass)))
         (gl:clear-color vx vy vz vw)
-        (apply #'gl:clear clear-buffers)))))
+        (apply #'gl:clear (clear-buffers pass))))))
 
 (defun render-frame ()
   (let ((scene-spec (spec (current-scene *state*))))
-    (map nil #'render-pass (pass-order (pipeline scene-spec)))))
+    (map nil #'render-pass (pass-order scene-spec))))
 
 (defun render-pass (pass)
   (a:when-let ((scene (current-scene *state*)))
-    (clear-render-pass (pipeline (spec scene)) pass)
+    (clear-render-pass pass)
     (avl-tree/walk
      (draw-order scene)
      (lambda (x)
-       ;; TODO: we should have a tree of trees where the outer tree are the
-       ;; sorted passes, and the inner ones are the ordered entities with
-       ;; materials for that pass
        (a:when-let ((material (u:href (render/materials x) pass)))
          (setf (render/current-material x) material)
          (render-entity x))))))

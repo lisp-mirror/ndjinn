@@ -96,27 +96,16 @@
     (string (read-image (source spec)))
     (list (mapcar #'read-image (source spec)))))
 
-(defun load-texture (texture-name)
+(defun load-texture (texture-name &key width height)
   (resource-lookup 'texture texture-name
     (let* ((spec (find-texture-spec texture-name))
-           (source (load-texture-source spec))
+           (source (load-texture-source
+                    spec
+                    :width width
+                    :height height))
            (texture (make-texture spec source)))
       (configure-texture texture)
       texture)))
-
-(defun load-framebuffer-texture (framebuffer attachment texture-name)
-  (with-slots (%name %point %width %height) attachment
-    (let* ((name (name (spec framebuffer)))
-           (cached-name (a:format-symbol (symbol-package name) "~a/~a"
-                                         name %name)))
-      (resource-lookup 'texture cached-name
-        (let* ((spec (find-texture-spec texture-name))
-               (source (load-texture-source spec
-                                            :width (funcall %width)
-                                            :height (funcall %height)))
-               (texture (make-texture spec source)))
-          (configure-texture texture)
-          texture)))))
 
 (defun recompile-texture (spec-name)
   (a:when-let ((texture (u:href (resources *state*) 'texture spec-name)))

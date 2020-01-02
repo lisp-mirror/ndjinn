@@ -38,7 +38,7 @@
    (:file "spec-texture")
    (:file "spec-framebuffer")
    (:file "spec-material")
-   (:file "spec-pipeline")
+   (:file "spec-render-pass")
    (:file "spec-scene")
    (:file "opengl")
    (:file "uuid")

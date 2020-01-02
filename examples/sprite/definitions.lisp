@@ -44,13 +44,8 @@
            :render/order 'ships
            :animate/sequence 'sprite))
 
-;;; pipeline
-
-(pyx:define-pipeline sprite ()
-  (:draw-order (background ships)))
-
 ;;; scene
 
 (pyx:define-scene sprite ()
-  (:pipeline sprite
+  (:draw-order (background ships)
    :prefabs (examples camera/orthographic planet ship)))

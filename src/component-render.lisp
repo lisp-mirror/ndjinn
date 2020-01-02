@@ -24,7 +24,7 @@
 (defun render-pass (pass)
   (a:when-let ((scene (current-scene *state*)))
     (clear-render-pass (pipeline (spec scene)) pass)
-    (tree:walk
+    (avl-tree/walk
      (draw-order scene)
      (lambda (x)
        ;; TODO: we should have a tree of trees where the outer tree are the

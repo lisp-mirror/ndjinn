@@ -46,14 +46,11 @@
     display))
 
 (defun kill-display ()
-  (when (and *state* (display *state*))
-    (sdl2:destroy-window (window (display *state*)))
-    (setf (slot-value *state* '%display) nil))
+  (sdl2:destroy-window (window (display *state*)))
   (sdl2:sdl-quit))
 
 (defun update-display ()
-  (with-slots (%clock %display %running-p) *state*
-    (when %running-p
-      (render-frame)
-      (sdl2:gl-swap-window (window %display))
-      (incf (clock-frame-count %clock)))))
+  (with-slots (%clock %display) *state*
+    (render-frame)
+    (sdl2:gl-swap-window (window %display))
+    (incf (clock-frame-count %clock))))

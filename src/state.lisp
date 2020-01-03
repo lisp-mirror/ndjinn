@@ -19,6 +19,10 @@
    (%running-p :accessor running-p
                :initform t)))
 
+(defun run-periodic-tasks ()
+  #-pyx.release (update-repl)
+  (process-queue :recompile))
+
 (defun initialize-engine (scene-name)
   (log:info :pyx "Loading ~a..." (cfg :game-title))
   (setup-repl)
@@ -28,10 +32,17 @@
   (make-display)
   (initialize-shaders)
   (switch-scene scene-name)
+  (make-clock)
   (log:info :pyx "Finished loading ~a." (cfg :game-title)))
 
+(defun deinitialize-engine ()
+  (format t "Test~%")
+  (kill-display)
+  (destroy-thread-pool)
+  (shutdown-gamepads)
+  (log:info :pyx "Stopped ~a." (cfg :game-title)))
+
 (defun run-main-game-loop ()
-  (make-clock)
   (u:while (running-p *state*)
     (with-continue-restart "Pyx"
       (clock-tick)
@@ -40,22 +51,14 @@
       (map-nodes #'resolve-model)
       (update-display))))
 
-(defun run-periodic-tasks ()
-  #-pyx.release (update-repl)
-  (process-queue :recompile))
-
 (defun start (scene-name &rest args)
-  (unwind-protect
-       (let ((*state* (make-instance 'state)))
-         (apply #'load-config args)
-         (initialize-engine scene-name)
-         (run-main-game-loop))
-    (stop)))
+  (let ((*state* (make-instance 'state)))
+    (unwind-protect
+         (progn
+           (apply #'load-config args)
+           (initialize-engine scene-name)
+           (run-main-game-loop))
+      (deinitialize-engine))))
 
 (defun stop ()
-  (kill-display)
-  (destroy-thread-pool)
-  (when *state*
-    (shutdown-gamepads)
-    (setf (slot-value *state* '%running-p) nil)
-    (log:info :pyx "Stopped ~a." (cfg :game-title))))
+  (setf (running-p *state*) nil))

@@ -19,15 +19,16 @@
 (define-animation-state fade ())
 
 (define-animation-state-hook fade entity state :update
-  (setf (u:href (uniforms (render/current-material entity)) :opacity)
-        (- 1 (progress state))))
+  (set-uniforms (render/current-material entity)
+                :opacity (- 1 (progress state))))
 
 (define-animation-state-hook fade entity state :finish
   (when (repeat-p state)
     (replace-animation-state state 'fade :name 'fade/reverse)))
 
 (define-animation-state-hook fade/reverse entity state :update
-  (setf (u:href (uniforms (render/current-material entity)) :opacity) (progress state)))
+  (set-uniforms (render/current-material entity)
+                :opacity (progress state)))
 
 (define-animation-state-hook fade/reverse entity state :finish
   (when (repeat-p state)

@@ -1,15 +1,21 @@
 (in-package #:pyx)
 
+(defclass uniform ()
+  ((%key :reader key
+         :initarg :key)
+   (%value :accessor value
+           :initarg :value)
+   (%func :accessor func
+          :initform nil)))
+
 (defun register-uniform-func (material uniform)
-  (with-slots (%uniforms %funcs) material
-    (with-slots (%name %shader) (spec material)
-      (let ((program (shadow:find-program %shader)))
-        (unless (u:href (shadow:uniforms program) uniform)
-          (error "Material ~s has the uniform ~s but shader ~s does not use it."
-                 %name uniform %shader))
-        (let* ((type (u:href (shadow:uniforms program) uniform :type))
-               (func (generate-uniform-func material type)))
-          (setf (u:href %funcs uniform) func))))))
+  (with-slots (%name %shader) (spec material)
+    (let ((program (shadow:find-program %shader)))
+      (unless (u:href (shadow:uniforms program) (key uniform))
+        (error "Material ~s has the uniform ~s but shader ~s does not use it."
+               %name uniform %shader))
+      (let ((type (u:href (shadow:uniforms program) (key uniform) :type)))
+        (setf (func uniform) (generate-uniform-func material type))))))
 
 (defun %generate-uniform-func (material type)
   (let ((func (a:format-symbol :shadow "UNIFORM-~a" type)))
@@ -62,16 +68,18 @@
            ((:bool :int :float :vec2 :vec3 :vec4 :mat2 :mat3 :mat4)
             (%generate-uniform-func/array material type))))))))
 
-(defun resolve-uniform-func (funcs key value)
-  (let ((func (u:href funcs key))
-        (value (if (functionp value)
-                   (funcall value)
-                   value)))
-    (funcall func key value)))
+(defun resolve-uniform-func (uniform)
+  (let* ((value (value uniform))
+         (new-value (if (functionp value) (funcall value) value)))
+    (funcall (func uniform) (key uniform) new-value)))
 
 (defun set-uniforms (material &rest args)
-  (let ((funcs (funcs material)))
+  (let ((uniforms (uniforms material)))
     (u:do-plist (k v args)
-      (unless (nth-value 1 (u:href funcs k))
-        (register-uniform-func material k))
-      (resolve-uniform-func funcs k v))))
+      (unless (u:href uniforms k)
+        (setf (u:href uniforms k) (make-instance 'uniform :key k)))
+      (let ((uniform (u:href uniforms k)))
+        (setf (value uniform) v)
+        (unless (func uniform)
+          (register-uniform-func material uniform))
+        (resolve-uniform-func uniform)))))

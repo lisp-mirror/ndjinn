@@ -71,9 +71,9 @@
   (a:with-gensyms (id target)
     `(if ,framebuffer
          (let ((,id (id ,framebuffer))
-               (,target (if ,mode
-                            (framebuffer-mode->target ,mode)
-                            (target ,framebuffer))))
+               (,target ,(if mode
+                             `(framebuffer-mode->target ,mode)
+                             `(target ,framebuffer))))
            ,@(when attachments
                `((gl/named-framebuffer-draw-buffers
                   ,id ,attachments)))

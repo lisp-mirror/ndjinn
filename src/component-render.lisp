@@ -32,17 +32,8 @@
          (render-entity x))))))
 
 (defun render-entity (entity)
-  (with-slots (%spec %framebuffer %attachment-points %uniforms %funcs
-               %texture-unit-state)
-      (render/current-material entity)
-    (with-slots (%enabled %disabled %blend-mode %depth-mode) %spec
-      (with-framebuffer %framebuffer (:attachments %attachment-points)
-        (shadow:with-shader (shader %spec)
-          (u:do-hash (k v %uniforms)
-            (resolve-uniform-func %funcs k v))
-          (with-opengl-state (%enabled %disabled %blend-mode %depth-mode)
-            (on-entity-render entity))
-          (setf %texture-unit-state 0))))))
+  (let ((material (render/current-material entity)))
+    (funcall (render-func (spec material)) entity)))
 
 ;;; entity hooks
 

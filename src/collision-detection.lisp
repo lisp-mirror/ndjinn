@@ -1,0 +1,163 @@
+(in-package #:pyx)
+
+(defclass collision-system ()
+  ((%spec :reader spec
+          :initarg :spec)
+   (%registered :reader registered
+                :initarg :registered
+                :initform (u:dict #'eq))
+   (%deregistered :reader deregistered
+                  :initarg :deregistered
+                  :initform (u:dict #'eq))
+   (%active :reader active
+            :initarg :stable
+            :initform (u:dict #'eq))
+   (%contacts :reader contacts
+              :initarg :contacts
+              :initform (u:dict #'eq))
+   (%buffer :reader buffer
+            :initform (make-array 8 :adjustable t :fill-pointer t))))
+
+(defun make-collision-system (plan-name)
+  (a:if-let ((spec (meta :collider-plans plan-name)))
+    (let ((system (make-instance 'collision-system :spec spec)))
+      (with-slots (%registered %deregistered %active) system
+        (dolist (label (collider-labels spec))
+          (setf (u:href %registered label) (u:dict)
+                (u:href %deregistered label) (u:dict)
+                (u:href %active label) (u:dict))))
+      (setf (slot-value (current-scene *state*) '%collision-system) system))
+    (error "Collider plan ~s not found." plan-name)))
+
+(defun register-collider (collider)
+  (let* ((system (collision-system (current-scene *state*)))
+         (registered (registered system)))
+    (setf (u:href registered (collider/label collider) collider) collider)))
+
+(defun deregister-collider (collider)
+  (let* ((system (collision-system (current-scene *state*)))
+         (deregistered (deregistered system)))
+    (setf (u:href deregistered (collider/label collider) collider) collider)))
+
+(defun collider-contact-p (collider1 collider2)
+  (assert (not (eq collider1 collider2)))
+  (let ((contacts (contacts (collision-system (current-scene *state*)))))
+    (when (u:href contacts collider1)
+      (u:href contacts collider1 collider2))))
+
+(defun collider-contact-enter (collider1 collider2)
+  (assert (not (eq collider1 collider2)))
+  (let ((contacts (contacts (collision-system (current-scene *state*)))))
+    (unless (u:href contacts collider1)
+      (setf (u:href contacts collider1) (u:dict #'eq)))
+    (setf (u:href contacts collider1 collider2) collider2)
+    (unless (u:href contacts collider2)
+      (setf (u:href contacts collider2) (u:dict #'eq)))
+    (setf (u:href contacts collider2 collider1) collider1)
+    (on-collision-enter collider1 collider2)
+    (on-collision-enter collider2 collider1)
+    :enter))
+
+(defun collider-contact-continue (collider1 collider2)
+  (assert (not (eq collider1 collider2)))
+  (on-collision-continue collider1 collider2)
+  (on-collision-continue collider2 collider1)
+  :continue)
+
+(defun collider-contact-exit (collider1 collider2)
+  (assert (not (eq collider1 collider2)))
+  (let ((contacts (contacts (collision-system (current-scene *state*)))))
+    (a:when-let ((table2 (u:href contacts collider1)))
+      (remhash collider2 table2)
+      (when (zerop (hash-table-count table2))
+        (remhash collider1 contacts)))
+    (a:when-let ((table1 (u:href contacts collider2)))
+      (remhash collider1 table1)
+      (when (zerop (hash-table-count table1))
+        (remhash collider2 contacts)))
+    (on-collision-exit collider1 collider2)
+    (on-collision-exit collider2 collider1)
+    :exit))
+
+(defun remove-collider-contacts (collider)
+  (let ((contacts (contacts (collision-system (current-scene *state*)))))
+    (a:when-let ((colliders (u:href contacts collider)))
+      (u:do-hash-keys (k colliders)
+        (when (collider-contact-p collider k)
+          (collider-contact-exit collider k))))))
+
+(defun compute-collider-contact (collider1 collider2)
+  (let ((collided-p (collide-p collider1 collider2))
+        (contact-p (collider-contact-p collider1 collider2)))
+    (cond
+      ((and collided-p contact-p)
+       (collider-contact-continue collider1 collider2))
+      ((and collided-p (not contact-p))
+       (collider-contact-enter collider1 collider2))
+      ((and (not collided-p) contact-p)
+       (collider-contact-exit collider1 collider2)))))
+
+(defun compute-collisions/active ()
+  (let* ((system (collision-system (current-scene *state*)))
+         (buffer (buffer system)))
+    (dolist (collider1-label (collider-labels system))
+      (dolist (collider2-label (u:href (plan system) collider1-label))
+        (if (eq collider1-label collider2-label)
+            (a:when-let ((colliders (u:href (active system) collider1-label)))
+              (setf (fill-pointer buffer) 0)
+              (u:do-hash-keys (k colliders)
+                (vector-push-extend k buffer))
+              (when (>= (length buffer) 2)
+                (a:map-combinations
+                 (lambda (x)
+                   (compute-collider-contact (aref x 0) (aref x 1)))
+                 buffer
+                 :length 2
+                 :copy nil)))
+            (a:when-let ((colliders1 (u:href (active system) collider1-label))
+                         (colliders2 (u:href (active system) collider2-label)))
+              (when (and (plusp (hash-table-count colliders1))
+                         (plusp (hash-table-count colliders2)))
+                (u:do-hash-keys (k1 colliders1)
+                  (u:do-hash-keys (k2 colliders2)
+                    (compute-collider-contact k1 k2))))))))))
+
+(defun compute-collisions/registered ()
+  (let* ((system (collision-system (current-scene *state*)))
+         (active (active system))
+         (registered (registered system)))
+    (dolist (c1-label (collider-labels system))
+      (let ((label-registered (u:href registered c1-label)))
+        (unless (zerop (hash-table-count label-registered))
+          (u:do-hash-keys (c1 label-registered)
+            (remhash c1 label-registered)
+            (unless (u:href active c1-label)
+              (let ((c2-labels (u:href (plan system) c1-label)))
+                (if c2-labels
+                    (progn
+                      (dolist (c2-label c2-labels)
+                        (let ((label-active (u:href active c2-label)))
+                          (unless (zerop (hash-table-count label-active))
+                            (u:do-hash-keys (c2 label-active)
+                              (compute-collider-contact c1 c2)))))
+                      (setf (u:href active c1-label c1) c1))
+                    (setf (u:href active c1-label) c1))))))))))
+
+(defun compute-collisions/deregistered ()
+  (let* ((system (collision-system (current-scene *state*)))
+         (active (active system))
+         (registered (registered system))
+         (deregistered (deregistered system)))
+    (dolist (label (collider-labels system))
+      (let ((label-deregistered (u:href deregistered label)))
+        (unless (zerop (hash-table-count label-deregistered))
+          (u:do-hash-keys (k label-deregistered)
+            (remhash k (u:href active label))
+            (remhash k (u:href registered label))
+            (remove-collider-contacts k)
+            (remhash k label-deregistered)))))))
+
+(defun compute-collisions ()
+  (compute-collisions/active)
+  (compute-collisions/registered)
+  (compute-collisions/deregistered))

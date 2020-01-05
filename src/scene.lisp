@@ -18,6 +18,8 @@
                           :initform nil)
    (%prefabs :reader prefabs
              :initform (u:dict #'eq))
+   (%collision-system :reader collision-system
+                      :initform nil)
    (%uuids :reader uuids
            :initform (u:dict #'eq))))
 
@@ -40,6 +42,7 @@
         (make-node-tree scene)
         (dolist (prefab (prefabs spec))
           (load-prefab prefab))
+        (make-collision-system (collider-plan spec))
         (setf (loaded-p scene) t))
       (setf (slot-value *state* '%current-scene) current)
       scene)))

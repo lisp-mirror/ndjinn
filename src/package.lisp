@@ -33,6 +33,7 @@
    #:define-animation-sequence
    #:define-animation-state
    #:define-animation-state-hook
+   #:define-collider-plan
    #:define-component
    #:define-framebuffer
    #:define-geometry
@@ -70,6 +71,7 @@
   (:export
    #:animate
    #:camera
+   #:collider
    #:group
    #:id
    #:mesh
@@ -90,7 +92,12 @@
   (:export
    #:sprite
    #:fade
-   #:rotate))
+   #:rotate)
+  ;; collision detection
+  (:export
+   #:on-collision-continue
+   #:on-collision-enter
+   #:on-collision-exit))
 
 (defpackage #:pyx.shader
   (:use #:shadow.glsl #:umbra.common))

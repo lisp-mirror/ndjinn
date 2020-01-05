@@ -23,25 +23,25 @@
 ;;; entity flow event hooks
 
 (defgeneric on-entity-create (entity)
-  (:method-combination progn)
+  (:method-combination progn :most-specific-last)
   (:method progn (entity)))
 
 (defgeneric on-entity-delete (entity)
-  (:method-combination progn)
+  (:method-combination progn :most-specific-last)
   (:method progn (entity)))
 
 (defgeneric on-entity-update (entity)
-  (:method-combination progn)
+  (:method-combination progn :most-specific-last)
   (:method progn (entity)))
 
 (defgeneric on-entity-render (entity)
-  (:method-combination progn)
+  (:method-combination progn :most-specific-last)
   (:method progn (entity)))
 
 (defgeneric on-component-attach (entity type)
-  (:method-combination progn)
+  (:method-combination progn :most-specific-last)
   (:method progn (entity type)))
 
 (defgeneric on-component-detach (entity type)
-  (:method-combination progn)
+  (:method-combination progn :most-specific-last)
   (:method progn (entity type)))

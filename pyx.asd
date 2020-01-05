@@ -19,6 +19,7 @@
                #:lparallel
                #:origin
                #:pngload-fast
+               #:printv
                #:sdl2
                #:shadow
                #:trivial-features

@@ -10,7 +10,10 @@
    (%node/children :accessor node/children
                    :initform nil)
    (%node/prefab :reader node/prefab
-                 :initform nil))
+                 :initform nil)
+   (%node/pickable :accessor node/pickable
+                   :initarg :node/pickable
+                   :initform nil))
   (:sorting :before xform)
   (:static t))
 

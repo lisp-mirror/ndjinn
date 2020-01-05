@@ -3,8 +3,8 @@
 (define-component id ()
   ((%id/uuid :reader id/uuid
              :initform (make-uuid))
-   (%id/picking-id :reader id/picking-id
-                   :initform (generate-picking-id)))
+   (%id/picking-id :accessor id/picking-id
+                   :initform nil))
   (:sorting :before node)
   (:static t))
 
@@ -36,7 +36,13 @@
                 (error "Entity ~s has a UUID collision with object ~s."
                        entity found)
                 (setf (u:href %uuids id/uuid) entity))
-    (setf (u:href %picking-ids id/picking-id) entity)))
+    (if (eq (node/pickable entity) :begin)
+        (let ((id (generate-picking-id)))
+          (setf id/picking-id id
+                (u:href %picking-ids id) entity))
+        (a:when-let ((parent (node/parent entity)))
+          (unless (eq (node/pickable parent) :end)
+            (setf id/picking-id (id/picking-id parent)))))))
 
 (define-hook :entity-delete (entity id)
   (with-slots (%uuids) (current-scene *state*)

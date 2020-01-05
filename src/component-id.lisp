@@ -1,10 +1,10 @@
 (in-package #:pyx)
 
-(define-component identify ()
-  ((%identify/uuid :reader identify/uuid
-                   :initform (make-uuid))
-   (%identify/picking-id :reader identify/picking-id
-                         :initform (generate-picking-id)))
+(define-component id ()
+  ((%id/uuid :reader id/uuid
+             :initform (make-uuid))
+   (%id/picking-id :reader id/picking-id
+                   :initform (generate-picking-id)))
   (:sorting :before node)
   (:static t))
 
@@ -30,15 +30,15 @@
 
 ;;; entity hooks
 
-(define-hook :entity-create (entity identify)
+(define-hook :entity-create (entity id)
   (with-slots (%uuids %picking-ids) (current-scene *state*)
-    (u:if-found (found (u:href %uuids identify/uuid))
+    (u:if-found (found (u:href %uuids id/uuid))
                 (error "Entity ~s has a UUID collision with object ~s."
                        entity found)
-                (setf (u:href %uuids identify/uuid) entity))
-    (setf (u:href %picking-ids identify/picking-id) entity)))
+                (setf (u:href %uuids id/uuid) entity))
+    (setf (u:href %picking-ids id/picking-id) entity)))
 
-(define-hook :entity-delete (entity identify)
+(define-hook :entity-delete (entity id)
   (with-slots (%uuids) (current-scene *state*)
-    (remhash identify/uuid %uuids)
-    (release-picking-id identify/picking-id)))
+    (remhash id/uuid %uuids)
+    (release-picking-id id/picking-id)))

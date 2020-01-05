@@ -71,7 +71,7 @@
    #:animate
    #:camera
    #:group
-   #:identify
+   #:id
    #:mesh
    #:node
    #:render

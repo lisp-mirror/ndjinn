@@ -11,7 +11,8 @@
    (#:v3 #:origin.vec3)
    (#:v4 #:origin.vec4)
    (#:q #:origin.quat)
-   (#:m4 #:origin.mat4))
+   (#:m4 #:origin.mat4)
+   (#:~ #:origin.swizzle))
   (:use #:cl)
   ;; engine
   (:export
@@ -97,7 +98,15 @@
   (:export
    #:on-collision-continue
    #:on-collision-enter
-   #:on-collision-exit))
+   #:on-collision-exit)
+  ;; transform protocol
+  (:export
+   #:rotate-entity
+   #:scale-entity
+   #:transform-direction
+   #:transform-point
+   #:transform-vector
+   #:translate-entity))
 
 (defpackage #:pyx.shader
   (:use #:shadow.glsl #:umbra.common))

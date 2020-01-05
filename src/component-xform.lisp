@@ -97,17 +97,53 @@
       (resolve-local entity (clock-interpolation-factor (clock *state*)))
       (m4:*! %xform/model (xform/model %node/parent) %xform/local))))
 
-(defun translate-entity (entity vec &optional replace-p)
-  (with-slots (%current) (xform/translation entity)
-    (v3:+! %current (if replace-p v3:+zero+ %current) vec)))
+;;; user protocol
 
-(defun rotate-entity (entity vec &optional replace-p)
-  (with-slots (%current) (xform/rotation entity)
-    (q:rotate-euler! %current (if replace-p q:+id+ %current) vec)))
+(defun translate-entity (entity vec &key replace-p instant-p)
+  (with-slots (%previous %current) (xform/translation entity)
+    (v3:+! %current (if replace-p v3:+zero+ %current) vec)
+    (when instant-p
+      (v3:copy! %previous %current))))
 
-(defun scale-entity (entity vec &optional replace-p)
-  (with-slots (%current) (xform/scaling entity)
-    (v3:+! %current (if replace-p v3:+zero+ %current) vec)))
+(defun rotate-entity (entity quat &key replace-p instant-p)
+  (with-slots (%previous %current) (xform/rotation entity)
+    (q:rotate! %current (if replace-p q:+id+ %current) quat)
+    (when instant-p
+      (q:copy! %previous %current))))
+
+(defun scale-entity (entity vec &key replace-p instant-p)
+  (with-slots (%previous %current) (xform/scaling entity)
+    (v3:+! %current (if replace-p v3:+zero+ %current) vec)
+    (when instant-p
+      (v3:copy! %previous %current))))
+
+(defun transform-point (entity point &key (space :model))
+  (v3:with-components ((v point))
+    (~:.xyz
+     (ecase space
+       (:model (m4:*v4 (xform/model entity)
+                       (v4:vec vx vy vz 1f0)))
+       (:world (m4:*v4 (m4:invert (xform/model entity))
+                       (v4:vec vx vy vz 1f0)))))))
+
+(defun transform-vector (entity vector &key (space :model))
+  (v3:with-components ((v vector))
+    (let ((model (m4:copy (xform/model entity))))
+      (m4:set-translation! model model v3:+zero+)
+      (~:.xyz
+       (ecase space
+         (:model (m4:*v4 model (v4:vec vx vy vz 1f0)))
+         (:world (m4:*v4 (m4:invert model) (v4:vec vx vy vz 1f0))))))))
+
+(defun transform-direction (entity direction &key (space :model))
+  (v3:with-components ((v direction))
+    (let ((model (m4:copy (xform/model entity))))
+      (m4:set-translation! model model v3:+zero+)
+      (m4:normalize-rotation! model model)
+      (~:.xyz
+       (ecase space
+         (:model (m4:*v4 model (v4:vec vx vy vz 1f0)))
+         (:world (m4:*v4 (m4:invert model) (v4:vec vx vy vz 1f0))))))))
 
 ;;; entity hooks
 

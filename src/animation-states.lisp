@@ -44,7 +44,7 @@
   (with-slots (%angle %axis %progress) state
     (let ((step (float (u:map-domain 0 1 0 %angle %progress) 1f0))
           (axis (v3:normalize %axis)))
-      (rotate-entity entity (v3:scale axis step) t))))
+      (rotate-entity entity (v3:scale axis step) :replace-p t))))
 
 (define-animation-state-hook rotate entity state :finish
   (when (repeat-p state)
@@ -54,7 +54,7 @@
   (with-slots (%angle %axis %progress) state
     (let ((step (float (- %angle (u:map-domain 0 1 0 %angle %progress)) 1f0))
           (axis (v3:normalize %axis)))
-      (rotate-entity entity (v3:scale axis step) t))))
+      (rotate-entity entity (v3:scale axis step) :replace-p t))))
 
 (define-animation-state-hook rotate/reverse entity state :finish
   (when (repeat-p state)

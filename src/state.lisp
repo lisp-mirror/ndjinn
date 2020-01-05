@@ -36,7 +36,6 @@
   (log:info :pyx "Finished loading ~a." (cfg :game-title)))
 
 (defun deinitialize-engine ()
-  (format t "Test~%")
   (kill-display)
   (destroy-thread-pool)
   (shutdown-gamepads)

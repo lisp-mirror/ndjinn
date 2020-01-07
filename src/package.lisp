@@ -73,6 +73,7 @@
    #:animate
    #:camera
    #:collider
+   #:collider/sphere
    #:group
    #:id
    #:mesh
@@ -96,17 +97,21 @@
    #:rotate)
   ;; collision detection
   (:export
+   #:collider/label
    #:on-collision-continue
    #:on-collision-enter
    #:on-collision-exit)
   ;; transform protocol
   (:export
    #:rotate-entity
+   #:rotate-entity/velocity
    #:scale-entity
+   #:scale-entity/velocity
    #:transform-direction
    #:transform-point
    #:transform-vector
-   #:translate-entity))
+   #:translate-entity
+   #:translate-entity/velocity))
 
 (defpackage #:pyx.shader
   (:use #:shadow.glsl #:umbra.common))

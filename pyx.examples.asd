@@ -34,4 +34,5 @@
    (:file "world/component-world")
    (:file "world/definitions")
    (:file "multi-pass/shader")
-   (:file "multi-pass/definitions")))
+   (:file "multi-pass/definitions")
+   (:file "collider/definitions")))

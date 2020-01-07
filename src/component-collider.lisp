@@ -9,7 +9,7 @@
    (%collider/visualize :reader collider/visualize
                         :initarg :collider/visualize
                         :initform nil)
-   (%collider/referent :reader collider/referent
+   (%collider/referent :accessor collider/referent
                        :initarg :collider/referent
                        :initform nil)
    (%collider/contact-count :accessor collider/contact-count
@@ -19,23 +19,35 @@
 (defgeneric collide-p (collider1 collider2)
   (:method ((collider1 collider) (collider2 collider))))
 
-(defgeneric on-collision-enter (collider1 collider2)
-  (:method ((collider1 collider) (collider2 collider))
-    (on-collision-enter (collider/referent collider1) collider2))
-  (:method :before ((collider1 collider) (collider2 collider))
-    (when (eq collider1 (collider/referent collider1))
-      (error "Collider referent cannot be the same collider."))))
+;;; component protocol
 
-(defgeneric on-collision-continue (collider1 collider2)
-  (:method ((collider1 collider) (collider2 collider))
-    (on-collision-continue (collider/referent collider1) collider2))
-  (:method :before ((collider1 collider) (collider2 collider))
-    (when (eq collider1 (collider/referent collider1))
-      (error "Collider referent cannot be the same collider."))))
+(define-hook :entity-delete (entity collider)
+  (setf (collider/referent entity) nil))
 
-(defgeneric on-collision-exit (collider1 collider2)
-  (:method ((collider1 collider) (collider2 collider))
-    (on-collision-exit (collider/referent collider1) collider2))
-  (:method :before ((collider1 collider) (collider2 collider))
-    (when (eq collider1 (collider/referent collider1))
-      (error "Collider referent cannot be the same collider."))))
+;;; user protocol
+
+(defgeneric on-collision-enter (contact1 contact2)
+  (:method (contact1 contact2))
+  (:method ((contact1 collider) contact2)
+    (incf (collider/contact-count contact1))
+    (a:when-let ((referent (collider/referent contact1)))
+      (when (eq contact1 referent)
+        (error "Collider referent cannot be the same collider."))
+      (on-collision-enter (collider/referent contact1) contact2))))
+
+(defgeneric on-collision-continue (contact1 contact2)
+  (:method (contact1 contact2))
+  (:method ((contact1 collider) contact2)
+    (a:when-let ((referent (collider/referent contact1)))
+      (when (eq contact1 referent)
+        (error "Collider referent cannot be the same collider."))
+      (on-collision-continue (collider/referent contact1) contact2))))
+
+(defgeneric on-collision-exit (contact1 contact2)
+  (:method (contact1 contact2))
+  (:method ((contact1 collider) contact2)
+    (decf (collider/contact-count contact1))
+    (a:when-let ((referent (collider/referent contact1)))
+      (when (eq contact1 referent)
+        (error "Collider referent cannot be the same collider."))
+      (on-collision-exit (collider/referent contact1) contact2))))

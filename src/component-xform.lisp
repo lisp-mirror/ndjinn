@@ -105,17 +105,29 @@
     (when instant-p
       (v3:copy! %previous %current))))
 
+(defun translate-entity/velocity (entity axis rate)
+  (with-slots (%incremental) (xform/translation entity)
+    (setf %incremental (math:make-velocity axis rate))))
+
 (defun rotate-entity (entity quat &key replace-p instant-p)
   (with-slots (%previous %current) (xform/rotation entity)
     (q:rotate! %current (if replace-p q:+id+ %current) quat)
     (when instant-p
       (q:copy! %previous %current))))
 
+(defun rotate-entity/velocity (entity axis rate)
+  (with-slots (%incremental) (xform/rotation entity)
+    (setf %incremental (math:make-velocity axis rate))))
+
 (defun scale-entity (entity vec &key replace-p instant-p)
   (with-slots (%previous %current) (xform/scaling entity)
     (v3:+! %current (if replace-p v3:+zero+ %current) vec)
     (when instant-p
       (v3:copy! %previous %current))))
+
+(defun scale-entity/velocity (entity axis rate)
+  (with-slots (%incremental) (xform/scaling entity)
+    (setf %incremental (math:make-velocity axis rate))))
 
 (defun transform-point (entity point &key (space :model))
   (v3:with-components ((v point))

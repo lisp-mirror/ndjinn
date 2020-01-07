@@ -6,6 +6,8 @@
                      :initform 1.0))
   (:sorting :after collider))
 
+;;; internal collider protocol
+
 (defmethod collide-p ((collider1 collider/sphere) (collider2 collider/sphere))
   (let* ((center1 (transform-point collider1 (collider/center collider1)))
          (center2 (transform-point collider2 (collider/center collider2)))
@@ -16,3 +18,11 @@
     (<= (v3:distance center1 center2)
         (+ (v3:length radius1)
            (v3:length radius2)))))
+
+;;; component-protocol
+
+(define-hook :component-attach (entity collider/sphere)
+  (register-collider entity))
+
+(define-hook :component-detach (entity collider/sphere)
+  (deregister-collider entity))

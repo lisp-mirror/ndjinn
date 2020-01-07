@@ -17,7 +17,7 @@
   (:sorting :after render))
 
 (defgeneric collide-p (collider1 collider2)
-  (:method ((collider1 collider) (collider2 collider))))
+  (:method (collider1 collider2)))
 
 ;;; component protocol
 

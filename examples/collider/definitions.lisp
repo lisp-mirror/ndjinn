@@ -51,9 +51,10 @@
 (defmethod pyx:on-collision-enter ((contact1 player-collision-message)
                                    (contact2 pyx:collider))
   (ecase (pyx:collider/label contact2)
-    (:gate (pyx:translate-entity/velocity contact1 v3:+right+ 4f0))
-    (:destroyer (pyx:translate-entity
-                 contact1 (v3:vec -30f0 0f0 0f0) :replace-p t))))
+    (:gate
+     (pyx:translate-entity/velocity contact1 v3:+right+ 4f0))
+    (:destroyer
+     (pyx:translate-entity contact1 (v3:vec -30f0 0f0 0f0) :replace-p t))))
 
 (defmethod pyx:on-collision-exit ((contact1 player-collision-message)
                                   (contact2 pyx:collider))

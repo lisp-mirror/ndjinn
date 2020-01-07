@@ -41,10 +41,10 @@
   :world/width 49
   :world/height 49
   :world/seed 1
-  (floor (:template tile/floor)
-         :mesh/instances (@ world :tiles/floor))
-  (wall (:template tile/wall)
-        :mesh/instances (@ world :tiles/wall)))
+  ((floor :template tile/floor)
+   :mesh/instances (@ world :tiles/floor))
+  ((wall :template tile/wall)
+   :mesh/instances (@ world :tiles/wall)))
 
 ;;; scene
 

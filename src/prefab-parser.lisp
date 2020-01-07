@@ -188,7 +188,7 @@
 (defmacro preprocess-prefab-data (name options data)
   (labels ((process (data)
              (destructuring-bind (name options args children)
-                 (loop :with (name options . rest) = data
+                 (loop :with ((name . options) . rest) = data
                        :for body :on rest :by #'cddr
                        :for (k v) = body
                        :while (keywordp (first body))
@@ -206,4 +206,4 @@
                          `(list ,@(mapcar #'process children)))))))
     `(macrolet ((,(a:symbolicate "@") (&rest path/query)
                   `(make-prefab-reference ',path/query)))
-       (list ,@(mapcar #'process (list (list* name options data)))))))
+       (list ,@(mapcar #'process (list (list* (list* name options) data)))))))

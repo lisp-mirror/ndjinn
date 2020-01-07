@@ -34,13 +34,13 @@
   :xform/translate (v3:vec 0f0 -120f0 0f0)
   :sprite/name "ship29"
   :render/order 'ships
-  (exhaust (:template sprite :add (pyx:animate))
-           :xform/translate (v3:vec 0f0 -145f0 0f0)
-           :xform/scale (v3:vec 1f0 0.65 1f0)
-           :sprite/name "exhaust01-01"
-           :sprite/frames 8
-           :render/order 'ships
-           :animate/sequence 'sprite))
+  ((exhaust :template sprite :add (pyx:animate))
+   :xform/translate (v3:vec 0f0 -145f0 0f0)
+   :xform/scale (v3:vec 1f0 0.65 1f0)
+   :sprite/name "exhaust01-01"
+   :sprite/frames 8
+   :render/order 'ships
+   :animate/sequence 'sprite))
 
 ;;; scene
 

@@ -125,7 +125,7 @@
           spec
         (setf %master master
               %shader (or shader (and master-spec (shader master-spec)))
-              %pass (or pass :default)
+              %pass (or pass 'default)
               %framebuffer framebuffer
               %attachments attachments
               %render-func func)

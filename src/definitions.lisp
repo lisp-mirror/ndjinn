@@ -20,10 +20,10 @@
 
 ;;; collider plans
 
-(define-collider-plan :default ())
+(define-collider-plan default ())
 
 ;;; render passes
 
-(define-render-pass :default ()
+(define-render-pass default ()
   (:clear-color (v4:vec 0f0 0f0 0f0 1f0)
    :clear-buffers (:color :depth)))

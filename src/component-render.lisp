@@ -5,7 +5,7 @@
                       :initarg :render/materials)
    (%render/order :reader render/order
                   :initarg :render/order
-                  :initform :default)
+                  :initform 'default)
    (%render/current-material :accessor render/current-material
                              :initform nil))
   (:sorting :after xform :before sprite))

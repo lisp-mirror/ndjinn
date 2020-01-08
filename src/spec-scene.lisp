@@ -15,7 +15,7 @@
 (define-event-handler :recompile :scene recompile-scene)
 
 (defun make-scene-draw-order-table (order)
-  (loop :with table = (u:dict #'eq :default 0)
+  (loop :with table = (u:dict #'eq 'default 0)
         :for item :in order
         :for i :from 0
         :do (setf (u:href table item) i)
@@ -45,8 +45,8 @@
 
 (defmacro define-scene (name options &body body)
   (declare (ignore options))
-  (destructuring-bind (&key prefabs (passes '(:default))
-                         (draw-order '(:default)) (collider-plan :default))
+  (destructuring-bind (&key prefabs (passes '(default))
+                         (draw-order '(default)) (collider-plan 'default))
       (car body)
     `(progn
        (unless (meta :scenes)

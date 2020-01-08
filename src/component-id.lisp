@@ -24,9 +24,11 @@
 
 (defun release-picking-id (id)
   (with-slots (%picking-ids %released-picking-ids) (current-scene *state*)
-    (remhash id %picking-ids)
-    (pushnew id %released-picking-ids)
-    (setf %released-picking-ids (sort (copy-seq %released-picking-ids) #'<))))
+    (when id
+      (remhash id %picking-ids)
+      (pushnew id %released-picking-ids)
+      (setf %released-picking-ids (sort (copy-seq %released-picking-ids)
+                                        #'<)))))
 
 ;;; entity hooks
 

@@ -90,6 +90,10 @@
     (pyx:make-shader-buffer world/buffer-name :world 'pyx.examples.shader:world)
     (pyx:update-shader-buffer entity)))
 
-(pyx:define-hook :delete (entity world)
+;; TODO: We don't have any reference counting for resources yet, so this will
+;; delete the resource unconditionally, even if there are other world
+;; components. There are not for this example, so this is safe for the time
+;; being.
+(pyx:define-hook :detach (entity world)
   (pyx:delete-resource 'world world/buffer-name)
   (pyx:delete-shader-buffer world/buffer-name))

@@ -19,11 +19,6 @@
 (defgeneric collide-p (collider1 collider2)
   (:method (collider1 collider2)))
 
-;;; component protocol
-
-(define-hook :delete (entity collider)
-  (setf (collider/referent entity) nil))
-
 ;;; user protocol
 
 (defgeneric on-collision-enter (contact1 contact2)

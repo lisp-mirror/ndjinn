@@ -25,4 +25,5 @@
 (define-hook :attach (entity collider/sphere)
 
 (define-hook :detach (entity collider/sphere)
-  (deregister-collider entity))
+  (deregister-collider entity)
+  (setf (collider/referent entity) nil))

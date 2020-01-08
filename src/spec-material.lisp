@@ -59,39 +59,40 @@
     (pushnew (name spec) (slaves master))))
 
 ;;definition
-(defun generate-material-render-func (enable disable blend-mode depth-mode)
-  (a:with-gensyms (entity material)
-    (let ((enable (set-difference enable +gl-capabilities/enabled+))
-          (disable (set-difference disable +gl-capabilities/disabled+))
-          (blend-mode (and (not (equal blend-mode +gl-blend-mode+))
-                           blend-mode))
-          (depth-mode (and (not (equal depth-mode +gl-depth-mode+))
-                           depth-mode)))
-      `(lambda (,entity)
-         (let ((,material (render/current-material ,entity)))
-           (with-framebuffer (framebuffer ,material)
-               (:attachments (attachments ,material))
-             (shadow:with-shader (shader (spec ,material))
-               ,@(when enable
-                   `((gl:enable ,@enable)))
-               ,@(when disable
-                   `((gl:disable ,@disable)))
-               ,@(when blend-mode
-                   `((gl:blend-func ,@blend-mode)))
-               ,@(when depth-mode
-                   `((gl:depth-func ,depth-mode)))
-               (u:do-hash-values (v (uniforms ,material))
-                 (resolve-uniform-func v))
-               (on-entity-render ,entity)
-               (setf (texture-unit-state ,material) 0)
-               ,@(when disable
-                   `((gl:enable ,@disable)))
-               ,@(when enable
-                   `((gl:disable ,@enable)))
-               ,@(when blend-mode
-                   `((gl:blend-func ,@+gl-blend-mode+)))
-               ,@(when depth-mode
-                   `((gl:depth-func ,+gl-depth-mode+))))))))))
+(defun generate-material-render-func (features)
+  (destructuring-bind (&key enable disable blend-mode depth-mode) features
+    (a:with-gensyms (entity material)
+      (let ((enable (set-difference enable +gl-capabilities/enabled+))
+            (disable (set-difference disable +gl-capabilities/disabled+))
+            (blend-mode (and (not (equal blend-mode +gl-blend-mode+))
+                             blend-mode))
+            (depth-mode (and (not (equal depth-mode +gl-depth-mode+))
+                             depth-mode)))
+        `(lambda (,entity)
+           (let ((,material (render/current-material ,entity)))
+             (with-framebuffer (framebuffer ,material)
+                 (:attachments (attachments ,material))
+               (shadow:with-shader (shader (spec ,material))
+                 ,@(when enable
+                     `((gl:enable ,@enable)))
+                 ,@(when disable
+                     `((gl:disable ,@disable)))
+                 ,@(when blend-mode
+                     `((gl:blend-func ,@blend-mode)))
+                 ,@(when depth-mode
+                     `((gl:depth-func ,depth-mode)))
+                 (u:do-hash-values (v (uniforms ,material))
+                   (resolve-uniform-func v))
+                 (on-entity-render ,entity)
+                 (setf (texture-unit-state ,material) 0)
+                 ,@(when disable
+                     `((gl:enable ,@disable)))
+                 ,@(when enable
+                     `((gl:disable ,@enable)))
+                 ,@(when blend-mode
+                     `((gl:blend-func ,@+gl-blend-mode+)))
+                 ,@(when depth-mode
+                     `((gl:depth-func ,+gl-depth-mode+)))))))))))
 
 (defun make-material-spec (name master shader uniforms pass output func)
   (let ((spec (make-instance 'material-spec :name name)))
@@ -136,17 +137,13 @@
          (render-func slave))))))
 
 (defmacro define-material (name (&optional master) &body body)
-  (destructuring-bind (&key shader uniforms blend-mode depth-mode features pass
-                         output)
-      (car body)
-    (destructuring-bind (&key enable disable) features
-      (a:with-gensyms (func)
-        `(let ((,func ,(generate-material-render-func
-                        enable disable blend-mode depth-mode)))
-           (unless (meta :materials)
-             (setf (meta :materials) (u:dict #'eq)))
-           (if (meta :materials ',name)
-               (update-material-spec ',name ',master ',shader (list ,@uniforms)
-                                     ',pass ',output ,func)
-               (make-material-spec ',name ',master ',shader (list ,@uniforms)
-                                   ',pass ',output ,func)))))))
+  (destructuring-bind (&key shader uniforms features pass output) (car body)
+    (a:with-gensyms (func)
+      `(let ((,func ,(generate-material-render-func features)))
+         (unless (meta :materials)
+           (setf (meta :materials) (u:dict #'eq)))
+         (if (meta :materials ',name)
+             (update-material-spec ',name ',master ',shader (list ,@uniforms)
+                                   ',pass ',output ,func)
+             (make-material-spec ',name ',master ',shader (list ,@uniforms)
+                                 ',pass ',output ,func))))))

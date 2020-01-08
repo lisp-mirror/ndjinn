@@ -10,7 +10,7 @@
 (pyx:define-material sprite ()
   (:shader umbra.sprite:sprite
    :uniforms (:opacity 1.0)
-   :depth-mode :lequal))
+   :features (:depth-mode :lequal)))
 
 ;;; animation sequences
 

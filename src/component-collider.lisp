@@ -28,7 +28,7 @@
 
 (defgeneric on-collision-enter (contact1 contact2)
   (:method (contact1 contact2))
-  (:method ((contact1 collider) contact2)
+  (:method ((contact1 collider) (contact2 collider))
     (incf (collider/contact-count contact1))
     (a:when-let ((referent (collider/referent contact1)))
       (when (eq contact1 referent)
@@ -37,7 +37,7 @@
 
 (defgeneric on-collision-continue (contact1 contact2)
   (:method (contact1 contact2))
-  (:method ((contact1 collider) contact2)
+  (:method ((contact1 collider) (contact2 collider))
     (a:when-let ((referent (collider/referent contact1)))
       (when (eq contact1 referent)
         (error "Collider referent cannot be the same collider."))
@@ -45,7 +45,7 @@
 
 (defgeneric on-collision-exit (contact1 contact2)
   (:method (contact1 contact2))
-  (:method ((contact1 collider) contact2)
+  (:method ((contact1 collider) (contact2 collider))
     (decf (collider/contact-count contact1))
     (a:when-let ((referent (collider/referent contact1)))
       (when (eq contact1 referent)

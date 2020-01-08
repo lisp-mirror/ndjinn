@@ -37,9 +37,6 @@
 
 ;;; entity hooks
 
-(define-hook :entity-create (entity render)
-  (setf render/materials (register-materials entity)))
-
 (define-hook :entity-render (entity render)
   (a:when-let ((camera (camera (current-scene *state*))))
     (set-uniforms render/current-material
@@ -47,6 +44,7 @@
                   :proj (camera/projection camera))))
 
 (define-hook :component-attach (entity render)
+  (setf render/materials (register-materials entity))
   (register-draw-order entity))
 
 (define-hook :component-detach (entity render)

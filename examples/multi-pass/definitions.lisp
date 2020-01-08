@@ -18,7 +18,7 @@
 
 ;;; materials
 
-(pyx:define-material multi-pass/pass1 (mesh)
+(pyx:define-material multi-pass/pass1 (pyx:mesh)
   (:output (multi-pass (color))
    :pass multi-pass/pass1))
 

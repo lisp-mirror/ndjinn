@@ -111,7 +111,12 @@
    #:transform-point
    #:transform-vector
    #:translate-entity
-   #:translate-entity/velocity))
+   #:translate-entity/velocity)
+  ;; definitions
+  (:export
+   #:debug
+   #:mesh
+   #:quad))
 
 (defpackage #:pyx.shader
   (:use #:shadow.glsl #:umbra.common))

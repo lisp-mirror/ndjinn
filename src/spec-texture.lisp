@@ -71,6 +71,3 @@
              (make-texture-spec ',name ',source ,width ,height
                                 ,pixel-format ,pixel-type ,internal-format
                                 ,generate-mipmaps ,parameters))))))
-
-(define-texture default ()
-  (:source "debug.png"))

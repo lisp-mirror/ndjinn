@@ -33,5 +33,3 @@
      (if (meta :collider-plans ',name)
          (update-collider-plan-spec ',name ',(car body))
          (make-collider-plan-spec ',name ',(car body)))))
-
-(define-collider-plan :default ())

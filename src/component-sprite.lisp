@@ -4,8 +4,7 @@
   ((%sprite/name :reader sprite/name
                  :initarg :sprite/name)
    (%sprite/texture :reader sprite/texture
-                    :initarg :sprite/texture
-                    :initform 'default)
+                    :initarg :sprite/texture)
    (%sprite/frames :reader sprite/frames
                    :initarg :sprite/frames
                    :initform 1)

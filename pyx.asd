@@ -101,5 +101,6 @@
    (:file "animation")
    (:file "animation-states")
    (:file "draw-order")
+   (:file "definitions")
    (:file "scene")
    (:file "state")))

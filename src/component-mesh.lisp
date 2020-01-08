@@ -16,7 +16,7 @@
 
 ;;; entity hooks
 
-(define-hook :entity-create (entity mesh)
+(define-hook :attach (entity mesh)
   (let* ((gltf (resource-lookup 'mesh mesh/file
                  (load-gltf (resolve-asset-path mesh/file))))
          (mesh (u:href (meshes gltf) mesh/name)))
@@ -24,5 +24,5 @@
       (error "Mesh name ~s not found in glTF file ~s." mesh/name mesh/file))
     (setf mesh/primitive (aref (primitives mesh) mesh/index))))
 
-(define-hook :entity-render (entity mesh)
+(define-hook :render (entity mesh)
   (funcall (draw-func mesh/primitive) mesh/instances))

@@ -12,9 +12,9 @@
   (make-mixin-class (make-mixin-class-list components)))
 
 (defun register-entity (entity types)
-  (on-entity-create entity)
+  (on-create entity)
   (dolist (type types)
-    (on-component-attach entity type)))
+    (on-attach entity type)))
 
 (defun %make-entity (types &optional args)
   (let* ((class (make-entity-class types))
@@ -33,7 +33,7 @@
       (if reparent-children-p
           (add-child child :parent parent)
           (%delete-entity child)))
-    (on-entity-delete entity)
+    (on-delete entity)
     (detach-components entity)
     (deregister-prefab-entity entity)
     (when parent

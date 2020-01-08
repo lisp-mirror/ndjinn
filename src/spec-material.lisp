@@ -93,7 +93,7 @@
                      `((gl:point-size ,point-size)))
                  (u:do-hash-values (v (uniforms ,material))
                    (resolve-uniform-func v))
-                 (on-entity-render ,entity)
+                 (on-render ,entity)
                  (setf (texture-unit-state ,material) 0)
                  ,@(when disable
                      `((gl:enable ,@disable)))

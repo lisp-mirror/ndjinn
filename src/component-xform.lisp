@@ -159,8 +159,8 @@
 
 ;;; entity hooks
 
-(define-hook :entity-update (entity xform)
+(define-hook :update (entity xform)
   (transform-node entity))
 
-(define-hook :entity-render (entity xform)
+(define-hook :render (entity xform)
   (set-uniforms (render/current-material entity) :model xform/model))

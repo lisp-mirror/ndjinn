@@ -10,9 +10,9 @@
 
 ;;; entity hooks
 
-(define-hook :component-attach (instance animate)
+(define-hook :attach (instance animate)
   (a:when-let ((sequence (meta :animation-sequences animate/sequence)))
     (funcall sequence instance)))
 
-(define-hook :entity-render (entity animate)
+(define-hook :render (entity animate)
   (process-animation-states entity))

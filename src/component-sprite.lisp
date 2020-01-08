@@ -15,13 +15,13 @@
 
 ;;; entity hooks
 
-(define-hook :entity-create (entity sprite)
+(define-hook :attach (entity sprite)
   (let ((spritesheet (make-spritesheet sprite/texture)))
     (setf sprite/spritesheet spritesheet
           sprite/index (u:href (sprites spritesheet) sprite/name)
           sprite/initial-index sprite/index)))
 
-(define-hook :entity-render (entity sprite)
+(define-hook :render (entity sprite)
   (set-uniforms (render/current-material entity)
                 :sprite.index sprite/index
                 :sprite.sampler (texture sprite/spritesheet))

@@ -91,13 +91,13 @@
 
 (defun attach-component (entity type &rest args)
   (apply #'add-mixin-class entity type args)
-  (on-component-attach entity type))
+  (on-attach entity type))
 
 (defun detach-component (entity type)
   (if (find type (meta :components :static))
       (error "Cannot remove built-in static component: ~s." type)
       (progn
-        (on-component-detach entity type)
+        (on-detach entity type)
         (remove-mixin-class entity type))))
 
 (defun detach-components (entity)

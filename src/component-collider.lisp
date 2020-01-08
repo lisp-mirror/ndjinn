@@ -21,7 +21,7 @@
 
 ;;; component protocol
 
-(define-hook :entity-delete (entity collider)
+(define-hook :delete (entity collider)
   (setf (collider/referent entity) nil))
 
 ;;; user protocol

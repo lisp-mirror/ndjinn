@@ -77,7 +77,7 @@
 
 ;;; entity hooks
 
-(pyx:define-hook :entity-create (entity world)
+(pyx:define-hook :attach (entity world)
   (setf world/buffer-name `(world (:width ,world/width
                                    :height ,world/height
                                    :seed ,world/seed
@@ -90,6 +90,6 @@
     (pyx:make-shader-buffer world/buffer-name :world 'pyx.examples.shader:world)
     (pyx:update-shader-buffer entity)))
 
-(pyx:define-hook :entity-delete (entity world)
+(pyx:define-hook :delete (entity world)
   (pyx:delete-resource 'world world/buffer-name)
   (pyx:delete-shader-buffer world/buffer-name))

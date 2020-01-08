@@ -21,8 +21,8 @@
 
 ;;; component-protocol
 
-(define-hook :component-attach (entity collider/sphere)
   (register-collider entity))
+(define-hook :attach (entity collider/sphere)
 
-(define-hook :component-detach (entity collider/sphere)
+(define-hook :detach (entity collider/sphere)
   (deregister-collider entity))

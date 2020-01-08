@@ -88,11 +88,11 @@
 
 ;;; entity hooks
 
-(define-hook :entity-create (entity camera)
+(define-hook :attach (entity camera)
   (when camera/active-p
     (setf (slot-value (current-scene *state*) '%camera) entity))
   (setf camera/fov-y (float (* camera/fov-y (/ pi 180)) 1f0))
   (set-camera-projection entity))
 
-(define-hook :entity-update (entity camera)
+(define-hook :update (entity camera)
   (set-camera-view entity))

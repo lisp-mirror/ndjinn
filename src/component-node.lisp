@@ -38,6 +38,6 @@
 
 ;;; entity hooks
 
-(define-hook :entity-create (entity node)
+(define-hook :create (entity node)
   (unless node/root-p
     (add-child entity :parent node/parent)))

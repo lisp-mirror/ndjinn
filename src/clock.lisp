@@ -73,7 +73,7 @@
                       (delta (clock-delta-time clock)))
       (incf accumulator (clock-frame-time clock))
       (u:while (>= accumulator delta)
-        (map-nodes #'on-entity-update)
+        (map-nodes #'on-update)
         (decf accumulator delta))
       (setf (clock-interpolation-factor clock)
             (float (/ accumulator delta) 1f0))

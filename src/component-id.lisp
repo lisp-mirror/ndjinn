@@ -30,7 +30,7 @@
 
 ;;; entity hooks
 
-(define-hook :entity-create (entity id)
+(define-hook :create (entity id)
   (with-slots (%uuids %picking-ids) (current-scene *state*)
     (u:if-found (found (u:href %uuids id/uuid))
                 (error "Entity ~s has a UUID collision with object ~s."
@@ -44,7 +44,7 @@
           (unless (eq (node/pickable parent) :end)
             (setf id/picking-id (id/picking-id parent)))))))
 
-(define-hook :entity-delete (entity id)
+(define-hook :delete (entity id)
   (with-slots (%uuids) (current-scene *state*)
     (remhash id/uuid %uuids)
     (release-picking-id id/picking-id)))

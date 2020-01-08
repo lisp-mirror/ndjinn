@@ -60,14 +60,18 @@
 
 ;;definition
 (defun generate-material-render-func (features)
-  (destructuring-bind (&key enable disable blend-mode depth-mode) features
+  (destructuring-bind (&key enable disable blend-mode depth-mode
+                         polygon-mode line-width point-size)
+      features
     (a:with-gensyms (entity material)
       (let ((enable (set-difference enable +gl-capabilities/enabled+))
             (disable (set-difference disable +gl-capabilities/disabled+))
             (blend-mode (and (not (equal blend-mode +gl-blend-mode+))
                              blend-mode))
             (depth-mode (and (not (equal depth-mode +gl-depth-mode+))
-                             depth-mode)))
+                             depth-mode))
+            (polygon-mode (and (not (equal polygon-mode +gl-polygon-mode+))
+                               polygon-mode)))
         `(lambda (,entity)
            (let ((,material (render/current-material ,entity)))
              (with-framebuffer (framebuffer ,material)
@@ -81,6 +85,12 @@
                      `((gl:blend-func ,@blend-mode)))
                  ,@(when depth-mode
                      `((gl:depth-func ,depth-mode)))
+                 ,@(when polygon-mode
+                     `((gl:polygon-mode :front-and-back ,polygon-mode)))
+                 ,@(when line-width
+                     `((gl:line-width ,line-width)))
+                 ,@(when point-size
+                     `((gl:point-size ,point-size)))
                  (u:do-hash-values (v (uniforms ,material))
                    (resolve-uniform-func v))
                  (on-entity-render ,entity)
@@ -92,7 +102,13 @@
                  ,@(when blend-mode
                      `((gl:blend-func ,@+gl-blend-mode+)))
                  ,@(when depth-mode
-                     `((gl:depth-func ,+gl-depth-mode+)))))))))))
+                     `((gl:depth-func ,+gl-depth-mode+)))
+                 ,@(when polygon-mode
+                     `((gl:polygon-mode ,@+gl-polygon-mode+)))
+                 ,@(when line-width
+                     `((gl:line-width 1f0)))
+                 ,@(when point-size
+                     `((gl:point-size 1f0)))))))))))
 
 (defun make-material-spec (name master shader uniforms pass output func)
   (let ((spec (make-instance 'material-spec :name name)))

@@ -20,3 +20,5 @@
   :test #'equal)
 
 (a:define-constant +gl-depth-mode+ :less)
+
+(a:define-constant +gl-polygon-mode+ '(:front-and-back :fill) :test #'equal)

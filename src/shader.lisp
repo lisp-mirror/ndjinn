@@ -19,8 +19,7 @@
     (setf (slot-value *state* '%shaders) shaders)))
 
 (defun recompile-shaders (program-names)
-  (shadow:recompile-shaders program-names)
-  (log:info :pyx "Recompiled shader programs: ~{~s~^, ~}" program-names))
+  (shadow:recompile-shaders program-names))
 
 (defun select-shader-buffer-binding ()
   (with-slots (%buffer-bindings %released-buffer-bindings) (shaders *state*)

@@ -5,10 +5,10 @@
          (p (+ p (dot p (+ p 42.4112)))))
     (fract (* (.x p) (.y p)))))
 
-(defun effect/truchet/f ((uv :vec2)
-                         &uniforms
-                         (res :vec2)
-                         (time :float))
+(defun effect/truchet/frag ((uv :vec2)
+                            &uniforms
+                            (res :vec2)
+                            (time :float))
   (let* ((uv (* (/ (- (.xy gl-frag-coord) (* res 0.5)) (.y res)) 4))
          (cell-id (floor uv))
          (checker (1- (* (mod (+ (.x cell-id) (.y cell-id)) 2) 2)))
@@ -33,5 +33,5 @@
     (vec4 (* noise mask) 1)))
 
 (define-shader effect/truchet ()
-  (:vertex (pyx.shader:quad/v mesh-attrs))
-  (:fragment (effect/truchet/f :vec2)))
+  (:vertex (pyx.shader:quad/vert mesh-attrs))
+  (:fragment (effect/truchet/frag :vec2)))

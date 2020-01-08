@@ -52,6 +52,7 @@
                       (setf %current-node node)
                       (let ((args (resolve-prefab-entity-args node parent))
                             (skeleton (u:href %entities path)))
-                        (realize-prefab-entity skeleton args)))
+                        (realize-prefab-entity skeleton args)
+                        (setf (slot-value skeleton '%node/prefab-path) path)))
                     (setf %current-node nil)
                     (register-prefab-root prefab))))))

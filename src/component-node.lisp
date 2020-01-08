@@ -11,6 +11,8 @@
                    :initform nil)
    (%node/prefab :reader node/prefab
                  :initform nil)
+   (%node/prefab-path :reader node/prefab-path
+                      :initform nil)
    (%node/pickable :accessor node/pickable
                    :initarg :node/pickable
                    :initform nil))

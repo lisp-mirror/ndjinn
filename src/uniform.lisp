@@ -81,5 +81,4 @@
       (let ((uniform (u:href uniforms k)))
         (setf (value uniform) v)
         (unless (func uniform)
-          (register-uniform-func material uniform))
-        (resolve-uniform-func uniform)))))
+          (register-uniform-func material uniform))))))

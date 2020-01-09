@@ -9,9 +9,13 @@
 
 (define-material mesh ()
   (:shader pyx.shader:mesh
-   :uniforms (:sampler 'debug)
-   :features (:enable ()
-              :polygon-mode :line
+   :uniforms (:sampler 'debug)))
+
+(define-material collider ()
+  (:shader pyx.shader:collider
+   :uniforms (:hit-color (v4:vec 0f0 1f0 0f0 1f0)
+              :miss-color (v4:vec 1f0 0f0 0f0 1f0))
+   :features (:polygon-mode :line
               :line-width 0.5)))
 
 (define-material quad ()

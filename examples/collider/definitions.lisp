@@ -10,15 +10,19 @@
 
 (pyx:define-prefab collider/gate (:template mesh/sphere)
   :xform/scale 3f0
-  ((collider :add (pyx:collider/sphere))
-   :collider/label :gate))
+  ((collider :add (pyx:collider))
+   :collider/type :sphere
+   :collider/label :gate
+   :collider/visualize t))
 
 (pyx:define-prefab collider/destroyer (:template mesh/sphere)
   :xform/scale 3f0
   :xform/translate (v3:vec 30f0 0f0 0f0)
   :xform/rotate/velocity (math:make-velocity v3:+forward+ math:pi)
-  ((collider :add (pyx:collider/sphere))
-   :collider/label :destroyer))
+  ((collider :add (pyx:collider))
+   :collider/type :sphere
+   :collider/label :destroyer
+   :collider/visualize t))
 
 (pyx:define-prefab collider/player (:template mesh/helmet
                                     :add (player-collision-message))
@@ -37,8 +41,10 @@
    :xform/rotate/velocity (math:make-velocity v3:+right+ math:pi))
   ((destroyer :template collider/destroyer))
   ((player :template collider/player)
-   ((collider :add (pyx:collider/sphere))
+   ((collider :add (pyx:collider))
+    :collider/type :sphere
     :collider/label :player
+    :collider/visualize t
     :collider/referent (@ collider/1 player))))
 
 ;;; collision detection

@@ -1,6 +1,6 @@
 (in-package #:pyx)
 
-(define-component collider/sphere (collider)
+(define-component collider/sphere ()
   ((%collider/radius :reader collider/radius
                      :initarg :collider/radius
                      :initform 1.0))
@@ -21,9 +21,8 @@
 
 ;;; component-protocol
 
-  (register-collider entity))
 (define-hook :attach (entity collider/sphere)
-
-(define-hook :detach (entity collider/sphere)
-  (deregister-collider entity)
-  (setf (collider/referent entity) nil))
+  (when (collider/visualize entity)
+    ;; TODO: set scale of mesh based off radius
+    (attach-component
+     entity 'mesh :mesh/file "sphere.glb" :mesh/name "sphere")))

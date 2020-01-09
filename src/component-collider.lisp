@@ -37,7 +37,7 @@
   (deregister-collider entity)
   (setf (collider/referent entity) nil))
 
-(define-hook :render (entity collider)
+(define-hook :pre-render (entity collider)
   (set-uniforms (render/current-material entity) :contact collider/hit-p))
 
 ;;; user protocol

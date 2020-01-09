@@ -2,7 +2,7 @@
 
 (defun get-entity-flow-hook-parameters (hook entity type)
   (ecase hook
-    ((:create :delete :update :render)
+    ((:create :delete :update :pre-render :render)
      `((,entity ,type)))
     ((:attach :detach)
      `(,entity (type (eql ',type))))))
@@ -29,6 +29,10 @@
   (:method progn (entity)))
 
 (defgeneric on-update (entity)
+  (:method-combination progn :most-specific-last)
+  (:method progn (entity)))
+
+(defgeneric on-pre-render (entity)
   (:method-combination progn :most-specific-last)
   (:method progn (entity)))
 

@@ -39,7 +39,7 @@
 
 ;;; entity hooks
 
-(define-hook :render (entity render)
+(define-hook :pre-render (entity render)
   (a:when-let ((camera (camera (current-scene *state*))))
     (set-uniforms render/current-material
                   :view (camera/view camera)

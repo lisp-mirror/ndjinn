@@ -14,5 +14,5 @@
   (a:when-let ((sequence (meta :animation-sequences animate/sequence)))
     (funcall sequence instance)))
 
-(define-hook :render (entity animate)
+(define-hook :pre-render (entity animate)
   (process-animation-states entity))

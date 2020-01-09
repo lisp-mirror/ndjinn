@@ -21,10 +21,12 @@
           sprite/index (u:href (sprites spritesheet) sprite/name)
           sprite/initial-index sprite/index)))
 
-(define-hook :render (entity sprite)
+(define-hook :pre-render (entity sprite)
   (set-uniforms (render/current-material entity)
                 :sprite.index sprite/index
-                :sprite.sampler (texture sprite/spritesheet))
+                :sprite.sampler (texture sprite/spritesheet)))
+
+(define-hook :render (entity sprite)
   (gl:bind-vertex-array (vao sprite/spritesheet))
   (gl:draw-arrays :points 0 1)
   (gl:bind-vertex-array 0))

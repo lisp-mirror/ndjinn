@@ -91,6 +91,7 @@
                      `((gl:line-width ,line-width)))
                  ,@(when point-size
                      `((gl:point-size ,point-size)))
+                 (on-pre-render ,entity)
                  (u:do-hash-values (v (uniforms ,material))
                    (resolve-uniform-func v))
                  (on-render ,entity)

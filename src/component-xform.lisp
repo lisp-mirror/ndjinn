@@ -162,5 +162,5 @@
 (define-hook :update (entity xform)
   (transform-node entity))
 
-(define-hook :render (entity xform)
+(define-hook :pre-render (entity xform)
   (set-uniforms (render/current-material entity) :model xform/model))

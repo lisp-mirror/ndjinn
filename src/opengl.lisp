@@ -28,3 +28,11 @@
   (cffi:with-foreign-object (renderbuffer '%gl:uint 1)
     (%gl:create-renderbuffers 1 renderbuffer)
     (cffi:mem-aref renderbuffer '%gl:uint 0)))
+
+(defmacro with-debug-group (name &body body)
+  (a:once-only (name)
+    `(progn
+       (cffi:with-foreign-string (s ,name)
+         (%gl:push-debug-group :debug-source-application 0 (length ,name) s))
+       (unwind-protect (progn ,@body)
+         (%gl:pop-debug-group)))))

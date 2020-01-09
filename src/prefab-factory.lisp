@@ -51,8 +51,10 @@
                     (u:do-hash (path node %nodes)
                       (setf %current-node node)
                       (let ((args (resolve-prefab-entity-args node parent))
-                            (skeleton (u:href %entities path)))
+                            (skeleton (u:href %entities path))
+                            (display-id (format nil "~{~(~a~)~^ -> ~}" path)))
                         (realize-prefab-entity skeleton args)
-                        (setf (slot-value skeleton '%node/prefab-path) path)))
+                        (setf (slot-value skeleton '%node/prefab-path) path
+                              (slot-value skeleton '%id/display) display-id)))
                     (setf %current-node nil)
                     (register-prefab-root prefab))))))

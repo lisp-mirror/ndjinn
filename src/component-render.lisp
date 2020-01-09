@@ -22,18 +22,20 @@
     (map nil #'render-pass (pass-order scene-spec))))
 
 (defun render-pass (pass)
-  (a:when-let ((scene (current-scene *state*)))
-    (clear-render-pass pass)
-    (avl-tree/walk
-     (draw-order scene)
-     (lambda (x)
-       (a:when-let ((material (u:href (render/materials x) pass)))
-         (setf (render/current-material x) material)
-         (render-entity x))))))
+  (with-debug-group (format nil "Render Pass: ~s" pass)
+    (a:when-let ((scene (current-scene *state*)))
+      (clear-render-pass pass)
+      (avl-tree/walk
+       (draw-order scene)
+       (lambda (x)
+         (a:when-let ((material (u:href (render/materials x) pass)))
+           (setf (render/current-material x) material)
+           (render-entity x)))))))
 
 (defun render-entity (entity)
   (let ((material (render/current-material entity)))
-    (funcall (render-func (spec material)) entity)))
+    (with-debug-group (format nil "Entity: ~a" (id/display entity))
+      (funcall (render-func (spec material)) entity))))
 
 ;;; entity hooks
 

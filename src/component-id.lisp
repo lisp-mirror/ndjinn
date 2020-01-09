@@ -3,9 +3,11 @@
 (define-component id ()
   ((%id/uuid :reader id/uuid
              :initform (make-uuid))
+   (%id/display :reader id/display
+                :initform "[Anonymous]")
    (%id/picking-id :accessor id/picking-id
                    :initform nil))
-  (:sorting :before node)
+  (:sorting :after node)
   (:static t))
 
 (defgeneric find-by-uuid (uuid)

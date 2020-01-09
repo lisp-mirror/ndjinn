@@ -3,9 +3,6 @@
 ;;; prefabs
 
 (pyx:define-prefab mesh (:add (pyx:mesh pyx:render))
-  :xform/rotate (q:orient :local :x math:pi/2)
-  :xform/rotate/velocity (math:make-velocity v3:+forward+ (- math:pi/6))
-  :xform/scale 15f0
   :render/materials '(pyx:mesh))
 
 (pyx:define-prefab mesh/sphere (:template mesh)
@@ -13,13 +10,15 @@
   :mesh/name "sphere")
 
 (pyx:define-prefab mesh/helmet (:template mesh)
+  :xform/rotate (q:orient :local :x math:pi/2)
   :mesh/file "helmet.glb"
   :mesh/name "helmet")
 
+(pyx:define-prefab mesh-carousel (:template mesh/helmet)
+  :xform/scale 15f0
+  :xform/rotate/velocity (math:make-velocity v3:+forward+ (- math:pi/6)))
+
 ;;; scenes
 
-(pyx:define-scene mesh/sphere ()
-  (:prefabs (examples camera/perspective mesh/sphere)))
-
-(pyx:define-scene mesh/helmet ()
-  (:prefabs (examples camera/perspective mesh/helmet)))
+(pyx:define-scene mesh-carousel ()
+  (:prefabs (examples camera/perspective mesh-carousel)))

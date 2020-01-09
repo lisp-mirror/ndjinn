@@ -6,9 +6,6 @@
   ((%scenes :accessor scenes
             :initform nil)))
 
-(pyx:define-hook :create (entity scene-switcher)
-  (v:info :pyx "Switched to scene ~a." (pyx:get-current-scene-name)))
-
 (pyx:define-hook :update (entity scene-switcher)
   (unless scenes
     (setf scenes (remove-if

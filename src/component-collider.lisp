@@ -1,9 +1,9 @@
 (in-package #:pyx)
 
 (define-component collider ()
-  ((%collider/type :reader collider/type
-                   :initarg :collider/type
-                   :initform nil)
+  ((%collider/shape :accessor collider/shape
+                    :initarg :collider/shape
+                    :initform 'sphere)
    (%collider/label :reader collider/label
                     :initarg :collider/label)
    (%collider/center :reader collider/center
@@ -21,17 +21,29 @@
                     :initform nil))
   (:sorting :after render))
 
-(defgeneric collide-p (collider1 collider2)
-  (:method (collider1 collider2)))
+(ff:define-filtered-function collide-p (collider1 collider2)
+  (:method (collider1 collider2)
+    (declare (ignore collider1 collider2)))
+  (:method ((collider1 collider) (collider2 collider))
+    (error "There is no test function defined for collider shapes ~s and ~s."
+           (class-name (class-of (collider/shape collider1)))
+           (class-name (class-of (collider/shape collider2)))))
+  (:filters (:shape (list (when (has-component-p collider1 'collider)
+                            #'collider/shape)
+                          (when (has-component-p collider2 'collider)
+                            #'collider/shape)))))
 
 ;;; component protocol
 
 (define-hook :attach (entity collider)
-  (let ((type (a:format-symbol :pyx "COLLIDER/~a" collider/type)))
+  (let ((shape (a:ensure-list collider/shape)))
+    (destructuring-bind (shape . args) shape
+      (unless (subtypep shape 'collider-shape)
+        (error "Collider shape ~s is not defined." shape))
+      (setf collider/shape (apply #'make-instance shape :collider entity args)))
     (register-collider entity)
     (when collider/visualize
-      (attach-component entity 'render :render/materials '(collider)))
-    (attach-component entity type)))
+      (attach-component entity 'render :render/materials '(collider)))))
 
 (define-hook :detach (entity collider)
   (deregister-collider entity)

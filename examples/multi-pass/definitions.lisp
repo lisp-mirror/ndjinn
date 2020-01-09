@@ -30,7 +30,7 @@
 
 ;;; prefabs
 
-(pyx:define-prefab multi-pass/mesh (:template mesh/helmet)
+(pyx:define-prefab multi-pass/mesh (:template mesh-carousel)
   :render/materials '(multi-pass/pass1))
 
 (pyx:define-prefab multi-pass/quad (:template quad)

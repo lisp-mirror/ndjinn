@@ -8,17 +8,16 @@
 
 ;;; prefabs
 
-(pyx:define-prefab collider/gate (:template mesh/sphere)
+(pyx:define-prefab collider/gate ()
   :xform/scale 3f0
   ((collider :add (pyx:collider))
    :collider/type :sphere
    :collider/label :gate
    :collider/visualize t))
 
-(pyx:define-prefab collider/destroyer (:template mesh/sphere)
+(pyx:define-prefab collider/destroyer ()
   :xform/scale 3f0
   :xform/translate (v3:vec 30f0 0f0 0f0)
-  :xform/rotate/velocity (math:make-velocity v3:+forward+ math:pi)
   ((collider :add (pyx:collider))
    :collider/type :sphere
    :collider/label :destroyer
@@ -34,11 +33,9 @@
 
 (pyx:define-prefab collider/1 ()
   ((gate/top :template collider/gate)
-   :xform/translate (v3:vec 0f0 5f0 0f0)
-   :xform/rotate/velocity (math:make-velocity v3:+left+ math:pi))
+   :xform/translate (v3:vec 0f0 5f0 0f0))
   ((gate/bottom :template collider/gate)
-   :xform/translate (v3:vec 0f0 -5f0 0f0)
-   :xform/rotate/velocity (math:make-velocity v3:+right+ math:pi))
+   :xform/translate (v3:vec 0f0 -5f0 0f0))
   ((destroyer :template collider/destroyer))
   ((player :template collider/player)
    ((collider :add (pyx:collider))

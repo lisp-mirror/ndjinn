@@ -23,27 +23,25 @@
   :xform/scale 4f0
   :xform/translate (v3:vec -30f0 0f0 0f0)
   :xform/translate/velocity (math:make-velocity v3:+right+ 15f0)
-  :xform/rotate/velocity (v3:zero)
   ((mesh :template mesh/helmet)
-   :xform/rotate (q:orient :local :x math:pi/2 :y math:pi/2)
-   :xform/rotate/velocity (v3:zero))
-  ((collider :add (pyx:collider))
-   :xform/scale 1.25f0
-   :collider/label :player
-   :collider/visualize t
-   :collider/referent (@ collider/1 player)))
+   :xform/rotate (q:orient :local :x math:pi/2 :y math:pi/2)))
 
-(pyx:define-prefab collider/1 ()
+(pyx:define-prefab collider ()
   ((gate/top :template collider/gate)
    :xform/translate (v3:vec 0f0 8f0 0f0))
   ((gate/bottom :template collider/gate)
    :xform/translate (v3:vec 0f0 -8f0 0f0))
   ((destroyer :template collider/destroyer))
-  ((player :template collider/player)))
+  ((player :template collider/player)
+   ((collider :add (pyx:collider))
+    :xform/scale 1.25f0
+    :collider/label :player
+    :collider/visualize t
+    :collider/referent (@ collider player))))
 
 ;;; collision detection
 
-(pyx:define-collider-plan collider/1 ()
+(pyx:define-collider-plan collider ()
   (:player (:gate :destroyer)
    :gate nil
    :destroyer nil))
@@ -52,7 +50,7 @@
                                    (contact2 pyx:collider))
   (ecase (pyx:collider/label contact2)
     (:gate
-     (pyx:translate-entity/velocity contact1 v3:+right+ 4f0))
+     (pyx:translate-entity/velocity contact1 v3:+right+ 3f0))
     (:destroyer
      (pyx:translate-entity contact1 (v3:vec -30f0 0f0 0f0) :replace-p t))))
 
@@ -63,6 +61,6 @@
 
 ;;; scenes
 
-(pyx:define-scene collider/1 ()
-  (:collider-plan collider/1
-   :prefabs (examples camera/perspective collider/1)))
+(pyx:define-scene collider ()
+  (:collider-plan collider
+   :prefabs (examples camera/perspective collider)))

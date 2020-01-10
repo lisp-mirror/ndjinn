@@ -12,6 +12,8 @@
 (defmethod initialize-instance :after ((instance sphere) &key)
   (let ((collider (collider instance)))
     (when (collider/visualize collider)
+      (with-slots (%current) (xform/scaling transform)
+        (v3:scale! %current %current some-scalar))
       (attach-component collider 'mesh
                         :mesh/file "sphere.glb"
                         :mesh/name "sphere"))))

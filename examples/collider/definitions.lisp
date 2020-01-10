@@ -20,7 +20,7 @@
   :collider/visualize t)
 
 (pyx:define-prefab collider/player (:add (player-collision-message))
-  :xform/scale 5f0
+  :xform/scale 4f0
   :xform/translate (v3:vec -30f0 0f0 0f0)
   :xform/translate/velocity (math:make-velocity v3:+right+ 10f0)
   :xform/rotate/velocity (v3:zero)
@@ -29,14 +29,15 @@
    :xform/rotate/velocity (v3:zero))
   ((collider :add (pyx:collider))
    :collider/label :player
+   :collider/shape '(pyx::sphere :radius 1.5f0)
    :collider/visualize t
    :collider/referent (@ collider/1 player)))
 
 (pyx:define-prefab collider/1 ()
   ((gate/top :template collider/gate)
-   :xform/translate (v3:vec 0f0 8f0 0f0))
+   :xform/translate (v3:vec 0f0 10f0 0f0))
   ((gate/bottom :template collider/gate)
-   :xform/translate (v3:vec 0f0 -8f0 0f0))
+   :xform/translate (v3:vec 0f0 -10f0 0f0))
   ((destroyer :template collider/destroyer))
   ((player :template collider/player)))
 

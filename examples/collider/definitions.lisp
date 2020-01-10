@@ -22,22 +22,22 @@
 (pyx:define-prefab collider/player (:add (player-collision-message))
   :xform/scale 4f0
   :xform/translate (v3:vec -30f0 0f0 0f0)
-  :xform/translate/velocity (math:make-velocity v3:+right+ 10f0)
+  :xform/translate/velocity (math:make-velocity v3:+right+ 15f0)
   :xform/rotate/velocity (v3:zero)
   ((mesh :template mesh/helmet)
    :xform/rotate (q:orient :local :x math:pi/2 :y math:pi/2)
    :xform/rotate/velocity (v3:zero))
   ((collider :add (pyx:collider))
+   :xform/scale 1.25f0
    :collider/label :player
-   :collider/shape '(pyx::sphere :radius 1.5f0)
    :collider/visualize t
    :collider/referent (@ collider/1 player)))
 
 (pyx:define-prefab collider/1 ()
   ((gate/top :template collider/gate)
-   :xform/translate (v3:vec 0f0 10f0 0f0))
+   :xform/translate (v3:vec 0f0 8f0 0f0))
   ((gate/bottom :template collider/gate)
-   :xform/translate (v3:vec 0f0 -10f0 0f0))
+   :xform/translate (v3:vec 0f0 -8f0 0f0))
   ((destroyer :template collider/destroyer))
   ((player :template collider/player)))
 
@@ -52,14 +52,14 @@
                                    (contact2 pyx:collider))
   (ecase (pyx:collider/label contact2)
     (:gate
-     (pyx:translate-entity/velocity contact1 v3:+right+ 3f0))
+     (pyx:translate-entity/velocity contact1 v3:+right+ 4f0))
     (:destroyer
      (pyx:translate-entity contact1 (v3:vec -30f0 0f0 0f0) :replace-p t))))
 
 (defmethod pyx:on-collision-exit ((contact1 player-collision-message)
                                   (contact2 pyx:collider))
   (when (eq (pyx:collider/label contact2) :gate)
-    (pyx:translate-entity/velocity contact1 v3:+right+ 10f0)))
+    (pyx:translate-entity/velocity contact1 v3:+right+ 15f0)))
 
 ;;; scenes
 

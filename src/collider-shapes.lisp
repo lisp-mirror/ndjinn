@@ -12,10 +12,10 @@
 (defmethod initialize-instance :after ((instance sphere) &key)
   (let ((collider (collider instance)))
     (when (collider/visualize collider)
-      (with-slots (%current) (xform/scaling transform)
-        (v3:scale! %current %current some-scalar))
+      (with-slots (%current) (xform/scaling collider)
+        (v3:scale! %current %current (radius instance)))
       (attach-component collider 'mesh
-                        :mesh/file "sphere.glb"
+                        :mesh/file "collider-sphere.glb"
                         :mesh/name "sphere"))))
 
 ;;; internal collider protocol

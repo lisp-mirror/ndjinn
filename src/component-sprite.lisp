@@ -28,5 +28,5 @@
 
 (define-hook :render (entity sprite)
   (gl:bind-vertex-array (vao sprite/spritesheet))
-  (gl:draw-arrays :points 0 1)
+  (gl:draw-arrays :triangle-strip 0 4)
   (gl:bind-vertex-array 0))

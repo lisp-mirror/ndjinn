@@ -9,6 +9,14 @@
     (values (vec4 (.xy mesh/pos) 0 1)
             mesh/uv1)))
 
+(defun quad-no-uv/vert ((mesh-attrs mesh-attrs)
+                        &uniforms
+                        (model :mat4)
+                        (view :mat4)
+                        (proj :mat4))
+  (with-slots (mesh/pos mesh/uv1) mesh-attrs
+    (vec4 (.xy mesh/pos) 0 1)))
+
 (defun mesh/vert ((mesh-attrs mesh-attrs)
                   &uniforms
                   (model :mat4)

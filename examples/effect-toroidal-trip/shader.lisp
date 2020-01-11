@@ -3,8 +3,7 @@
 (defun effect/toroidal-trip/check-ray ((distance :float))
   (< distance 1e-3))
 
-(defun effect/toroidal-trip/frag ((uv :vec2)
-                                  &uniforms
+(defun effect/toroidal-trip/frag (&uniforms
                                   (res :vec2)
                                   (time :float))
   (let* ((rtime (* time 0.5))
@@ -59,5 +58,5 @@
       (vec4 color 1))))
 
 (define-shader effect/toroidal-trip ()
-  (:vertex (pyx.shader:quad/vert mesh-attrs))
-  (:fragment (effect/toroidal-trip/frag :vec2)))
+  (:vertex (pyx.shader:quad-no-uv/vert mesh-attrs))
+  (:fragment (effect/toroidal-trip/frag)))

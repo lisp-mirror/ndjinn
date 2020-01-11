@@ -9,8 +9,7 @@
 (defun effect/kaleidoscope/xor ((a :float) (b :float))
   (+ (* a (- 1 b)) (* b (- 1 a))))
 
-(defun effect/kaleidoscope/frag ((uv :vec2)
-                                 &uniforms
+(defun effect/kaleidoscope/frag (&uniforms
                                  (res :vec2)
                                  (time :float)
                                  (zoom :float)
@@ -48,5 +47,5 @@
       (vec4 color 1))))
 
 (define-shader effect/kaleidoscope ()
-  (:vertex (pyx.shader:quad/vert mesh-attrs))
-  (:fragment (effect/kaleidoscope/frag :vec2)))
+  (:vertex (pyx.shader:quad-no-uv/vert mesh-attrs))
+  (:fragment (effect/kaleidoscope/frag)))

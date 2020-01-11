@@ -23,6 +23,7 @@
    (:file "effect-truchet/definitions")
    (:file "effect-toroidal-trip/shader")
    (:file "effect-toroidal-trip/definitions")
+   (:file "effect-rainy-window/definitions")
    (:file "graph/shader")
    (:file "graph/definitions")
    (:file "mesh/definitions")

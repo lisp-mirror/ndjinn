@@ -15,30 +15,38 @@
 (u:define-printer (texture stream)
   (format stream "~s" (name (spec texture))))
 
+(defun calculate-mipmap-levels (width height)
+  (loop :for levels = 0 :then (incf levels)
+        :while (or (> (ash width (- levels)) 1)
+                   (> (ash height (- levels)) 1))
+        :finally (return levels)))
+
 (defgeneric make-texture (spec source))
 
 (defmethod make-texture (spec (source image))
   (let* ((id (gl:create-texture :texture-2d))
+         (width (width source))
+         (height (height source))
          (texture (make-instance
                    'texture
                    :spec spec
                    :type :texture-2d
                    :id id
-                   :width (width source)
-                   :height (height source))))
+                   :width width
+                   :height height)))
     (%gl:texture-storage-2d id
-                            1
+                            (calculate-mipmap-levels width height)
                             (internal-format source)
-                            (width source)
-                            (height source))
+                            width
+                            height)
     (when (data source)
       (gl/texture-sub-image-2d
        id
        0
        0
        0
-       (width source)
-       (height source)
+       width
+       height
        (pixel-format source)
        (pixel-type source)
        (data source)))
@@ -47,18 +55,20 @@
 (defmethod make-texture (spec (source list))
   (let* ((id (gl:create-texture :texture-2d-array))
          (layer0 (first source))
+         (width (width layer0))
+         (height (height layer0))
          (texture (make-instance
                    'texture
                    :spec spec
                    :type :texture-2d-array
                    :id id
-                   :width (width layer0)
-                   :height (height layer0))))
+                   :width width
+                   :height height)))
     (%gl:texture-storage-3d id
-                            1
+                            (calculate-mipmap-levels width height)
                             (internal-format layer0)
-                            (width layer0)
-                            (height layer0)
+                            width
+                            height
                             (length source))
     (loop :for image :in source
           :for layer :from 0

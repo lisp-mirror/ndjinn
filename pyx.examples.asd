@@ -24,6 +24,8 @@
    (:file "effect-toroidal-trip/shader")
    (:file "effect-toroidal-trip/definitions")
    (:file "effect-rainy-window/definitions")
+   (:file "effect-ocean-waves/shader")
+   (:file "effect-ocean-waves/definitions")
    (:file "graph/shader")
    (:file "graph/definitions")
    (:file "mesh/definitions")

@@ -21,6 +21,7 @@
    #:deploy)
   ;; common
   (:export
+   #:cfg
    #:meta
    #:get-window-resolution
    #:get-total-time)

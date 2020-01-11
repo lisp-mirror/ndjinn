@@ -50,7 +50,7 @@
   (setf (collider/referent entity) nil))
 
 (define-hook :pre-render (entity collider)
-  (set-uniforms (render/current-material entity) :contact collider/hit-p))
+  (set-uniforms entity :contact collider/hit-p))
 
 ;;; user protocol
 

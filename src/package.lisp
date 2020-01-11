@@ -89,6 +89,7 @@
   (:export
    #:delete-shader-buffer
    #:make-shader-buffer
+   #:set-uniforms
    #:update-shader-buffer)
   ;; animation states
   (:export

@@ -41,7 +41,7 @@
 
 (define-hook :pre-render (entity render)
   (a:when-let ((camera (camera (current-scene *state*))))
-    (set-uniforms render/current-material
+    (set-uniforms entity
                   :view (camera/view camera)
                   :proj (camera/projection camera))))
 

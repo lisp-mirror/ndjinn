@@ -73,8 +73,9 @@
          (new-value (if (functionp value) (funcall value) value)))
     (funcall (func uniform) (key uniform) new-value)))
 
-(defun set-uniforms (material &rest args)
-  (let ((uniforms (uniforms material)))
+(defun set-uniforms (entity &rest args)
+  (let* ((material (render/current-material entity))
+         (uniforms (uniforms material)))
     (u:do-plist (k v args)
       (unless (u:href uniforms k)
         (setf (u:href uniforms k) (make-instance 'uniform :key k)))

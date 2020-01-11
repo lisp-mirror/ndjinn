@@ -22,7 +22,7 @@
           sprite/initial-index sprite/index)))
 
 (define-hook :pre-render (entity sprite)
-  (set-uniforms (render/current-material entity)
+  (set-uniforms entity
                 :sprite.index sprite/index
                 :sprite.sampler (texture sprite/spritesheet)))
 

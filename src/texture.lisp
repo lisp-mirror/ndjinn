@@ -15,11 +15,13 @@
 (u:define-printer (texture stream)
   (format stream "~s" (name (spec texture))))
 
-(defun calculate-mipmap-levels (width height)
-  (loop :for levels = 0 :then (incf levels)
-        :while (or (> (ash width (- levels)) 1)
-                   (> (ash height (- levels)) 1))
-        :finally (return levels)))
+(defun calculate-mipmap-levels (spec width height)
+  (if (generate-mipmaps-p spec)
+      (loop :for levels = 0 :then (incf levels)
+            :while (or (> (ash width (- levels)) 1)
+                       (> (ash height (- levels)) 1))
+            :finally (return levels))
+      1))
 
 (defgeneric make-texture (spec source))
 
@@ -35,7 +37,7 @@
                    :width width
                    :height height)))
     (%gl:texture-storage-2d id
-                            (calculate-mipmap-levels width height)
+                            (calculate-mipmap-levels spec width height)
                             (internal-format source)
                             width
                             height)
@@ -65,7 +67,7 @@
                    :width width
                    :height height)))
     (%gl:texture-storage-3d id
-                            (calculate-mipmap-levels width height)
+                            (calculate-mipmap-levels spec width height)
                             (internal-format layer0)
                             width
                             height

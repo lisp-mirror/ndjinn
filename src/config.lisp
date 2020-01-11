@@ -8,8 +8,8 @@
                               :release nil
                               :threads 8
                               :vsync t
-                              :window-width 1280
-                              :window-height 720)
+                              :window-width 1920
+                              :window-height 1080)
                       (apply #'u:dict #'eq args))))
 
 (defun cfg (key)

@@ -12,9 +12,9 @@
    (%attribute-order :reader attribute-order
                      :initarg :attribute-order)))
 
-(defclass geometry-group/separate (group) ())
+(defclass geometry-group/separate (geometry-group) ())
 
-(defclass geometry-group/interleaved (group) ())
+(defclass geometry-group/interleaved (geometry-group) ())
 
 (defun make-geometry-groups (spec)
   (let ((groups (u:dict #'eq))

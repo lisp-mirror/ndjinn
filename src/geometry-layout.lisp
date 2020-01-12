@@ -23,7 +23,8 @@
     (setf %groups groups
           %group-order order)))
 
-(defmacro define-geometry-layout (name &body body)
+(defmacro define-geometry-layout (name options &body body)
+  (declare (ignore options))
   (a:with-gensyms (groups order)
     `(u:mvlet ((,groups ,order (make-geometry-groups ',body)))
        (unless (meta :geometry-layouts)

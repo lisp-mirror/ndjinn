@@ -1,6 +1,6 @@
 (in-package #:pyx)
 
-(defclass geometry ()
+(defclass geometry-spec ()
   ((%id :reader id
         :initform (gl:create-vertex-array))
    (%layout :reader layout
@@ -17,7 +17,7 @@
                            &key (primitive :triangles) (vertex-count 0)
                              buffer-data)
   (lambda ()
-    (let ((geometry (make-instance 'geometry
+    (let ((geometry (make-instance 'geometry-spec
                                    :layout (find-geometry-layout layout-name)
                                    :primitive primitive
                                    :vertex-count vertex-count)))
@@ -39,13 +39,15 @@
     (u:noop)))
 
 (defun draw-geometry (geometry instance-count)
-  (with-slots (%primitive %vertex-count) geometry
+  (with-slots (%id %primitive %vertex-count) geometry
+    (gl:bind-vertex-array %id)
     (%gl:draw-arrays-instanced %primitive 0 %vertex-count instance-count)))
 
-(defmacro define-geometry (name &body body)
+(defmacro define-geometry (name options &body body)
+  (declare (ignore options))
   (destructuring-bind (&key layout (primitive :triangles) (vertex-count 0)
                          buffers)
-      body
+      (car body)
     `(progn
        (unless (meta :geometry)
          (setf (meta :geometry) (u:dict #'eq)))

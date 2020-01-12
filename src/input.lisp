@@ -152,7 +152,8 @@
     (setf (u:href states '(:mouse :scroll-horizontal)) 0
           (u:href states '(:mouse :scroll-vertical)) 0)
     (input-enable-entering)
-    (input-disable-exiting)))
+    (input-disable-exiting)
+    (reset-mouse-motion-state)))
 
 (defun handle-events ()
   (let ((event (sdl2:new-event)))

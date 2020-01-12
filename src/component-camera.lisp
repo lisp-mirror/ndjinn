@@ -4,6 +4,9 @@
   ((%camera/active-p :reader camera/active-p
                      :initarg :camera/active-p
                      :initform t)
+   (%camera/debug :reader camera/debug
+                  :initarg :camera/debug
+                  :initform nil)
    (%camera/mode :reader camera/mode
                  :initarg :camera/mode
                  :initform :perspective)
@@ -86,6 +89,16 @@
     (setf %camera/zoom (a:clamp (+ %camera/zoom (/ direction 2)) 1 10))
     (set-camera-projection entity)))
 
+;;; TODO: This is just a quick hack to be able to translate the camera for
+;;; debugging purposes. Figure out a proper camera controlling system.
+(defun camera-debug-transform (entity)
+  (when (camera/debug entity)
+    (u:mvlet ((x y dx dy (get-mouse-position)))
+      (when (input-enabled-p :key :lctrl)
+        (translate-entity entity (v3:vec (/ dx 10) (/ (- dy) 10) 0f0)))
+      (when (input-enabled-p :key :lalt)
+        (translate-entity entity (v3:vec 0f0 0f0 dy))))))
+
 ;;; entity hooks
 
 (define-hook :attach (entity camera)
@@ -95,4 +108,5 @@
   (set-camera-projection entity))
 
 (define-hook :update (entity camera)
+  (camera-debug-transform entity)
   (set-camera-view entity))

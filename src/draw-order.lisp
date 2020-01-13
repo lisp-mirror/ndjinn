@@ -19,10 +19,8 @@
    :sort #'draw-order-comparator
    :hash-test #'eq))
 
-(defun register-draw-order (entity)
-  (let ((order (draw-order (current-scene *state*))))
-    (avl-tree/insert order entity)))
+(defun register-draw-order (viewport entity)
+  (avl-tree/insert (draw-order viewport) entity))
 
-(defun deregister-draw-order (entity)
-  (let ((order (draw-order (current-scene *state*))))
-    (avl-tree/delete order entity)))
+(defun deregister-draw-order (viewport entity)
+  (avl-tree/delete (draw-order viewport) entity))

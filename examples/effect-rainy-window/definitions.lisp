@@ -25,4 +25,6 @@
 ;;; scene
 
 (pyx:define-scene effect/rainy-window ()
-  (:prefabs (examples camera/orthographic effect/rainy-window)))
+  (:sub-trees ((examples examples)
+               (camera camera/orthographic)
+               (effect effect/rainy-window))))

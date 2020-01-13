@@ -7,4 +7,5 @@
 ;;; scene
 
 (pyx:define-scene texture ()
-  (:prefabs (examples texture-example)))
+  (:sub-trees ((examples examples)
+               (texture texture-example))))

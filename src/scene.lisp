@@ -5,13 +5,15 @@
           :initarg :spec)
    (%loaded-p :accessor loaded-p
               :initform nil)
+   (%sub-trees :reader sub-trees
+               :initform (u:dict #'eq))
+   (%viewports :reader viewports
+               :initform (u:dict #'eq))
    (%camera :reader camera
             :initform nil)
    (%node-tree :reader node-tree)
    (%materials :reader materials
                :initform (u:dict #'eq))
-   (%draw-order :accessor draw-order
-                :initform (make-draw-order-tree))
    (%picking-ids :reader picking-ids
                  :initform (u:dict #'eq))
    (%released-picking-ids :accessor released-picking-ids
@@ -32,6 +34,16 @@
 (defun get-scene-name ()
   (name (spec (get-scene))))
 
+(defun load-scene-sub-trees (scene)
+  (loop :for (binding prefab) :in (sub-trees (spec scene))
+        :for entity = (load-prefab prefab)
+        :do (setf (u:href (sub-trees scene) binding) entity)))
+
+(defun load-scene-viewports (scene)
+  (loop :for (view-spec sub-trees) :in (viewports (spec scene))
+        :for viewport = (make-viewport view-spec)
+        :do (setf (u:href (viewports scene) view-spec) viewport)))
+
 (defun load-scene (scene-name)
   (let ((spec (meta :scenes scene-name)))
     (unless spec
@@ -44,8 +56,8 @@
       (unless (loaded-p scene)
         (make-node-tree scene)
         (make-collision-system (collider-plan spec))
-        (dolist (prefab (prefabs spec))
-          (load-prefab prefab))
+        (load-scene-viewports scene)
+        (load-scene-sub-trees scene)
         (setf (loaded-p scene) t))
       (setf (slot-value *state* '%current-scene) current)
       scene)))

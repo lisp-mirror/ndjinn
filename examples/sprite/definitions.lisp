@@ -46,4 +46,7 @@
 
 (pyx:define-scene sprite ()
   (:draw-order (background ships)
-   :prefabs (examples camera/orthographic planet ship)))
+   :sub-trees ((examples examples)
+               (camera camera/orthographic)
+               (planet planet)
+               (ship ship))))

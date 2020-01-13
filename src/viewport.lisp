@@ -3,6 +3,8 @@
 (defclass viewport ()
   ((%spec :reader spec
           :initarg :spec)
+   (%draw-order :accessor draw-order
+                :initform (make-draw-order-tree))
    (%x :reader x
        :initform 0f0)
    (%y :reader y

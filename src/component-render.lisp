@@ -25,12 +25,14 @@
   (with-debug-group (format nil "Render Pass: ~s" pass)
     (a:when-let ((scene (get-scene)))
       (clear-render-pass pass)
-      (avl-tree/walk
-       (draw-order scene)
-       (lambda (x)
-         (a:when-let ((material (u:href (render/materials x) pass)))
-           (setf (render/current-material x) material)
-           (render-entity x)))))))
+      (u:do-hash-values (viewport (viewports scene))
+        (configure-viewport viewport)
+        (avl-tree/walk
+         (draw-order viewport)
+         (lambda (x)
+           (a:when-let ((material (u:href (render/materials x) pass)))
+             (setf (render/current-material x) material)
+             (render-entity x))))))))
 
 (defun render-entity (entity)
   (let ((material (render/current-material entity)))
@@ -47,7 +49,9 @@
 
 (define-hook :attach (entity render)
   (setf render/materials (register-materials entity))
-  (register-draw-order entity))
+  (u:do-hash-values (viewport (viewports (get-scene)))
+    (register-draw-order viewport entity)))
 
 (define-hook :detach (entity render)
-  (deregister-draw-order entity))
+  (u:do-hash-values (viewport (viewports (get-scene)))
+    (deregister-draw-order viewport entity)))

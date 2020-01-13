@@ -15,4 +15,6 @@
 ;;; scene
 
 (pyx:define-scene effect/toroidal-trip ()
-  (:prefabs (examples camera/orthographic effect/toroidal-trip)))
+  (:sub-trees ((examples examples)
+               (camera camera/orthographic)
+               (effect effect/toroidal-trip))))

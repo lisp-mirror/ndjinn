@@ -14,4 +14,5 @@
 ;;; scene
 
 (pyx:define-scene graph ()
-  (:prefabs (examples graph)))
+  (:sub-trees ((examples examples)
+               (graph graph))))

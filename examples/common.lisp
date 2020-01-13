@@ -54,4 +54,4 @@
 ;;; scene
 
 (pyx:define-scene examples ()
-  (:prefabs (examples)))
+  (:sub-trees ((examples examples))))

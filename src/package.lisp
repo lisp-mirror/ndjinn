@@ -29,7 +29,8 @@
   ;; definitions
   ;; scenes
   (:export
-   #:get-current-scene-name
+   #:get-scene
+   #:get-scene-name
    #:load-scene
    #:switch-scene)
   (:export

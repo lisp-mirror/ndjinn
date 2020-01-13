@@ -14,7 +14,7 @@
                                  (find-package :pyx.examples)))
                         (eq x 'examples)))
                   (sort (u:hash-keys (pyx:meta :scenes)) #'string<))))
-  (let ((index (or (position (pyx:get-current-scene-name) scenes) 0)))
+  (let ((index (or (position (pyx:get-scene-name) scenes) 0)))
     (cond
       ((pyx:input-exit-p :key :up)
        (decf index))

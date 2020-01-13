@@ -21,13 +21,13 @@
 
 (defun add-child (entity &key parent)
   (with-slots (%node/parent %node/children) entity
-    (setf %node/parent (or parent (node-tree (current-scene *state*))))
+    (setf %node/parent (or parent (node-tree (get-scene))))
     (push entity (node/children %node/parent))
     (dolist (child %node/children)
       (add-child child :parent entity))))
 
 (defun map-nodes (func &optional parent)
-  (let ((parent (or parent (node-tree (current-scene *state*)))))
+  (let ((parent (or parent (node-tree (get-scene)))))
     (funcall func parent)
     (dolist (child (node/children parent))
       (map-nodes func child))))

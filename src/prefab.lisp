@@ -5,14 +5,14 @@
     (funcall (func factory) :parent parent)))
 
 (defun recompile-prefab (name)
-  (dolist (entity (u:href (prefabs (current-scene *state*)) name))
+  (dolist (entity (u:href (prefabs (get-scene)) name))
     (let ((parent (node/parent entity)))
       (delete-entity entity)
       (load-prefab name :parent parent))))
 
 (defun deregister-prefab-entity (entity)
   (a:when-let* ((prefab (node/prefab entity))
-                (table (prefabs (current-scene *state*))))
+                (table (prefabs (get-scene))))
     (a:deletef (u:href table prefab) entity)
     (unless (u:href table prefab)
       (remhash prefab table))))

@@ -11,19 +11,19 @@
   (:sorting :after xform :before sprite))
 
 (defun clear-render-pass (pass-name)
-  (let ((pass (u:href (pass-table (spec (current-scene *state*))) pass-name)))
+  (let ((pass (u:href (pass-table (spec (get-scene))) pass-name)))
     (with-framebuffer (find-framebuffer (framebuffer pass)) ()
       (v4:with-components ((v (clear-color pass)))
         (gl:clear-color vx vy vz vw)
         (apply #'gl:clear (clear-buffers pass))))))
 
 (defun render-frame ()
-  (let ((scene-spec (spec (current-scene *state*))))
+  (let ((scene-spec (spec (get-scene))))
     (map nil #'render-pass (pass-order scene-spec))))
 
 (defun render-pass (pass)
   (with-debug-group (format nil "Render Pass: ~s" pass)
-    (a:when-let ((scene (current-scene *state*)))
+    (a:when-let ((scene (get-scene)))
       (clear-render-pass pass)
       (avl-tree/walk
        (draw-order scene)
@@ -40,7 +40,7 @@
 ;;; entity hooks
 
 (define-hook :pre-render (entity render)
-  (a:when-let ((camera (camera (current-scene *state*))))
+  (a:when-let ((camera (camera (get-scene))))
     (set-uniforms entity
                   :view (camera/view camera)
                   :proj (camera/projection camera))))

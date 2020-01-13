@@ -39,7 +39,7 @@
     (let ((material (make-instance 'material :spec spec)))
       (make-material-uniforms material)
       (ensure-material-framebuffer material)
-      (push material (u:href (materials (current-scene *state*)) spec-name))
+      (push material (u:href (materials (get-scene)) spec-name))
       material)
     (error "Material ~s not found." spec-name)))
 
@@ -53,6 +53,6 @@
 (defun recompile-material (spec-name)
   (let ((shader (shader (meta :materials spec-name))))
     (recompile-shaders (list shader))
-    (dolist (material (u:href (materials (current-scene *state*)) spec-name))
+    (dolist (material (u:href (materials (get-scene)) spec-name))
       (make-material-uniforms material)
       (ensure-material-framebuffer material))))

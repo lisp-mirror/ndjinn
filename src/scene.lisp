@@ -26,14 +26,17 @@
 (u:define-printer (scene stream :identity t)
   (format stream "~s" (name (spec scene))))
 
-(defun get-current-scene-name ()
-  (name (spec (current-scene *state*))))
+(defun get-scene ()
+  (current-scene *state*))
+
+(defun get-scene-name ()
+  (name (spec (get-scene))))
 
 (defun load-scene (scene-name)
   (let ((spec (meta :scenes scene-name)))
     (unless spec
       (error "Scene ~s is not defined." scene-name))
-    (let ((current (current-scene *state*))
+    (let ((current (get-scene))
           (scene (or (u:href (scenes *state*) scene-name)
                      (make-instance 'scene :spec spec))))
       (setf (u:href (scenes *state*) scene-name) scene
@@ -52,7 +55,7 @@
     (setf (slot-value *state* '%current-scene) scene)))
 
 (defun recompile-scene (name)
-  (let ((scene (current-scene *state*)))
+  (let ((scene (get-scene)))
     (with-slots (%spec %prefabs %loaded-p) scene
       (when (eq name (name %spec))
         (u:do-hash-values (entities %prefabs)

@@ -29,6 +29,6 @@
       (gl:viewport %x %y %width %height))))
 
 (defun get-viewport-dimensions ()
-  (let ((camera (camera (current-scene *state*))))
+  (let ((camera (camera (get-scene))))
     (with-slots (%width %height) (camera/viewport camera)
       (v2:vec %width %height))))

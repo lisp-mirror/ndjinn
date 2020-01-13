@@ -12,20 +12,20 @@
 
 (defgeneric find-by-uuid (uuid)
   (:method ((uuid uuid))
-    (u:href (uuids (current-scene *state*)) uuid))
+    (u:href (uuids (get-scene)) uuid))
   (:method ((uuid string))
-    (u:href (uuids (current-scene *state*)) (string->uuid uuid))))
+    (u:href (uuids (get-scene)) (string->uuid uuid))))
 
 (defun find-by-picking-id (id)
-  (u:href (picking-ids (current-scene *state*)) id))
+  (u:href (picking-ids (get-scene)) id))
 
 (defun generate-picking-id ()
-  (with-slots (%picking-ids %released-picking-ids) (current-scene *state*)
+  (with-slots (%picking-ids %released-picking-ids) (get-scene)
     (let ((id-count (hash-table-count %picking-ids)))
       (or (pop %released-picking-ids) id-count))))
 
 (defun release-picking-id (id)
-  (with-slots (%picking-ids %released-picking-ids) (current-scene *state*)
+  (with-slots (%picking-ids %released-picking-ids) (get-scene)
     (when id
       (remhash id %picking-ids)
       (pushnew id %released-picking-ids)
@@ -35,7 +35,7 @@
 ;;; entity hooks
 
 (define-hook :create (entity id)
-  (with-slots (%uuids %picking-ids) (current-scene *state*)
+  (with-slots (%uuids %picking-ids) (get-scene)
     (u:if-found (found (u:href %uuids id/uuid))
                 (error "Entity ~s has a UUID collision with object ~s."
                        entity found)
@@ -49,6 +49,6 @@
             (setf id/picking-id (id/picking-id parent)))))))
 
 (define-hook :delete (entity id)
-  (with-slots (%uuids) (current-scene *state*)
+  (with-slots (%uuids) (get-scene)
     (remhash id/uuid %uuids)
     (release-picking-id id/picking-id)))

@@ -12,8 +12,10 @@
 (defmethod initialize-instance :after ((instance sphere) &key)
   (let ((collider (collider instance)))
     (when (collider/visualize collider)
-      (with-slots (%current) (xform/scaling collider)
-        (v3:scale! %current %current (radius instance)))
+      (v3:with-components ((s (current (xform/scaling collider))))
+        (unless (= sx sy sz)
+          (error "Sphere colliders must have a uniform scale."))
+        (v3:scale! s s (radius instance)))
       (attach-component collider 'mesh
                         :mesh/file "collider-sphere.glb"
                         :mesh/name "sphere"))))

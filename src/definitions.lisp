@@ -31,3 +31,7 @@
 (define-render-pass default ()
   (:clear-color (v4:vec 0f0 0f0 0f0 1f0)
    :clear-buffers (:color :depth)))
+;;; views
+
+(define-view default ()
+  (:x 0f0 :y 0f0 :width 1f0 :height 1f0))

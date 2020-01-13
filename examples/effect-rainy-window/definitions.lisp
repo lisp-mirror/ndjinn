@@ -14,7 +14,7 @@
               :speed 0.24f0
               :zoom 0.75f0
               :time #'pyx:get-total-time
-              :res #'pyx:get-window-resolution
+              :res #'pyx:get-viewport-dimensions
               :sampler 'effect/rainy-window)))
 
 ;;; prefabs

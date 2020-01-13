@@ -5,7 +5,7 @@
 (pyx:define-material effect/truchet ()
   (:shader pyx.examples.shader:effect/truchet
    :uniforms (:time #'pyx:get-total-time
-              :res #'pyx:get-window-resolution)))
+              :res #'pyx:get-viewport-dimensions)))
 
 ;;; prefabs
 

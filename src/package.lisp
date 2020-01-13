@@ -16,15 +16,16 @@
   (:use #:cl)
   ;; engine
   (:export
-   #:start
-   #:stop
+   #:start-engine
+   #:stop-engine
    #:deploy)
   ;; common
   (:export
    #:cfg
    #:meta
    #:get-window-resolution
-   #:get-total-time)
+   #:get-total-time
+   #:get-viewport-dimensions)
   ;; definitions
   ;; scenes
   (:export
@@ -47,7 +48,8 @@
    #:define-query-types
    #:define-render-pass
    #:define-scene
-   #:define-texture)
+   #:define-texture
+   #:define-view)
   ;; input
   (:export
    #:get-gamepad-analog

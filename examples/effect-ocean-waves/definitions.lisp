@@ -5,7 +5,7 @@
 (pyx:define-component mouse-input () ())
 
 (pyx:define-hook :update (entity mouse-input)
-  (u:mvlet ((res (pyx:get-window-resolution))
+  (u:mvlet ((res (pyx:get-viewport-dimensions))
             (x y (pyx:get-mouse-position)))
     (when (pyx:input-enabled-p :mouse :left)
       (pyx:set-uniforms
@@ -17,7 +17,7 @@
 (pyx:define-material effect/ocean-waves ()
   (:shader pyx.examples.shader:effect/ocean-waves
    :uniforms (:time #'pyx:get-total-time
-              :res #'pyx:get-window-resolution
+              :res #'pyx:get-viewport-dimensions
               :mouse (v2:zero))))
 
 ;;; prefabs

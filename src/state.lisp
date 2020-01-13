@@ -51,7 +51,7 @@
       (compute-collisions)
       (update-display))))
 
-(defun start (scene-name &rest args)
+(defun start-engine (scene-name &rest args)
   (let ((*state* (make-instance 'state)))
     (unwind-protect
          (progn
@@ -60,5 +60,5 @@
            (run-main-game-loop))
       (deinitialize-engine))))
 
-(defun stop ()
+(defun stop-engine ()
   (setf (running-p *state*) nil))

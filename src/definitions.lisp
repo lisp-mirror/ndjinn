@@ -23,6 +23,9 @@
               :polygon-mode :line
               :line-width 1.0)))
 
+(define-material picking-ray ()
+  (:shader pyx.shader:picking-ray
+   :features (:enable (:line-smooth))))
 
 ;;; collider plans
 
@@ -33,6 +36,22 @@
 (define-render-pass default ()
   (:clear-color (v4:vec 0f0 0f0 0f0 1f0)
    :clear-buffers (:color :depth)))
+
+;;; geometry
+
+(define-geometry-layout picking-ray ()
+  (:data (:format interleaved)
+         (position :type float :count 3)
+         (color :type float :count 3)))
+
+(define-geometry picking-ray ()
+  (:layout picking-ray
+   :primitive :lines
+   :vertex-count 2
+   :buffers
+   (:data (((0f0 0f0 0f0) (1f0 0f0 0f0))
+           ((0f0 0f0 0f0) (1f0 0f0 0f0))))))
+
 ;;; views
 
 (define-view default ()

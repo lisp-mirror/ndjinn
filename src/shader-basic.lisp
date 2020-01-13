@@ -47,6 +47,18 @@
       hit-color
       miss-color))
 
+(defun picking-ray/vert ((pos :vec3)
+                         (color :vec3)
+                         &uniforms
+                         (model :mat4)
+                         (view :mat4)
+                         (proj :mat4))
+  (values (* proj view model (vec4 pos 1))
+          color))
+
+(defun picking-ray/frag ((color :vec3))
+  (vec4 color 1))
+
 (define-shader quad ()
   (:vertex (quad/vert mesh-attrs))
   (:fragment (mesh/frag :vec2)))
@@ -58,3 +70,7 @@
 (define-shader collider ()
   (:vertex (collider/vert mesh-attrs))
   (:fragment (collider/frag)))
+
+(define-shader picking-ray (:primitive :lines)
+  (:vertex (picking-ray/vert :vec3 :vec3))
+  (:fragment (picking-ray/frag :vec3)))

@@ -14,10 +14,6 @@
    (%node-tree :reader node-tree)
    (%materials :reader materials
                :initform (u:dict #'eq))
-   (%picking-ids :reader picking-ids
-                 :initform (u:dict #'eq))
-   (%released-picking-ids :accessor released-picking-ids
-                          :initform nil)
    (%prefabs :reader prefabs
              :initform (u:dict #'eq))
    (%collision-system :reader collision-system

@@ -4,9 +4,7 @@
   ((%id/uuid :reader id/uuid
              :initform (make-uuid))
    (%id/display :reader id/display
-                :initform "[Anonymous]")
-   (%id/picking-id :accessor id/picking-id
-                   :initform nil))
+                :initform "[Anonymous]"))
   (:sorting :after node)
   (:static t))
 
@@ -16,39 +14,15 @@
   (:method ((uuid string))
     (u:href (uuids (get-scene)) (string->uuid uuid))))
 
-(defun find-by-picking-id (id)
-  (u:href (picking-ids (get-scene)) id))
-
-(defun generate-picking-id ()
-  (with-slots (%picking-ids %released-picking-ids) (get-scene)
-    (let ((id-count (hash-table-count %picking-ids)))
-      (or (pop %released-picking-ids) id-count))))
-
-(defun release-picking-id (id)
-  (with-slots (%picking-ids %released-picking-ids) (get-scene)
-    (when id
-      (remhash id %picking-ids)
-      (pushnew id %released-picking-ids)
-      (setf %released-picking-ids (sort (copy-seq %released-picking-ids)
-                                        #'<)))))
-
 ;;; entity hooks
 
 (define-hook :create (entity id)
-  (with-slots (%uuids %picking-ids) (get-scene)
+  (with-slots (%uuids) (get-scene)
     (u:if-found (found (u:href %uuids id/uuid))
                 (error "Entity ~s has a UUID collision with object ~s."
                        entity found)
-                (setf (u:href %uuids id/uuid) entity))
-    (if (eq (node/pickable entity) :begin)
-        (let ((id (generate-picking-id)))
-          (setf id/picking-id id
-                (u:href %picking-ids id) entity))
-        (a:when-let ((parent (node/parent entity)))
-          (unless (eq (node/pickable parent) :end)
-            (setf id/picking-id (id/picking-id parent)))))))
+                (setf (u:href %uuids id/uuid) entity))))
 
 (define-hook :delete (entity id)
   (with-slots (%uuids) (get-scene)
-    (remhash id/uuid %uuids)
-    (release-picking-id id/picking-id)))
+    (remhash id/uuid %uuids)))

@@ -104,9 +104,7 @@
 ;;; entity hooks
 
 (define-hook :attach (entity camera)
-  (let* ((viewports (viewports (get-scene)))
-         (viewport (or (u:href (table viewports) camera/viewport)
-                       (default viewports))))
+  (let ((viewport (first (get-entity-viewports entity))))
     (when camera/active-p
       (setf (camera viewport) entity))
     (setf camera/fov-y (float (* camera/fov-y (/ pi 180)) 1f0)

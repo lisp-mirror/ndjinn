@@ -33,6 +33,15 @@
 (defun get-viewport ()
   (active (viewports (get-scene))))
 
+(defun get-entity-viewports (entity)
+  (let ((scene (get-scene))
+        (viewports nil))
+    (dolist (tag (id/tags entity))
+      (dolist (view-name (meta :view-tags tag))
+        (let ((viewport (u:href (table (viewports scene)) view-name)))
+          (pushnew viewport viewports))))
+    (or viewports (list (default (viewports scene))))))
+
 (defun configure-viewport (viewport)
   (with-slots (%spec %x %y %width %height) viewport
     (let ((window-width (cfg :window-width))

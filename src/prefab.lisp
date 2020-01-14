@@ -1,13 +1,20 @@
 (in-package #:pyx)
 
+(defun register-prefab-viewports (entity &key viewports)
+  (let ((viewports-table (table (viewports (get-scene)))))
+    (do-nodes (node :parent entity)
+      (when (has-component-p node 'render)
+        (if viewports
+            (dolist (name viewports)
+              (let ((viewport (u:href viewports-table name)))
+                (register-draw-order viewport node)))
+            (dolist (viewport (get-entity-viewports node))
+              (register-draw-order viewport node)))))))
+
 (defun load-prefab (name &key viewports parent)
   (let* ((factory (factory (meta :prefabs name)))
          (entity (funcall (func factory) :parent parent)))
-    (do-nodes (node :parent entity)
-      (when (has-component-p node 'render)
-        (dolist (name viewports)
-          (let ((viewport (u:href (table (viewports (get-scene))) name)))
-            (register-draw-order viewport node)))))))
+    (register-prefab-viewports entity :viewports viewports)))
 
 (defun recompile-prefab (name)
   (dolist (entity (u:href (prefabs (get-scene)) name))

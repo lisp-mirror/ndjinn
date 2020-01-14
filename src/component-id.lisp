@@ -28,6 +28,9 @@
                 (error "Entity ~s has a UUID collision with object ~s."
                        entity found)
                 (setf (u:href %uuids id/uuid) entity))
+    (a:when-let ((parent (node/parent entity)))
+      (dolist (tag (id/tags parent))
+        (pushnew tag id/tags)))
     (dolist (tag id/tags)
       (pushnew entity (u:href %tags tag)))))
 

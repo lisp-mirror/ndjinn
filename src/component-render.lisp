@@ -53,5 +53,5 @@
   (setf render/materials (register-materials entity)))
 
 (define-hook :detach (entity render)
-  (u:do-hash-values (viewport (viewports (get-scene)))
+  (u:do-hash-values (viewport (table (viewports (get-scene))))
     (deregister-draw-order viewport entity)))

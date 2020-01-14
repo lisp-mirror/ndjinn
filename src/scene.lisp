@@ -31,7 +31,7 @@
 (defun get-scene-sub-tree-viewports (scene sub-tree)
   (let (viewports)
     (dolist (viewport-spec (viewports (spec scene)))
-      (destructuring-bind (viewport sub-trees) viewport-spec
+      (destructuring-bind (viewport &optional sub-trees) viewport-spec
         (when (find sub-tree sub-trees)
           (push viewport viewports))))
     viewports))

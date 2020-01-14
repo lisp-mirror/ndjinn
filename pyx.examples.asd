@@ -38,4 +38,5 @@
    (:file "world/definitions")
    (:file "multi-pass/shader")
    (:file "multi-pass/definitions")
-   (:file "collider/definitions")))
+   (:file "collider/definitions")
+   (:file "viewports/definitions")))

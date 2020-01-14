@@ -4,7 +4,8 @@
   ((%name :reader name
           :initarg :name)
    (%tags :reader tags
-          :initarg :tags)
+          :initarg :tags
+          :initform nil)
    (%x :reader x
        :initform 0f0)
    (%y :reader y

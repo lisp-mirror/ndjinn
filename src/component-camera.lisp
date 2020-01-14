@@ -105,6 +105,9 @@
 
 (define-hook :attach (entity camera)
   (let ((viewport (first (get-entity-viewports entity))))
+    (unless viewport
+      (error "Camera ~s does not have a viewport tag known to this scene."
+             entity))
     (when camera/active-p
       (setf (camera viewport) entity))
     (setf camera/fov-y (float (* camera/fov-y (/ pi 180)) 1f0)

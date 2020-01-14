@@ -6,9 +6,6 @@
    (%render/order :reader render/order
                   :initarg :render/order
                   :initform 'default)
-   (%render/viewport :accessor render/viewport
-                     :initarg :render/viewport
-                     :initform nil)
    (%render/current-material :accessor render/current-material
                              :initform nil))
   (:sorting :after xform :before sprite))
@@ -26,9 +23,11 @@
 
 (defun render-pass (pass)
   (with-debug-group (format nil "Render Pass: ~s" pass)
-    (a:when-let ((scene (get-scene)))
+    (a:when-let* ((scene (get-scene))
+                  (viewports (viewports scene)))
       (clear-render-pass pass)
-      (u:do-hash-values (viewport (viewports scene))
+      (u:do-hash-values (viewport (table viewports))
+        (setf (active viewports) viewport)
         (configure-viewport viewport)
         (avl-tree/walk
          (draw-order viewport)
@@ -45,15 +44,13 @@
 ;;; entity hooks
 
 (define-hook :pre-render (entity render)
-  (a:when-let ((camera (camera (get-scene))))
+  (a:when-let ((camera (camera (get-viewport))))
     (set-uniforms entity
                   :view (camera/view camera)
                   :proj (camera/projection camera))))
 
 (define-hook :attach (entity render)
-  (setf render/materials (register-materials entity))
-  (when render/viewport
-    (register-draw-order render/viewport entity)))
+  (setf render/materials (register-materials entity)))
 
 (define-hook :detach (entity render)
   (u:do-hash-values (viewport (viewports (get-scene)))

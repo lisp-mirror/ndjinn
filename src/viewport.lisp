@@ -1,8 +1,18 @@
 (in-package #:pyx)
 
+(defclass viewport-manager ()
+  ((%table :reader table
+           :initform (u:dict #'eq))
+   (%active :accessor active
+            :initform nil)
+   (%default :accessor default
+             :initform nil)))
+
 (defclass viewport ()
   ((%spec :reader spec
           :initarg :spec)
+   (%camera :accessor camera
+            :initform nil)
    (%draw-order :accessor draw-order
                 :initform (make-draw-order-tree))
    (%x :reader x
@@ -19,6 +29,9 @@
          (viewport (make-instance 'viewport :spec spec)))
     (configure-viewport viewport)
     viewport))
+
+(defun get-viewport ()
+  (active (viewports (get-scene))))
 
 (defun configure-viewport (viewport)
   (with-slots (%spec %x %y %width %height) viewport

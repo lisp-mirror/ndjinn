@@ -5,14 +5,8 @@
           :initarg :spec)
    (%loaded-p :accessor loaded-p
               :initform nil)
-   (%sub-trees :reader sub-trees
-               :initform (u:dict #'eq))
    (%viewports :reader viewports
-               :initform (u:dict #'eq))
-   (%default-viewport :accessor default-viewport
-                      :initform nil)
-   (%camera :reader camera
-            :initform nil)
+               :initform nil)
    (%node-tree :reader node-tree)
    (%materials :reader materials
                :initform (u:dict #'eq))
@@ -32,23 +26,28 @@
 (defun get-scene-name ()
   (name (spec (get-scene))))
 
-(defun load-scene-sub-trees (scene)
-  (loop :for (sub-tree prefab) :in (sub-trees (spec scene))
-        :for entity = (load-prefab prefab)
-        :do (setf (u:href (sub-trees scene) sub-tree) entity)))
+(defun get-scene-sub-tree-viewports (scene sub-tree)
+  (let (viewports)
+    (dolist (viewport-spec (viewports (spec scene)))
+      (destructuring-bind (viewport sub-trees) viewport-spec
+        (when (find sub-tree sub-trees)
+          (push viewport viewports))))
+    viewports))
 
-(defun load-scene-viewports (scene)
-  (loop :for (view-spec sub-trees) :in (viewports (spec scene))
+(defun make-scene-viewports (scene)
+  (loop :with manager = (make-instance 'viewport-manager)
+        :for (view-spec nil) :in (viewports (spec scene))
         :for viewport = (make-viewport view-spec)
         :for i :from 0
         :do (when (zerop i)
-              (setf (default-viewport scene) viewport))
-            (setf (u:href (viewports scene) view-spec) viewport)
-            (dolist (sub-tree sub-trees)
-              (a:when-let ((entity (u:href (sub-trees scene) sub-tree)))
-                (do-nodes (node :parent entity)
-                  (when (has-component-p node 'render)
-                    (register-draw-order viewport node)))))))
+              (setf (default manager) viewport))
+            (setf (u:href (table manager) view-spec) viewport)
+        :finally (setf (slot-value scene '%viewports) manager)))
+
+(defun load-scene-sub-trees (scene)
+  (loop :for (sub-tree prefab) :in (sub-trees (spec scene))
+        :for viewports = (get-scene-sub-tree-viewports scene sub-tree)
+        :for entity = (load-prefab prefab :viewports viewports)))
 
 (defun load-scene (scene-name)
   (let ((spec (meta :scenes scene-name)))
@@ -62,8 +61,8 @@
       (unless (loaded-p scene)
         (make-node-tree scene)
         (make-collision-system (collider-plan spec))
+        (make-scene-viewports scene)
         (load-scene-sub-trees scene)
-        (load-scene-viewports scene)
         (setf (loaded-p scene) t))
       (setf (slot-value *state* '%current-scene) current)
       scene)))

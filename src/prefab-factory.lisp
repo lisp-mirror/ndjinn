@@ -13,13 +13,11 @@
           (setf (u:href (slots entity) slot) (u:href args key))))
       entity)))
 
-(defun realize-prefab-entity (skeleton viewport args)
+(defun realize-prefab-entity (skeleton args)
   (let ((types (types skeleton)))
     (with-slots (%mixin-class) skeleton
       (when (typep skeleton 'prefab-entity-skeleton)
         (apply #'change-class skeleton %mixin-class args))
-      (when (has-component-p skeleton 'render)
-        (setf (render/viewport skeleton) viewport))
       (register-entity skeleton types))))
 
 (defun resolve-prefab-entity-args (node parent)
@@ -46,7 +44,7 @@
 (defun build-prefab-factory (prefab)
   (with-slots (%nodes %factory) prefab
     (with-slots (%current-node %entities %func) %factory
-      (setf %func (lambda (&key parent viewport)
+      (setf %func (lambda (&key parent)
                     (u:do-hash (path node %nodes)
                       (let ((skeleton (make-prefab-entity-skeleton node)))
                         (setf (u:href %entities path) skeleton)))
@@ -55,7 +53,7 @@
                       (let ((args (resolve-prefab-entity-args node parent))
                             (skeleton (u:href %entities path))
                             (display-id (format nil "~{~(~a~)~^ -> ~}" path)))
-                        (realize-prefab-entity skeleton viewport args)
+                        (realize-prefab-entity skeleton args)
                         (setf (slot-value skeleton '%node/prefab-path) path
                               (slot-value skeleton '%id/display) display-id)))
                     (setf %current-node nil)

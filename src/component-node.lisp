@@ -12,10 +12,7 @@
    (%node/prefab :reader node/prefab
                  :initform nil)
    (%node/prefab-path :reader node/prefab-path
-                      :initform nil)
-   (%node/pickable :accessor node/pickable
-                   :initarg :node/pickable
-                   :initform nil))
+                      :initform nil))
   (:sorting :before xform)
   (:static t))
 
@@ -31,6 +28,9 @@
     (funcall func parent)
     (dolist (child (node/children parent))
       (map-nodes func child))))
+
+(defmacro do-nodes ((entity &key parent) &body body)
+  `(map-nodes (lambda (,entity) ,@body) ,parent))
 
 (defun make-node-tree (scene)
   (let ((root (make-entity () :node/root-p t)))

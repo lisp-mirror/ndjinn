@@ -9,6 +9,8 @@
                :initform (u:dict #'eq))
    (%viewports :reader viewports
                :initform (u:dict #'eq))
+   (%default-viewport :accessor default-viewport
+                      :initform nil)
    (%camera :reader camera
             :initform nil)
    (%node-tree :reader node-tree)
@@ -31,14 +33,22 @@
   (name (spec (get-scene))))
 
 (defun load-scene-sub-trees (scene)
-  (loop :for (binding prefab) :in (sub-trees (spec scene))
+  (loop :for (sub-tree prefab) :in (sub-trees (spec scene))
         :for entity = (load-prefab prefab)
-        :do (setf (u:href (sub-trees scene) binding) entity)))
+        :do (setf (u:href (sub-trees scene) sub-tree) entity)))
 
 (defun load-scene-viewports (scene)
   (loop :for (view-spec sub-trees) :in (viewports (spec scene))
         :for viewport = (make-viewport view-spec)
-        :do (setf (u:href (viewports scene) view-spec) viewport)))
+        :for i :from 0
+        :do (when (zerop i)
+              (setf (default-viewport scene) viewport))
+            (setf (u:href (viewports scene) view-spec) viewport)
+            (dolist (sub-tree sub-trees)
+              (a:when-let ((entity (u:href (sub-trees scene) sub-tree)))
+                (do-nodes (node :parent entity)
+                  (when (has-component-p node 'render)
+                    (register-draw-order viewport node)))))))
 
 (defun load-scene (scene-name)
   (let ((spec (meta :scenes scene-name)))
@@ -52,8 +62,8 @@
       (unless (loaded-p scene)
         (make-node-tree scene)
         (make-collision-system (collider-plan spec))
-        (load-scene-viewports scene)
         (load-scene-sub-trees scene)
+        (load-scene-viewports scene)
         (setf (loaded-p scene) t))
       (setf (slot-value *state* '%current-scene) current)
       scene)))

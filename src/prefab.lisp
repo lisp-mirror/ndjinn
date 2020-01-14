@@ -1,8 +1,9 @@
 (in-package #:pyx)
 
-(defun load-prefab (name &key parent)
-  (let ((factory (factory (meta :prefabs name))))
-    (funcall (func factory) :parent parent)))
+(defun load-prefab (name &key viewport parent)
+  (let ((factory (factory (meta :prefabs name)))
+        (viewport (or viewport (default-viewport (get-scene)))))
+    (funcall (func factory) :parent parent :viewport viewport)))
 
 (defun recompile-prefab (name)
   (dolist (entity (u:href (prefabs (get-scene)) name))

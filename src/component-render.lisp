@@ -6,6 +6,9 @@
    (%render/order :reader render/order
                   :initarg :render/order
                   :initform 'default)
+   (%render/viewport :accessor render/viewport
+                     :initarg :render/viewport
+                     :initform nil)
    (%render/current-material :accessor render/current-material
                              :initform nil))
   (:sorting :after xform :before sprite))
@@ -49,8 +52,8 @@
 
 (define-hook :attach (entity render)
   (setf render/materials (register-materials entity))
-  (u:do-hash-values (viewport (viewports (get-scene)))
-    (register-draw-order viewport entity)))
+  (when render/viewport
+    (register-draw-order render/viewport entity)))
 
 (define-hook :detach (entity render)
   (u:do-hash-values (viewport (viewports (get-scene)))

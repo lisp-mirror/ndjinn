@@ -7,8 +7,9 @@
     (< x y)))
 
 (defun rebuild-draw-order-tree ()
-  (let ((new-tree (make-draw-order-tree)))
-    (symbol-macrolet ((tree (draw-order (get-scene))))
+  (u:do-hash-values (viewport (viewports (get-scene)))
+    (let ((tree (draw-order viewport))
+          (new-tree (make-draw-order-tree)))
       (avl-tree/walk tree (lambda (x) (avl-tree/insert new-tree x)))
       (setf tree new-tree))))
 

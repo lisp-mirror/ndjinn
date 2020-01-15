@@ -3,6 +3,10 @@
 (defclass uniform ()
   ((%key :reader key
          :initarg :key)
+   (%type :accessor uniform-type
+          :initform nil)
+   (%resolved-type :accessor resolved-type
+                   :initform nil)
    (%value :accessor value
            :initarg :value)
    (%func :accessor func
@@ -14,8 +18,13 @@
       (unless (u:href (shadow:uniforms program) (key uniform))
         (error "Material ~s has the uniform ~s but shader ~s does not use it."
                %name uniform %shader))
-      (let ((type (u:href (shadow:uniforms program) (key uniform) :type)))
-        (setf (func uniform) (generate-uniform-func material type))))))
+      (let* ((type (u:href (shadow:uniforms program) (key uniform) :type))
+             (resolved-type (if (search "SAMPLER" (symbol-name type))
+                                :sampler
+                                type)))
+        (setf (uniform-type uniform) type
+              (resolved-type uniform) resolved-type
+              (func uniform) (generate-uniform-func material uniform))))))
 
 (defun %generate-uniform-func (material type)
   (let ((func (a:format-symbol :shadow "UNIFORM-~a" type)))
@@ -48,30 +57,45 @@
             :finally (incf %texture-unit-state dimensions)
                      (shadow:uniform-int-array (shader %spec) k units)))))
 
-(defun generate-uniform-func (material type-spec)
-  (flet ((resolve-type (type-spec)
-           (if (search "SAMPLER" (symbol-name type-spec))
-               :sampler
-               type-spec)))
-    (etypecase type-spec
+(defun generate-uniform-func (material uniform)
+  (let ((type (uniform-type uniform))
+        (resolved-type (resolved-type uniform)))
+    (etypecase type
       (symbol
-       (ecase (resolve-type type-spec)
+       (ecase resolved-type
          (:sampler
           (%generate-uniform-func/sampler material))
          ((:bool :int :float :vec2 :vec3 :vec4 :mat2 :mat3 :mat4)
-          (%generate-uniform-func material type-spec))))
+          (%generate-uniform-func material type))))
       (cons
-       (destructuring-bind (type . dimensions) type-spec
-         (ecase (resolve-type type-spec)
+       (destructuring-bind (type . dimensions) type
+         (ecase resolved-type
            (:sampler
             (%generate-uniform-func/sampler-array material dimensions))
            ((:bool :int :float :vec2 :vec3 :vec4 :mat2 :mat3 :mat4)
             (%generate-uniform-func/array material type))))))))
 
+(defun resolve-uniform-value/sampler (uniform)
+  (let ((value (value uniform)))
+    (if (typep value 'symbol)
+        value
+        (error "Sampler uniform ~s must be a symbol denoting a texture."
+               (key uniform)))))
+
+(defun resolve-uniform-value (uniform)
+  (let ((value (value uniform)))
+    (typecase value
+      (boolean value)
+      ((or symbol function)
+       (funcall value))
+      (t value))))
+
 (defun resolve-uniform-func (uniform)
-  (let* ((value (value uniform))
-         (new-value (if (functionp value) (funcall value) value)))
-    (funcall (func uniform) (key uniform) new-value)))
+  (funcall (func uniform)
+           (key uniform)
+           (case (resolved-type uniform)
+             (:sampler (resolve-uniform-value/sampler uniform))
+             (t (resolve-uniform-value uniform)))))
 
 (defun set-uniforms (entity &rest args)
   (let* ((material (render/current-material entity))

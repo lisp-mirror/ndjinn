@@ -4,8 +4,8 @@
 
 (pyx:define-material effect/toroidal-trip ()
   (:shader pyx.examples.shader:effect/toroidal-trip
-   :uniforms (:time #'pyx:get-total-time
-              :res #'pyx:get-viewport-dimensions)))
+   :uniforms (:time 'pyx:get-total-time
+              :res 'pyx:get-viewport-dimensions)))
 
 ;;; prefabs
 

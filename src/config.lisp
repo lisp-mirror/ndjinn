@@ -9,7 +9,8 @@
                               :threads 8
                               :vsync t
                               :window-width 1920
-                              :window-height 1080)
+                              :window-height 1080
+                              :allow-screensaver t)
                       (apply #'u:dict #'eq args))))
 
 (defun cfg (key)

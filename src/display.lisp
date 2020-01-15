@@ -42,6 +42,9 @@
     (make-window display width height)
     (make-opengl-context display)
     (sdl2:gl-set-swap-interval (if (cfg :vsync) 1 0))
+    (if (cfg :allow-screensaver)
+        (sdl2:enable-screensaver)
+        (sdl2:disable-screensaver))
     (setf (slot-value *state* '%display) display)
     display))
 

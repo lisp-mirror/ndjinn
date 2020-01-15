@@ -7,6 +7,9 @@
    (%camera/debug :reader camera/debug
                   :initarg :camera/debug
                   :initform nil)
+   (%camera/debug-speed :reader camera/debug-speed
+                        :initarg :camera/debug-speed
+                        :initform 1f0)
    (%camera/mode :reader camera/mode
                  :initarg :camera/mode
                  :initform :perspective)
@@ -94,12 +97,15 @@
 ;;; TODO: This is just a quick hack to be able to translate the camera for
 ;;; debugging purposes. Figure out a proper camera controlling system.
 (defun camera-debug-transform (entity)
-  (when (camera/debug entity)
-    (u:mvlet ((x y dx dy (get-mouse-position)))
-      (when (input-enabled-p :key :lctrl)
-        (translate-entity entity (v3:vec (/ dx 10) (/ (- dy) 10) 0f0)))
-      (when (input-enabled-p :key :lalt)
-        (translate-entity entity (v3:vec 0f0 0f0 dy))))))
+  (with-slots (%camera/debug %camera/debug-speed) entity
+    (u:mvlet ((x y dx dy viewport (get-mouse-position)))
+      (when (and %camera/debug (eq entity (camera viewport)))
+        (when (input-enabled-p :key :lctrl)
+          (translate-entity entity (v3:vec (* dx %camera/debug-speed)
+                                           (/ dy %camera/debug-speed)
+                                           0f0)))
+        (when (input-enabled-p :key :lalt)
+          (translate-entity entity (v3:vec 0f0 0f0 dy)))))))
 
 ;;; entity hooks
 

@@ -55,8 +55,8 @@
                  (push coords doors/v))
                 ((dungen:has-feature-p cell :door/horizontal)
                  (push coords doors/h))))))
-        (setf (u:href %world/cell-counts :tiles/floor) (length floors)
-              (u:href %world/cell-counts :tiles/wall) (length walls)
+        (setf (u:href %world/cell-counts :tiles/wall) (length walls)
+              (u:href %world/cell-counts :tiles/floor) (length floors)
               (u:href %world/cell-counts :tiles/door/v) (length doors/v)
               (u:href %world/cell-counts :tiles/door/h) (length doors/h))
         (values walls floors doors/v doors/h)))))
@@ -87,8 +87,9 @@
                                    :door-rate ,world/door-rate
                                    :cycle-factor ,world/cycle-factor)))
   (pyx:resource-lookup 'world world/buffer-name
-    (pyx:make-shader-buffer world/buffer-name :world 'pyx.examples.shader:world)
-    (pyx:update-shader-buffer entity)))
+    (pyx:make-shader-buffer
+     world/buffer-name :world 'pyx.examples.shader:world))
+  (pyx:update-shader-buffer entity))
 
 ;; TODO: We don't have any reference counting for resources yet, so this will
 ;; delete the resource unconditionally, even if there are other world

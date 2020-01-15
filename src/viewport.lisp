@@ -24,6 +24,9 @@
    (%height :reader height
             :initform 0f0)))
 
+(u:define-printer (viewport stream :identity t)
+  (format stream "~s" (name (spec viewport))))
+
 (defun make-viewport (view-spec)
   (let* ((spec (meta :views view-spec))
          (viewport (make-instance 'viewport :spec spec)))

@@ -6,10 +6,6 @@
   :id/tags '(top-left)
   ((camera :template camera/perspective)))
 
-(pyx:define-prefab camera/bottom-left ()
-  :id/tags '(bottom-left)
-  ((camera :template camera/orthographic)))
-
 (pyx:define-prefab camera/right ()
   :id/tags '(right)
   ((camera :template camera/isometric)))
@@ -18,35 +14,34 @@
 
 (pyx:define-view top-left ()
   (:tags (top-left)
-   :x 0f0
-   :y 0.5f0
-   :width 0.25f0
-   :height 0.5f0))
+   :x 0
+   :y 1/2
+   :width 1/3
+   :height 1/2))
 
 (pyx:define-view bottom-left ()
   (:tags (bottom-left)
-   :x 0f0
-   :y 0f0
-   :width 0.25f0
-   :height 0.5f0))
+   :x 0
+   :y 0
+   :width 1/3
+   :height 1/2))
 
 (pyx:define-view right ()
   (:tags (right)
-   :x 0.25f0
-   :y 0f0
-   :width 0.75f0
-   :height 1f0))
+   :x 1/3
+   :y 0
+   :width 2/3
+   :height 1))
 
 ;;; scenes
 
 (pyx:define-scene viewports ()
   (:sub-trees ((examples examples)
                (camera1 camera/top-left)
-               (camera2 camera/bottom-left)
-               (camera3 camera/right)
-               (a mesh-carousel)
-               (b effect/ocean-waves)
-               (c world))
-   :viewports ((top-left (a))
-               (bottom-left (b))
-               (right (c)))))
+               (camera2 camera/right)
+               (top-left mesh-carousel)
+               (bottom-left effect/kaleidoscope)
+               (right world))
+   :viewports ((top-left (top-left))
+               (bottom-left (bottom-left))
+               (right (right)))))

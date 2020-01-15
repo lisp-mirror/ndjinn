@@ -18,6 +18,8 @@
 (u:define-printer (view-spec stream :identity t)
   (format stream "~s" (name view-spec)))
 
+(define-event-handler :recompile :view recompile-viewport)
+
 (defun update-view-tags (view-spec tags)
   (with-slots (%name %tags) view-spec
     (dolist (tag %tags)
@@ -35,7 +37,8 @@
             %x (a:clamp (float x 1f0) 0f0 1f0)
             %y (a:clamp (float y 1f0) 0f0 1f0)
             %width (a:clamp (float width 1f0) 0f0 1f0)
-            %height (a:clamp (float height 1f0) 0f0 1f0)))))
+            %height (a:clamp (float height 1f0) 0f0 1f0))
+      (enqueue :recompile (list :view)))))
 
 (defun make-view-spec (name tags x y width height)
   (let ((spec (make-instance 'view-spec :name name)))

@@ -60,3 +60,7 @@
                       (default (viewports (get-scene))))))
     (with-slots (%width %height) viewport
       (v2:vec %width %height))))
+
+(defun recompile-viewport (name)
+  (declare (ignore name))
+  (recompile-scene (name (spec (get-scene)))))

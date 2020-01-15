@@ -30,15 +30,18 @@
   :camera/debug t)
 
 (pyx:define-prefab camera/perspective (:template camera)
+  :camera/debug-speed 0.1
   :xform/translate (v3:vec 0f0 0f0 50f0))
 
 (pyx:define-prefab camera/orthographic (:template camera)
+  :camera/debug-speed 4
   :xform/translate (v3:vec 0f0 0f0 1f0)
   :camera/mode :orthographic
   :camera/clip-near 0f0
   :camera/clip-far 16f0)
 
 (pyx:define-prefab camera/isometric (:template camera)
+  :camera/debug-speed 4
   :xform/translate (v3:vec 0f0 0f0 1f0)
   :camera/mode :isometric
   :camera/clip-near -1000f0

@@ -102,10 +102,11 @@
       (when (and %camera/debug (eq entity (camera viewport)))
         (when (input-enabled-p :key :lctrl)
           (translate-entity entity (v3:vec (* dx %camera/debug-speed)
-                                           (/ dy %camera/debug-speed)
+                                           (* dy %camera/debug-speed)
                                            0f0)))
         (when (input-enabled-p :key :lalt)
-          (translate-entity entity (v3:vec 0f0 0f0 dy)))))))
+          (translate-entity entity
+                            (v3:vec 0f0 0f0 (* dy %camera/debug-speed))))))))
 
 ;;; entity hooks
 

@@ -35,18 +35,25 @@
 (defun on-mouse-move (x y dx dy)
   (let* ((input-state (input-state *state*))
          (motion-states (u:href (states input-state) '(:mouse :motion))))
-    (setf (x motion-states) x
-          (y motion-states) y
-          (dx motion-states) dx
-          (dy motion-states) dy)))
+    (setf (x motion-states) (float x 1f0)
+          (y motion-states) (float (- (cfg :window-height) y) 1f0)
+          (dx motion-states) (float dx 1f0)
+          (dy motion-states) (float (- dy) 1f0))))
 
 (defun get-mouse-position ()
-  (let ((state (u:href (states (input-state *state*)) '(:mouse :motion))))
-    (with-slots (%x %y %dx %dy) state
-      (values (float %x 1f0)
-              (float %y 1f0)
-              (float %dx 1f0)
-              (float %dy 1f0)))))
+  (let ((state (u:href (states (input-state *state*)) '(:mouse :motion)))
+        (viewports (viewports (get-scene)))
+        (viewport nil))
+    (u:do-hash-values (v (table viewports))
+      (with-slots (%x %y %width %height) v
+        (when (and (<= %x (x state) (+ %x %width))
+                   (<= %y (y state) (+ %y %height)))
+          (setf viewport v))))
+    (values (x state)
+            (y state)
+            (dx state)
+            (dy state)
+            (or viewport (default viewports)))))
 
 (defun get-mouse-scroll (axis)
   (let ((states (states (input-state *state*))))

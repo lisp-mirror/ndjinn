@@ -61,8 +61,8 @@
       (setf (u:href (scenes *state*) scene-name) scene
             (slot-value *state* '%current-scene) scene)
       (unless (loaded-p scene)
-        (make-node-tree scene)
         (make-collision-system (collider-plan spec))
+        (make-node-tree scene)
         (make-scene-viewports scene)
         (load-scene-sub-trees scene)
         (setf (loaded-p scene) t))

@@ -53,7 +53,33 @@
       (setf (collider/hit-p contact1) nil))
     (when (zerop (collider/contact-count contact2))
       (setf (collider/hit-p contact2) nil))
-    (on-collision-exit (collider/target contact1) (collider/layer contact2))))
+    (dolist (entity (get-collision-targets contact1))
+      (on-collision-exit (collider/target contact1)
+                         (collider/layer contact2)
+                         entity))))
+
+(defgeneric on-collision-enter (target layer entity)
+  (:method (target layer entity)))
+
+(defgeneric on-collision-continue (target layer entity)
+  (:method (target layer entity)))
+
+(defgeneric on-collision-exit (target layer entity)
+  (:method (target layer entity)))
+
+(defmacro define-collision-hook (name (target layer) &body body)
+  (a:with-gensyms (target-symbol)
+    (let ((hook-types '(:enter :continue :exit)))
+      `(progn
+         (unless (find ',name ',hook-types)
+           (error "Hook type must be one of: ~{~s~^, ~}" ',hook-types))
+         (unless (symbolp ',target)
+           (error "Target of a collision hook must be a symbol: ~s." ',target))
+         (unless (symbolp ',layer)
+           (error "Layer of a collision hook must be a symbol: ~s." ',layer))
+         (defmethod ,(a:format-symbol :pyx "ON-COLLISION-~a" name)
+             ((,target-symbol (eql ',target)) (layer (eql ',layer)) ,target)
+           ,@body)))))
 
 ;;; component protocol
 

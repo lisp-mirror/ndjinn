@@ -15,6 +15,8 @@
    (%contacts :reader contacts
               :initarg :contacts
               :initform (u:dict #'eq))
+   (%callback-entities :reader callback-entities
+                       :initform (u:dict #'eq))
    (%buffer :reader buffer
             :initform (make-array 8 :adjustable t :fill-pointer t))))
 

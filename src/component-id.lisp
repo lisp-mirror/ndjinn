@@ -7,7 +7,10 @@
                 :initform "[Anonymous]")
    (%id/views :accessor id/views
               :initarg :id/views
-              :initform nil))
+              :initform nil)
+   (%id/contact :reader id/contact
+                :initarg :id/contact
+                :initform nil))
   (:sorting :after node)
   (:static t))
 
@@ -33,6 +36,20 @@
   (dolist (id (id/views entity))
     (a:deletef (u:href (view-tags (get-scene)) id) entity)))
 
+(defun id/register-contact (entity)
+  (with-slots (%callback-entities) (collision-system (get-scene))
+    (a:when-let ((id (id/contact entity)))
+      (unless (u:href %callback-entities id)
+        (setf (u:href %callback-entities id) (u:dict #'eq)))
+      (setf (u:href %callback-entities id entity) entity))))
+
+(defun id/deregister-contact (entity)
+  (with-slots (%callback-entities) (collision-system (get-scene))
+    (a:when-let ((id (id/contact entity)))
+      (remhash entity (u:href %callback-entities id))
+      (when (zerop (hash-table-count (u:href %callback-entities id)))
+        (remhash id %callback-entities)))))
+
 ;;; protocol
 
 (defgeneric find-by-uuid (uuid)
@@ -45,8 +62,11 @@
 
 (define-hook :create (entity id)
   (id/register-uuid entity)
-  (id/register-views entity))
+  (id/register-views entity)
+  (id/register-contact entity))
+
 
 (define-hook :delete (entity id)
   (id/deregister-uuid entity)
-  (id/deregister-views entity))
+  (id/deregister-views entity)
+  (id/deregister-contact entity))

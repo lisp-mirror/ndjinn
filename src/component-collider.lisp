@@ -21,6 +21,24 @@
                     :initform nil))
   (:sorting :after render))
 
+(defun scale-collider (entity)
+  (v3:with-components ((s (current (xform/scaling entity))))
+    (unless (= sx sy sz)
+      (error "Colliders must have a uniform scale."))
+    (v3:scale! s s (collider/radius entity))))
+
+(defun initialize-collider-visualization (entity)
+  (when (collider/visualize entity)
+    (when (or (has-component-p entity 'mesh)
+              (has-component-p entity 'render))
+      (error "Entity ~s has a collider to be visualized, but it must not have ~
+              a mesh or render component attached." entity))
+    (attach-component entity 'mesh
+                      :mesh/file "collider-sphere.glb"
+                      :mesh/name "sphere")
+    (attach-component entity 'render
+                      :render/materials '(collider/mesh))))
+
 (defgeneric collide-p (collider1 collider2)
   (:method (collider1 collider2))
   (:method ((collider1 collider) (collider2 collider))
@@ -89,20 +107,8 @@
 ;;; component protocol
 
 (define-hook :attach (entity collider)
-  (v3:with-components ((s (current (xform/scaling entity))))
-    (unless (= sx sy sz)
-      (error "Colliders must have a uniform scale."))
-    (v3:scale! s s collider/radius))
-  (when collider/visualize
-    (when (or (has-component-p entity 'mesh)
-              (has-component-p entity 'render))
-      (error "Entity ~s has a collider to be visualized, but it must not have ~
-              a mesh or render component attached." entity))
-    (attach-component entity 'mesh
-                      :mesh/file "collider-sphere.glb"
-                      :mesh/name "sphere")
-    (attach-component entity 'render
-                      :render/materials '(collider/mesh)))
+  (scale-collider entity)
+  (initialize-collider-visualization entity)
   (register-collider entity))
 
 (define-hook :detach (entity collider)

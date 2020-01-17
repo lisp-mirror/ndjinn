@@ -37,13 +37,18 @@
       (setf (collider/hit-p contact1) t))
     (when (plusp (collider/contact-count contact2))
       (setf (collider/hit-p contact2) t))
-    (on-collision-enter (collider/target contact1) (collider/layer contact2))))
+    (dolist (entity (get-collision-targets contact1))
+      (on-collision-enter (collider/target contact1)
+                          (collider/layer contact2)
+                          entity))))
 
 (defgeneric %on-collision-continue (contact1 contact2)
   (:method (contact1 contact2))
   (:method ((contact1 collider) (contact2 collider))
-    (on-collision-continue (collider/target contact1)
-                           (collider/layer contact2))))
+    (dolist (entity (get-collision-targets contact1))
+      (on-collision-continue (collider/target contact1)
+                             (collider/layer contact2)
+                             entity))))
 
 (defgeneric %on-collision-exit (contact1 contact2)
   (:method (contact1 contact2))
@@ -98,12 +103,6 @@
                       :mesh/name "sphere")
     (attach-component entity 'render
                       :render/materials '(collider/mesh)))
-  (unless (or (null collider/target)
-              (has-component-p collider/target 'node))
-    (error "Target of collider ~s must be an entity or NIL to represent itself."
-           entity))
-  (unless collider/target
-    (setf collider/target entity))
   (register-collider entity))
 
 (define-hook :detach (entity collider)
@@ -112,14 +111,3 @@
 
 (define-hook :pre-render (entity collider)
   (set-uniforms entity :contact collider/hit-p))
-
-;;; user protocol
-
-(defgeneric on-collision-enter (entity layer)
-  (:method (entity layer)))
-
-(defgeneric on-collision-continue (entity layer)
-  (:method (entity layer)))
-
-(defgeneric on-collision-exit (entity layer)
-  (:method (entity layer)))

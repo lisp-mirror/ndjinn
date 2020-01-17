@@ -31,9 +31,11 @@
       (setf (slot-value (get-scene) '%collision-system) system))
     (error "Collider plan ~s not found." plan-name)))
 
-(defun ensure-collider-referent-unique (collider)
-  (when (eq collider (collider/referent collider))
-    (error "Collider referent cannot be the same collider object.")))
+
+(defun get-collision-targets (collider)
+  (a:when-let* ((table (callback-entities (collision-system (get-scene))))
+                (target (u:href table (collider/target collider))))
+    (u:hash-keys target)))
 
 (defun register-collider (collider)
   (let* ((system (collision-system (get-scene)))

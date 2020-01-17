@@ -24,10 +24,12 @@
    :xform/translate (v3:vec 30f0 0f0 0f0)
    :collider/layer :destroyer
    :collider/visualize t)
-  ((player :add (player-collision-message pyx:collider))
+  ((player :add (pyx:collider))
+   :id/contact 'player
    :xform/scale 4f0
    :xform/translate (v3:vec -30f0 0f0 0f0)
    :xform/translate/velocity (math:make-velocity v3:+right+ 15f0)
+   :collider/target 'player
    :collider/layer :player
    :collider/visualize t
    ((mesh :template mesh/helmet)
@@ -40,17 +42,14 @@
    :gate nil
    :destroyer nil))
 
-(defmethod pyx:on-collision-enter ((entity player-collision-message)
-                                   (layer (eql :gate)))
-  (pyx:translate-entity/velocity entity v3:+right+ 3f0))
+(pyx:define-collision-hook :enter (player :gate)
+  (pyx:translate-entity/velocity player v3:+right+ 3f0))
 
-(defmethod pyx:on-collision-enter ((entity player-collision-message)
-                                   (layer (eql :destroyer)))
-  (pyx:translate-entity entity (v3:vec -30f0 0f0 0f0) :replace-p t))
+(pyx:define-collision-hook :enter (player :destroyer)
+  (pyx:translate-entity player (v3:vec -30f0 0f0 0f0) :replace-p t))
 
-(defmethod pyx:on-collision-exit ((entity player-collision-message)
-                                  (layer (eql :gate)))
-  (pyx:translate-entity/velocity entity v3:+right+ 15f0))
+(pyx:define-collision-hook :exit (player :gate)
+  (pyx:translate-entity/velocity player v3:+right+ 15f0))
 
 ;;; scenes
 

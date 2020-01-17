@@ -102,9 +102,7 @@
   ;; collision detection
   (:export
    #:collider/layer
-   #:on-collision-continue
-   #:on-collision-enter
-   #:on-collision-exit)
+   #:define-collision-hook)
   ;; transform protocol
   (:export
    #:rotate-entity

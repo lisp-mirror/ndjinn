@@ -77,7 +77,6 @@
    #:animate
    #:camera
    #:collider
-   #:collider/sphere
    #:group
    #:id
    #:mesh
@@ -102,7 +101,7 @@
    #:rotate)
   ;; collision detection
   (:export
-   #:collider/label
+   #:collider/layer
    #:on-collision-continue
    #:on-collision-enter
    #:on-collision-exit)

@@ -99,7 +99,6 @@
    (:file "prefab-reference")
    (:file "prefab")
    (:file "collision-detection")
-   (:file "collider-shapes")
    (:file "animation")
    (:file "animation-states")
    (:file "draw-order")

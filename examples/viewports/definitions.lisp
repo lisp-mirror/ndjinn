@@ -3,11 +3,11 @@
 ;;; prefabs
 
 (pyx:define-prefab camera/top-left ()
-  :id/tags '(top-left)
+  :id/views '(top-left)
   ((camera :template camera/perspective)))
 
 (pyx:define-prefab camera/right ()
-  :id/tags '(right)
+  :id/views '(right)
   ((camera :template camera/isometric)))
 
 ;;; views

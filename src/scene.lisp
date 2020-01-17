@@ -16,8 +16,8 @@
                       :initform nil)
    (%uuids :reader uuids
            :initform (u:dict #'eq))
-   (%tags :reader tags
-          :initform (u:dict #'eq))))
+   (%view-tags :reader view-tags
+               :initform (u:dict #'eq))))
 
 (u:define-printer (scene stream :identity t)
   (format stream "~s" (name (spec scene))))

@@ -21,9 +21,6 @@
 (define-hook :pre-render (entity collider)
   (set-uniforms entity :contact collider/hit-p))
 
-(defgeneric collide-p (collider1 collider2)
-  (:method (collider1 collider2)))
-
 (defgeneric %on-collision-enter (contact1 contact2)
   (:method (contact1 contact2))
   (:method ((contact1 collider) (contact2 collider))

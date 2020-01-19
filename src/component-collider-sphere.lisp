@@ -19,16 +19,10 @@
       (error "Entity ~s has a collider to be visualized, but it must not have ~
               a mesh or render component attached." entity))
     (attach-component entity 'mesh
-                      :mesh/file "collider-sphere.glb"
+                      :mesh/file "colliders.glb"
                       :mesh/name "sphere")
     (attach-component entity 'render
                       :render/materials '(collider/mesh))))
-
-(defmethod collide-p ((collider1 collider/sphere) (collider2 collider/sphere))
-  (<= (v3:distance (transform-point collider1 (collider/center collider1))
-                   (transform-point collider2 (collider/center collider2)))
-      (+ (v3:length (transform-vector collider1 (v3:vec 1f0 0f0 0f0)))
-         (v3:length (transform-vector collider2 (v3:vec 1f0 0f0 0f0))))))
 
 ;;; component protocol
 

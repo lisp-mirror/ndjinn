@@ -31,6 +31,13 @@
       (setf (slot-value (get-scene) '%collision-system) system))
     (error "Collider plan ~s not found." plan-name)))
 
+(defun get-active-colliders ()
+  (let ((colliders nil)
+        (active (active (collision-system (get-scene)))))
+    (u:do-hash-values (v active)
+      (u:do-hash-keys (k v)
+        (push k colliders)))
+    colliders))
 
 (defun get-collision-targets (collider)
   (a:when-let* ((table (callback-entities (collision-system (get-scene))))

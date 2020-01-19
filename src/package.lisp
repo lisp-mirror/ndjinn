@@ -11,6 +11,7 @@
    (#:v3 #:origin.vec3)
    (#:v4 #:origin.vec4)
    (#:q #:origin.quat)
+   (#:m3 #:origin.mat3)
    (#:m4 #:origin.mat4)
    (#:~ #:origin.swizzle))
   (:use #:cl)

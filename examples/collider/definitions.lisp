@@ -19,9 +19,10 @@
    :xform/scale 5f0
    :collider/layer :gate
    :collider/visualize t)
-  ((destroyer :add (pyx:collider/sphere))
-   :xform/scale 3f0
+  ((destroyer :add (pyx:collider/cuboid))
+   :xform/scale 1.5f0
    :xform/translate (v3:vec 30f0 0f0 0f0)
+   :xform/rotate/velocity (math:make-velocity v3:+down+ 5f0)
    :collider/layer :destroyer
    :collider/visualize t)
   ((player :add (pyx:collider/sphere))
@@ -43,7 +44,7 @@
    :destroyer nil))
 
 (pyx:define-collision-hook :enter (player :gate)
-  (pyx:translate-entity/velocity player v3:+right+ 3f0))
+  (pyx:translate-entity/velocity player v3:+right+ 4f0))
 
 (pyx:define-collision-hook :enter (player :destroyer)
   (pyx:translate-entity player (v3:vec -30f0 0f0 0f0) :replace-p t))

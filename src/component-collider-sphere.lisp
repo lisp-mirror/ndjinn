@@ -28,9 +28,9 @@
 
 (define-hook :attach (entity collider/sphere)
   (scale-collider/sphere entity)
-  (initialize-collider-visualization/sphere entity)
+  (initialize-collider-visualization entity "sphere")
   (register-collider entity))
 
-(define-hook :detach (entity collider)
+(define-hook :detach (entity collider/sphere)
   (deregister-collider entity)
   (setf collider/target nil))

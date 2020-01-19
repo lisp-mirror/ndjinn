@@ -75,6 +75,7 @@
       (incf accumulator (clock-frame-time clock))
       (u:while (>= accumulator delta)
         (map-nodes #'on-update)
+        (compute-collisions)
         (decf accumulator delta))
       (setf interpolation-factor (float (/ accumulator delta) 1f0))
       (u:noop))))

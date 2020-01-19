@@ -48,7 +48,6 @@
       (process-queue :entity-flow)
       (handle-events)
       (map-nodes #'resolve-model)
-      (compute-collisions)
       (update-display))))
 
 (defun start-engine (scene-name &rest args)

@@ -18,6 +18,18 @@
      (%collider/hit-p :accessor collider/hit-p
                       :initform nil))))
 
+(defun initialize-collider-visualization (entity mesh-name)
+  (when (collider/visualize entity)
+    (when (or (has-component-p entity 'mesh)
+              (has-component-p entity 'render))
+      (error "Entity ~s has a collider to be visualized, but it must not have ~
+              a mesh or render component attached." entity))
+    (attach-component entity 'mesh
+                      :mesh/file "colliders.glb"
+                      :mesh/name mesh-name)
+    (attach-component entity 'render
+                      :render/materials '(collider/mesh))))
+
 (define-hook :pre-render (entity collider)
   (set-uniforms entity :contact collider/hit-p))
 

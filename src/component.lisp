@@ -26,26 +26,26 @@
 (defun compute-all-components-order ()
   (compute-component-order (u:hash-keys (meta :components :order))))
 
-(defun compute-component-slots (type)
-  (let ((class (c2mop:ensure-finalized (find-class type))))
-    (mapcar #'c2mop:slot-definition-name (c2mop:class-direct-slots class))))
-
 (defun compute-component-accessors (type)
-  (let* ((class (c2mop:ensure-finalized (find-class type)))
-         (slots (c2mop:class-direct-slots class)))
-    (remove-duplicates
-     (remove-if
-      (lambda (x)
-        (or (null x)
-            (and (not (eq (symbol-package x) *package*))
-                 (not (eq (nth-value 1 (find-symbol (symbol-name x)
-                                                    (symbol-package x)))
-                          :external)))))
-      (a:mappend
-       (lambda (x)
-         (append (c2mop:slot-definition-readers x)
-                 (mapcar #'second (c2mop:slot-definition-writers x))))
-       slots)))))
+  (labels ((get-all-direct-slots (class)
+             (append (c2mop:class-direct-slots class)
+                     (a:mappend #'get-all-direct-slots
+                                (c2mop:class-direct-superclasses class)))))
+    (let* ((class (c2mop:ensure-finalized (find-class type)))
+           (slots (get-all-direct-slots class)))
+      (remove-duplicates
+       (remove-if
+        (lambda (x)
+          (or (null x)
+              (and (not (eq (symbol-package x) *package*))
+                   (not (eq (nth-value 1 (find-symbol (symbol-name x)
+                                                      (symbol-package x)))
+                            :external)))))
+        (a:mappend
+         (lambda (x)
+           (append (c2mop:slot-definition-readers x)
+                   (mapcar #'second (c2mop:slot-definition-writers x))))
+         slots))))))
 
 (defun compute-component-args (type)
   (let* ((class (c2mop:ensure-finalized (find-class type)))

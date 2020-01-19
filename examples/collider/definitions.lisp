@@ -9,22 +9,22 @@
 ;;; prefabs
 
 (pyx:define-prefab collider ()
-  ((gate/top :add (pyx:collider))
+  ((gate/top :add (pyx:collider/sphere))
    :xform/translate (v3:vec 0f0 8f0 0f0)
    :xform/scale 5f0
    :collider/layer :gate
    :collider/visualize t)
-  ((gate/bottom :add (pyx:collider))
+  ((gate/bottom :add (pyx:collider/sphere))
    :xform/translate (v3:vec 0f0 -8f0 0f0)
    :xform/scale 5f0
    :collider/layer :gate
    :collider/visualize t)
-  ((destroyer :add (pyx:collider))
+  ((destroyer :add (pyx:collider/sphere))
    :xform/scale 3f0
    :xform/translate (v3:vec 30f0 0f0 0f0)
    :collider/layer :destroyer
    :collider/visualize t)
-  ((player :add (pyx:collider))
+  ((player :add (pyx:collider/sphere))
    :id/contact 'player
    :xform/scale 4f0
    :xform/translate (v3:vec -30f0 0f0 0f0)

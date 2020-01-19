@@ -77,7 +77,7 @@
    #:animate
    #:camera
    #:collider
-   #:group
+   #:collider/sphere
    #:id
    #:mesh
    #:node

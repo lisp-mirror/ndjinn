@@ -1,5 +1,9 @@
 (in-package #:pyx)
 
+;;; TODO: cuboid/cuboid intersection seems to have the problem of not detecting
+;;; a hit when it should. This seems dependent on the min/max extents given. Do
+;;; not use cuboid colliders yet until this is investigated.
+
 (define-component collider/cuboid (collider)
   ((%collider/min-x :reader collider/min-x
                     :initarg :collider/min-x

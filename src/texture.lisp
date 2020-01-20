@@ -36,13 +36,13 @@
                    :id id
                    :width width
                    :height height)))
-    (%gl:texture-storage-2d id
-                            (calculate-mipmap-levels spec width height)
-                            (internal-format source)
-                            width
-                            height)
+    (gl:texture-storage-2d id
+                           (calculate-mipmap-levels spec width height)
+                           (internal-format source)
+                           width
+                           height)
     (when (data source)
-      (gl/texture-sub-image-2d
+      (gl:texture-sub-image-2d
        id
        0
        0
@@ -66,15 +66,15 @@
                    :id id
                    :width width
                    :height height)))
-    (%gl:texture-storage-3d id
-                            (calculate-mipmap-levels spec width height)
-                            (internal-format layer0)
-                            width
-                            height
-                            (length source))
+    (gl:texture-storage-3d id
+                           (calculate-mipmap-levels spec width height)
+                           (internal-format layer0)
+                           width
+                           height
+                           (length source))
     (loop :for image :in source
           :for layer :from 0
-          :do (gl/texture-sub-image-3d id
+          :do (gl:texture-sub-image-3d id
                                        0
                                        0
                                        0
@@ -88,7 +88,7 @@
     texture))
 
 (defun bind-texture (texture unit)
-  (%gl:bind-texture-unit unit (id texture)))
+  (gl:bind-texture-unit unit (id texture)))
 
 (defun configure-texture (texture)
   (with-slots (%spec %id) texture

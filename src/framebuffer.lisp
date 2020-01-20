@@ -18,7 +18,7 @@
     (let* ((target (framebuffer-mode->target %mode))
            (framebuffer (make-instance 'framebuffer
                                        :spec spec
-                                       :id (gl/create-framebuffer)
+                                       :id (gl:create-framebuffer)
                                        :target target)))
       (u:do-hash-values (attachment %attachments)
         (framebuffer-attach framebuffer (name attachment)))
@@ -62,7 +62,7 @@
 
 (defun ensure-framebuffer-complete (framebuffer target buffer attachment)
   (with-slots (%spec %id) framebuffer
-    (let ((result (%gl:check-named-framebuffer-status %id target)))
+    (let ((result (gl:check-named-framebuffer-status %id target)))
       (unless (find result '(:framebuffer-complete :framebuffer-complete-oes))
         (error "Error attaching ~a as attachment ~s of framebuffer ~s: ~a"
                buffer attachment (name %spec) result)))))
@@ -75,8 +75,7 @@
                              `(framebuffer-mode->target ,mode)
                              `(target ,framebuffer))))
            ,@(when attachments
-               `((gl/named-framebuffer-draw-buffers
-                  ,id ,attachments)))
+               `((gl/named-framebuffer-draw-buffers ,id ,attachments)))
            (gl:bind-framebuffer ,target ,id)
            (progn ,@body)
            (gl:bind-framebuffer ,target 0))
@@ -87,7 +86,7 @@
     (with-slots (%point %width %height) attachment
       (let* ((point (framebuffer-attachment-point->gl %point))
              (internal-format (framebuffer-point->render-buffer-format %point))
-             (buffer-id (gl/create-renderbuffer))
+             (buffer-id (gl:create-renderbuffer))
              (width (funcall %width))
              (height (funcall %height)))
         (%gl:named-renderbuffer-storage buffer-id internal-format width height)
@@ -110,7 +109,7 @@
                                            :width (funcall %width)
                                            :height (funcall %height))))
               (point (framebuffer-attachment-point->gl %point)))
-          (%gl:named-framebuffer-texture %id point buffer-id 0)
+          (gl:named-framebuffer-texture %id point buffer-id 0)
           (ensure-framebuffer-complete framebuffer %target buffer-id point)
           (setf (u:href %attachments point) buffer-id)
           buffer-id)))))

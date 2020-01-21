@@ -24,9 +24,10 @@
   (:export
    #:cfg
    #:meta
-   #:get-window-resolution
-   #:get-total-time
-   #:get-viewport-dimensions)
+   #:get-frame-count
+   #:get-frame-time
+   #:get-viewport-dimensions
+   #:get-window-resolution)
   ;; definitions
   ;; scenes
   (:export

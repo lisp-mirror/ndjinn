@@ -11,7 +11,8 @@
 
 (defun effect/kaleidoscope/frag (&uniforms
                                  (res :vec2)
-                                 (time :float)
+                                 (frame-count :int)
+                                 (frame-time :float)
                                  (zoom :float)
                                  (speed :float)
                                  (strength :float)
@@ -32,7 +33,7 @@
          (circle 0.0)
          (detail (clamp detail 0 1))
          (strength (mix 1.5 0.2 (clamp strength 0 1)))
-         (speed (* time speed)))
+         (speed (* frame-count frame-time speed)))
     (dotimes (y 3)
       (dotimes (x 3)
         (let* ((offset (1- (vec2 x y)))

@@ -17,16 +17,13 @@
   (pause-time 0d0)
   (period-elapsed 0d0)
   (period-interval 0.25d0)
-  (previous-time 0d0)
-  (start-time 0d0)
-  (total-time 0d0))
+  (previous-time 0d0))
 
 (defun make-clock ()
   (let ((clock (%make-clock)))
     (setf (clock-init-time clock) (sb-ext:get-time-of-day)
           (clock-current-time clock) 0d0
           (clock-debug-time clock) 0d0
-          (clock-start-time clock) 0d0
           (slot-value *state* '%clock) clock)
     ;; NOTE: We have to tick the clock and resolve an initial model matrix for
     ;; all entities as soon as we initialize the clock times in order to work
@@ -94,12 +91,10 @@
         (refresh-rate (refresh-rate (display *state*))))
     (symbol-macrolet ((previous (clock-previous-time clock))
                       (current (clock-current-time clock))
-                      (start (clock-start-time clock))
                       (pause (clock-pause-time clock)))
       (setf previous (+ current pause)
             current (- (get-time clock) pause)
             (clock-frame-time clock) (- current previous)
-            (clock-total-time clock) (- current start)
             pause 0d0)
       (when (cfg :vsync)
         (smooth-delta-time clock refresh-rate))
@@ -110,5 +105,8 @@
 
 ;;; public api
 
-(defun get-total-time ()
-  (clock-total-time (clock *state*)))
+(defun get-frame-count ()
+  (clock-frame-count (clock *state*)))
+
+(defun get-frame-time ()
+  (clock-frame-time (clock *state*)))

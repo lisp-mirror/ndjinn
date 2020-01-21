@@ -2,8 +2,10 @@
 
 (defun graph/frag ((uv :vec2)
                    &uniforms
-                   (time :float))
-  (let* ((dim (vec2 (1+ (sin time)) (+ 2 (sin time))))
+                   (frame-count :int)
+                   (frame-time :float))
+  (let* ((time (* frame-count frame-time))
+         (dim (vec2 (1+ (sin time)) (+ 2 (sin time))))
          (uv (+ (* uv (- (.y dim) (.x dim)))
                 (vec2 (.x dim) -0.5))))
     (umbra.graphing:graph

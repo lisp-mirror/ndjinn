@@ -14,7 +14,8 @@
 
 (pyx:define-material effect/ocean-waves ()
   (:shader pyx.examples.shader:effect/ocean-waves
-   :uniforms (:time 'pyx:get-total-time
+   :uniforms (:frame-count 'pyx:get-frame-count
+              :frame-time 'pyx:get-frame-time
               :res 'pyx:get-viewport-dimensions
               :mouse (v2:zero))))
 

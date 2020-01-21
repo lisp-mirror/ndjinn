@@ -5,8 +5,10 @@
 
 (defun effect/toroidal-trip/frag (&uniforms
                                   (res :vec2)
-                                  (time :float))
-  (let* ((rtime (* time 0.5))
+                                  (frame-count :int)
+                                  (frame-time :float))
+  (let* ((time (* frame-count frame-time))
+         (rtime (* time 0.5))
          (uv (* (/ (- (.xy gl-frag-coord) (* res 0.5)) (.y res))
                 (mat2 (cos rtime) (- (sin rtime)) (sin rtime) (cos rtime))))
          (ray-origin (vec3 0 0 -1))

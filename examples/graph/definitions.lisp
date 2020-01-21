@@ -4,7 +4,8 @@
 
 (pyx:define-material graph ()
   (:shader pyx.examples.shader:graph
-   :uniforms (:time 'pyx:get-total-time)))
+   :uniforms (:frame-count 'pyx:get-frame-count
+              :frame-time 'pyx:get-frame-time)))
 
 ;;; prefabs
 

@@ -21,7 +21,9 @@
       ((pyx:input-exit-p :key :down)
        (incf index))
       ((pyx:input-enter-p :key :escape)
-       (pyx:stop-engine)))
+       (pyx:stop-engine))
+      ((pyx:input-enter-p :mouse :left)
+       (pyx::pick-entity)))
     (pyx:switch-scene (elt scenes (mod index (length scenes))))))
 
 ;;; prefabs

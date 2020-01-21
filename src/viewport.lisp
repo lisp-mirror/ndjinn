@@ -15,6 +15,8 @@
             :initform nil)
    (%draw-order :accessor draw-order
                 :initform (make-draw-order-tree))
+   (%picking-ray :reader picking-ray
+                 :initform (make-instance 'picking-ray))
    (%x :reader x
        :initform 0f0)
    (%y :reader y

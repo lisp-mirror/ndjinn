@@ -80,6 +80,7 @@
    (:file "shape")
    (:file "shape-sphere")
    (:file "shape-obb")
+   (:file "object-picking")
    (:file "shader")
    (:file "shader-basic")
    (:file "mixin")

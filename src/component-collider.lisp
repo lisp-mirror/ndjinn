@@ -28,7 +28,7 @@
                       :mesh/file "colliders.glb"
                       :mesh/name (format nil "~(~a~)" (collider/shape entity)))
     (attach-component entity 'render
-                      :render/materials '(collider/mesh))))
+                      :render/materials '(collider))))
 
 (defgeneric %on-collision-enter (contact1 contact2)
   (:method (contact1 contact2))
@@ -73,16 +73,21 @@
 (defgeneric on-collision-exit (target layer entity)
   (:method (target layer entity)))
 
-(defmacro define-collision-hook (name (target layer) &body body)
+(defgeneric on-collision-picked (target layer entity)
+  (:method (target layer entity)))
+
+(defmacro define-collision-hook (name (target &optional layer) &body body)
   (a:with-gensyms (target-symbol)
-    (let ((hook-types '(:enter :continue :exit)))
+    (let ((hook-types '(:enter :continue :exit :picked)))
       `(progn
-         (unless (find ',name ',hook-types)
-           (error "Hook type must be one of: ~{~s~^, ~}" ',hook-types))
-         (unless (symbolp ',target)
-           (error "Target of a collision hook must be a symbol: ~s." ',target))
-         (unless (symbolp ',layer)
-           (error "Layer of a collision hook must be a symbol: ~s." ',layer))
+         ,@(unless (find name hook-types)
+             `((error "Hook type must be one of: ~{~s~^, ~}" ',hook-types)))
+         ,@(unless (symbolp target)
+             `((error "Target of a collision hook must be a symbol: ~s."
+                      ',target)))
+         ,@(unless (symbolp layer)
+             `((error "Layer of a collision hook must be a symbol: ~s."
+                      ',layer)))
          (defmethod ,(a:format-symbol :pyx "ON-COLLISION-~a" name)
              ((,target-symbol (eql ',target)) (layer (eql ',layer)) ,target)
            ,@body)))))

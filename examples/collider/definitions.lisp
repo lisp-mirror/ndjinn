@@ -42,6 +42,9 @@
 (pyx:define-collision-hook :exit (player :gate)
   (pyx:translate-entity/velocity player v3:+right+ 15f0))
 
+(pyx:define-collision-hook :picked (player)
+  (:printv player))
+
 ;;; scenes
 
 (pyx:define-scene collider ()

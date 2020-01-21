@@ -10,9 +10,7 @@
 (defclass mixin () ())
 
 (u:define-printer (mixin stream :type nil)
-  (let ((path (node/prefab-path mixin))
-        (root-p (node/root-p mixin)))
-    (format stream "ENTITY ~a" (if root-p "ROOT" path))))
+  (format stream "~a" (id/display mixin)))
 
 (defmethod c2mop:validate-superclass ((class mixin-class)
                                       (superclass standard-class))

@@ -78,6 +78,7 @@
    #:animate
    #:camera
    #:collider
+   #:geometry
    #:id
    #:mesh
    #:node

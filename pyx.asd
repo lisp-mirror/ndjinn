@@ -97,6 +97,7 @@
    (:file "component-camera")
    (:file "component-sprite")
    (:file "component-mesh")
+   (:file "component-geometry")
    (:file "collision-system")
    (:file "collision-tests")
    (:file "prefab-common")

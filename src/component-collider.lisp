@@ -1,24 +1,24 @@
 (in-package #:pyx)
 
-(u:eval-always
-  (defclass collider ()
-    ((%collider/layer :reader collider/layer
-                      :initarg :collider/layer)
-     (%collider/center :reader collider/center
-                       :initarg :collider/center
-                       :initform (v3:zero))
-     (%collider/visualize :reader collider/visualize
-                          :initarg :collider/visualize
-                          :initform nil)
-     (%collider/target :accessor collider/target
-                       :initarg :collider/target
-                       :initform nil)
-     (%collider/contact-count :accessor collider/contact-count
-                              :initform 0)
-     (%collider/hit-p :accessor collider/hit-p
-                      :initform nil))))
+(define-component collider ()
+  ((%collider/shape :accessor collider/shape
+                    :initarg :collider/shape
+                    :initform 'sphere)
+   (%collider/layer :reader collider/layer
+                    :initarg :collider/layer)
+   (%collider/visualize :reader collider/visualize
+                        :initarg :collider/visualize
+                        :initform t)
+   (%collider/target :accessor collider/target
+                     :initarg :collider/target
+                     :initform nil)
+   (%collider/contact-count :accessor collider/contact-count
+                            :initform 0)
+   (%collider/hit-p :accessor collider/hit-p
+                    :initform nil))
+  (:sorting :after render))
 
-(defun initialize-collider-visualization (entity mesh-name)
+(defun initialize-collider-visualization (entity)
   (when (collider/visualize entity)
     (when (or (has-component-p entity 'mesh)
               (has-component-p entity 'render))
@@ -26,12 +26,9 @@
               a mesh or render component attached." entity))
     (attach-component entity 'mesh
                       :mesh/file "colliders.glb"
-                      :mesh/name mesh-name)
+                      :mesh/name (format nil "~(~a~)" (collider/shape entity)))
     (attach-component entity 'render
                       :render/materials '(collider/mesh))))
-
-(define-hook :pre-render (entity collider)
-  (set-uniforms entity :contact collider/hit-p))
 
 (defgeneric %on-collision-enter (contact1 contact2)
   (:method (contact1 contact2))
@@ -89,3 +86,20 @@
          (defmethod ,(a:format-symbol :pyx "ON-COLLISION-~a" name)
              ((,target-symbol (eql ',target)) (layer (eql ',layer)) ,target)
            ,@body)))))
+
+;;; component protocol
+
+(define-hook :attach (entity collider)
+  (initialize-collider-visualization entity)
+  (setf collider/shape (make-shape entity collider/shape))
+  (register-collider entity))
+
+(define-hook :detach (entity collider)
+  (deregister-collider entity)
+  (setf collider/target nil))
+
+(define-hook :update (entity collider)
+  (update-shape collider/shape))
+
+(define-hook :pre-render (entity collider)
+  (set-uniforms entity :contact collider/hit-p))

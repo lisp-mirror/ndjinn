@@ -99,15 +99,19 @@
           (collider-contact-exit collider k))))))
 
 (defun compute-collider-contact (collider1 collider2)
-  (let ((collided-p (collide-p collider1 collider2))
-        (contact-p (collider-contact-p collider1 collider2)))
-    (cond
-      ((and collided-p contact-p)
-       (collider-contact-continue collider1 collider2))
-      ((and collided-p (not contact-p))
-       (collider-contact-enter collider1 collider2))
-      ((and (not collided-p) contact-p)
-       (collider-contact-exit collider1 collider2)))))
+  (when (and (has-component-p collider1 'collider)
+             (has-component-p collider2 'collider))
+    (a:when-let ((shape1 (collider/shape collider1))
+                 (shape2 (collider/shape collider2)))
+      (let ((collided-p (collide-p shape1 shape2))
+            (contact-p (collider-contact-p collider1 collider2)))
+        (cond
+          ((and collided-p contact-p)
+           (collider-contact-continue collider1 collider2))
+          ((and collided-p (not contact-p))
+           (collider-contact-enter collider1 collider2))
+          ((and (not collided-p) contact-p)
+           (collider-contact-exit collider1 collider2)))))))
 
 (defun compute-collisions/active ()
   (let* ((system (collision-system (get-scene)))

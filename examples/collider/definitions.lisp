@@ -1,38 +1,28 @@
 (in-package #:pyx.examples)
 
-;;; components
-
-(pyx:define-component player-collision-message ()
-  ()
-  (:sorting :after pyx:collider))
-
 ;;; prefabs
 
 (pyx:define-prefab collider ()
-  ((gate/top :add (pyx:collider/sphere))
+  ((gate/top :add (pyx:collider))
    :xform/translate (v3:vec 0f0 8f0 0f0)
    :xform/scale 5f0
-   :collider/layer :gate
-   :collider/visualize t)
-  ((gate/bottom :add (pyx:collider/sphere))
+   :collider/layer :gate)
+  ((gate/bottom :add (pyx:collider))
    :xform/translate (v3:vec 0f0 -8f0 0f0)
    :xform/scale 5f0
-   :collider/layer :gate
-   :collider/visualize t)
-  ((destroyer :add (pyx:collider/cuboid))
-   :xform/scale 1.5f0
+   :collider/layer :gate)
+  ((destroyer :add (pyx:collider))
+   :xform/scale 3f0
    :xform/translate (v3:vec 30f0 0f0 0f0)
    :xform/rotate/velocity (math:make-velocity v3:+down+ 5f0)
-   :collider/layer :destroyer
-   :collider/visualize t)
-  ((player :add (pyx:collider/sphere))
+   :collider/layer :destroyer)
+  ((player :add (pyx:collider))
    :id/contact 'player
    :xform/scale 4f0
    :xform/translate (v3:vec -30f0 0f0 0f0)
    :xform/translate/velocity (math:make-velocity v3:+right+ 15f0)
    :collider/target 'player
    :collider/layer :player
-   :collider/visualize t
    ((mesh :template mesh/helmet)
     :xform/rotate (q:orient :local :x math:pi/2 :y math:pi/2))))
 

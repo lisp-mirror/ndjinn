@@ -1,33 +1,22 @@
 (in-package #:pyx)
 
-(defclass oriented-bounding-box ()
-  ((%center :reader center
-            :initarg :center
-            :initform (v3:zero))
+;;;; TODO: This is wrong. Do not use OBB's until this is investigated.
+
+(defclass shape/obb (shape)
+  ((%world-center :reader world-center
+                  :initform (v3:zero))
    (%axes :reader axes
-          :initarg :axes
           :initform (m3:zero))
    (%half-widths :reader half-widths
-                 :initarg :half-widths
                  :initform (v3:zero))))
 
-(defun make-oriented-bounding-box (center axes half-widths)
-  (make-instance 'oriented-bounding-box
-                 :center center
-                 :axes axes
-                 :half-widths half-widths))
-
 (defun get-closest-point/obb-point (obb point)
-  (with-slots (%center %axes %half-widths) obb
-    (let ((d (v3:- point %center))
-          (q (v3:copy %center)))
+  (with-slots (%entity %world-center %axes %half-widths) obb
+    (let* ((d (v3:- point %world-center))
+           (q (v3:copy %world-center)))
       (dotimes (i 3)
-        (let ((dist (v3:dot d (m3:get-column %axes i)))
-              (e (aref %half-widths i)))
-          (when (> dist e)
-            (setf dist e))
-          (when (< dist (- e))
-            (setf dist (- e)))
+        (let* ((e (aref %half-widths i))
+               (dist (a:clamp (v3:dot d (m3:get-column %axes i)) (- e) e)))
           (v3:+! q q (v3:scale (m3:get-column %axes i) dist))))
       q)))
 
@@ -58,7 +47,24 @@
 
 (defun make-obb-obb-translation (obb1 obb2)
   (let ((axes1 (axes obb1))
-        (translation (v3:- (center obb2) (center obb1))))
+        (translation (v3:- (world-center obb2) (world-center obb1))))
     (v3:vec (v3:dot translation (m3:get-column axes1 0))
             (v3:dot translation (m3:get-column axes1 1))
             (v3:dot translation (m3:get-column axes1 2)))))
+
+(defmethod update-shape ((shape shape/obb))
+  (with-slots (%entity %center %world-center %axes %half-widths) shape
+    (let* ((scale (current (xform/scaling %entity)))
+           (min (transform-point %entity (v3:+ %center (v3:scale scale -2f0))))
+           (max (transform-point %entity (v3:+ %center (v3:scale scale 2f0))))
+           (axes (m4:rotation-to-mat3
+                  (m4:normalize-rotation
+                   (xform/model %entity))))
+           (center (v3:lerp min max 0.5))
+           (diagonal (v3:- max center))
+           (half-widths (v3:vec (v3:dot diagonal (m3:get-column axes 0))
+                                (v3:dot diagonal (m3:get-column axes 1))
+                                (v3:dot diagonal (m3:get-column axes 2)))))
+      (setf %world-center center
+            %axes axes
+            %half-widths half-widths))))

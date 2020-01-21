@@ -3,8 +3,7 @@
 ;;; materials
 
 (pyx:define-material noise ()
-  (:uniforms (:frame-count 'pyx:get-frame-count
-              :frame-time 'pyx:get-frame-time)))
+  (:uniforms (:time 'pyx:get-total-time)))
 
 (pyx:define-material noise/perlin-3d (noise)
   (:shader pyx.examples.shader:noise/perlin-3d))

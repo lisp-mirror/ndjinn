@@ -13,8 +13,7 @@
    :uniforms (:blur 7.5f0
               :speed 0.24f0
               :zoom 0.75f0
-              :frame-count 'pyx:get-frame-count
-              :frame-time 'pyx:get-frame-time
+              :time 'pyx:get-total-time
               :res 'pyx:get-viewport-dimensions
               :sampler 'effect/rainy-window)))
 

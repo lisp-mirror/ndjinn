@@ -4,8 +4,7 @@
 
 (pyx:define-material effect/kaleidoscope ()
   (:shader pyx.examples.shader:effect/kaleidoscope
-   :uniforms (:frame-count 'pyx:get-frame-count
-              :frame-time 'pyx:get-frame-time
+   :uniforms (:time 'pyx:get-total-time
               :res 'pyx:get-viewport-dimensions
               :zoom 0.85
               :speed 1

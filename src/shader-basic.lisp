@@ -14,7 +14,7 @@
                         (model :mat4)
                         (view :mat4)
                         (proj :mat4))
-  (with-slots (mesh/pos) mesh-attrs
+  (with-slots (mesh/pos mesh/uv1) mesh-attrs
     (vec4 (.xy mesh/pos) 0 1)))
 
 (defun mesh/vert ((mesh-attrs mesh-attrs)

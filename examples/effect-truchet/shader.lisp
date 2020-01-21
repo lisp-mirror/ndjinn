@@ -7,8 +7,7 @@
 
 (defun effect/truchet/frag (&uniforms
                             (res :vec2)
-                            (frame-count :int)
-                            (frame-time :float))
+                            (time :float))
   (let* ((uv (* (/ (- (.xy gl-frag-coord) (* res 0.5)) (.y res)) 4))
          (cell-id (floor uv))
          (checker (1- (* (mod (+ (.x cell-id) (.y cell-id)) 2) 2)))
@@ -21,7 +20,7 @@
          (angle (atan (.x circle-uv) (.y circle-uv)))
          (mask (smoothstep 0.01 -0.01 (- (abs (- dist 0.5)) width)))
          (mask-uv (vec2 (* (- (abs (fract (- (/ (* angle checker) +half-pi+)
-                                             (* frame-count frame-time 0.3))))
+                                             (* time 0.3))))
                               0.5)
                            2.0)
                         (* (abs (- (/ (- dist (- 0.5 width)) (* width 2))

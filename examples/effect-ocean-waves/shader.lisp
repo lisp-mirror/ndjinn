@@ -146,20 +146,9 @@
   (let ((sd (normalize (vec3 1))))
     (* (pow (max 0 (dot ray sd)) 528) 110)))
 
-(defun effect/ocean-waves/vert ((mesh-attrs mesh-attrs)
-                                &uniforms
-                                (model :mat4)
-                                (view :mat4)
-                                (proj :mat4)
-                                (frame-count :int)
-                                (frame-time :float))
-  (with-slots (mesh/pos) mesh-attrs
-    (values (vec4 (.xy mesh/pos) 0 1)
-            (* frame-count frame-time))))
-
-(defun effect/ocean-waves/frag ((time :float)
-                                &uniforms
+(defun effect/ocean-waves/frag (&uniforms
                                 (res :vec2)
+                                (time :float)
                                 (mouse :vec2))
   (let* ((uv (/ (.xy gl-frag-coord) res))
          (water-depth 2.1)
@@ -197,5 +186,5 @@
           (vec4 c 1)))))
 
 (define-shader effect/ocean-waves ()
-  (:vertex (effect/ocean-waves/vert mesh-attrs))
-  (:fragment (effect/ocean-waves/frag :float)))
+  (:vertex (pyx.shader:quad-no-uv/vert mesh-attrs))
+  (:fragment (effect/ocean-waves/frag)))

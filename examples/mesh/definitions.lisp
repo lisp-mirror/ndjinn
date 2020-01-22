@@ -5,10 +5,6 @@
 (pyx:define-prefab mesh (:add (pyx:mesh pyx:render))
   :render/materials '(pyx:mesh))
 
-(pyx:define-prefab mesh/sphere (:template mesh)
-  :mesh/file "sphere.glb"
-  :mesh/name "sphere")
-
 (pyx:define-prefab mesh/helmet (:template mesh)
   :xform/rotate (q:orient :local :x math:pi/2)
   :mesh/file "helmet.glb"

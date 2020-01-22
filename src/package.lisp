@@ -2,18 +2,20 @@
 
 (defpackage #:pyx
   (:local-nicknames
+   (#:~ #:origin.swizzle)
    (#:a #:alexandria)
-   (#:u #:golden-utils)
    (#:ff #:filtered-functions)
+   (#:font #:3b-bmfont)
+   (#:font-spec #:3b-bmfont-json)
    (#:log #:verbose)
    (#:math #:origin)
+   (#:m3 #:origin.mat3)
+   (#:m4 #:origin.mat4)
+   (#:q #:origin.quat)
    (#:v2 #:origin.vec2)
    (#:v3 #:origin.vec3)
    (#:v4 #:origin.vec4)
-   (#:q #:origin.quat)
-   (#:m3 #:origin.mat3)
-   (#:m4 #:origin.mat4)
-   (#:~ #:origin.swizzle))
+   (#:u #:golden-utils))
   (:use #:cl)
   ;; engine
   (:export
@@ -78,7 +80,7 @@
    #:animate
    #:camera
    #:collider
-   #:geometry
+   #:font
    #:id
    #:mesh
    #:node

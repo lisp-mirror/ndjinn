@@ -39,4 +39,5 @@
    (:file "multi-pass/shader")
    (:file "multi-pass/definitions")
    (:file "collider/definitions")
-   (:file "viewports/definitions")))
+   (:file "viewports/definitions")
+   (:file "font/definitions")))

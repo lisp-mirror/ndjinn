@@ -7,7 +7,9 @@
   :source-control (:git "https://github.com/mfiano/pyx.git")
   :bug-tracker "https://github.com/mfiano/pyx/issues"
   :encoding :utf-8
-  :depends-on (#:alexandria
+  :depends-on (#:3b-bmfont
+               #:3b-bmfont/json
+               #:alexandria
                #:cl-graph
                #:cl-opengl
                #:closer-mop
@@ -83,6 +85,7 @@
    (:file "object-picking")
    (:file "shader")
    (:file "shader-basic")
+   (:file "shader-font")
    (:file "mixin")
    (:file "entity-flow")
    (:file "entity-query")
@@ -97,7 +100,7 @@
    (:file "component-camera")
    (:file "component-sprite")
    (:file "component-mesh")
-   (:file "component-geometry")
+   (:file "component-font")
    (:file "collision-system")
    (:file "collision-tests")
    (:file "prefab-common")

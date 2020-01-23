@@ -12,6 +12,7 @@
                #:alexandria
                #:cl-graph
                #:cl-opengl
+               #:cl-renderdoc
                #:closer-mop
                #:doubly-linked-list
                #:fast-io

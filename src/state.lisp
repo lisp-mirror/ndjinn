@@ -25,6 +25,7 @@
 
 (defun initialize-engine (scene-name)
   (log:info :pyx "Loading ~a..." (cfg :game-title))
+  (cl-renderdoc:mask-overlay-bits :none :none)
   (setup-repl)
   (rng/init)
   (make-thread-pool)

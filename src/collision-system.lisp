@@ -47,6 +47,10 @@
 (defun register-collider (collider)
   (let* ((system (collision-system (get-scene)))
          (registered (registered system)))
+    (unless (u:href registered (collider/layer collider))
+      (error "Collider ~s has a layer that is not in the scene's collider ~
+              plan."
+             collider))
     (setf (u:href registered (collider/layer collider) collider) collider)))
 
 (defun deregister-collider (collider)

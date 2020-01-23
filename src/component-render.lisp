@@ -45,9 +45,10 @@
 
 (define-hook :pre-render (entity render)
   (a:when-let ((camera (camera (get-viewport))))
-    (set-uniforms entity
-                  :view (camera/view camera)
-                  :proj (camera/projection camera))))
+    (when (has-component-p camera 'camera)
+      (set-uniforms entity
+                    :view (camera/view camera)
+                    :proj (camera/projection camera)))))
 
 (define-hook :attach (entity render)
   (setf render/materials (register-materials entity)))

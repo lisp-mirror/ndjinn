@@ -30,11 +30,14 @@
     (dolist (id (id/views parent))
       (pushnew id (id/views entity))))
   (dolist (id (id/views entity))
-    (pushnew entity (u:href (view-tags (get-scene)) id))))
+    (pushnew entity (u:href (tags (viewports (get-scene))) id))))
 
 (defun id/deregister-views (entity)
-  (dolist (id (id/views entity))
-    (a:deletef (u:href (view-tags (get-scene)) id) entity)))
+  (let ((tags (tags (viewports (get-scene)))))
+    (dolist (id (id/views entity))
+      (a:deletef (u:href tags id) entity)
+      (unless (u:href tags id)
+        (remhash id tags)))))
 
 (defun id/register-contact (entity)
   (with-slots (%callback-entities) (collision-system (get-scene))

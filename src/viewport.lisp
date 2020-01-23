@@ -6,7 +6,9 @@
    (%active :accessor active
             :initform nil)
    (%default :accessor default
-             :initform nil)))
+             :initform nil)
+   (%tags :reader tags
+          :initform (u:dict #'eq))))
 
 (defclass viewport ()
   ((%spec :reader spec
@@ -42,9 +44,8 @@
   (let ((scene (get-scene))
         (viewports nil))
     (dolist (id (id/views entity))
-      (dolist (view-name (meta :view-tags id))
-        (let ((viewport (u:href (table (viewports scene)) view-name)))
-          (pushnew viewport viewports))))
+      (let ((viewport (u:href (table (viewports scene)) id)))
+        (pushnew viewport viewports)))
     (or viewports (list (default (viewports scene))))))
 
 (defun configure-viewport (viewport)

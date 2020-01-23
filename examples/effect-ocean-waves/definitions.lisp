@@ -27,6 +27,4 @@
 ;;; scene
 
 (pyx:define-scene effect/ocean-waves ()
-  (:sub-trees ((examples examples)
-               (camera camera/orthographic)
-               (effect effect/ocean-waves))))
+  (:sub-trees (examples camera/orthographic effect/ocean-waves)))

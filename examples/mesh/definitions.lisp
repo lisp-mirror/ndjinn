@@ -17,6 +17,4 @@
 ;;; scenes
 
 (pyx:define-scene mesh-carousel ()
-  (:sub-trees ((examples examples)
-               (camera camera/perspective)
-               (mesh mesh-carousel))))
+  (:sub-trees (examples camera/perspective mesh-carousel)))

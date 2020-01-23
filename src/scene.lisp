@@ -26,14 +26,6 @@
 (defun get-scene-name ()
   (name (spec (get-scene))))
 
-(defun get-scene-sub-tree-viewports (scene sub-tree)
-  (let (viewports)
-    (dolist (viewport-spec (viewports (spec scene)))
-      (destructuring-bind (viewport &optional sub-trees) viewport-spec
-        (when (find sub-tree sub-trees)
-          (push viewport viewports))))
-    viewports))
-
 (defun make-scene-viewports (scene)
   (loop :with manager = (make-instance 'viewport-manager)
         :for (view-spec nil) :in (viewports (spec scene))
@@ -43,6 +35,14 @@
               (setf (default manager) viewport))
             (setf (u:href (table manager) view-spec) viewport)
         :finally (setf (slot-value scene '%viewports) manager)))
+
+(defun get-scene-sub-tree-viewports (scene sub-tree)
+  (let (viewports)
+    (dolist (viewport-spec (viewports (spec scene)))
+      (destructuring-bind (viewport &optional sub-trees) viewport-spec
+        (when (find sub-tree sub-trees)
+          (push viewport viewports))))
+    viewports))
 
 (defun load-scene-sub-trees (scene)
   (loop :for (sub-tree prefab) :in (sub-trees (spec scene))

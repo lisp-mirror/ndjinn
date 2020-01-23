@@ -49,6 +49,4 @@
 
 (pyx:define-scene collider ()
   (:collider-plan collider
-   :sub-trees ((examples examples)
-               (camera camera/perspective)
-               (collider collider))))
+   :sub-trees (examples camera/perspective collider)))

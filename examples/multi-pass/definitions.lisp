@@ -49,7 +49,4 @@
 
 (pyx:define-scene multi-pass ()
   (:passes (multi-pass/pass1 multi-pass/pass2)
-   :sub-trees ((examples examples)
-               (camera camera/perspective)
-               (mesh multi-pass/mesh)
-               (quad multi-pass/quad))))
+   :sub-trees (examples camera/perspective multi-pass/mesh multi-pass/quad)))

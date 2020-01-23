@@ -15,6 +15,4 @@
 ;;; scene
 
 (pyx:define-scene effect/truchet ()
-  (:sub-trees ((examples examples)
-               (camera camera/orthographic)
-               (effect effect/truchet))))
+  (:sub-trees (examples camera/orthographic effect/truchet)))

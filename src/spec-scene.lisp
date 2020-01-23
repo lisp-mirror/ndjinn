@@ -27,9 +27,13 @@
   (with-slots (%sub-trees %viewports %pass-order %pass-table %draw-order
                %collider-plan)
       (meta :scenes name)
-    (let ((draw-order-table (make-scene-draw-order-table draw-order))
-          (pass-table (u:dict #'eq))
-          (viewports (or viewports `((default ,(mapcar #'car sub-trees))))))
+    (let* ((draw-order-table (make-scene-draw-order-table draw-order))
+           (pass-table (u:dict #'eq))
+           (sub-trees (mapcar
+                       (lambda (x)
+                         (if (listp x) x (list x x)))
+                       sub-trees))
+           (viewports (or viewports `((default ,(mapcar #'car sub-trees))))))
       (dolist (pass passes)
         (a:if-let ((pass-spec (meta :render-passes pass)))
           (setf (u:href pass-table pass) pass-spec)
@@ -42,7 +46,8 @@
             %collider-plan collider-plan)
       (enqueue :recompile (list :scene name)))))
 
-(defun make-scene-spec (name sub-trees viewports passes draw-order collider-plan)
+(defun make-scene-spec (name sub-trees viewports passes draw-order
+                        collider-plan)
   (let ((spec (make-instance 'scene-spec :name name)))
     (setf (meta :scenes name) spec)
     (update-scene-spec name sub-trees viewports passes draw-order collider-plan)

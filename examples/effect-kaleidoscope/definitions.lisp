@@ -21,6 +21,4 @@
 ;;; scene
 
 (pyx:define-scene effect/kaleidoscope ()
-  (:sub-trees ((examples examples)
-               (camera camera/orthographic)
-               (effect effect/kaleidoscope))))
+  (:sub-trees (examples camera/orthographic effect/kaleidoscope)))

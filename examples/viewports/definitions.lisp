@@ -24,12 +24,12 @@
 ;;; scenes
 
 (pyx:define-scene viewports ()
-  (:sub-trees ((examples examples)
-               (camera1 camera/top-left)
-               (camera2 camera/right)
-               (mesh mesh-carousel)
-               (effect effect/kaleidoscope)
-               (world world))
-   :viewports ((top-left (mesh))
-               (bottom-left (effect))
+  (:sub-trees (examples
+               camera/top-left
+               camera/right
+               mesh-carousel
+               effect/kaleidoscope
+               world)
+   :viewports ((top-left (mesh-carousel))
+               (bottom-left (effect/kaleidoscope))
                (right (world)))))

@@ -40,7 +40,11 @@
   (with-slots (%font/text) entity
     (typecase %font/text
       (string %font/text)
-      ((or function symbol) (funcall %font/text)))))
+      ((or function symbol)
+       (let ((text (funcall %font/text)))
+         (unless (stringp text)
+           (error "Font component ~s has text that is not a string." entity))
+         text)))))
 
 (defun generate-font-data (entity)
   (lambda (x- y- x+ y+ u- v- u+ v+)
@@ -61,8 +65,6 @@
 (define-hook :update (entity font)
   (let ((text (resolve-font-text entity))
         (func (funcall #'generate-font-data entity)))
-    (unless (typep text 'string)
-      (error "Font component ~s has text that is not a string." entity))
     (font:map-glyphs font/spec func text :model-y-up t :texture-y-up t)
     (update-geometry font/geometry :data font/buffer-data)))
 

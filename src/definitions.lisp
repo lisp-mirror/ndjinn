@@ -7,6 +7,10 @@
 
 ;;; materials
 
+(define-material full-quad ()
+  (:shader pyx.shader:full-quad
+   :uniforms (:sampler 'debug)))
+
 (define-material quad ()
   (:shader pyx.shader:quad
    :uniforms (:sampler 'debug)))

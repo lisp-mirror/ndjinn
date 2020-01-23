@@ -186,5 +186,5 @@
           (vec4 c 1)))))
 
 (define-shader effect/ocean-waves ()
-  (:vertex (pyx.shader:quad-no-uv/vert mesh-attrs))
+  (:vertex (pyx.shader:full-quad-no-uv/vert mesh-attrs))
   (:fragment (effect/ocean-waves/frag)))

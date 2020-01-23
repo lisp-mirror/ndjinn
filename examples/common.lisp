@@ -54,6 +54,9 @@
   :mesh/name "plane"
   :render/materials '(pyx:quad))
 
+(pyx:define-prefab full-quad (:template quad)
+  :render/materials '(pyx:full-quad))
+
 (pyx:define-prefab examples (:add (scene-switcher)))
 
 ;;; scene

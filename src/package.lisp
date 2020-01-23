@@ -121,6 +121,7 @@
   (:export
    #:debug
    #:mesh
+   #:full-quad
    #:quad))
 
 (defpackage #:pyx.shader

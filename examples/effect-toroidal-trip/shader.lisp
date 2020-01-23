@@ -58,5 +58,5 @@
       (vec4 color 1))))
 
 (define-shader effect/toroidal-trip ()
-  (:vertex (pyx.shader:quad-no-uv/vert mesh-attrs))
+  (:vertex (pyx.shader:full-quad-no-uv/vert mesh-attrs))
   (:fragment (effect/toroidal-trip/frag)))

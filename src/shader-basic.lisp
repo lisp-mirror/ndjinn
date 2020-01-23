@@ -1,21 +1,30 @@
 (in-package #:pyx.shader)
 
+(defun full-quad/vert ((mesh-attrs mesh-attrs)
+                       &uniforms
+                       (model :mat4)
+                       (view :mat4)
+                       (proj :mat4))
+  (with-slots (mesh/pos mesh/uv1) mesh-attrs
+    (values (vec4 (* (.xy mesh/pos) 2) 0 1)
+            mesh/uv1)))
+
+(defun full-quad-no-uv/vert ((mesh-attrs mesh-attrs)
+                             &uniforms
+                             (model :mat4)
+                             (view :mat4)
+                             (proj :mat4))
+  (with-slots (mesh/pos) mesh-attrs
+    (vec4 (* (.xy mesh/pos) 2) 0 1)))
+
 (defun quad/vert ((mesh-attrs mesh-attrs)
                   &uniforms
                   (model :mat4)
                   (view :mat4)
                   (proj :mat4))
   (with-slots (mesh/pos mesh/uv1) mesh-attrs
-    (values (vec4 (.xy mesh/pos) 0 1)
+    (values (* proj view model (vec4 (.xy mesh/pos) 0 1))
             mesh/uv1)))
-
-(defun quad-no-uv/vert ((mesh-attrs mesh-attrs)
-                        &uniforms
-                        (model :mat4)
-                        (view :mat4)
-                        (proj :mat4))
-  (with-slots (mesh/pos mesh/uv1) mesh-attrs
-    (vec4 (.xy mesh/pos) 0 1)))
 
 (defun mesh/vert ((mesh-attrs mesh-attrs)
                   &uniforms
@@ -46,6 +55,10 @@
   (if contact
       hit-color
       miss-color))
+
+(define-shader full-quad ()
+  (:vertex (full-quad/vert mesh-attrs))
+  (:fragment (mesh/frag :vec2)))
 
 (define-shader quad ()
   (:vertex (quad/vert mesh-attrs))

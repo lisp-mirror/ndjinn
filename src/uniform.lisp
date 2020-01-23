@@ -17,7 +17,7 @@
     (let ((program (shadow:find-program %shader)))
       (unless (u:href (shadow:uniforms program) (key uniform))
         (error "Material ~s has the uniform ~s but shader ~s does not use it."
-               %name uniform %shader))
+               %name (key uniform) %shader))
       (let* ((type (u:href (shadow:uniforms program) (key uniform) :type))
              (resolved-type (if (search "SAMPLER" (symbol-name type))
                                 :sampler

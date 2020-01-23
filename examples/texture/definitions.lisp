@@ -2,7 +2,7 @@
 
 ;;; prefabs
 
-(pyx:define-prefab texture-example (:template quad))
+(pyx:define-prefab texture-example (:template full-quad))
 
 ;;; scene
 

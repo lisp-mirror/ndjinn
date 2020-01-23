@@ -1,5 +1,14 @@
 (in-package #:pyx.examples.shader)
 
+(defun noise/vert ((mesh-attrs mesh-attrs)
+                   &uniforms
+                   (model :mat4)
+                   (view :mat4)
+                   (proj :mat4))
+  (with-slots (mesh/pos mesh/uv1) mesh-attrs
+    (values (* proj view model (vec4 (* (.xy mesh/pos) 2) 0 1))
+            mesh/uv1)))
+
 (defun noise/perlin-3d/frag ((uv :vec2)
                              &uniforms
                              (time :float))
@@ -111,69 +120,69 @@
     (vec4 noise 1)))
 
 (define-shader noise/perlin-3d ()
-  (:vertex (pyx.shader:mesh/vert mesh-attrs))
+  (:vertex (noise/vert mesh-attrs))
   (:fragment (noise/perlin-3d/frag :vec2)))
 
 (define-shader noise/perlin-surflet-3d ()
-  (:vertex (pyx.shader:mesh/vert mesh-attrs))
+  (:vertex (noise/vert mesh-attrs))
   (:fragment (noise/perlin-surflet-3d/frag :vec2)))
 
 (define-shader noise/perlin-improved-3d ()
-  (:vertex (pyx.shader:mesh/vert mesh-attrs))
+  (:vertex (noise/vert mesh-attrs))
   (:fragment (noise/perlin-improved-3d/frag :vec2)))
 
 (define-shader noise/perlin-4d ()
-  (:vertex (pyx.shader:mesh/vert mesh-attrs))
+  (:vertex (noise/vert mesh-attrs))
   (:fragment (noise/perlin-4d/frag :vec2)))
 
 (define-shader noise/cellular-3d ()
-  (:vertex (pyx.shader:mesh/vert mesh-attrs))
+  (:vertex (noise/vert mesh-attrs))
   (:fragment (noise/cellular-3d/frag :vec2)))
 
 (define-shader noise/cellular-fast-3d ()
-  (:vertex (pyx.shader:mesh/vert mesh-attrs))
+  (:vertex (noise/vert mesh-attrs))
   (:fragment (noise/cellular-fast-3d/frag :vec2)))
 
 (define-shader noise/hermite-3d ()
-  (:vertex (pyx.shader:mesh/vert mesh-attrs))
+  (:vertex (noise/vert mesh-attrs))
   (:fragment (noise/hermite-3d/frag :vec2)))
 
 (define-shader noise/simplex-perlin-3d ()
-  (:vertex (pyx.shader:mesh/vert mesh-attrs))
+  (:vertex (noise/vert mesh-attrs))
   (:fragment (noise/simplex-perlin-3d/frag :vec2)))
 
 (define-shader noise/simplex-cellular-3d ()
-  (:vertex (pyx.shader:mesh/vert mesh-attrs))
+  (:vertex (noise/vert mesh-attrs))
   (:fragment (noise/simplex-cellular-3d/frag :vec2)))
 
 (define-shader noise/simplex-polkadot-3d ()
-  (:vertex (pyx.shader:mesh/vert mesh-attrs))
+  (:vertex (noise/vert mesh-attrs))
   (:fragment (noise/simplex-polkadot-3d/frag :vec2)))
 
 (define-shader noise/value-3d ()
-  (:vertex (pyx.shader:mesh/vert mesh-attrs))
+  (:vertex (noise/vert mesh-attrs))
   (:fragment (noise/value-3d/frag :vec2)))
 
 (define-shader noise/value-4d ()
-  (:vertex (pyx.shader:mesh/vert mesh-attrs))
+  (:vertex (noise/vert mesh-attrs))
   (:fragment (noise/value-4d/frag :vec2)))
 
 (define-shader noise/value-hermite-3d ()
-  (:vertex (pyx.shader:mesh/vert mesh-attrs))
+  (:vertex (noise/vert mesh-attrs))
   (:fragment (noise/value-hermite-3d/frag :vec2)))
 
 (define-shader noise/value-perlin-3d ()
-  (:vertex (pyx.shader:mesh/vert mesh-attrs))
+  (:vertex (noise/vert mesh-attrs))
   (:fragment (noise/value-perlin-3d/frag :vec2)))
 
 (define-shader noise/polkadot-3d ()
-  (:vertex (pyx.shader:mesh/vert mesh-attrs))
+  (:vertex (noise/vert mesh-attrs))
   (:fragment (noise/polkadot-3d/frag :vec2)))
 
 (define-shader noise/polkadot-box-3d ()
-  (:vertex (pyx.shader:mesh/vert mesh-attrs))
+  (:vertex (noise/vert mesh-attrs))
   (:fragment (noise/polkadot-box-3d/frag :vec2)))
 
 (define-shader noise/cubist-3d ()
-  (:vertex (pyx.shader:mesh/vert mesh-attrs))
+  (:vertex (noise/vert mesh-attrs))
   (:fragment (noise/cubist-3d/frag :vec2)))

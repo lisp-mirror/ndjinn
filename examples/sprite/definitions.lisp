@@ -15,8 +15,7 @@
 ;;; animation sequences
 
 (pyx:define-animation-sequence sprite ()
-  (pyx:sprite :duration 0.5
-              :repeat-p t))
+  (pyx:sprite :duration 0.5 :repeat-p t))
 
 ;;; prefabs
 

@@ -35,9 +35,9 @@
                             :initarg :camera/target-z-axis-p
                             :initform nil)
    (%camera/view :reader camera/view
-                 :initform (m4:id))
+                 :initform (m4:mat 1))
    (%camera/projection :reader camera/projection
-                       :initform (m4:id)))
+                       :initform (m4:mat 1)))
   (:sorting :before render :after xform))
 
 (defun set-camera-projection (entity)

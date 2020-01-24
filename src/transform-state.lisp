@@ -25,12 +25,12 @@
 
 (defun make-rotate-state ()
   (make-instance 'transform-state
-                 :current (q:id)
-                 :frame (q:id)
+                 :current (q:quat 1)
+                 :frame (q:quat 1)
                  :incremental (v3:vec)
-                 :incremental-delta (q:id)
-                 :interpolated (q:id)
-                 :previous (q:id)))
+                 :incremental-delta (q:quat 1)
+                 :interpolated (q:quat 1)
+                 :previous (q:quat 1)))
 
 (defun make-scale-state ()
   (make-instance 'transform-state

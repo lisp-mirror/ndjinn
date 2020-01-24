@@ -8,9 +8,9 @@
    (%xform/scaling :reader xform/scaling
                    :initform (make-scale-state))
    (%xform/local :reader xform/local
-                 :initform (m4:id))
+                 :initform (m4:mat 1))
    (%xform/model :reader xform/model
-                 :initform (m4:id)))
+                 :initform (m4:mat 1)))
   (:sorting :after node)
   (:static t))
 

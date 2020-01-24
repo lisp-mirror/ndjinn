@@ -21,7 +21,7 @@
   (:shader pyx.shader:font
    :uniforms (:time 'pyx:get-total-time
               :sampler 'font
-              :color (v4:one))))
+              :color (v4:vec 1 1 1 0.3))))
 
 ;;; prefabs
 

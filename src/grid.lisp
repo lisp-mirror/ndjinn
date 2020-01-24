@@ -16,8 +16,8 @@
   (unless size
     (error "Grid must have a size."))
   (with-slots (%cell-size %cell-origin) instance
-    (setf %cell-size (or %cell-size (v2:one))
-          %cell-origin (or %cell-origin (v2:zero)))))
+    (setf %cell-size (or %cell-size (v2:vec 1))
+          %cell-origin (or %cell-origin (v2:vec)))))
 
 (defun make-grid (type &rest args)
   (apply #'make-instance type args))
@@ -63,7 +63,7 @@
     (ensure-grid-cell grid cell)))
 
 (defun grid-cell-nudge (cell)
-  (v2:+ cell (v2:vec 1e-7 1e-7)))
+  (v2:+ cell (v2:vec 1e-7)))
 
 (defun grid-cell-neighbors (grid cell)
   (loop :for direction :in (grid-cell-neighbor-directions grid)

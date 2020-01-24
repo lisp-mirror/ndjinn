@@ -6,13 +6,13 @@
 
 (defclass mouse-motion-state ()
   ((%x :accessor x
-       :initform 0f0)
+       :initform 0)
    (%y :accessor y
-       :initform 0f0)
+       :initform 0)
    (%dx :accessor dx
-        :initform 0f0)
+        :initform 0)
    (%dy :accessor dy
-        :initform 0f0)))
+        :initform 0)))
 
 (defun on-mouse-button-up (button)
   (input-transition-out (list :mouse button))
@@ -35,10 +35,10 @@
 (defun on-mouse-move (x y dx dy)
   (let* ((input-state (input-state *state*))
          (motion-states (u:href (states input-state) '(:mouse :motion))))
-    (setf (x motion-states) (float x 1f0)
-          (y motion-states) (float (- (cfg :window-height) y) 1f0)
-          (dx motion-states) (float dx 1f0)
-          (dy motion-states) (float (- dy) 1f0))))
+    (setf (x motion-states) x
+          (y motion-states) (- (cfg :window-height) y)
+          (dx motion-states) dx
+          (dy motion-states) (- dy))))
 
 (defun get-mouse-position ()
   (let ((state (u:href (states (input-state *state*)) '(:mouse :motion)))
@@ -64,5 +64,5 @@
 (defun reset-mouse-motion-state ()
   (let ((state (u:href (states (input-state *state*)) '(:mouse :motion))))
     (with-slots (%dx %dy) state
-      (setf %dx 0f0
-            %dy 0f0))))
+      (setf %dx 0
+            %dy 0))))

@@ -10,9 +10,9 @@
 (pyx:define-material effect/rainy-window ()
   (:shader umbra.effects:window-rain
    :features (:disable (:multisample))
-   :uniforms (:blur 7.5f0
-              :speed 0.24f0
-              :zoom 0.75f0
+   :uniforms (:blur 7.5
+              :speed 0.24
+              :zoom 0.75
               :time 'pyx:get-total-time
               :res 'pyx:get-viewport-dimensions
               :sampler 'effect/rainy-window)))

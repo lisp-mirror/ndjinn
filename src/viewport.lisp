@@ -20,13 +20,13 @@
    (%picking-ray :reader picking-ray
                  :initform (make-instance 'picking-ray))
    (%x :reader x
-       :initform 0f0)
+       :initform 0)
    (%y :reader y
-       :initform 0f0)
+       :initform 0)
    (%width :reader width
-           :initform 0f0)
+           :initform 0)
    (%height :reader height
-            :initform 0f0)))
+            :initform 0)))
 
 (u:define-printer (viewport stream :identity t)
   (format stream "~s" (name (spec viewport))))

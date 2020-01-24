@@ -4,11 +4,11 @@
 
 (defclass shape/obb (shape)
   ((%world-center :reader world-center
-                  :initform (v3:zero))
+                  :initform (v3:vec))
    (%axes :reader axes
-          :initform (m3:zero))
+          :initform (m3:mat))
    (%half-widths :reader half-widths
-                 :initform (v3:zero))))
+                 :initform (v3:vec))))
 
 (defun get-closest-point/obb-point (obb point)
   (with-slots (%entity %world-center %axes %half-widths) obb

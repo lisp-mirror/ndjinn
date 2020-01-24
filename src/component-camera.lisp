@@ -69,9 +69,7 @@
   (let ((rotation (q:inverse
                    (q:rotate-euler
                     q:+id+
-                    (v3:vec (float (- (asin (/ (sqrt 3)))) 1f0)
-                            0f0
-                            math:pi/4)))))
+                    (v3:vec (- (asin (/ (sqrt 3)))) 0 math:pi/4)))))
     (%set-camera-projection entity :orthographic)
     (initialize-rotation entity rotation)))
 
@@ -82,7 +80,7 @@
                     (v3:with-components ((v (m4:get-translation
                                              (xform/model %camera/target))))
                       (v3:+ (m4:get-translation model)
-                            (if %camera/target-z-axis-p v (v3:vec vx vy 0f0))))
+                            (if %camera/target-z-axis-p v (v3:vec vx vy))))
                     (m4:get-translation model)))
            (target (v3:+ eye (v3:negate (m4:rotation-axis-to-vec3 model :z))))
            (up (m4:rotation-axis-to-vec3 model :y)))
@@ -102,11 +100,9 @@
       (when (and %camera/debug (eq entity (camera viewport)))
         (when (input-enabled-p :key :lctrl)
           (translate-entity entity (v3:vec (* dx %camera/debug-speed)
-                                           (* dy %camera/debug-speed)
-                                           0f0)))
+                                           (* dy %camera/debug-speed))))
         (when (input-enabled-p :key :lalt)
-          (translate-entity entity
-                            (v3:vec 0f0 0f0 (* dy %camera/debug-speed))))))))
+          (translate-entity entity (v3:vec 0 0 (* dy %camera/debug-speed))))))))
 
 ;;; entity hooks
 

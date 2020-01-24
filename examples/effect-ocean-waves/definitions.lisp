@@ -16,7 +16,7 @@
   (:shader pyx.examples.shader:effect/ocean-waves
    :uniforms (:time 'pyx:get-total-time
               :res 'pyx:get-viewport-dimensions
-              :mouse (v2:zero))))
+              :mouse (v2:vec))))
 
 ;;; prefabs
 

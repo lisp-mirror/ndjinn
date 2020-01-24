@@ -21,8 +21,8 @@
 
 (define-material collider ()
   (:shader pyx.shader:collider
-   :uniforms (:hit-color (v4:vec 0f0 1f0 0f0 1f0)
-              :miss-color (v4:vec 1f0 0f0 0f0 1f0))
+   :uniforms (:hit-color (v4:vec 0 1 0 1)
+              :miss-color (v4:vec 1 0 0 1))
    :features (:enable (:line-smooth)
               :polygon-mode :line
               :line-width 1.0)))
@@ -34,10 +34,10 @@
 ;;; render passes
 
 (define-render-pass default ()
-  (:clear-color (v4:vec 0f0 0f0 0f0 1f0)
+  (:clear-color (v4:vec 0 0 0 1)
    :clear-buffers (:color :depth)))
 
 ;;; views
 
 (define-view default ()
-  (:x 0f0 :y 0f0 :width 1f0 :height 1f0))
+  (:x 0 :y 0 :width 1 :height 1))

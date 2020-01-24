@@ -18,7 +18,7 @@
     (when (and framebuffer (not (meta :framebuffers framebuffer)))
       (error "Framebuffer ~s not defined." framebuffer))
     (setf %framebuffer framebuffer
-          %clear-color (or clear-color (v4:vec 0f0 0f0 0f0 1f0))
+          %clear-color (or clear-color (v4:vec 0 0 0 1))
           %clear-buffers (mapcar
                           (lambda (x)
                             (a:format-symbol :keyword "~a-BUFFER" x))

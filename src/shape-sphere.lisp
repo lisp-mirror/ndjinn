@@ -2,7 +2,7 @@
 
 (defclass shape/sphere (shape)
   ((%radius :reader radius
-            :initform 1f0)))
+            :initform 1)))
 
 (defmethod initialize-instance :after ((instance shape/sphere) &key)
   (with-slots (%entity) instance

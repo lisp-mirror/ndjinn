@@ -4,13 +4,13 @@
   ((%name :reader name
           :initarg :name)
    (%x :reader x
-       :initform 0f0)
+       :initform 0)
    (%y :reader y
-       :initform 0f0)
+       :initform 0)
    (%width :reader width
-           :initform 1f0)
+           :initform 1)
    (%height :reader height
-            :initform 1f0)))
+            :initform 1)))
 
 (u:define-printer (view-spec stream :identity t)
   (format stream "~s" (name view-spec)))
@@ -34,7 +34,7 @@
 
 (defmacro define-view (name options &body body)
   (declare (ignore options))
-  (destructuring-bind (&key (x 0f0) (y 0f0) (width 1f0) (height 1f0))
+  (destructuring-bind (&key (x 0) (y 0) (width 1) (height 1))
       (car body)
     `(progn
        (unless (meta :views)

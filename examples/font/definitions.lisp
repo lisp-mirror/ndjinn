@@ -3,12 +3,11 @@
 ;;; helper functions
 
 (defun update-font-text ()
-  (format nil "Hello, world!~%Running time: ~,2fs"
-          (pyx:get-total-time)))
+  (format nil "Hello, world!~%Running time: ~,2fs" (pyx:get-total-time)))
 
 (defun position-font-text ()
   (v2:with-components ((s (pyx:get-viewport-dimensions)))
-    (v3:vec (- (/ sx 2)) 0f0 0f0)))
+    (v3:vec (- (/ sx 2)) 0 0)))
 
 ;;; textures
 

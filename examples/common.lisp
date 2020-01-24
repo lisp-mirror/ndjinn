@@ -33,21 +33,21 @@
 
 (pyx:define-prefab camera/perspective (:template camera)
   :camera/debug-speed 0.1
-  :xform/translate (v3:vec 0f0 0f0 50f0))
+  :xform/translate (v3:vec 0 0 50))
 
 (pyx:define-prefab camera/orthographic (:template camera)
   :camera/debug-speed 4
-  :xform/translate (v3:vec 0f0 0f0 1f0)
+  :xform/translate (v3:vec 0 0 1)
   :camera/mode :orthographic
-  :camera/clip-near 0f0
-  :camera/clip-far 16f0)
+  :camera/clip-near 0
+  :camera/clip-far 16)
 
 (pyx:define-prefab camera/isometric (:template camera)
   :camera/debug-speed 4
-  :xform/translate (v3:vec 0f0 0f0 1f0)
+  :xform/translate (v3:vec 0 0 1)
   :camera/mode :isometric
-  :camera/clip-near -1000f0
-  :camera/clip-far 1000f0)
+  :camera/clip-near -1000
+  :camera/clip-far 1000)
 
 (pyx:define-prefab quad (:add (pyx:mesh pyx:render))
   :mesh/file "plane.glb"

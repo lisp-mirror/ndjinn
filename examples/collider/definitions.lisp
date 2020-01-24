@@ -4,22 +4,22 @@
 
 (pyx:define-prefab collider ()
   ((gate/top :add (pyx:collider))
-   :xform/translate (v3:vec 0f0 8f0 0f0)
-   :xform/scale 5f0
+   :xform/translate (v3:vec 0 8 0)
+   :xform/scale 5
    :collider/layer 'gate)
   ((gate/bottom :add (pyx:collider))
-   :xform/translate (v3:vec 0f0 -8f0 0f0)
-   :xform/scale 5f0
+   :xform/translate (v3:vec 0 -8 0)
+   :xform/scale 5
    :collider/layer 'gate)
   ((destroyer :add (pyx:collider))
-   :xform/scale 3f0
-   :xform/translate (v3:vec 30f0 0f0 0f0)
+   :xform/scale 3
+   :xform/translate (v3:vec 30 0 0)
    :xform/rotate/velocity (math:make-velocity v3:+down+ 5f0)
    :collider/layer 'destroyer)
   ((player :add (pyx:collider))
    :id/contact 'player
-   :xform/scale 4f0
-   :xform/translate (v3:vec -30f0 0f0 0f0)
+   :xform/scale 4
+   :xform/translate (v3:vec -30 0 0)
    :xform/translate/velocity (math:make-velocity v3:+right+ 15f0)
    :collider/target 'player
    :collider/layer 'player
@@ -36,7 +36,7 @@
   (pyx:translate-entity/velocity player v3:+right+ 4f0))
 
 (pyx:define-collision-hook :enter (player destroyer)
-  (pyx:translate-entity player (v3:vec -30f0 0f0 0f0) :replace-p t))
+  (pyx:translate-entity player (v3:vec -30 0 0) :replace-p t))
 
 (pyx:define-collision-hook :exit (player gate)
   (pyx:translate-entity/velocity player v3:+right+ 15f0))

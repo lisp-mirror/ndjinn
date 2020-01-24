@@ -5,7 +5,7 @@
             :initarg :entity)
    (%center :reader center
             :initarg :center
-            :initform (v3:zero))))
+            :initform (v3:vec))))
 
 (defun make-shape (entity shape-spec)
   (destructuring-bind (type . args) (a:ensure-list shape-spec)

@@ -2,9 +2,9 @@
 
 (defclass picking-ray ()
   ((%start :reader start
-           :initform (v3:zero))
+           :initform (v3:vec))
    (%end :reader end
-         :initform (v3:zero))
+         :initform (v3:vec))
    (%visualize :reader visualize)))
 
 (defun update-picking-ray ()
@@ -15,8 +15,8 @@
     (with-slots (%x %y %width %height %picking-ray) viewport
       (with-slots (%start %end) %picking-ray
         (let ((viewport (v4:vec %x %y %width %height)))
-          (math:unproject! %start (v3:vec x y 0f0) view proj viewport)
-          (math:unproject! %end (v3:vec x y 1f0) view proj viewport)
+          (math:unproject! %start (v3:vec x y) view proj viewport)
+          (math:unproject! %end (v3:vec x y 1) view proj viewport)
           (values %start %end))))))
 
 (defgeneric pick-shape (ray shape)
@@ -33,7 +33,7 @@
         (unless (and (plusp c) (plusp b))
           (let ((discriminant (- (expt b 2) c)))
             (unless (minusp discriminant)
-              (let ((x (max 0f0 (- (- b) (sqrt discriminant)))))
+              (let ((x (max 0 (- (- b) (sqrt discriminant)))))
                 (when (<= x (v3:length line))
                   x)))))))))
 

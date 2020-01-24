@@ -11,7 +11,7 @@
   :mesh/name "helmet")
 
 (pyx:define-prefab mesh-carousel (:template mesh/helmet)
-  :xform/scale 15f0
+  :xform/scale 15
   :xform/rotate/velocity (math:make-velocity v3:+forward+ (- math:pi/6)))
 
 ;;; scenes

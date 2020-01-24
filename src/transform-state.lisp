@@ -16,30 +16,30 @@
 
 (defun make-translate-state ()
   (make-instance 'transform-state
-                 :current (v3:zero)
-                 :frame (v3:zero)
-                 :incremental (v3:zero)
-                 :incremental-delta (v3:zero)
-                 :interpolated (v3:zero)
-                 :previous (v3:zero)))
+                 :current (v3:vec)
+                 :frame (v3:vec)
+                 :incremental (v3:vec)
+                 :incremental-delta (v3:vec)
+                 :interpolated (v3:vec)
+                 :previous (v3:vec)))
 
 (defun make-rotate-state ()
   (make-instance 'transform-state
                  :current (q:id)
                  :frame (q:id)
-                 :incremental (v3:zero)
+                 :incremental (v3:vec)
                  :incremental-delta (q:id)
                  :interpolated (q:id)
                  :previous (q:id)))
 
 (defun make-scale-state ()
   (make-instance 'transform-state
-                 :current (v3:one)
-                 :frame (v3:zero)
-                 :incremental (v3:zero)
-                 :incremental-delta (v3:zero)
-                 :interpolated (v3:zero)
-                 :previous (v3:one)))
+                 :current (v3:vec 1)
+                 :frame (v3:vec)
+                 :incremental (v3:vec)
+                 :incremental-delta (v3:vec)
+                 :interpolated (v3:vec)
+                 :previous (v3:vec 1)))
 
 (defun interpolate-vector (state factor)
   (with-slots (%interpolated %current %previous) state

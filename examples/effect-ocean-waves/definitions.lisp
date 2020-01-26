@@ -7,7 +7,7 @@
 (pyx:define-hook :update (entity mouse-input)
   (u:mvlet ((res (pyx:get-viewport-dimensions))
             (x y (pyx:get-mouse-position)))
-    (when (pyx:input-enabled-p :mouse :left)
+    (when (pyx:on-button-enabled :mouse :left)
       (pyx:set-uniforms entity :mouse (v2:/ (v2:vec x y) res)))))
 
 ;;; materials

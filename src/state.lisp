@@ -11,8 +11,8 @@
    (%framebuffers :reader framebuffers
                   :initform (u:dict #'eq))
    (%display :reader display)
-   (%input-state :reader input-state
-                 :initform (make-instance 'input-state))
+   (%input-data :reader input-data
+                :initform (make-instance 'input-data))
    (%shaders :reader shaders)
    (%resources :reader resources
                :initform (u:dict #'eq))
@@ -42,14 +42,20 @@
   (shutdown-gamepads)
   (log:info :pyx "Stopped ~a." (cfg :game-title)))
 
+(defun update-step ()
+  (map-nodes #'on-update)
+  (perform-input-tasks (input-data *state*))
+  (compute-collisions))
+
 (defun run-main-game-loop ()
-  (u:while (running-p *state*)
-    (with-continue-restart "Pyx"
-      (clock-tick)
-      (process-queue :entity-flow)
-      (handle-events)
-      (map-nodes #'resolve-model)
-      (update-display))))
+  (let ((input-data (input-data *state*)))
+    (u:while (running-p *state*)
+      (with-continue-restart "Pyx"
+        (clock-tick #'update-step)
+        (process-queue :entity-flow)
+        (handle-events input-data)
+        (map-nodes #'resolve-model)
+        (update-display #'render-frame)))))
 
 (defun start-engine (scene-name &rest args)
   (let ((*state* (make-instance 'state)))

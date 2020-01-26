@@ -4,65 +4,62 @@
     #(nil :left :middle :right :x1 :x2)
   :test #'equalp)
 
-(defclass mouse-motion-state ()
-  ((%x :accessor x
-       :initform 0)
-   (%y :accessor y
-       :initform 0)
-   (%dx :accessor dx
-        :initform 0)
-   (%dy :accessor dy
-        :initform 0)))
+(defstruct mouse-motion-state
+  (x 0)
+  (y 0)
+  (dx 0)
+  (dy 0))
 
-(defun on-mouse-button-up (button)
-  (input-transition-out (list :mouse button))
-  (input-transition-out '(:mouse :any))
-  (input-transition-out '(:button :any)))
+(defun on-mouse-button-up (data button)
+  (button-transition-out data (list :mouse button))
+  (button-transition-out data '(:mouse :any))
+  (button-transition-out data '(:button :any)))
 
-(defun on-mouse-button-down (button)
-  (input-transition-in (list :mouse button))
-  (input-transition-in '(:mouse :any))
-  (input-transition-in '(:button :any)))
+(defun on-mouse-button-down (data button)
+  (button-transition-in data (list :mouse button))
+  (button-transition-in data '(:mouse :any))
+  (button-transition-in data '(:button :any)))
 
-(defun on-mouse-scroll (x y)
-  (let* ((input-state (input-state *state*))
-         (states (states input-state)))
+(defun on-mouse-scroll (data x y)
+  (let ((states (states data)))
     (unless (zerop x)
       (setf (u:href states '(:mouse :scroll-horizontal)) x))
     (unless (zerop y)
       (setf (u:href states '(:mouse :scroll-vertical)) y))))
 
-(defun on-mouse-move (x y dx dy)
-  (let* ((input-state (input-state *state*))
-         (motion-states (u:href (states input-state) '(:mouse :motion))))
-    (setf (x motion-states) x
-          (y motion-states) (- (cfg :window-height) y)
-          (dx motion-states) dx
-          (dy motion-states) (- dy))))
+(defun on-mouse-move (data x y dx dy)
+  (let ((motion-state (u:href (states data) '(:mouse :motion))))
+    (setf (mouse-motion-state-x motion-state) x
+          (mouse-motion-state-y motion-state) (- (cfg :window-height) y)
+          (mouse-motion-state-dx motion-state) dx
+          (mouse-motion-state-dy motion-state) (- dy))))
 
 (defun get-mouse-position ()
-  (let ((state (u:href (states (input-state *state*)) '(:mouse :motion)))
-        (viewports (viewports (get-scene)))
-        (viewport nil))
+  (let* ((viewports (viewports (get-scene)))
+         (viewport nil)
+         (data (input-data *state*))
+         (motion-state (u:href (states data) '(:mouse :motion)))
+         (x (mouse-motion-state-x motion-state))
+         (y (mouse-motion-state-y motion-state))
+         (dx (mouse-motion-state-dx motion-state))
+         (dy (mouse-motion-state-dy motion-state)))
     (u:do-hash-values (v (table viewports))
       (with-slots (%x %y %width %height) v
-        (when (and (<= %x (x state) (+ %x %width))
-                   (<= %y (y state) (+ %y %height)))
+        (when (and (<= %x x (+ %x %width))
+                   (<= %y y (+ %y %height)))
           (setf viewport v))))
-    (values (x state)
-            (y state)
-            (dx state)
-            (dy state)
-            (or viewport (default viewports)))))
+    (values x y dx dy (or viewport (default viewports)))))
 
 (defun get-mouse-scroll (axis)
-  (let ((states (states (input-state *state*))))
+  (let ((states (states (input-data *state*))))
     (ecase axis
       (:horizontal (u:href states '(:mouse :scroll-horizontal)))
       (:vertical (u:href states '(:mouse :scroll-vertical))))))
 
-(defun reset-mouse-motion-state ()
-  (let ((state (u:href (states (input-state *state*)) '(:mouse :motion))))
-    (with-slots (%dx %dy) state
-      (setf %dx 0
-            %dy 0))))
+(defun reset-mouse-state (data)
+  (let* ((states (states data))
+         (motion-state (u:href states '(:mouse :motion))))
+    (setf (u:href states '(:mouse :scroll-horizontal)) 0
+          (u:href states '(:mouse :scroll-vertical)) 0
+          (mouse-motion-state-dx motion-state) 0
+          (mouse-motion-state-dy motion-state) 0)))

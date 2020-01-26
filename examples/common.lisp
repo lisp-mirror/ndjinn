@@ -16,13 +16,13 @@
                   (sort (u:hash-keys (pyx:meta :scenes)) #'string<))))
   (let ((index (or (position (pyx:get-scene-name) scenes) 0)))
     (cond
-      ((pyx:input-exit-p :key :up)
+      ((pyx:on-button-exit :key :up)
        (decf index))
-      ((pyx:input-exit-p :key :down)
+      ((pyx:on-button-exit :key :down)
        (incf index))
-      ((pyx:input-enter-p :key :escape)
+      ((pyx:on-button-enter :key :escape)
        (pyx:stop-engine))
-      ((pyx:input-enter-p :mouse :left)
+      ((pyx:on-button-enter :mouse :left)
        (pyx::pick-entity)))
     (pyx:switch-scene (elt scenes (mod index (length scenes))))))
 

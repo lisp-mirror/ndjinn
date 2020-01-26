@@ -98,10 +98,10 @@
   (with-slots (%camera/debug %camera/debug-speed) entity
     (u:mvlet ((x y dx dy viewport (get-mouse-position)))
       (when (and %camera/debug (eq entity (camera viewport)))
-        (when (input-enabled-p :key :lctrl)
+        (when (on-button-enabled :key :lctrl)
           (translate-entity entity (v3:vec (* dx %camera/debug-speed)
                                            (* dy %camera/debug-speed))))
-        (when (input-enabled-p :key :lalt)
+        (when (on-button-enabled :key :lalt)
           (translate-entity entity (v3:vec 0 0 (* dy %camera/debug-speed))))))))
 
 ;;; entity hooks

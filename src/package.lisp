@@ -59,11 +59,12 @@
    #:get-gamepad-analog
    #:get-mouse-position
    #:get-mouse-scroll
-   #:input-enabled-p
-   #:input-enter-p
-   #:input-exit-p
+   #:on-button-enabled
+   #:on-button-enter
+   #:on-button-exit
    #:on-gamepad-analog-move
    #:on-gamepad-attach
+   #:on-gamepad-enabled
    #:on-gamepad-detach)
   ;; entity protocol
   (:export

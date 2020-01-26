@@ -28,11 +28,6 @@
           (clock-debug-time clock) 0d0
           (clock-start-time clock) 0d0
           (slot-value *state* '%clock) clock)
-    ;; NOTE: We have to tick the clock and resolve an initial model matrix for
-    ;; all entities as soon as we initialize the clock times in order to work
-    ;; around a bug resulting in identity transforms on frame 1.
-    (clock-tick)
-    (map-nodes #'resolve-model)
     (u:noop)))
 
 (defun get-time (clock)
@@ -67,15 +62,14 @@
       (incf debug-count)
       (u:noop))))
 
-(defun clock-update ()
+(defun clock-update (update-func)
   (let* ((clock (clock *state*))
          (delta (clock-delta-time clock)))
     (symbol-macrolet ((accumulator (clock-accumulator clock))
                       (interpolation-factor (clock-interpolation-factor clock)))
       (incf accumulator (clock-frame-time clock))
       (u:while (>= accumulator delta)
-        (map-nodes #'on-update)
-        (compute-collisions)
+        (funcall update-func)
         (decf accumulator delta))
       (setf interpolation-factor (float (/ accumulator delta) 1f0))
       (u:noop))))
@@ -89,7 +83,7 @@
         (setf elapsed current))
       (u:noop))))
 
-(defun clock-tick ()
+(defun clock-tick (update-func)
   (let ((clock (clock *state*))
         (refresh-rate (refresh-rate (display *state*))))
     (symbol-macrolet ((previous (clock-previous-time clock))
@@ -103,7 +97,7 @@
             pause 0d0)
       (when (cfg :vsync)
         (smooth-delta-time clock refresh-rate))
-      (clock-update)
+      (clock-update update-func)
       (clock-update/periodic)
       (calculate-frame-rate clock)
       (u:noop))))

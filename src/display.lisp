@@ -52,8 +52,8 @@
   (sdl2:destroy-window (window (display *state*)))
   (sdl2:sdl-quit))
 
-(defun update-display ()
+(defun update-display (render-func)
   (with-slots (%clock %display) *state*
-    (render-frame)
+    (funcall render-func)
     (sdl2:gl-swap-window (window %display))
     (incf (clock-frame-count %clock))))

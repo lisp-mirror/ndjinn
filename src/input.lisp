@@ -1,6 +1,6 @@
 (in-package #:pyx)
 
-(defclass input-state ()
+(defclass input-data ()
   ((%gamepad-instances :reader gamepad-instances
                        :initform (u:dict #'eq))
    (%gamepad-ids :accessor gamepad-ids
@@ -8,80 +8,15 @@
    (%detached-gamepads :accessor detached-gamepads
                        :initform nil)
    (%entering :accessor entering
-              :initform nil)
+              :initform (u:dict #'eq :button nil :gamepad nil))
    (%exiting :accessor exiting
-             :initform nil)
+             :initform (u:dict #'eq :button nil :gamepad nil))
    (%states :reader states
             :initform (u:dict
                        #'equal
-                       '(:mouse :motion) (make-instance 'mouse-motion-state)
+                       '(:mouse :motion) (make-mouse-motion-state)
                        '(:mouse :scroll-horizontal) 0
                        '(:mouse :scroll-vertical) 0))))
-
-(defclass input-button-states ()
-  ((%enter :accessor enter
-           :initarg :enter
-           :initform nil)
-   (%enabled :accessor enabled
-             :initarg :enabled
-             :initform nil)
-   (%exit :accessor exit
-          :initform nil)))
-
-(defun input-transition-in (input)
-  (let ((input-state (input-state *state*)))
-    (symbol-macrolet ((state (u:href (states input-state) input)))
-      (with-slots (%enter %enabled %exit) state
-        (if state
-            (setf %enter t
-                  %enabled t
-                  %exit nil)
-            (setf state (make-instance 'input-button-states
-                                       :enter t
-                                       :enabled t)))
-        (push input (entering input-state))))))
-
-(defun input-transition-out (input)
-  (a:when-let* ((input-state (input-state *state*))
-                (state (u:href (states input-state) input)))
-    (with-slots (%enter %enabled %exit) state
-      (setf %enter nil
-            %enabled nil
-            %exit t)
-      (push input (exiting input-state)))))
-
-(defun input-enable-entering ()
-  (with-slots (%entering %states) (input-state *state*)
-    (dolist (input %entering)
-      (with-slots (%enter %enabled %exit) (u:href %states input)
-        (setf %enter nil
-              %enabled t
-              %exit nil)))
-    (setf %entering nil)))
-
-(defun input-disable-exiting ()
-  (with-slots (%exiting %states) (input-state *state*)
-    (dolist (input %exiting)
-      (with-slots (%enter %enabled %exit) (u:href %states input)
-        (setf %enter nil
-              %enabled nil
-              %exit nil)))
-    (setf %exiting nil)))
-
-(defun input-enter-p (&rest args)
-  (a:when-let* ((input-state (input-state *state*))
-                (state (u:href (states input-state) args)))
-    (enter state)))
-
-(defun input-enabled-p (&rest args)
-  (a:when-let* ((input-state (input-state *state*))
-                (state (u:href (states input-state) args)))
-    (enabled state)))
-
-(defun input-exit-p (&rest args)
-  (a:when-let* ((input-state (input-state *state*))
-                (state (u:href (states input-state) args)))
-    (exit state)))
 
 (defmacro event-case ((event) &body handlers)
   (let (events)
@@ -96,7 +31,7 @@
     `(case (sdl2:get-event-type ,event)
        ,@(nreverse events))))
 
-(defun dispatch-event (event)
+(defun dispatch-event (data event)
   (event-case (event)
     (:windowevent
      (:event event-type :data1 data1 :data2 data2)
@@ -115,50 +50,50 @@
        (:close (on-window-close))))
     (:mousebuttonup
      (:button button)
-     (on-mouse-button-up (aref +mouse-button-names+ button)))
+     (on-mouse-button-up data (aref +mouse-button-names+ button)))
     (:mousebuttondown
      (:button button)
-     (on-mouse-button-down (aref +mouse-button-names+ button)))
+     (on-mouse-button-down data (aref +mouse-button-names+ button)))
     (:mousewheel
      (:x x :y y)
-     (on-mouse-scroll x y))
+     (on-mouse-scroll data x y))
     (:mousemotion
      (:x x :y y :xrel dx :yrel dy)
-     (on-mouse-move x y dx dy))
+     (on-mouse-move data x y dx dy))
     (:keyup
      (:keysym keysym)
-     (on-key-up (aref +key-names+ (sdl2:scancode-value keysym))))
+     (on-key-up data (aref +key-names+ (sdl2:scancode-value keysym))))
     (:keydown
      (:keysym keysym)
-     (on-key-down (aref +key-names+ (sdl2:scancode-value keysym))))
+     (on-key-down data (aref +key-names+ (sdl2:scancode-value keysym))))
     (:controllerdeviceadded
      (:which gamepad-id)
-     (on-gamepad-attach gamepad-id))
+     (%on-gamepad-attach data gamepad-id))
     (:controllerdeviceremoved
      (:which gamepad-id)
-     (on-gamepad-detach gamepad-id))
+     (%on-gamepad-detach data gamepad-id))
     (:controlleraxismotion
      (:which gamepad-id :axis axis :value value)
-     (on-gamepad-analog-move gamepad-id (aref +gamepad-axis-names+ axis) value))
+     (on-gamepad-analog-move
+      data gamepad-id (aref +gamepad-axis-names+ axis) value))
     (:controllerbuttonup
      (:which gamepad-id :button button)
-     (on-gamepad-button-up gamepad-id (aref +gamepad-button-names+ button)))
+     (on-gamepad-button-up
+      data gamepad-id (aref +gamepad-button-names+ button)))
     (:controllerbuttondown
      (:which gamepad-id :button button)
-     (on-gamepad-button-down gamepad-id (aref +gamepad-button-names+ button)))))
+     (on-gamepad-button-down
+      data gamepad-id (aref +gamepad-button-names+ button)))))
 
-(defun perform-input-tasks ()
-  (let ((states (states (input-state *state*))))
-    (setf (u:href states '(:mouse :scroll-horizontal)) 0
-          (u:href states '(:mouse :scroll-vertical)) 0)
-    (input-enable-entering)
-    (input-disable-exiting)
-    (reset-mouse-motion-state)))
+(defun perform-input-tasks (data)
+  (button-enable-entering data)
+  (button-disable-exiting data)
+  (gamepad-enable-entering data)
+  (gamepad-disable-exiting data)
+  (reset-mouse-state data))
 
-(defun handle-events ()
-  (let ((event (sdl2:new-event)))
-    (perform-input-tasks)
-    (unwind-protect
-         (loop :until (zerop (sdl2:next-event event :poll))
-               :do (dispatch-event event))
-      (sdl2:free-event event))))
+(defun handle-events (data)
+  (loop :with event = (sdl2:new-event)
+        :until (zerop (sdl2:next-event event :poll))
+        :do (dispatch-event data event)
+        :finally (sdl2:free-event event)))

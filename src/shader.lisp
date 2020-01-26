@@ -24,8 +24,7 @@
 (defun select-shader-buffer-binding ()
   (with-slots (%buffer-bindings %released-buffer-bindings) (shaders *state*)
     (let* ((id-count (hash-table-count %buffer-bindings))
-           (max-bindings (get-gpu-parameter
-                          :max-shader-storage-buffer-bindings)))
+           (max-bindings (get-gpu-limit/ssbo-bindings)))
       (when (= id-count max-bindings)
         (error "Cannot create shader buffer. Maximum bindings reached: ~d."
                max-bindings))

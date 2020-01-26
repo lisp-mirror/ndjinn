@@ -29,13 +29,20 @@
    #:get-window-resolution
    #:get-total-time
    #:get-viewport-dimensions)
-  ;; definitions
+  ;; hardware
+  (:export
+   #:get-cpu
+   #:get-gpu-vendor
+   #:get-gpu-device
+   #:get-gpu-make/model
+   #:get-gpu-version)
   ;; scenes
   (:export
    #:get-scene
    #:get-scene-name
    #:load-scene
    #:switch-scene)
+  ;; definitions
   (:export
    #:define-animation-sequence
    #:define-animation-state

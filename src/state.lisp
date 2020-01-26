@@ -16,6 +16,8 @@
    (%shaders :reader shaders)
    (%resources :reader resources
                :initform (u:dict #'eq))
+   (%hardware :reader hardware
+              :initform nil)
    (%running-p :accessor running-p
                :initform t)))
 
@@ -31,6 +33,7 @@
   (make-thread-pool)
   (prepare-gamepads)
   (make-display)
+  (make-hardware)
   (initialize-shaders)
   (switch-scene scene-name)
   (make-clock)

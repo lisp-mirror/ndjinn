@@ -52,7 +52,7 @@
    (:file "config")
    (:file "clock")
    (:file "display")
-   (:file "gpu-query")
+   (:file "hardware")
    (:file "input-keyboard")
    (:file "input-mouse")
    (:file "input-gamepad")

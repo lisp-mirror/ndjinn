@@ -9,11 +9,19 @@
                    :initform nil)
    (%font/text :reader font/text
                :initarg :font/text
-               :initform nil)
+               :initform "")
+   (%font/position :reader font/position
+                   :initarg :font/position
+                   :initform nil)
+   (%font/offset :reader font/offset
+                 :initarg :font/offset
+                 :initform (v2:vec))
    (%font/spec :reader font/spec
                :initform nil)
    (%font/buffer-data :accessor font/buffer-data
-                      :initform nil))
+                      :initform nil)
+   (%font/dimensions :accessor font/dimensions
+                     :initform (v2:vec)))
   (:sorting :after render))
 
 (defun load-font-spec (entity)
@@ -63,12 +71,16 @@
   (load-font-geometry entity))
 
 (define-hook :update (entity font)
-  (let ((text (resolve-font-text entity))
-        (func (funcall #'generate-font-data entity)))
-    (font:map-glyphs font/spec func text :model-y-up t :texture-y-up t)
-    (update-geometry font/geometry :data font/buffer-data)))
+  (u:mvlet* ((text (resolve-font-text entity))
+             (func (funcall #'generate-font-data entity))
+             (width height (get-font-dimensions font/spec text)))
+    (v2:with-components ((v font/dimensions))
+      (setf vx width vy height))
+    (translate-entity entity (get-font-position entity) :replace-p t)
+    (font:map-glyphs font/spec func text :model-y-up t :texture-y-up t)))
 
 (define-hook :render (entity font)
+  (update-geometry font/geometry :data font/buffer-data)
   (draw-geometry font/geometry 1)
   (setf font/buffer-data nil))
 

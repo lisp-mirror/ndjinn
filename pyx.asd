@@ -68,6 +68,7 @@
    (:file "image")
    (:file "texture")
    (:file "spritesheet")
+   (:file "font")
    (:file "grid")
    (:file "grid-quad")
    (:file "grid-quad-4-way")

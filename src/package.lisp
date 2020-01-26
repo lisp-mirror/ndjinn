@@ -27,8 +27,12 @@
    #:cfg
    #:meta
    #:get-window-resolution
-   #:get-total-time
    #:get-viewport-dimensions)
+  ;; clock
+  (:export
+   #:get-fps
+   #:get-frame-count
+   #:get-total-time)
   ;; hardware
   (:export
    #:get-cpu

@@ -9,8 +9,8 @@
                               :release nil
                               :threads nil
                               :vsync t
-                              :window-width 1920
-                              :window-height 1080
+                              :window-width 1280
+                              :window-height 720
                               :allow-screensaver t)
                       (apply #'u:dict #'eq args))))
 

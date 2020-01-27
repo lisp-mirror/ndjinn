@@ -6,6 +6,7 @@
 
 (defstruct (hardware (:constructor %make-hardware))
   (cpu (machine-version))
+  (cpu-count (cl-cpus:get-number-of-processors))
   (gpu-vendor (%get-gpu-vendor))
   (gpu-device (%get-gpu-device))
   (gpu-make/model (%get-gpu-make/model))
@@ -77,6 +78,9 @@
 
 (defun get-cpu ()
   (hardware-cpu (hardware *state*)))
+
+(defun get-cpu-count ()
+  (hardware-cpu-count (hardware *state*)))
 
 (defun get-gpu-vendor ()
   (hardware-gpu-vendor (hardware *state*)))

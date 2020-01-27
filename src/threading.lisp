@@ -11,7 +11,7 @@
             :initform (u:dict #'eq))))
 
 (defun make-thread-pool ()
-  (let* ((worker-count (cfg :threads))
+  (let* ((worker-count (or (cfg :threads) (get-cpu-count)))
          (thread-pool (make-instance 'thread-pool :worker-count worker-count)))
     (setf lparallel:*kernel* (lparallel:make-kernel worker-count)
           *thread-pool* thread-pool)))

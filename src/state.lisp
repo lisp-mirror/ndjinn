@@ -25,19 +25,19 @@
   #-pyx.release (update-repl)
   (process-queue :recompile))
 
-(defun initialize-engine (scene-name)
-  (log:info :pyx "Loading ~a..." (cfg :game-title))
+(defun initialize-engine (scene-name args)
   (cl-renderdoc:mask-overlay-bits :none :none)
+  (apply #'load-config args)
   (setup-repl)
   (rng/init)
-  (make-thread-pool)
   (prepare-gamepads)
   (make-display)
   (make-hardware)
+  (make-thread-pool)
   (initialize-shaders)
   (switch-scene scene-name)
   (make-clock)
-  (log:info :pyx "Finished loading ~a." (cfg :game-title)))
+  (log:info :pyx "Started ~a." (cfg :game-title)))
 
 (defun deinitialize-engine ()
   (kill-display)
@@ -64,8 +64,7 @@
   (let ((*state* (make-instance 'state)))
     (unwind-protect
          (progn
-           (apply #'load-config args)
-           (initialize-engine scene-name)
+           (initialize-engine scene-name args)
            (run-main-game-loop))
       (deinitialize-engine))))
 

@@ -36,6 +36,7 @@
   ;; hardware
   (:export
    #:get-cpu
+   #:get-cpu-count
    #:get-gpu-vendor
    #:get-gpu-device
    #:get-gpu-make/model

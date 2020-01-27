@@ -6,7 +6,7 @@
                               :debug t
                               :game-title "Pyx Engine"
                               :release nil
-                              :threads 8
+                              :threads nil
                               :vsync t
                               :window-width 1920
                               :window-height 1080

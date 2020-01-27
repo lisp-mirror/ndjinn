@@ -10,6 +10,7 @@
   :depends-on (#:3b-bmfont
                #:3b-bmfont/json
                #:alexandria
+               #:cl-cpus
                #:cl-graph
                #:cl-opengl
                #:cl-renderdoc

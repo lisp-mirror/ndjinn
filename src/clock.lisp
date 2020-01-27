@@ -17,6 +17,8 @@
                   (:predicate nil)
                   (:copier nil))
   (accumulator 0d0)
+  (debug-interval 0.25f0)
+  (debug-time 0d0)
   (delta-buffer 0d0)
   (delta-time (/ 60f0))
   (frame-count 0)
@@ -37,6 +39,8 @@
           (clock-total-time clock) 0d0
           (clock-start-time clock) 0d0
           (slot-value *state* '%clock) clock)
+    (a:when-let ((debug-interval (cfg :debug-interval)))
+      (setf (clock-debug-interval clock) debug-interval))
     (map-nodes #'resolve-model)
     (u:noop)))
 
@@ -111,21 +115,29 @@
       (u:noop))))
 
 (defun clock-tick (update-func)
-  (let ((clock (clock *state*))
-        (refresh-rate (refresh-rate (display *state*))))
-    (let* ((pause (clock-pause-time clock))
-           (previous (+ (clock-total-time clock) pause))
-           (total (- (get-time clock) pause)))
-      (setf (clock-previous-time clock) previous
-            (clock-total-time clock) total
-            (clock-frame-time clock) (- total previous)
-            (clock-pause-time clock) 0d0))
+  (let* ((clock (clock *state*))
+         (refresh-rate (refresh-rate (display *state*)))
+         (pause (clock-pause-time clock))
+         (previous (+ (clock-total-time clock) pause))
+         (total (- (get-time clock) pause)))
+    (setf (clock-previous-time clock) previous
+          (clock-total-time clock) total
+          (clock-frame-time clock) (- total previous)
+          (clock-pause-time clock) 0d0)
+    (if (>= (clock-debug-time clock) (clock-debug-interval clock))
+        (setf (clock-debug-time clock) 0d0)
+        (incf (clock-debug-time clock) (clock-frame-time clock)))
     (when (cfg :vsync)
       (smooth-delta-time clock refresh-rate))
     (clock-update update-func)
     (clock-update/periodic)
     (calculate-frame-rate clock)
     (u:noop)))
+
+;;; Internal API
+
+(defun debug-time-p ()
+  (zerop (clock-debug-time (clock *state*))))
 
 ;;; Public API
 

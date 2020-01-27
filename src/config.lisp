@@ -4,6 +4,7 @@
   (setf (slot-value *state* '%config)
         (u:hash-merge (u:dict #'eq
                               :debug t
+                              :debug-interval nil
                               :game-title "Pyx Engine"
                               :release nil
                               :threads nil

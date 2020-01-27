@@ -9,12 +9,12 @@
 (defun font/vert ((pos :vec2)
                   (uv :vec2)
                   &uniforms
-                  (time :float)
                   (model :mat4)
                   (view :mat4)
                   (proj :mat4)
+                  (res :vec2)
                   (sampler :sampler-2d))
-  (values (* proj view model (vec4 (vec3 pos 0) 1))
+  (values (vec4 (.xy (* model (vec4 (/ pos res) 1 1))) -1 1)
           uv))
 
 (defun font/frag ((uv :vec2)

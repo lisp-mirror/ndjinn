@@ -69,4 +69,5 @@
   (with-buffer (ptr size (u:flatten-numbers data))
     (let ((buffer (u:href (buffer-names geometry) buffer-name)))
       (gl:bind-buffer :array-buffer buffer)
-      (%gl:buffer-data :array-buffer size ptr usage))))
+      (%gl:buffer-data :array-buffer size ptr usage)
+      (gl:bind-buffer :array-buffer 0))))

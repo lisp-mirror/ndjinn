@@ -44,10 +44,12 @@
   (with-slots (%id %primitive %primitive-count %vertex-count) geometry
     (gl:bind-vertex-array %id)
     (%gl:draw-arrays-instanced
-     %primitive 0 (* %primitive-count %vertex-count) instance-count)))
+     %primitive 0 (* %primitive-count %vertex-count) instance-count)
+    (gl:bind-vertex-array 0)))
 
 (defun delete-geometry (geometry)
-  (gl:delete-buffers (list (id geometry))))
+  (gl:delete-buffers (buffers geometry))
+  (gl:delete-vertex-arrays (list (id geometry))))
 
 (defmacro define-geometry (name options &body body)
   (declare (ignore options))

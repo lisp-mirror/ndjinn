@@ -30,7 +30,7 @@
           (clock-total-time clock) 0d0
           (clock-start-time clock) 0d0
           (slot-value *state* '%clock) clock)
-    (a:when-let ((debug-interval (cfg :debug-interval)))
+    (a:when-let ((debug-interval cfg:=DEBUG-INTERVAL=))
       (setf (clock-debug-interval clock) debug-interval))
     (map-nodes #'resolve-model)
     (u:noop)))
@@ -107,7 +107,7 @@
     (if (>= (clock-debug-time clock) (clock-debug-interval clock))
         (setf (clock-debug-time clock) 0d0)
         (incf (clock-debug-time clock) (clock-frame-time clock)))
-    (when (cfg :vsync)
+    (when cfg:=VSYNC=
       (smooth-delta-time clock refresh-rate))
     (clock-update update-func)
     (clock-update/periodic)

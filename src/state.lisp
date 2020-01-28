@@ -3,7 +3,6 @@
 (defclass state ()
   ((%clock :reader clock
            :initarg :clock)
-   (%config :reader config)
    (%current-scene :reader current-scene
                    :initform nil)
    (%scenes :reader scenes
@@ -27,7 +26,7 @@
 
 (defun initialize-engine (scene-name args)
   (cl-renderdoc:mask-overlay-bits :none :none)
-  (apply #'load-config args)
+  (apply #'cfg:load args)
   (setup-repl)
   (rng/init)
   (prepare-gamepads)
@@ -37,13 +36,13 @@
   (initialize-shaders)
   (switch-scene scene-name)
   (make-clock)
-  (log:info :pyx "Started ~a." (cfg :game-title)))
+  (log:info :pyx "Started ~a." cfg:=TITLE=))
 
 (defun deinitialize-engine ()
   (kill-display)
   (destroy-thread-pool)
   (shutdown-gamepads)
-  (log:info :pyx "Stopped ~a." (cfg :game-title)))
+  (log:info :pyx "Stopped ~a." cfg:=TITLE=))
 
 (defun update-step ()
   (map-nodes #'on-update)

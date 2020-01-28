@@ -1,12 +1,34 @@
 (in-package #:cl-user)
 
+(defpackage #:pyx.config
+  (:local-nicknames
+   (#:a #:alexandria)
+   (#:glob #:global-vars)
+   (#:u #:golden-utils))
+  (:use #:cl)
+  (:shadow
+   #:load)
+  (:export
+   #:load
+   #:=DEBUG=
+   #:=DEBUG-INTERVAL=
+   #:=TITLE=
+   #:=RELEASE=
+   #:=THREADS=
+   #:=VSYNC=
+   #:=WINDOW-WIDTH=
+   #:=WINDOW-HEIGHT=
+   #:=ALLOW-SCREENSAVER=))
+
 (defpackage #:pyx
+  ;; library nicknames
   (:local-nicknames
    (#:~ #:origin.swizzle)
    (#:a #:alexandria)
    (#:ff #:filtered-functions)
    (#:font #:3b-bmfont)
    (#:font-spec #:3b-bmfont-json)
+   (#:glob #:global-vars)
    (#:log #:verbose)
    (#:math #:origin)
    (#:m3 #:origin.mat3)
@@ -16,6 +38,9 @@
    (#:v3 #:origin.vec3)
    (#:v4 #:origin.vec4)
    (#:u #:golden-utils))
+  ;; engine nicknames
+  (:local-nicknames
+   (#:cfg #:pyx.config))
   (:use #:cl)
   ;; engine
   (:export
@@ -24,7 +49,6 @@
    #:deploy)
   ;; common
   (:export
-   #:cfg
    #:meta
    #:get-window-resolution
    #:get-viewport-dimensions)

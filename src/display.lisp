@@ -24,25 +24,24 @@
     (gl:depth-func +gl-depth-mode+)
     (u:noop)))
 
-(defun make-window (display width height)
+(defun make-window (display)
   (with-slots (%window) display
     (setf %window (sdl2:create-window :title "Pyx"
-                                      :w (truncate width)
-                                      :h (truncate height)
+                                      :w (truncate cfg:=WINDOW-WIDTH=)
+                                      :h (truncate cfg:=WINDOW-HEIGHT=)
                                       :flags '(:opengl)))))
 
 (defun make-display ()
   (sdl2:init :everything)
   (let* ((refresh-rate (nth-value 3 (sdl2:get-current-display-mode 0)))
-         (width (cfg :window-width))
-         (height (cfg :window-height))
          (display (make-instance 'display
                                  :refresh-rate refresh-rate
-                                 :resolution (v2:vec width height))))
-    (make-window display width height)
+                                 :resolution (v2:vec cfg:=WINDOW-WIDTH=
+                                                     cfg:=WINDOW-HEIGHT=))))
+    (make-window display)
     (make-opengl-context display)
-    (sdl2:gl-set-swap-interval (if (cfg :vsync) 1 0))
-    (if (cfg :allow-screensaver)
+    (sdl2:gl-set-swap-interval (if cfg:=VSYNC= 1 0))
+    (if cfg:=ALLOW-SCREENSAVER=
         (sdl2:enable-screensaver)
         (sdl2:disable-screensaver))
     (setf (slot-value *state* '%display) display)

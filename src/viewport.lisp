@@ -50,13 +50,11 @@
 
 (defun configure-viewport (viewport)
   (with-slots (%spec %x %y %width %height) viewport
-    (let ((window-width (cfg :window-width))
-          (window-height (cfg :window-height)))
-      (setf %x (u:map-domain 0 1 0 window-width (x %spec))
-            %y (u:map-domain 0 1 0 window-height (y %spec))
-            %width (u:map-domain 0 1 0 window-width (width %spec))
-            %height (u:map-domain 0 1 0 window-height (height %spec)))
-      (gl:viewport %x %y %width %height))))
+    (setf %x (u:map-domain 0 1 0 cfg:=WINDOW-WIDTH= (x %spec))
+          %y (u:map-domain 0 1 0 cfg:=WINDOW-HEIGHT= (y %spec))
+          %width (u:map-domain 0 1 0 cfg:=WINDOW-WIDTH= (width %spec))
+          %height (u:map-domain 0 1 0 cfg:=WINDOW-HEIGHT= (height %spec)))
+    (gl:viewport %x %y %width %height)))
 
 (defun get-viewport-dimensions ()
   (let ((viewport (or (get-viewport)

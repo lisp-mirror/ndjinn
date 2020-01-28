@@ -3,7 +3,7 @@
 (defun resolve-asset-path (path)
   (uiop:merge-pathnames*
    (uiop:ensure-directory-pathname "data")
-   (if (cfg :release)
+   (if cfg:=RELEASE=
        #+sbcl
        (truename
         (uiop:merge-pathnames*

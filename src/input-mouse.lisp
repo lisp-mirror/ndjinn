@@ -30,7 +30,7 @@
 (defun on-mouse-move (data x y dx dy)
   (let ((motion-state (u:href (states data) '(:mouse :motion))))
     (setf (mouse-motion-state-x motion-state) x
-          (mouse-motion-state-y motion-state) (- (cfg :window-height) y)
+          (mouse-motion-state-y motion-state) (- cfg:=WINDOW-HEIGHT= y)
           (mouse-motion-state-dx motion-state) dx
           (mouse-motion-state-dy motion-state) (- dy))))
 

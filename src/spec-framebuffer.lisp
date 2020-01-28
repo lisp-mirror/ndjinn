@@ -36,7 +36,9 @@
   (flet ((generate-size-func (dimension value)
            (lambda ()
              (or value
-                 (cfg (a:format-symbol :keyword "WINDOW-~a" dimension))))))
+                 (ecase dimension
+                   (:width cfg:=WINDOW-WIDTH=)
+                   (:height cfg:=WINDOW-HEIGHT=))))))
     (destructuring-bind (name &key point (buffer :render-buffer) width height)
         spec
       (make-instance 'framebuffer-attachment-spec

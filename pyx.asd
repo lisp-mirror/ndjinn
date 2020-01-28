@@ -18,6 +18,7 @@
                #:doubly-linked-list
                #:fast-io
                #:filtered-functions
+               #:global-vars
                #:golden-utils
                #:jsown
                #:lparallel
@@ -37,6 +38,7 @@
    (:file "common")
    (:file "constants")
    (:file "metadata")
+   (:file "config")
    (:file "threading")
    (:file "interactive-development")
    (:file "avl-tree")
@@ -50,7 +52,6 @@
    (:file "opengl")
    (:file "uuid")
    (:file "binary-parser")
-   (:file "config")
    (:file "clock")
    (:file "display")
    (:file "hardware")

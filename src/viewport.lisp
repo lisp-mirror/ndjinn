@@ -1,67 +1,73 @@
-(in-package #:pyx)
+(in-package #:%pyx.viewport)
 
-(defclass viewport-manager ()
-  ((%table :reader table
-           :initform (u:dict #'eq))
-   (%active :accessor active
-            :initform nil)
-   (%default :accessor default
-             :initform nil)
-   (%tags :reader tags
-          :initform (u:dict #'eq))))
+(defstruct (manager (:conc-name nil)
+                    (:predicate nil)
+                    (:copier nil))
+  (table (u:dict #'eq))
+  active
+  default)
 
-(defclass viewport ()
-  ((%spec :reader spec
-          :initarg :spec)
-   (%camera :accessor camera
-            :initform nil)
-   (%draw-order :accessor draw-order
-                :initform (make-draw-order-tree))
-   (%picking-ray :reader picking-ray
-                 :initform (make-instance 'picking-ray))
-   (%x :reader x
-       :initform 0)
-   (%y :reader y
-       :initform 0)
-   (%width :reader width
-           :initform 0)
-   (%height :reader height
-            :initform 0)))
+(defstruct (viewport (:constructor %make-viewport)
+                     (:conc-name nil)
+                     (:predicate nil)
+                     (:copier nil))
+  spec
+  camera
+  draw-order
+  picking-ray
+  (x 0)
+  (y 0)
+  (width 0)
+  (height 0))
 
 (u:define-printer (viewport stream :identity t)
-  (format stream "~s" (name (spec viewport))))
+  (format stream "~s" (spec-name (spec viewport))))
 
-(defun make-viewport (view-spec)
-  (let* ((spec (meta :views view-spec))
-         (viewport (make-instance 'viewport :spec spec)))
-    (configure-viewport viewport)
+(defun make-viewport (name order ray)
+  (let* ((spec (u:href meta:=viewports= name))
+         (viewport (%make-viewport :spec spec
+                                   :draw-order order
+                                   :picking-ray ray)))
+    (configure viewport)
     viewport))
 
-(defun get-viewport ()
-  (active (viewports (get-scene))))
+(defun get-manager ()
+  (scene:viewports (ctx:current-scene)))
+
+(defun get-by-coordinates (x y)
+  (let ((manager (get-manager)))
+    (u:do-hash-values (v (table manager))
+      (when (and (<= (x v) x (+ (x v) (width v)))
+                 (<= (y v) y (+ (y v) (height v))))
+        (return-from get-by-coordinates v)))
+    (default manager)))
+
+(defun configure (viewport)
+  (let ((spec (spec viewport)))
+    (setf (x viewport) (a:lerp (spec-x spec) 0 cfg:=window-width=)
+          (y viewport) (a:lerp (spec-y spec) 0 cfg:=window-height=)
+          (width viewport) (a:lerp (spec-width spec) 0 cfg:=window-width=)
+          (height viewport) (a:lerp (spec-height spec) 0 cfg:=window-height=)))
+  (gl:viewport (x viewport)
+               (y viewport)
+               (width viewport)
+               (height viewport)))
 
 (defun get-entity-viewports (entity)
-  (let ((scene (get-scene))
+  (let ((scene-viewports (get-manager))
         (viewports nil))
-    (dolist (id (id/views entity))
-      (let ((viewport (u:href (table (viewports scene)) id)))
+    (dolist (id (c/id:views entity))
+      (let ((viewport (u:href (table scene-viewports) id)))
         (pushnew viewport viewports)))
-    (or viewports (list (default (viewports scene))))))
+    (or viewports (list (default scene-viewports)))))
 
-(defun configure-viewport (viewport)
-  (with-slots (%spec %x %y %width %height) viewport
-    (setf %x (u:map-domain 0 1 0 cfg:=WINDOW-WIDTH= (x %spec))
-          %y (u:map-domain 0 1 0 cfg:=WINDOW-HEIGHT= (y %spec))
-          %width (u:map-domain 0 1 0 cfg:=WINDOW-WIDTH= (width %spec))
-          %height (u:map-domain 0 1 0 cfg:=WINDOW-HEIGHT= (height %spec)))
-    (gl:viewport %x %y %width %height)))
+(live:on-recompile :viewport data ()
+  (live:recompile :scene (scene:get-scene-name)))
+
+;;; Public API
 
 (defun get-viewport-dimensions ()
-  (let ((viewport (or (get-viewport)
-                      (default (viewports (get-scene))))))
-    (with-slots (%width %height) viewport
-      (v2:vec %width %height))))
-
-(defun recompile-viewport (name)
-  (declare (ignore name))
-  (recompile-scene (name (spec (get-scene)))))
+  (let* ((manager (get-manager))
+         (viewport (or (active manager)
+                       (default manager))))
+    (v2:vec (width viewport) (height viewport))))

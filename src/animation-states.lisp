@@ -1,33 +1,31 @@
-(in-package #:pyx)
+(in-package #:%pyx.animation)
 
 ;;; sprite
 
 (define-animation-state sprite ())
 
 (define-animation-state-hook sprite entity state :update
-  (with-slots (%sprite/initial-index %sprite/index %sprite/frames) entity
-    (let* ((min %sprite/initial-index)
-           (max (1- (+ min %sprite/frames)))
-           (index (floor
-                   (a:clamp (u:map-domain 0 1 min max (progress state))
-                            min
-                            max))))
-      (setf %sprite/index index))))
+  (let* ((min (c/sprite:initial-index entity))
+         (max (1- (+ min (c/sprite:frames entity))))
+         (index (floor (a:clamp (a:lerp (progress state) min max) min max))))
+    (setf (c/sprite:index entity) index)))
 
 ;;; fade
 
-(define-animation-state fade ())
+(define-animation-state opacity ())
 
-(define-animation-state-hook fade entity state :update
-  (set-uniforms entity :opacity (- 1 (progress state))))
+(define-animation-state-hook opacity entity state :update
+  (mat:set-uniforms (c/render:current-material entity)
+                    :opacity (- 1 (progress state))))
 
-(define-animation-state-hook fade entity state :finish
+(define-animation-state-hook opacity entity state :finish
   (when (repeat-p state)
-    (replace-animation-state state 'fade :name 'fade/reverse)))
+    (replace-animation-state state 'opacity :name 'opacity/reverse)))
 
-(define-animation-state-hook fade/reverse entity state :update
-  (set-uniforms entity :opacity (progress state)))
+(define-animation-state-hook opacity/reverse entity state :update
+  (mat:set-uniforms (c/render:current-material entity)
+                    :opacity (progress state)))
 
-(define-animation-state-hook fade/reverse entity state :finish
+(define-animation-state-hook opacity/reverse entity state :finish
   (when (repeat-p state)
-    (replace-animation-state state 'fade :name 'fade)))
+    (replace-animation-state state 'opacity :name 'opacity)))

@@ -1,4 +1,4 @@
-(in-package #:pyx)
+(in-package #:%pyx.animation)
 
 (defclass animation-state ()
   ((%name :reader name
@@ -31,21 +31,21 @@
   (format stream "ANIMATION-STATE: ~s" (name animation-state)))
 
 (defun register-animation-state (entity state &key (where :tail) target)
-  (doubly-linked-list:insert-dlist-node where
-                                        (animate/states entity)
-                                        (name state)
-                                        state
-                                        :target-key target)
+  (dll:insert-dlist-node where
+                         (c/anim:states entity)
+                         (name state)
+                         state
+                         :target-key target)
   (%on-animation-start entity state))
 
 (defun deregister-animation-state (entity state)
-  (doubly-linked-list:remove-dlist-node (animate/states entity) (name state)))
+  (dll:remove-dlist-node (c/anim:states entity) (name state)))
 
 (defun replace-animation-state (state name &rest args)
   (with-slots (%elapsed %finished-p) state
     (apply #'change-class
            state
-           (class-name (meta :animation-states name))
+           (class-name (u:href meta:=animation-states= name))
            args)
     (setf %elapsed 0
           %finished-p nil)))
@@ -56,8 +56,8 @@
                              (a:clamp (/ %elapsed %duration) 0f0 1f0)))))
 
 (defun process-animation-states (entity)
-  (loop :with states = (animate/states entity)
-        :for (nil . state) :in (doubly-linked-list:dlist-elements states)
+  (loop :with states = (c/anim:states entity)
+        :for (nil . state) :in (dll:dlist-elements states)
         :do (%on-animation-update entity state)
         :when (finished-p state)
           :do (%on-animation-finish entity state)
@@ -89,7 +89,7 @@
   (:method :before (entity state)
     (declare (ignore entity))
     (with-slots (%elapsed %duration %self-finishing-p %finished-p) state
-      (incf %elapsed (clock-frame-time (clock *state*)))
+      (incf %elapsed (clock:get-frame-time))
       (when (and (not %self-finishing-p)
                  (>= %elapsed %duration))
         (setf %finished-p t))
@@ -109,33 +109,33 @@
                                  :initarg ,initarg
                                  :initform ,value))
          (:default-initargs :name ',name))
-       (unless (meta :animation-states)
-         (setf (meta :animation-states) (u:dict #'eq)))
-       (setf (meta :animation-states ',name) (find-class ',class-name)))))
+       (setf (u:href meta:=animation-states= ',name)
+             (find-class ',class-name)))))
 
 (defmacro define-animation-state-hook (name entity state hook &body body)
   (let ((hook-types '(:start :finish :update)))
     `(progn
        (unless (find ',hook ',hook-types)
          (error "Hook type must be one of: ~{~s~^, ~}" ',hook-types))
-       (defmethod ,(a:format-symbol :pyx "%ON-ANIMATION-~a" hook) :filter :state
+       (defmethod ,(a:format-symbol :%pyx.animation "%ON-ANIMATION-~a" hook)
+           :filter :state
            (,entity (,state (eql ',name)))
          (declare (ignorable ,entity ,state))
          ,@body))))
 
+;;; Public API
+
 (defmacro define-animation-sequence (name options &body body)
   (declare (ignore options))
   (a:with-gensyms (state entity)
-    `(progn
-       (unless (meta :animation-sequences)
-         (setf (meta :animation-sequences) (u:dict #'eq)))
-       (setf (meta :animation-sequences ',name)
-             (lambda (,entity)
-               ,@(mapcar
-                  (lambda (spec)
-                    (destructuring-bind (name . args) spec
-                      `(let ((,state (apply #'make-instance
-                                            (meta :animation-states ',name)
-                                            ',args)))
-                         (register-animation-state ,entity ,state))))
-                  body))))))
+    `(setf (u:href meta:=animation-sequences= ',name)
+           (lambda (,entity)
+             ,@(mapcar
+                (lambda (spec)
+                  (destructuring-bind (name . args) spec
+                    `(let ((,state (apply #'make-instance
+                                          (u:href meta:=animation-states=
+                                                  ',name)
+                                          ',args)))
+                       (register-animation-state ,entity ,state))))
+                body)))))

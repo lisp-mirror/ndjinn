@@ -1,14 +1,14 @@
-(in-package #:pyx)
+(in-package #:%pyx.prefab)
 
 (defun make-prefab-entity-skeleton (node)
   (with-slots (%component-types %component-args) node
     (let* ((types (u:href %component-types :resolved))
            (args (u:href %component-args :resolved))
            (entity (make-instance 'prefab-entity-skeleton
-                                  :mixin-class (make-entity-class types)
+                                  :mixin-class (ent:make-class types)
                                   :types types
                                   :args args)))
-      (dolist (slot (get-entity-slots types))
+      (dolist (slot (ent:get-slots types))
         (let ((key (a:make-keyword (string-left-trim "%" (symbol-name slot)))))
           (setf (u:href (slots entity) slot) (u:href args key))))
       entity)))
@@ -18,7 +18,7 @@
     (with-slots (%mixin-class) skeleton
       (when (typep skeleton 'prefab-entity-skeleton)
         (apply #'change-class skeleton %mixin-class args))
-      (register-entity skeleton types))))
+      (ent:register skeleton types))))
 
 (defun resolve-prefab-entity-args (node parent)
   (with-slots (%prefab %parent %component-args) node
@@ -31,14 +31,14 @@
       (setf (u:href args :node/parent)
             (if %parent
                 (u:href (entities (factory %prefab)) (path %parent))
-                (or parent (node-tree (get-scene)))))
+                (or parent (scene:node-tree (ctx:current-scene)))))
       (u:hash->plist args))))
 
 (defun register-prefab-root (prefab)
   (with-slots (%name %root %factory) prefab
     (let ((root (u:href (entities %factory) (path %root))))
-      (push root (u:href (prefabs (get-scene)) %name))
-      (setf (slot-value root '%node/prefab) %name)
+      (push root (u:href (scene:prefabs (ctx:current-scene)) %name))
+      (setf (c/node:prefab root) %name)
       root)))
 
 (defun build-prefab-factory (prefab)
@@ -54,7 +54,7 @@
                             (skeleton (u:href %entities path))
                             (display-id (format nil "~{~(~a~)~^ -> ~}" path)))
                         (realize-prefab-entity skeleton args)
-                        (setf (slot-value skeleton '%node/prefab-path) path
-                              (slot-value skeleton '%id/display) display-id)))
+                        (setf (c/node:prefab-path skeleton) path
+                              (c/id:display skeleton) display-id)))
                     (setf %current-node nil)
                     (register-prefab-root prefab))))))

@@ -1,6 +1,6 @@
-(in-package #:pyx)
+(in-package #:%pyx.binary-parser)
 
-(defun parser/get-string-length (buffer byte-count null-terminated-p)
+(defun get-string-length (buffer byte-count null-terminated-p)
   (let* ((sequence (fast-io:input-buffer-vector buffer))
          (max-length (or byte-count (length sequence)))
          (start (fast-io:buffer-position buffer))
@@ -10,12 +10,12 @@
                     end)))
     (- index start)))
 
-(defun parser/split-string (string delimiter)
+(defun split-string (string delimiter)
   (let ((pos (position delimiter string)))
     (values (subseq string 0 pos)
             (subseq string (1+ pos)))))
 
-(defun parser/octets= (octets1 octets2)
+(defun octets= (octets1 octets2)
   (equalp octets1 (fast-io:octets-from octets2)))
 
 (defun parse-bytes (buffer count)
@@ -53,9 +53,9 @@
 
 (defun parse-string (buffer &key byte-count (encoding :ascii) null-terminated-p)
   (let ((octet-vector (fast-io:make-octet-vector
-                       (parser/get-string-length buffer
-                                                 byte-count
-                                                 null-terminated-p))))
+                       (get-string-length buffer
+                                          byte-count
+                                          null-terminated-p))))
     (fast-io:fast-read-sequence octet-vector buffer)
     (when null-terminated-p
       (fast-io:fast-read-byte buffer))

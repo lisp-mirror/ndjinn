@@ -1,9 +1,7 @@
 (in-package #:pyx.examples)
 
-;;; materials
-
 (pyx:define-material world ()
-  (:shader pyx.examples.shader:world
+  (:shader shader:world
    :uniforms (:light.position (v3:vec 0.1 0.25 -1)
               :light.ambient (v4:vec 0.01 0.01 0.01 0.01)
               :light.diffuse (v4:vec 0.5 0.5 0.5 0.5)
@@ -20,24 +18,22 @@
 (pyx:define-material world/wall (world)
   (:uniforms (:cell-type 1)))
 
-;;; prefabs
-
 (pyx:define-prefab tile (:add (pyx:mesh pyx:render))
   :mesh/file "tiles.glb")
 
 (pyx:define-prefab tile/floor (:template tile)
-  :xform/scale (v3:vec 0.5 0.5 0.1)
+  :transform/scale (v3:vec 0.5 0.5 0.1)
   :mesh/name "floor"
   :render/materials '(world/floor))
 
 (pyx:define-prefab tile/wall (:template tile)
-  :xform/translate (v3:vec 0 0 1.25)
-  :xform/scale (v3:vec 0.5 0.5 1.25)
+  :transform/translate (v3:vec 0 0 1.25)
+  :transform/scale (v3:vec 0.5 0.5 1.25)
   :mesh/name "wall"
   :render/materials '(world/wall))
 
 (pyx:define-prefab world (:add (world))
-  :xform/scale 40
+  :transform/scale 40
   :world/width 49
   :world/height 49
   :world/seed 1

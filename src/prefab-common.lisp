@@ -1,4 +1,4 @@
-(in-package #:pyx)
+(in-package #:%pyx.prefab)
 
 (defclass prefab ()
   ((%name :reader name
@@ -32,7 +32,7 @@
                      :initform (u:dict #'eq))
    (%component-args :reader component-args
                     :initarg :component-args
-                    :initform (make-nested-dict #'eq :self :resolved))))
+                    :initform (util:make-nested-dict #'eq :self :resolved))))
 
 (defclass prefab-factory ()
   ((%prefab-name :reader prefab-name
@@ -66,8 +66,6 @@
 (u:define-printer (prefab-factory stream)
   (format stream "~s" (prefab-name prefab-factory)))
 
-(define-event-handler :recompile :prefab recompile-prefab)
-
 ;; Create a fresh prefab object. This only creates an instance with the raw data
 ;; needed to begin parsing. NOTE: This is only called if a prefab with the given
 ;; name does not yet exist when defining a prefab.
@@ -76,13 +74,13 @@
                                :name name
                                :data data
                                :factory (make-prefab-factory name))))
-    (setf (meta :prefabs name) prefab)))
+    (setf (u:href meta:=prefabs= name) prefab)))
 
 ;; Reset an existing prefab object. This resets an existing prefab instance with
 ;; new raw data so we don't lose the object identity. NOTE: This is only called
 ;; if a prefab with the given name already exists when defining a prefab.
 (defun reset-prefab (name data)
-  (let ((prefab (meta :prefabs name)))
+  (let ((prefab (u:href meta:=prefabs= name)))
     (with-slots (%data %root %nodes %factory) prefab
       (setf %data data
             %root nil
@@ -94,7 +92,7 @@
 
 (defun find-prefab-node-template (spec path)
   (let* ((spec (a:ensure-list spec))
-         (prefab (meta :prefabs (first spec))))
+         (prefab (u:href meta:=prefabs= (first spec))))
     (or (and prefab (u:href (nodes prefab) spec))
         (error "Template ~{~a~^/~} not found for prefab node ~{~a~^/~}."
                (a:ensure-list spec) path))))

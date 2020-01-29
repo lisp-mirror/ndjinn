@@ -1,7 +1,5 @@
 (in-package #:pyx.examples)
 
-;;; prefabs
-
 (pyx:define-prefab camera/top-left ()
   :id/views '(top-left)
   ((camera :template camera/perspective)))
@@ -10,18 +8,14 @@
   :id/views '(right)
   ((camera :template camera/isometric)))
 
-;;; views
-
-(pyx:define-view top-left ()
+(pyx:define-viewport top-left ()
   (:x 0 :y 1/2 :width 1/3 :height 1/2))
 
-(pyx:define-view bottom-left ()
+(pyx:define-viewport bottom-left ()
   (:x 0 :y 0 :width 1/3 :height 1/2))
 
-(pyx:define-view right ()
+(pyx:define-viewport right ()
   (:x 1/3 :y 0 :width 2/3 :height 1))
-
-;;; scenes
 
 (pyx:define-scene viewports ()
   (:sub-trees (examples

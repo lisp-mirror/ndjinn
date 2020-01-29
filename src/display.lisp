@@ -1,58 +1,53 @@
-(in-package #:pyx)
+(in-package #:%pyx.display)
 
-(defclass display ()
-  ((%window :accessor window)
-   (%resolution :reader resolution
-                :initarg :resolution)
-   (%refresh-rate :reader refresh-rate
-                  :initarg :refresh-rate)))
-
-(defun get-window-resolution ()
-  (resolution (display *state*)))
+(defstruct (display (:constructor %make-display)
+                    (:conc-name nil)
+                    (:predicate nil)
+                    (:copier nil))
+  window
+  (resolution (v2:vec cfg:=window-width= cfg:=window-height=))
+  refresh-rate)
 
 (defun make-opengl-context (display)
-  (with-slots (%window) display
-    (sdl2:gl-set-attrs :context-major-version 4
-                       :context-minor-version 5
-                       :context-profile-mask 1
-                       :multisamplebuffers 1
-                       :multisamplesamples 4)
-    (sdl2:gl-create-context %window)
-    (apply #'gl:enable +gl-capabilities/enabled+)
-    (apply #'gl:disable +gl-capabilities/disabled+)
-    (apply #'gl:blend-func +gl-blend-mode+)
-    (gl:depth-func +gl-depth-mode+)
-    (u:noop)))
+  (sdl2:gl-set-attrs :context-major-version 4
+                     :context-minor-version 5
+                     :context-profile-mask 1
+                     :multisamplebuffers 1
+                     :multisamplesamples 4)
+  (sdl2:gl-create-context (window display))
+  (apply #'gl:enable ogl:+enabled+)
+  (apply #'gl:disable ogl:+disabled+)
+  (apply #'gl:blend-func ogl:+blend-mode+)
+  (gl:depth-func ogl:+depth-mode+))
 
-(defun make-window (display)
-  (with-slots (%window) display
-    (setf %window (sdl2:create-window :title "Pyx"
-                                      :w (truncate cfg:=WINDOW-WIDTH=)
-                                      :h (truncate cfg:=WINDOW-HEIGHT=)
-                                      :flags '(:opengl)))))
+(defun make-window ()
+  (sdl2:create-window :title "Pyx"
+                      :w (truncate cfg:=window-width=)
+                      :h (truncate cfg:=window-height=)
+                      :flags '(:opengl)))
 
 (defun make-display ()
   (sdl2:init :everything)
   (let* ((refresh-rate (nth-value 3 (sdl2:get-current-display-mode 0)))
-         (display (make-instance 'display
+         (resolution (v2:vec cfg:=window-width= cfg:=window-height=))
+         (display (%make-display :window (make-window)
                                  :refresh-rate refresh-rate
-                                 :resolution (v2:vec cfg:=WINDOW-WIDTH=
-                                                     cfg:=WINDOW-HEIGHT=))))
-    (make-window display)
+                                 :resolution resolution)))
     (make-opengl-context display)
-    (sdl2:gl-set-swap-interval (if cfg:=VSYNC= 1 0))
-    (if cfg:=ALLOW-SCREENSAVER=
+    (sdl2:gl-set-swap-interval (if cfg:=vsync= 1 0))
+    (if cfg:=allow-screensaver=
         (sdl2:enable-screensaver)
         (sdl2:disable-screensaver))
-    (setf (slot-value *state* '%display) display)
-    display))
+    (setf (ctx:display) display)))
 
-(defun kill-display ()
-  (sdl2:destroy-window (window (display *state*)))
+(defun kill ()
+  (sdl2:destroy-window (window (ctx:display)))
   (sdl2:sdl-quit))
 
-(defun update-display (render-func)
-  (with-slots (%clock %display) *state*
-    (funcall render-func)
-    (sdl2:gl-swap-window (window %display))
-    (incf (clock-frame-count %clock))))
+(defun render (display)
+  (c/render:render-frame)
+  (sdl2:gl-swap-window (window display))
+  (incf (clock:frame-count (ctx:clock))))
+
+(defun get-resolution ()
+  (resolution (ctx:display)))

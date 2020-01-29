@@ -1,11 +1,14 @@
-(in-package #:pyx)
+(in-package #:%pyx.metadata)
 
-(defvar *metadata* (u:dict #'eq))
-
-(defun meta (&rest keys)
-  (if keys
-      (apply #'u:href *metadata* keys)
-      *metadata*))
-
-(defun (setf meta) (value &rest keys)
-  (setf (apply #'u:href *metadata* keys) value))
+(glob:define-global-var =animation-states= (u:dict #'eq))
+(glob:define-global-var =animation-sequences= (u:dict #'eq))
+(glob:define-global-var =collider-plans= (u:dict #'eq))
+(glob:define-global-var =framebuffers= (u:dict #'eq))
+(glob:define-global-var =geometry= (u:dict #'eq))
+(glob:define-global-var =geometry-layouts= (u:dict #'eq))
+(glob:define-global-var =materials= (u:dict #'eq))
+(glob:define-global-var =render-passes= (u:dict #'eq))
+(glob:define-global-var =prefabs= (u:dict #'eq))
+(glob:define-global-var =scenes= (u:dict #'eq))
+(glob:define-global-var =textures= (u:dict #'eq))
+(glob:define-global-var =viewports= (u:dict #'eq))

@@ -1,28 +1,28 @@
-(in-package #:pyx)
+(in-package #:%pyx.component.mesh)
 
-(define-component mesh ()
-  ((%mesh/file :reader mesh/file
-               :initarg :mesh/file)
-   (%mesh/name :reader mesh/name
-               :initarg :mesh/name)
-   (%mesh/index :reader mesh/index
-                :initarg :mesh/index
-                :initform 0)
-   (%mesh/instances :reader mesh/instances
-                    :initarg :mesh/instances
-                    :initform 1)
-   (%mesh/primitive :accessor mesh/primitive))
+(ent:define-component mesh ()
+  ((%file :reader file
+          :initarg :mesh/file)
+   (%name :reader name
+          :initarg :mesh/name)
+   (%index :reader index
+           :initarg :mesh/index
+           :initform 0)
+   (%instances :reader instances
+               :initarg :mesh/instances
+               :initform 1)
+   (%primitive :accessor primitive))
   (:sorting :after render))
 
 ;;; entity hooks
 
-(define-hook :attach (entity mesh)
-  (let* ((gltf (resource-lookup 'mesh mesh/file
-                 (load-gltf (resolve-asset-path mesh/file))))
-         (mesh (u:href (meshes gltf) mesh/name)))
+(ent:define-entity-hook :attach (entity mesh)
+  (let* ((gltf (res:with-resource-cache :mesh file
+                 (res.mesh:load (res:resolve-path file))))
+         (mesh (u:href (res.mesh:meshes gltf) name)))
     (unless mesh
-      (error "Mesh name ~s not found in glTF file ~s." mesh/name mesh/file))
-    (setf mesh/primitive (aref (primitives mesh) mesh/index))))
+      (error "Mesh name ~s not found in mesh file ~s." name file))
+    (setf primitive (aref (res.mesh:primitives mesh) index))))
 
-(define-hook :render (entity mesh)
-  (funcall (draw-func mesh/primitive) mesh/instances))
+(ent:define-entity-hook :render (entity mesh)
+  (funcall (res.mesh:draw-func primitive) instances))

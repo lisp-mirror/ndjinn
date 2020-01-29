@@ -1,4 +1,4 @@
-(in-package #:pyx)
+(in-package #:%pyx.prefab)
 
 (defun find-prefab-reference (factory path)
   (with-slots (%current-node %entities) factory
@@ -12,8 +12,7 @@
   (lambda (factory)
     (let ((query (first (last path/query))))
       (if (keywordp query)
-          (%entity-query (find-prefab-reference factory (butlast path/query))
-                         query)
+          (ent:query (find-prefab-reference factory (butlast path/query)) query)
           (find-prefab-reference factory path/query)))))
 
 (defun make-prefab-reference (path/query)

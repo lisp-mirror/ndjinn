@@ -9,7 +9,6 @@
 
 (defun deploy/setup ()
   (setf *deployed-p* t)
-  (log:stop log:*global-controller*)
   (sb-ext:disable-debugger)
   (sb-ext:gc :full t))
 

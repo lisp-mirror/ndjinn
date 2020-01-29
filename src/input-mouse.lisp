@@ -1,10 +1,11 @@
-(in-package #:pyx)
+(in-package #:%pyx.input)
 
 (a:define-constant +mouse-button-names+
     #(nil :left :middle :right :x1 :x2)
   :test #'equalp)
 
-(defstruct mouse-motion-state
+(defstruct (mouse-motion-state (:predicate nil)
+                               (:copier nil))
   (x 0)
   (y 0)
   (dx 0)
@@ -30,31 +31,9 @@
 (defun on-mouse-move (data x y dx dy)
   (let ((motion-state (u:href (states data) '(:mouse :motion))))
     (setf (mouse-motion-state-x motion-state) x
-          (mouse-motion-state-y motion-state) (- cfg:=WINDOW-HEIGHT= y)
+          (mouse-motion-state-y motion-state) (- cfg:=window-height= y)
           (mouse-motion-state-dx motion-state) dx
           (mouse-motion-state-dy motion-state) (- dy))))
-
-(defun get-mouse-position ()
-  (let* ((viewports (viewports (get-scene)))
-         (viewport nil)
-         (data (input-data *state*))
-         (motion-state (u:href (states data) '(:mouse :motion)))
-         (x (mouse-motion-state-x motion-state))
-         (y (mouse-motion-state-y motion-state))
-         (dx (mouse-motion-state-dx motion-state))
-         (dy (mouse-motion-state-dy motion-state)))
-    (u:do-hash-values (v (table viewports))
-      (with-slots (%x %y %width %height) v
-        (when (and (<= %x x (+ %x %width))
-                   (<= %y y (+ %y %height)))
-          (setf viewport v))))
-    (values x y dx dy (or viewport (default viewports)))))
-
-(defun get-mouse-scroll (axis)
-  (let ((states (states (input-data *state*))))
-    (ecase axis
-      (:horizontal (u:href states '(:mouse :scroll-horizontal)))
-      (:vertical (u:href states '(:mouse :scroll-vertical))))))
 
 (defun reset-mouse-state (data)
   (let* ((states (states data))
@@ -63,3 +42,19 @@
           (u:href states '(:mouse :scroll-vertical)) 0
           (mouse-motion-state-dx motion-state) 0
           (mouse-motion-state-dy motion-state) 0)))
+
+;;; Public API
+
+(defun get-mouse-position ()
+  (let* ((motion-state (u:href (states (ctx:input-data)) '(:mouse :motion)))
+         (x (mouse-motion-state-x motion-state))
+         (y (mouse-motion-state-y motion-state))
+         (dx (mouse-motion-state-dx motion-state))
+         (dy (mouse-motion-state-dy motion-state)))
+    (values x y dx dy)))
+
+(defun get-mouse-scroll (axis)
+  (let ((states (states (ctx:input-data))))
+    (ecase axis
+      (:horizontal (u:href states '(:mouse :scroll-horizontal)))
+      (:vertical (u:href states '(:mouse :scroll-vertical))))))

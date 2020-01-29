@@ -1,34 +1,31 @@
-(in-package #:pyx)
+(in-package #:%pyx.geometry)
 
-(defclass geometry-layout ()
-  ((%name :reader name
-          :initarg :name)
-   (%groups :reader groups
-            :initarg :groups
-            :initform nil)
-   (%group-order :reader group-order
-                 :initarg :group-order)))
+(defstruct (layout (:constructor %make-layout)
+                   (:conc-name nil)
+                   (:predicate nil)
+                   (:copier nil))
+  layout-name
+  groups
+  group-order)
 
-(defun find-geometry-layout (layout-name)
-  (or (u:href (meta :geometry-layouts) layout-name)
+(defun find-layout (layout-name)
+  (or (u:href meta:=geometry-layouts= layout-name)
       (error "Geometry layout ~s not found." layout-name)))
 
-(defun make-geometry-layout (name groups order)
-  (let ((layout (make-instance 'geometry-layout :name name)))
-    (setf (meta :geometry-layouts name) layout)
-    (update-geometry-layout name groups order)))
+(defun make-layout (name groups order)
+  (let ((layout (%make-layout :layout-name name)))
+    (setf (u:href meta:=geometry-layouts= name) layout)
+    (update-layout name groups order)))
 
-(defun update-geometry-layout (name groups order)
-  (with-slots (%groups %group-order) (meta :geometry-layouts name)
-    (setf %groups groups
-          %group-order order)))
+(defun update-layout (name groups order)
+  (let ((layout (u:href meta:=geometry-layouts= name)))
+    (setf (groups layout) groups
+          (group-order layout) order)))
 
 (defmacro define-geometry-layout (name options &body body)
   (declare (ignore options))
   (a:with-gensyms (groups order)
-    `(u:mvlet ((,groups ,order (make-geometry-groups ',body)))
-       (unless (meta :geometry-layouts)
-         (setf (meta :geometry-layouts) (u:dict #'eq)))
-       (if (meta :geometry-layouts ',name)
-           (update-geometry-layout ',name ,groups ,order)
-           (make-geometry-layout ',name ,groups ,order)))))
+    `(u:mvlet ((,groups ,order (make-groups ',body)))
+       (if (u:href meta:=geometry-layouts= ',name)
+           (update-layout ',name ,groups ,order)
+           (make-layout ',name ,groups ,order)))))

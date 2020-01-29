@@ -1,6 +1,9 @@
-(in-package #:pyx)
+(in-package #:%pyx.uuid)
 
-(defstruct (uuid (:constructor %make-uuid))
+(defstruct (uuid (:constructor %make-uuid)
+                 (:conc-name nil)
+                 (:predicate nil)
+                 (:copier nil))
   version
   (variant :rfc-4122)
   (low 0 :type (unsigned-byte 64))
@@ -9,29 +12,29 @@
 (u:define-printer (uuid stream)
   (format stream "~a" (uuid->string uuid)))
 
-(defmacro write-uuid-chunk (string count offset bits word)
-  `(setf ,@(loop :for i :below count
-                 :collect `(aref ,string ,(+ offset i))
-                 :collect `(aref "0123456789ABCDEF"
-                                 (ldb (byte 4 ,(- bits (* i 4))) ,word)))))
-
 (defun uuid->string (uuid)
   (declare (optimize speed))
-  (check-type uuid uuid)
-  (let ((high (uuid-high uuid))
-        (low (uuid-low uuid))
-        (string (make-string 36 :element-type 'base-char)))
-    (locally (declare (optimize (safety 0)))
-      (psetf (aref string 8) #\-
-             (aref string 13) #\-
-             (aref string 18) #\-
-             (aref string 23) #\-)
-      (write-uuid-chunk string 8 0 60 high)
-      (write-uuid-chunk string 4 9 28 high)
-      (write-uuid-chunk string 4 14 12 high)
-      (write-uuid-chunk string 4 19 60 low)
-      (write-uuid-chunk string 12 24 44 low))
-    string))
+  (macrolet ((%write (string count offset bits word)
+               `(setf ,@(loop :for i :below count
+                              :collect `(aref ,string ,(+ offset i))
+                              :collect `(aref "0123456789ABCDEF"
+                                              (ldb (byte 4 ,(- bits (* i 4)))
+                                                   ,word))))))
+    (check-type uuid uuid)
+    (let ((high (high uuid))
+          (low (low uuid))
+          (string (make-string 36 :element-type 'base-char)))
+      (locally (declare (optimize (safety 0)))
+        (psetf (aref string 8) #\-
+               (aref string 13) #\-
+               (aref string 18) #\-
+               (aref string 23) #\-)
+        (%write string 8 0 60 high)
+        (%write string 4 9 28 high)
+        (%write string 4 14 12 high)
+        (%write string 4 19 60 low)
+        (%write string 12 24 44 low))
+      string)))
 
 (defun string->uuid (string)
   (check-type string (simple-string 36))

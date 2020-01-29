@@ -1,110 +1,76 @@
-(in-package #:pyx)
+(in-package #:%pyx.component.collider)
 
-(define-component collider ()
-  ((%collider/shape :accessor collider/shape
-                    :initarg :collider/shape
-                    :initform 'sphere)
-   (%collider/layer :reader collider/layer
-                    :initarg :collider/layer)
-   (%collider/visualize :reader collider/visualize
-                        :initarg :collider/visualize
-                        :initform t)
-   (%collider/target :accessor collider/target
-                     :initarg :collider/target
-                     :initform nil)
-   (%collider/contact-count :accessor collider/contact-count
-                            :initform 0)
-   (%collider/hit-p :accessor collider/hit-p
-                    :initform nil))
+(ent:define-component collider ()
+  ((%shape :accessor shape
+           :initarg :collider/shape
+           :initform 'sphere)
+   (%layer :reader layer
+           :initarg :collider/layer)
+   (%visualize :reader visualize
+               :initarg :collider/visualize
+               :initform t)
+   (%target :accessor target
+            :initarg :collider/target
+            :initform nil)
+   (%contact-count :accessor contact-count
+                   :initform 0)
+   (%hit-p :accessor hit-p
+           :initform nil))
   (:sorting :after render))
 
 (defun initialize-collider-visualization (entity)
-  (when (collider/visualize entity)
-    (when (or (has-component-p entity 'mesh)
-              (has-component-p entity 'render))
+  (when (visualize entity)
+    (when (or (ent:has-component-p entity 'c/mesh:mesh)
+              (ent:has-component-p entity 'c/render:render))
       (error "Entity ~s has a collider to be visualized, but it must not have ~
               a mesh or render component attached." entity))
-    (attach-component entity 'mesh
-                      :mesh/file "colliders.glb"
-                      :mesh/name (format nil "~(~a~)" (collider/shape entity)))
-    (attach-component entity 'render
-                      :render/materials '(collider))))
+    (ent:attach-component entity 'c/mesh:mesh
+                          :mesh/file "colliders.glb"
+                          :mesh/name (format nil "~(~a~)" (shape entity)))
+    (ent:attach-component entity 'c/render:render
+                          :render/materials '(ext:collider))))
 
-(defgeneric %on-collision-enter (contact1 contact2)
-  (:method (contact1 contact2))
-  (:method ((contact1 collider) (contact2 collider))
-    (incf (collider/contact-count contact1))
-    (when (plusp (collider/contact-count contact1))
-      (setf (collider/hit-p contact1) t))
-    (when (plusp (collider/contact-count contact2))
-      (setf (collider/hit-p contact2) t))
-    (dolist (entity (get-collision-targets contact1))
-      (on-collision-enter (collider/target contact1)
-                          (collider/layer contact2)
-                          entity))))
+(defmethod cd:%on-collision-enter ((contact1 collider) (contact2 collider))
+  (let ((targets (cd:callback-entities
+                  (scene:collision-system (ctx:current-scene)))))
+    (incf (contact-count contact1))
+    (when (plusp (contact-count contact1))
+      (setf (hit-p contact1) t))
+    (when (plusp (contact-count contact2))
+      (setf (hit-p contact2) t))
+    (dolist (entity (cd:get-collision-targets targets contact1))
+      (cd:on-collision-enter (target contact1) (layer contact2) entity))))
 
-(defgeneric %on-collision-continue (contact1 contact2)
-  (:method (contact1 contact2))
-  (:method ((contact1 collider) (contact2 collider))
-    (dolist (entity (get-collision-targets contact1))
-      (on-collision-continue (collider/target contact1)
-                             (collider/layer contact2)
-                             entity))))
+(defmethod cd:%on-collision-continue ((contact1 collider) (contact2 collider))
+  (let ((targets (cd:callback-entities
+                  (scene:collision-system (ctx:current-scene)))))
+    (dolist (entity (cd:get-collision-targets targets contact1))
+      (cd:on-collision-continue (target contact1) (layer contact2) entity))))
 
-(defgeneric %on-collision-exit (contact1 contact2)
-  (:method (contact1 contact2))
-  (:method ((contact1 collider) (contact2 collider))
-    (decf (collider/contact-count contact1))
-    (when (zerop (collider/contact-count contact1))
-      (setf (collider/hit-p contact1) nil))
-    (when (zerop (collider/contact-count contact2))
-      (setf (collider/hit-p contact2) nil))
-    (dolist (entity (get-collision-targets contact1))
-      (on-collision-exit (collider/target contact1)
-                         (collider/layer contact2)
-                         entity))))
-
-(defgeneric on-collision-enter (target layer entity)
-  (:method (target layer entity)))
-
-(defgeneric on-collision-continue (target layer entity)
-  (:method (target layer entity)))
-
-(defgeneric on-collision-exit (target layer entity)
-  (:method (target layer entity)))
-
-(defgeneric on-collision-picked (target layer entity)
-  (:method (target layer entity)))
-
-(defmacro define-collision-hook (name (target &optional layer) &body body)
-  (a:with-gensyms (target-symbol)
-    (let ((hook-types '(:enter :continue :exit :picked)))
-      `(progn
-         ,@(unless (find name hook-types)
-             `((error "Hook type must be one of: ~{~s~^, ~}" ',hook-types)))
-         ,@(unless (symbolp target)
-             `((error "Target of a collision hook must be a symbol: ~s."
-                      ',target)))
-         ,@(unless (symbolp layer)
-             `((error "Layer of a collision hook must be a symbol: ~s."
-                      ',layer)))
-         (defmethod ,(a:format-symbol :pyx "ON-COLLISION-~a" name)
-             ((,target-symbol (eql ',target)) (layer (eql ',layer)) ,target)
-           ,@body)))))
+(defmethod cd:%on-collision-exit ((contact1 collider) (contact2 collider))
+  (let ((targets (cd:callback-entities
+                  (scene:collision-system (ctx:current-scene)))))
+    (decf (contact-count contact1))
+    (when (zerop (contact-count contact1))
+      (setf (hit-p contact1) nil))
+    (when (zerop (contact-count contact2))
+      (setf (hit-p contact2) nil))
+    (dolist (entity (cd:get-collision-targets targets contact1))
+      (cd:on-collision-exit (target contact1) (layer contact2) entity))))
 
 ;;; component protocol
 
-(define-hook :attach (entity collider)
+(ent:define-entity-hook :attach (entity collider)
   (initialize-collider-visualization entity)
-  (setf collider/shape (make-shape entity collider/shape))
-  (register-collider entity))
+  (setf shape (cd:make-shape entity shape))
+  (cd:register-collider entity layer))
 
-(define-hook :detach (entity collider)
-  (deregister-collider entity)
-  (setf collider/target nil))
+(ent:define-entity-hook :detach (entity collider)
+  (cd:deregister-collider entity layer)
+  (setf target nil))
 
-(define-hook :update (entity collider)
-  (update-shape collider/shape))
+(ent:define-entity-hook :physics-update (entity collider)
+  (cd:update-shape shape))
 
-(define-hook :pre-render (entity collider)
-  (set-uniforms entity :contact collider/hit-p))
+(ent:define-entity-hook :pre-render (entity collider)
+  (mat:set-uniforms (c/render:current-material entity) :contact hit-p))

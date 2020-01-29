@@ -22,8 +22,8 @@
           "CPU: ~a~%GPU: ~a~%~%~
            Counters~%Elapsed Time:~%Frames Drawn:~%~%~
            Frame Rates~%Current:~%Last 10s:~%Last 30s:~%Last 1m:~%Overall:"
-          (pyx:get-cpu)
-          (pyx:get-gpu-make/model)))
+          (pyx:get-hardware-info :cpu)
+          (pyx:get-hardware-info :gpu-make/model)))
 
 (defun print-fps-times ()
   (u:mvlet ((fps avg avg/10s avg/30s avg/1m (pyx:get-fps)))
@@ -35,7 +35,7 @@
        ~a / ~,3f ms~%~
        ~a / ~,3f ms~%~
        ~a / ~,3f ms~%"
-      (seconds->duration (pyx:get-total-time))
+      (seconds->duration (pyx:get-running-time))
       (pyx:get-frame-count)
       (print-frame-rate fps)
       (print-frame-rate avg/10s)
@@ -43,21 +43,15 @@
       (print-frame-rate avg/1m)
       (print-frame-rate avg))))
 
-;;; textures
-
 (pyx:define-texture font ()
   (:generate-mipmaps nil
    :source "core-font.png"))
-
-;;; materials
 
 (pyx:define-material font ()
   (:shader pyx.shader:font
    :uniforms (:res 'pyx:get-viewport-dimensions
               :sampler 'font
               :color (v4:vec 0 1 0 0.75))))
-
-;;; prefabs
 
 (pyx:define-prefab debug-info ()
   ((fps-labels :add (pyx:render pyx:font))
@@ -75,8 +69,6 @@
    :font/offset (v2:vec 12 -4.5)
    :render/materials '(font)))
 
-;;; geometry
-
 (pyx:define-geometry-layout text ()
   (:data (:format interleaved)
          (position :type float :count 2)
@@ -86,14 +78,6 @@
   (:layout text
    :primitive :triangles
    :vertex-count 6))
-
-;;; render passes
-
-(pyx:define-render-pass font ()
-  (:clear-color (v4:vec 0 0 0 1)
-   :clear-buffers (:color :depth)))
-
-;;; scenes
 
 (pyx:define-scene font ()
   (:sub-trees (examples camera/orthographic debug-info)))

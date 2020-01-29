@@ -1,22 +1,4 @@
-(in-package #:pyx)
-
-(defclass input-data ()
-  ((%gamepad-instances :reader gamepad-instances
-                       :initform (u:dict #'eq))
-   (%gamepad-ids :accessor gamepad-ids
-                 :initform (u:dict #'eq))
-   (%detached-gamepads :accessor detached-gamepads
-                       :initform nil)
-   (%entering :accessor entering
-              :initform (u:dict #'eq :button nil :gamepad nil))
-   (%exiting :accessor exiting
-             :initform (u:dict #'eq :button nil :gamepad nil))
-   (%states :reader states
-            :initform (u:dict
-                       #'equal
-                       '(:mouse :motion) (make-mouse-motion-state)
-                       '(:mouse :scroll-horizontal) 0
-                       '(:mouse :scroll-vertical) 0))))
+(in-package #:%pyx.input)
 
 (defmacro event-case ((event) &body handlers)
   (let (events)
@@ -26,7 +8,7 @@
                      `(declare (ignorable ,@(u:plist-values options)))
                      body)))
           (dolist (type (a:ensure-list type))
-            (a:when-let ((x (sdl2::expand-handler event type options body)))
+            (a:when-let ((x (sdl2:expand-handler event type options body)))
               (push x events))))))
     `(case (sdl2:get-event-type ,event)
        ,@(nreverse events))))
@@ -85,14 +67,16 @@
      (on-gamepad-button-down
       data gamepad-id (aref +gamepad-button-names+ button)))))
 
-(defun perform-input-tasks (data)
-  (button-enable-entering data)
-  (button-disable-exiting data)
-  (gamepad-enable-entering data)
-  (gamepad-disable-exiting data)
-  (reset-mouse-state data))
+(defun perform-input-tasks ()
+  (let ((data (ctx:input-data)))
+    (button-enable-entering data)
+    (button-disable-exiting data)
+    (gamepad-enable-entering data)
+    (gamepad-disable-exiting data)
+    (reset-mouse-state data)))
 
 (defun handle-events (data)
+  (perform-input-tasks)
   (loop :with event = (sdl2:new-event)
         :until (zerop (sdl2:next-event event :poll))
         :do (dispatch-event data event)

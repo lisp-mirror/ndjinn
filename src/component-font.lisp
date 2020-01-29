@@ -1,55 +1,55 @@
-(in-package #:pyx)
+(in-package #:%pyx.component.font)
 
-(define-component font ()
-  ((%font/texture :reader font/texture
-                  :initarg :font/texture
-                  :initform nil)
-   (%font/geometry :reader font/geometry
-                   :initarg :font/geometry
-                   :initform nil)
-   (%font/text :reader font/text
-               :initarg :font/text
-               :initform "")
-   (%font/position :reader font/position
-                   :initarg :font/position
-                   :initform nil)
-   (%font/offset :reader font/offset
-                 :initarg :font/offset
-                 :initform (v2:vec))
-   (%font/spec :reader font/spec
-               :initform nil)
-   (%font/buffer-data :accessor font/buffer-data
-                      :initform nil)
-   (%font/dimensions :accessor font/dimensions
-                     :initform (v2:vec)))
+(ent:define-component font ()
+  ((%texture :reader texture
+             :initarg :font/texture
+             :initform nil)
+   (%geometry :reader geometry
+              :initarg :font/geometry
+              :initform nil)
+   (%text :reader text
+          :initarg :font/text
+          :initform "")
+   (%position :reader font-position
+              :initarg :font/position
+              :initform nil)
+   (%offset :reader offset
+            :initarg :font/offset
+            :initform (v2:vec))
+   (%spec :reader spec
+          :initform nil)
+   (%buffer-data :accessor buffer-data
+                 :initform nil)
+   (%dimensions :accessor dimensions
+                :initform (v2:vec)))
   (:sorting :after render))
 
 (defun load-font-spec (entity)
-  (with-slots (%font/texture %font/spec) entity
-    (unless %font/texture
+  (with-slots (%texture %spec) entity
+    (unless %texture
       (error "Font component ~s does not have a spec." entity))
-    (let* ((texture-spec (find-texture-spec %font/texture))
-           (source (source texture-spec))
-           (spec (resolve-asset-path
+    (let* ((texture-spec (tex:find-spec %texture))
+           (source (tex:source texture-spec))
+           (spec (res:resolve-path
                   (make-pathname :defaults source :type "json"))))
       (unless (uiop:file-exists-p spec)
-        (error "Font texture source ~s does not have a spec file." source))
-      (setf %font/spec (resource-lookup 'font %font/texture
-                         (with-open-file (in spec)
-                           (font-spec:read-bmfont-json in)))))))
+        (error "Font metadata file ~s could not be found." spec))
+      (setf %spec (res:with-resource-cache :font %texture
+                    (with-open-file (in spec)
+                      (3b-bmfont-json:read-bmfont-json in)))))))
 
 (defun load-font-geometry (entity)
-  (with-slots (%font/geometry %font/buffer-data) entity
-    (unless %font/geometry
+  (with-slots (%geometry %buffer-data) entity
+    (unless %geometry
       (error "Font component ~s does not have any geometry." entity))
-    (setf %font/geometry (make-geometry %font/geometry))))
+    (setf %geometry (geom:make-geometry %geometry))))
 
 (defun resolve-font-text (entity)
-  (with-slots (%font/text) entity
-    (typecase %font/text
-      (string %font/text)
+  (with-slots (%text) entity
+    (typecase %text
+      (string %text)
       ((or function symbol)
-       (let ((text (funcall %font/text)))
+       (let ((text (funcall %text)))
          (unless (stringp text)
            (error "Font component ~s has text that is not a string." entity))
          text)))))
@@ -62,27 +62,33 @@
             (,x+ ,y+ ,u+ ,v+)
             (,x- ,y- ,u- ,v-)
             (,x+ ,y- ,u+ ,v-))
-          (font/buffer-data entity))))
+          (buffer-data entity))))
 
 ;;; entity hooks
 
-(define-hook :attach (entity font)
+(ent:define-entity-hook :attach (entity font)
   (load-font-spec entity)
   (load-font-geometry entity))
 
-(define-hook :update (entity font)
-  (translate-entity entity (v3:vec (get-font-position entity)) :replace-p t))
+(ent:define-entity-hook :physics-update (entity font)
+  (c/transform:translate-entity entity
+                                (v3:vec (ui.font:calculate-position
+                                         spec
+                                         font-position
+                                         dimensions
+                                         offset))
+                                :replace-p t))
 
-(define-hook :render (entity font)
-  (when (debug-time-p)
+(ent:define-entity-hook :render (entity font)
+  (when (clock:debug-time-p)
     (u:mvlet* ((text (resolve-font-text entity))
                (func (funcall #'generate-font-data entity))
-               (width height (map-glyphs font/spec func text)))
-      (v2:with-components ((fd font/dimensions))
+               (width height (ui.font:map-glyphs spec func text)))
+      (v2:with-components ((fd dimensions))
         (setf fdx width fdy height))
-      (update-geometry font/geometry :data font/buffer-data)))
-  (draw-geometry font/geometry 1)
-  (setf font/buffer-data nil))
+      (geom:update-geometry geometry :data buffer-data)))
+  (geom:draw-geometry geometry 1)
+  (setf buffer-data nil))
 
-(define-hook :delete (entity font)
-  (delete-geometry font/geometry))
+(ent:define-entity-hook :delete (entity font)
+  (geom:delete-geometry geometry))

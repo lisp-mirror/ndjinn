@@ -8,8 +8,7 @@
   :bug-tracker "https://github.com/mfiano/pyx/issues"
   :encoding :utf-8
   :depends-on (#:dungen
-               #:pyx
-               #:verbose)
+               #:pyx)
   :pathname "examples"
   :serial t
   :components

@@ -1,10 +1,8 @@
 (in-package #:pyx.examples)
 
-;;; materials
-
 (pyx:define-material effect/kaleidoscope ()
-  (:shader pyx.examples.shader:effect/kaleidoscope
-   :uniforms (:time 'pyx:get-total-time
+  (:shader shader:effect/kaleidoscope
+   :uniforms (:time 'pyx:get-running-time
               :res 'pyx:get-viewport-dimensions
               :zoom 0.85
               :speed 1
@@ -13,12 +11,8 @@
               :outline nil
               :detail 0.8)))
 
-;;; prefabs
-
 (pyx:define-prefab effect/kaleidoscope (:template quad)
   :render/materials '(effect/kaleidoscope))
-
-;;; scene
 
 (pyx:define-scene effect/kaleidoscope ()
   (:sub-trees (examples camera/orthographic effect/kaleidoscope)))

@@ -1,32 +1,28 @@
 (in-package #:pyx.examples)
 
-;;; prefabs
-
 (pyx:define-prefab collider ()
   ((gate/top :add (pyx:collider))
-   :xform/translate (v3:vec 0 8 0)
-   :xform/scale 5
+   :transform/translate (v3:vec 0 8 0)
+   :transform/scale 5
    :collider/layer 'gate)
   ((gate/bottom :add (pyx:collider))
-   :xform/translate (v3:vec 0 -8 0)
-   :xform/scale 5
+   :transform/translate (v3:vec 0 -8 0)
+   :transform/scale 5
    :collider/layer 'gate)
   ((destroyer :add (pyx:collider))
-   :xform/scale 3
-   :xform/translate (v3:vec 30 0 0)
-   :xform/rotate/velocity (math:make-velocity v3:+down+ 5f0)
+   :transform/scale 3
+   :transform/translate (v3:vec 30 0 0)
+   :transform/rotate/velocity (math:make-velocity v3:+down+ 5f0)
    :collider/layer 'destroyer)
   ((player :add (pyx:collider))
    :id/contact 'player
-   :xform/scale 4
-   :xform/translate (v3:vec -30 0 0)
-   :xform/translate/velocity (math:make-velocity v3:+right+ 15f0)
+   :transform/scale 4
+   :transform/translate (v3:vec -30 0 0)
+   :transform/translate/velocity (math:make-velocity v3:+right+ 15f0)
    :collider/target 'player
    :collider/layer 'player
    ((mesh :template mesh/helmet)
-    :xform/rotate (q:orient :local :x math:pi/2 :y math:pi/2))))
-
-;;; collision detection
+    :transform/rotate (q:orient :local :x math:pi/2 :y math:pi/2))))
 
 (pyx:define-collider-plan collider ()
   (:layers (player gate destroyer)
@@ -42,9 +38,7 @@
   (pyx:translate-entity/velocity player v3:+right+ 15f0))
 
 (pyx:define-collision-hook :picked (player)
-  (:printv player))
-
-;;; scenes
+  (format t "Player selected: ~s~%" player))
 
 (pyx:define-scene collider ()
   (:collider-plan collider

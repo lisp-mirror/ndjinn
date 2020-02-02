@@ -24,7 +24,7 @@
               (:inherit-from
                (destructuring-bind (from . symbols) items
                  `((:import-from ,from ,@symbols)
-                   (:export ,from ,@symbols))))
+                   (:export ,@symbols))))
               (t `(,x)))))
         body)))
 

@@ -51,19 +51,34 @@
                    slots))))))
 
 (defun compute-component-initargs (type)
-  (let* ((class (c2mop:ensure-finalized (find-class type)))
-         (class-args (a:mappend #'c2mop:slot-definition-initargs
-                                (c2mop:class-slots class)))
-         (instance-lambda-list (c2mop:method-lambda-list
-                                (first
-                                 (c2mop:compute-applicable-methods-using-classes
-                                  #'reinitialize-instance
-                                  (list class)))))
-         (instance-args (mapcar
-                         (lambda (x)
-                           (a:make-keyword (car (a:ensure-list x))))
-                         (rest (member '&key instance-lambda-list)))))
-    (union class-args instance-args)))
+  (let ((methods nil)
+        (class (c2mop:ensure-finalized (find-class type))))
+    (push (find-method #'initialize-instance '(:before) (list class) nil)
+          methods)
+    (push (find-method #'initialize-instance '(:after) (list class) nil)
+          methods)
+    (push (find-method #'initialize-instance '(:around) (list class) nil)
+          methods)
+    (push (find-method #'reinitialize-instance '(:before) (list class) nil)
+          methods)
+    (push (find-method #'reinitialize-instance '(:after) (list class) nil)
+          methods)
+    (push (find-method #'reinitialize-instance '(:around) (list class) nil)
+          methods)
+    (push (find-method #'shared-initialize '(:before) (list class t) nil)
+          methods)
+    (push (find-method #'shared-initialize '(:after) (list class t) nil)
+          methods)
+    (push (find-method #'shared-initialize '(:around) (list class t) nil)
+          methods)
+    (remove-duplicates
+     (union (a:mappend #'c2mop:slot-definition-initargs
+                       (c2mop:class-slots class))
+            (mapcan
+             (lambda (x)
+               (mapcar #'a:make-keyword
+                       (rest (member '&key (c2mop:method-lambda-list x)))))
+             (remove nil methods))))))
 
 (defun track-component-initargs (type slots)
   (flet ((clear-type ()

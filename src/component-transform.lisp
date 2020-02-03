@@ -32,22 +32,6 @@
                         transform/scale
                         transform/scale/velocity))
 
-(defmethod reinitialize-instance :after ((instance transform)
-                                         &key
-                                           transform/translate
-                                           transform/translate/velocity
-                                           transform/rotate
-                                           transform/rotate/velocity
-                                           transform/scale
-                                           transform/scale/velocity)
-  (shared-initialize instance nil
-                     :transform/translate transform/translate
-                     :transform/translate/velocity transform/translate/velocity
-                     :transform/rotate transform/rotate
-                     :transform/rotate/velocity transform/rotate/velocity
-                     :transform/scale transform/scale
-                     :transform/scale/velocity transform/scale/velocity))
-
 (defun transform-node (entity)
   (let ((delta cfg:=delta-time=)
         (frame-time (clock:get-frame-time)))

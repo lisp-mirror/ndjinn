@@ -102,6 +102,9 @@
           (c/transform:translate-entity entity
                                         (v3:vec 0 0 (* dy %debug-speed))))))))
 
+(defun get-current-camera ()
+  (vp:camera (vp:active (vp:get-manager))))
+
 ;;; entity hooks
 
 (ent:define-entity-hook :attach (entity camera)

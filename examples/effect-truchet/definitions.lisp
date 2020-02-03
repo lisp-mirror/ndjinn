@@ -2,8 +2,8 @@
 
 (pyx:define-material effect/truchet ()
   (:shader shader:effect/truchet
-   :uniforms (:time 'pyx:get-running-time
-              :res 'pyx:get-viewport-dimensions)))
+   :uniforms (:time (pyx:as-uniform 'pyx:get-running-time)
+              :res (pyx:as-uniform 'pyx:get-viewport-dimensions))))
 
 (pyx:define-prefab effect/truchet (:template quad)
   :render/materials '(effect/truchet))

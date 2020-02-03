@@ -81,20 +81,24 @@
         (error "Sampler uniform ~s must be a symbol denoting a texture."
                (uniform-key uniform)))))
 
-(defun resolve-uniform-value (uniform)
+(defun as-uniform (func)
+  (lambda (entity)
+    (declare (ignore entity))
+    (funcall func)))
+
+(defun resolve-uniform-value (entity uniform)
   (let ((value (uniform-value uniform)))
     (typecase value
       (boolean value)
-      ((or symbol function)
-       (funcall value))
+      ((or symbol function) (funcall value entity))
       (t value))))
 
-(defun resolve-uniform-func (uniform)
+(defun resolve-uniform-func (entity uniform)
   (funcall (uniform-func uniform)
            (uniform-key uniform)
            (case (uniform-resolved-type uniform)
              (:sampler (resolve-uniform-value/sampler uniform))
-             (t (resolve-uniform-value uniform)))))
+             (t (resolve-uniform-value entity uniform)))))
 
 ;;; Public API
 
@@ -107,3 +111,5 @@
         (setf (uniform-value uniform) v)
         (unless (uniform-func uniform)
           (register-uniform-func material uniform))))))
+
+()

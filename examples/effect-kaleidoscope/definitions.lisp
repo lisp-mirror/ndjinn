@@ -2,8 +2,8 @@
 
 (pyx:define-material effect/kaleidoscope ()
   (:shader shader:effect/kaleidoscope
-   :uniforms (:time 'pyx:get-running-time
-              :res 'pyx:get-viewport-dimensions
+   :uniforms (:time (pyx:as-uniform 'pyx:get-running-time)
+              :res (pyx:as-uniform 'pyx:get-viewport-dimensions)
               :zoom 0.85
               :speed 1
               :strength 0.7

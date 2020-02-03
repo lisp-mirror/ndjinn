@@ -12,7 +12,7 @@
   (depth/stencil :buffer :render-buffer
                  :point :depth/stencil))
 
-(pyx:define-material multi-pass/pass1 (ext:mesh)
+(pyx:define-material multi-pass/pass1 (mesh)
   (:output (multi-pass (color))
    :pass multi-pass/pass1))
 

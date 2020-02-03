@@ -90,6 +90,7 @@
   (:use #:cl)
   (:export
    #:camera
+   #:get-current-camera
    #:projection
    #:view)
   ;; public
@@ -185,6 +186,7 @@
    #:get-rotation
    #:get-scale
    #:get-translation
+   #:resolve-normal-matrix
    #:rotate-entity
    #:rotate-entity/velocity
    #:scale-entity
@@ -359,6 +361,7 @@
 (define-package #:%pyx.material
   (:use #:cl)
   (:export
+   #:as-uniform
    #:attachments
    #:framebuffer
    #:make-material

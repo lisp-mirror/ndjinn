@@ -10,7 +10,9 @@
    (%local :reader local
            :initform (m4:mat 1))
    (%model :reader model
-           :initform (m4:mat 1)))
+           :initform (m4:mat 1))
+   (%normal-matrix :reader normal-matrix
+                   :initform (m4:mat 1)))
   (:sorting :after node)
   (:static t))
 
@@ -58,8 +60,14 @@
            (model parent)
            (local entity))))
 
+(defun resolve-normal-matrix (entity)
+  (a:if-let ((camera (c/camera:get-current-camera)))
+    (m4:transpose (m4:invert (m4:* (c/camera:view camera) (model entity))))
+    m4:+id+))
+
 (ent:define-entity-hook :pre-render (entity transform)
-  (mat:set-uniforms (c/render:current-material entity) :model model))
+  (mat:set-uniforms (c/render:current-material entity)
+                    :model model))
 
 ;;; Public API
 

@@ -5,6 +5,7 @@
                      (:predicate nil)
                      (:copier nil))
   spec
+  entity
   (uniforms (u:dict #'eq))
   framebuffer
   attachments
@@ -32,9 +33,9 @@
       (register-uniform-func material uniform)
       (setf (u:href (uniforms material) k) uniform))))
 
-(defun make-material (name)
+(defun make-material (entity name)
   (let* ((spec (find-spec name))
-         (material (%make-material :spec spec)))
+         (material (%make-material :entity entity :spec spec)))
     (make-uniforms material)
     (ensure-framebuffer material)
     (push material (u:href (scene:materials (ctx:current-scene)) name))

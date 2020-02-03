@@ -36,6 +36,7 @@
                  #:get-rotation
                  #:get-scale
                  #:get-translation
+                 #:resolve-normal-matrix
                  #:rotate-entity
                  #:rotate-entity/velocity
                  #:scale-entity
@@ -81,6 +82,7 @@
                  #:on-button-enter
                  #:on-button-exit)
   (:inherit-from #:%pyx.material
+                 #:as-uniform
                  #:define-material
                  #:set-uniforms)
   (:inherit-from #:%pyx.prefab

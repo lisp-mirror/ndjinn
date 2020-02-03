@@ -13,7 +13,7 @@
 (defun register-material (entity)
   (let ((materials (u:dict #'eq)))
     (dolist (spec-name (materials entity))
-      (let ((material (mat:make-material spec-name)))
+      (let ((material (mat:make-material entity spec-name)))
         (setf (u:href materials (mat:pass (mat:spec material))) material)))
     materials))
 
@@ -96,7 +96,7 @@
                      `((gl:point-size ,point-size)))
                  (ent:on-pre-render ,entity)
                  (u:do-hash-values (v (mat:uniforms ,material))
-                   (mat:resolve-uniform-func v))
+                   (mat:resolve-uniform-func ,entity v))
                  (ent:on-render ,entity)
                  (setf (mat:texture-unit-state ,material) 0)
                  ,@(when disable

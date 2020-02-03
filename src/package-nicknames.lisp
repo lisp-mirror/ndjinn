@@ -138,6 +138,7 @@
 (define-local-nicknames #:%pyx.component.transform
   (#:~ #:origin.swizzle)
   (#:a #:alexandria)
+  (#:c/camera #:%pyx.component.camera)
   (#:c/node #:%pyx.component.node)
   (#:c/render #:%pyx.component.render)
   (#:cfg #:%pyx.config)

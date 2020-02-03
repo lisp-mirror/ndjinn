@@ -2,7 +2,7 @@
 
 (pyx:define-material graph ()
   (:shader shader:graph
-   :uniforms (:time 'pyx:get-running-time)))
+   :uniforms (:time (pyx:as-uniform 'pyx:get-running-time))))
 
 (pyx:define-prefab graph (:template quad)
   :render/materials '(graph))

@@ -1,7 +1,7 @@
 (in-package #:pyx.examples)
 
 (pyx:define-material noise ()
-  (:uniforms (:time 'pyx:get-running-time)))
+  (:uniforms (:time (pyx:as-uniform 'pyx:get-running-time))))
 
 (pyx:define-material noise/perlin-3d (noise)
   (:shader shader:noise/perlin-3d))

@@ -49,7 +49,7 @@
 
 (pyx:define-material font ()
   (:shader pyx.shader:font
-   :uniforms (:res 'pyx:get-viewport-dimensions
+   :uniforms (:res (pyx:as-uniform 'pyx:get-viewport-dimensions)
               :sampler 'font
               :color (v4:vec 0 1 0 0.75))))
 

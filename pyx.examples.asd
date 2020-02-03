@@ -27,6 +27,7 @@
    (:file "effect-ocean-waves/definitions")
    (:file "graph/shader")
    (:file "graph/definitions")
+   (:file "mesh/shader")
    (:file "mesh/definitions")
    (:file "noise/shaders")
    (:file "noise/definitions")

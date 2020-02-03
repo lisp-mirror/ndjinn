@@ -43,8 +43,7 @@
                 (setf (aref pos i) (v2:vec x y)
                       (aref size i) (v2:vec w h)
                       (u:href (sprites object) id) i)))
-        :finally (shader:write-shader-buffer (texture object)
-                                             :pos pos)
+        :finally (shader:write-shader-buffer (texture-name object) :pos pos)
                  (shader:write-shader-buffer (texture-name object) :size size)))
 
 (defun make-spritesheet (texture-name)

@@ -105,7 +105,7 @@
   (res.img:load source))
 
 (defmethod load-source-image (spec (source list) &key)
-  (map nil #'res.img:load source))
+  (mapcar #'res.img:load source))
 
 (defun load (name &key width height)
   (res:with-resource-cache :texture name

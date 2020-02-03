@@ -1,5 +1,11 @@
 (in-package #:pyx.examples.shader)
 
+(defconstant +albedo+ 0)
+(defconstant +ao+ 1)
+(defconstant +emissive+ 2)
+(defconstant +metal-roughness+ 3)
+(defconstant +normal+ 4)
+
 (defstruct material-info
   (perceptual-roughness :float :accessor perceptual-roughness)
   (reflectance0 :vec3 :accessor reflectance0)
@@ -111,7 +117,7 @@
          (shade (get-point-shade point-to-light material-info normal view)))
     (* (intensity light) (color light) shade)))
 
-(defun get-normal ((sampler :sampler-2d)
+(defun get-normal ((sampler :sampler-2d-array)
                    (normal-scale :float)
                    (uv :vec2)
                    (world-position :vec3)
@@ -125,7 +131,7 @@
                 (- (* (.s tex-dx) (.t tex-dy))
                    (* (.s tex-dy) (.t tex-dx)))))
          (ng (cross pos-dx pos-dy))
-         (n (.rgb (texture sampler uv))))
+         (n (.rgb (texture sampler (vec3 uv +normal+)))))
     (normalize (* tbn (- (* n 2) (vec3 1))
                   (vec3 normal-scale normal-scale 1)))))
 
@@ -156,23 +162,20 @@
                       &uniforms
                       (view :mat4)
                       (light light-info)
-                      (base-color-sampler :sampler-2d)
+                      (sampler :sampler-2d-array)
                       (base-color-factor :vec4)
-                      (metallic-roughness-sampler :sampler-2d)
                       (metallic-factor :float)
                       (roughness-factor :float)
-                      (normal-sampler :sampler-2d)
                       (normal-scale :float)
-                      (occlusion-sampler :sampler-2d)
                       (occlusion-strength :float)
-                      (emissive-sampler :sampler-2d)
                       (emissive-factor :float))
   (let* ((uv (vec2 (.x uv) (- 1 (.y uv))))
          (f0 (vec3 0.04))
-         (mr-sample (texture metallic-roughness-sampler uv))
+         (mr-sample (texture sampler (vec3 uv +metal-roughness+)))
          (perceptual-roughness (* (.g mr-sample) roughness-factor))
          (metallic (* (.b mr-sample) metallic-factor))
-         (base-color (* (umbra.color:srgb->rgb (texture base-color-sampler uv))
+         (base-color (* (umbra.color:srgb->rgb
+                         (texture sampler (vec3 uv +albedo+)))
                         base-color-factor))
          (diffuse-color (* (.rgb base-color)
                            (- (vec3 1) f0)
@@ -191,12 +194,12 @@
                                             diffuse-color
                                             specular-environment-r90
                                             specular-color))
-         (normal (get-normal normal-sampler normal-scale uv world-pos tbn))
+         (normal (get-normal sampler normal-scale uv world-pos tbn))
          (color (apply-directional-light light material-info normal camera-pos))
-         (ao (.r (texture occlusion-sampler uv)))
+         (ao (.r (texture sampler (vec3 uv +ao+))))
          (color (mix color (* color ao) occlusion-strength))
          (emissive (* (.rgb (umbra.color:srgb->rgb
-                             (texture emissive-sampler uv)))
+                             (texture sampler (vec3 uv +emissive+))))
                       emissive-factor))
          (color (+ color emissive)))
     (vec4 (umbra.color:rgb->srgb

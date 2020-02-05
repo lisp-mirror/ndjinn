@@ -27,20 +27,23 @@
   (intensity :float :accessor intensity))
 
 (defun get-ibl-contribution ((material-info material-info)
-                             (n :vec3)
-                             (v :vec3)
+                             (normal :vec3)
+                             (view-dir :vec3)
                              (brdf-lut :sampler-2d)
                              (diffuse-sampler :sampler-cube)
                              (specular-sampler :sampler-cube))
   (with-slots (perceptual-roughness diffuse-color specular-color) material-info
-    (let* ((n-dot-v (clamp (dot n v) 0 1))
-           (lod (clamp (* perceptual-roughness 9) 0 9))
-           (reflection (normalize (reflect v n)))
+    (let* ((n-dot-v (clamp (dot normal view-dir) 0 1))
+           (specular-mipmaps (texture-query-levels specular-sampler))
+           (lod (clamp (* perceptual-roughness specular-mipmaps)
+                       0
+                       specular-mipmaps))
+           (reflection (normalize (reflect view-dir normal)))
            (brdf-sample-point (clamp (vec2 n-dot-v perceptual-roughness)
                                      (vec2 0)
                                      (vec2 1)))
            (brdf (.rg (texture brdf-lut brdf-sample-point)))
-           (diffuse-sample (texture diffuse-sampler n))
+           (diffuse-sample (texture diffuse-sampler normal))
            (specular-sample (texture specular-sampler reflection lod))
            (diffuse-light (.rgb (umbra.color:srgb->rgb diffuse-sample)))
            (specular-light (.rgb (umbra.color:srgb->rgb specular-sample)))
@@ -135,9 +138,9 @@
 (defun apply-directional-light ((light light-info)
                                 (material-info material-info)
                                 (normal :vec3)
-                                (view :vec3))
+                                (view-dir :vec3))
   (let* ((point-to-light (- (normalize (direction light))))
-         (shade (get-point-shade point-to-light material-info normal view)))
+         (shade (get-point-shade point-to-light material-info normal view-dir)))
     (* (intensity light) (color light) shade)))
 
 (defun get-normal ((sampler :sampler-2d-array)
@@ -171,19 +174,19 @@
            (tangent-w (normalize (vec3 (* model (vec4 (.xyz mesh/tangent) 0)))))
            (bitangent-w (* (cross normal-w tangent-w)) (.w mesh/tangent))
            (tbn (mat3 tangent-w bitangent-w normal-w))
-           (camera-pos (.xyz (aref (inverse view) 3))))
+           (camera-pos (.xyz (aref (inverse view) 3)))
+           (view-dir (normalize (- camera-pos world-pos))))
       (values (* proj view pos)
               world-pos
-              camera-pos
+              view-dir
               tbn
               mesh/uv1))))
 
 (defun pbr-mesh/frag ((world-pos :vec3)
-                      (camera-pos :vec3)
+                      (view-dir :vec3)
                       (tbn :mat3)
                       (uv :vec2)
                       &uniforms
-                      (view :mat4)
                       (light light-info)
                       (sampler :sampler-2d-array)
                       (base-color-factor :vec4)
@@ -224,7 +227,6 @@
                                             specular-color))
          (color (vec3 0))
          (normal (get-normal sampler normal-scale uv world-pos tbn))
-         (view-pos (normalize (- camera-pos world-pos)))
          (ao (.r (texture sampler (vec3 uv +ao+))))
          (emissive (* (.rgb (umbra.color:srgb->rgb
                              (texture sampler (vec3 uv +emissive+))))
@@ -233,11 +235,11 @@
       (incf color (apply-directional-light light
                                            material-info
                                            normal
-                                           view-pos)))
+                                           view-dir)))
     (when use-ibl
       (incf color (get-ibl-contribution material-info
                                         normal
-                                        view-pos
+                                        view-dir
                                         brdf-lut
                                         diffuse-sampler
                                         specular-sampler)))

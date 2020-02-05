@@ -31,9 +31,12 @@
    (%target :reader target
             :initarg :camera/target
             :initform nil)
-   (%target-z-axis-p :reader target-z-axis-p
-                     :initarg :camera/target-z-axis-p
-                     :initform nil)
+   (%target-z-axis :reader target-z-axis
+                   :initarg :camera/target-z-axis
+                   :initform nil)
+   (%translate-view :reader translate-view
+                    :initarg :camera/translate-view
+                    :initform t)
    (%view :reader view
           :initform (m4:mat 1))
    (%projection :reader projection
@@ -70,17 +73,19 @@
     (tfm:initialize-rotation (c/transform:rotation entity) rotation)))
 
 (defun set-camera-view (entity)
-  (with-slots (%target %target-z-axis-p %viewport) entity
+  (with-slots (%view %target %target-z-axis %viewport %translate-view) entity
     (let* ((model (c/transform:model entity))
            (eye (if %target
                     (v3:with-components ((v (m4:get-translation
                                              (c/transform:model %target))))
                       (v3:+ (m4:get-translation model)
-                            (if %target-z-axis-p v (v3:vec vx vy))))
+                            (if %target-z-axis v (v3:vec vx vy))))
                     (m4:get-translation model)))
            (target (v3:+ eye (v3:negate (m4:rotation-axis-to-vec3 model :z))))
            (up (m4:rotation-axis-to-vec3 model :y)))
-      (m4:set-view! (view entity) eye target up)
+      (m4:set-view! %view eye target up)
+      (unless %translate-view
+        (m4:set-translation! %view %view v3:+zero+))
       (vp:configure %viewport))))
 
 (defun zoom-camera (entity direction)

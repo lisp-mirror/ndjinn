@@ -40,4 +40,6 @@
    (:file "multi-pass/definitions")
    (:file "collider/definitions")
    (:file "viewports/definitions")
-   (:file "font/definitions")))
+   (:file "font/definitions")
+   (:file "skybox/shader")
+   (:file "skybox/definitions")))

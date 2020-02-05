@@ -179,6 +179,7 @@
   (#:util #:%pyx.util))
 
 (define-local-nicknames #:%pyx.display
+  (#:a #:alexandria)
   (#:c/render #:%pyx.component.render)
   (#:cfg #:%pyx.config)
   (#:clock #:%pyx.clock)

@@ -41,7 +41,8 @@
     (setf (ctx:display) display)))
 
 (defun kill ()
-  (sdl2:destroy-window (window (ctx:display)))
+  (a:when-let ((display (ctx:display)))
+    (sdl2:destroy-window (window display)))
   (sdl2:sdl-quit))
 
 (defun render (display)

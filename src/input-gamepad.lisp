@@ -75,14 +75,14 @@
                          (1+ (hash-table-count %gamepad-instances))))))
 
 (defun prepare-gamepads ()
-  (let ((database (res:resolve-path "gamepads.db")))
+  (let ((database (res:resolve-path "data/gamepads.db")))
     (sdl2:game-controller-add-mappings-from-file (namestring database))
     (sdl2-ffi.functions:sdl-set-hint
      sdl2-ffi:+sdl-hint-joystick-allow-background-events+ "1")))
 
 (defun shutdown-gamepads ()
-  (let* ((data (ctx:input-data))
-         (instances (gamepad-instances data)))
+  (a:when-let* ((data (ctx:input-data))
+                (instances (gamepad-instances data)))
     (u:do-hash-values (v instances)
       (sdl2:game-controller-close (gamepad-handle v)))
     (clrhash instances)))

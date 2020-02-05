@@ -27,8 +27,6 @@
          (spec (res:resolve-path
                 (make-pathname :defaults (tex:source texture-spec)
                                :type "spec"))))
-    (unless (uiop:file-exists-p spec)
-      (error "Spritesheet spec file ~s could not be found." spec))
     (u:safe-read-file-form spec)))
 
 (defmethod shader:update-shader-buffer ((object spritesheet))

@@ -32,8 +32,6 @@
            (source (tex:source texture-spec))
            (spec (res:resolve-path
                   (make-pathname :defaults source :type "json"))))
-      (unless (uiop:file-exists-p spec)
-        (error "Font metadata file ~s could not be found." spec))
       (setf %spec (res:with-resource-cache :font %texture
                     (with-open-file (in spec)
                       (3b-bmfont-json:read-bmfont-json in)))))))

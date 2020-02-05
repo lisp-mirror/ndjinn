@@ -131,7 +131,8 @@
       (attach framebuffer (attachment-name attachment)))))
 
 (live:on-recompile :framebuffer data ()
-  (let ((spec (find-spec data)))
-    (attach-all (find data))
+  (a:when-let ((spec (find-spec data))
+               (data (find data)))
+    (attach-all data)
     (dolist (material (materials spec))
       (tp:enqueue :recompile (list :material material)))))

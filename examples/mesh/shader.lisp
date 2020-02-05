@@ -26,6 +26,29 @@
   (color :vec3 :accessor color)
   (intensity :float :accessor intensity))
 
+(defun get-ibl-contribution ((material-info material-info)
+                             (n :vec3)
+                             (v :vec3)
+                             (brdf-lut :sampler-2d)
+                             (diffuse-sampler :sampler-cube)
+                             (specular-sampler :sampler-cube))
+  (with-slots (perceptual-roughness diffuse-color specular-color) material-info
+    (let* ((n-dot-v (clamp (dot n v) 0 1))
+           (lod (clamp (* perceptual-roughness 9) 0 9))
+           (reflection (normalize (reflect v n)))
+           (brdf-sample-point (clamp (vec2 n-dot-v perceptual-roughness)
+                                     (vec2 0)
+                                     (vec2 1)))
+           (brdf (.rg (texture brdf-lut brdf-sample-point)))
+           (diffuse-sample (texture diffuse-sampler n))
+           (specular-sample (texture specular-sampler reflection lod))
+           (diffuse-light (.rgb (umbra.color:srgb->rgb diffuse-sample)))
+           (specular-light (.rgb (umbra.color:srgb->rgb specular-sample)))
+           (diffuse (* diffuse-light diffuse-color))
+           (specular (* specular-light (+ (* specular-color (.x brdf))
+                                          (.y brdf)))))
+      (+ diffuse specular))))
+
 (defun get-angular-info ((point-to-light :vec3)
                          (normal :vec3)
                          (view :vec3))
@@ -168,7 +191,12 @@
                       (roughness-factor :float)
                       (normal-scale :float)
                       (occlusion-strength :float)
-                      (emissive-factor :float))
+                      (emissive-factor :float)
+                      (brdf-lut :sampler-2d)
+                      (diffuse-sampler :sampler-cube)
+                      (specular-sampler :sampler-cube)
+                      (use-punctual :bool)
+                      (use-ibl :bool))
   (let* ((uv (vec2 (.x uv) (- 1 (.y uv))))
          (f0 (vec3 0.04))
          (mr-sample (texture sampler (vec3 uv +metal-roughness+)))
@@ -194,16 +222,28 @@
                                             diffuse-color
                                             specular-environment-r90
                                             specular-color))
+         (color (vec3 0))
          (normal (get-normal sampler normal-scale uv world-pos tbn))
-         (color (apply-directional-light light material-info normal camera-pos))
+         (view-pos (normalize (- camera-pos world-pos)))
          (ao (.r (texture sampler (vec3 uv +ao+))))
-         (color (mix color (* color ao) occlusion-strength))
          (emissive (* (.rgb (umbra.color:srgb->rgb
                              (texture sampler (vec3 uv +emissive+))))
-                      emissive-factor))
-         (color (+ color emissive)))
-    (vec4 (umbra.color:rgb->srgb
-           (umbra.color:tone-map/aces color 1))
+                      emissive-factor)))
+    (when use-punctual
+      (incf color (apply-directional-light light
+                                           material-info
+                                           normal
+                                           view-pos)))
+    (when use-ibl
+      (incf color (get-ibl-contribution material-info
+                                        normal
+                                        view-pos
+                                        brdf-lut
+                                        diffuse-sampler
+                                        specular-sampler)))
+    (setf color (mix color (* color ao) occlusion-strength))
+    (incf color emissive)
+    (vec4 (umbra.color:rgb->srgb (umbra.color:tone-map/aces color 1))
           (.a base-color))))
 
 (define-shader pbr-mesh ()

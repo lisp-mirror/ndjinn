@@ -1,7 +1,7 @@
 (in-package #:pyx.examples)
 
 (pyx:define-texture effect/rainy-window ()
-  (:source "city.png"))
+  (:source "data/textures/city.png"))
 
 (pyx:define-material effect/rainy-window ()
   (:shader umbra.effects:window-rain

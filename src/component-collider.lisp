@@ -25,7 +25,7 @@
       (error "Entity ~s has a collider to be visualized, but it must not have ~
               a mesh or render component attached." entity))
     (ent:attach-component entity 'c/mesh:mesh
-                          :mesh/file "colliders.glb"
+                          :mesh/file "data/mesh/colliders.glb"
                           :mesh/name (format nil "~(~a~)" (shape entity)))
     (ent:attach-component entity 'c/render:render
                           :render/materials '(ext:collider))))

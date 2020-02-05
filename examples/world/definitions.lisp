@@ -19,7 +19,7 @@
   (:uniforms (:cell-type 1)))
 
 (pyx:define-prefab tile (:add (pyx:mesh pyx:render))
-  :mesh/file "tiles.glb")
+  :mesh/file "data/mesh/tiles.glb")
 
 (pyx:define-prefab tile/floor (:template tile)
   :transform/scale (v3:vec 0.5 0.5 0.1)

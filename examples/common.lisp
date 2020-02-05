@@ -42,7 +42,7 @@
   :camera/clip-far 1000)
 
 (pyx:define-prefab quad (:add (pyx:mesh pyx:render))
-  :mesh/file "plane.glb"
+  :mesh/file "data/mesh/plane.glb"
   :mesh/name "plane"
   :render/materials '(ext:quad))
 

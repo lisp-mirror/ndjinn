@@ -14,7 +14,7 @@
 ;;; built-in resources
 
 (tex:define-texture debug ()
-  (:source "debug.png"))
+  (:source "data/textures/debug.png"))
 
 (mat:define-material full-quad ()
   (:shader pyx.shader:full-quad

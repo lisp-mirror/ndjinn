@@ -1,7 +1,7 @@
 (in-package #:pyx.examples)
 
 (pyx:define-texture sprites ()
-  (:source "sprites.png"))
+  (:source "data/sprites.png"))
 
 (pyx:define-material sprite ()
   (:shader umbra.sprite:sprite

@@ -45,7 +45,7 @@
 
 (pyx:define-texture font ()
   (:generate-mipmaps nil
-   :source "core-font.png"))
+   :source "data/font/core-font.png"))
 
 (pyx:define-material font ()
   (:shader pyx.shader:font

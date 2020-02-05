@@ -5,14 +5,15 @@
                  (:predicate nil)
                  (:copier nil))
   name
-  source
+  texture-type
   spec-width
   spec-height
   pixel-format
   pixel-type
   internal-format
   generate-mipmaps
-  parameters)
+  parameters
+  source)
 
 (u:define-printer (spec stream)
   (format stream "~s" (name spec)))
@@ -21,17 +22,18 @@
   (or (u:href meta:=textures= name)
       (error "Texture ~s is not defined." name)))
 
-(defun update-spec (name source width height pixel-format pixel-type
+(defun update-spec (name type source width height pixel-format pixel-type
                     internal-format generate-mipmaps parameters)
   (let ((spec (find-spec name)))
-    (setf (source spec) source
+    (setf (texture-type spec) type
           (spec-width spec) width
           (spec-height spec) height
-          (pixel-format spec) pixel-format
-          (pixel-type spec) pixel-type
-          (internal-format spec) internal-format
+          (pixel-format spec) (or pixel-format :rgba)
+          (pixel-type spec) (or pixel-type :unsigned-byte)
+          (internal-format spec) (or internal-format :rgba8)
           (generate-mipmaps spec) generate-mipmaps
-          (parameters spec) parameters)
+          (parameters spec) parameters
+          (source spec) source)
     (tp:enqueue :recompile (list :texture name))))
 
 (defun make-spec (name &rest args)
@@ -72,8 +74,7 @@
 
 ;;; Public API
 
-(defmacro define-texture (name options &body body)
-  (declare (ignore options))
+(defmacro define-texture (name (&optional (type :2d)) &body body)
   (destructuring-bind (&rest args
                        &key source width height (generate-mipmaps t)
                          pixel-format pixel-type internal-format
@@ -81,9 +82,9 @@
       (car body)
     (let ((parameters (make-parameters args)))
       `(if (u:href meta:=textures= ',name)
-           (update-spec ',name ',source ,width ,height ,pixel-format
+           (update-spec ',name ,type ',source ,width ,height ,pixel-format
                         ,pixel-type ,internal-format ,generate-mipmaps
                         ',parameters)
-           (make-spec ',name ',source ,width ,height ,pixel-format
+           (make-spec ',name ,type ',source ,width ,height ,pixel-format
                       ,pixel-type ,internal-format ,generate-mipmaps
                       ',parameters)))))

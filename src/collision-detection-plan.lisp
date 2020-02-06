@@ -41,3 +41,5 @@
     `(if (u:href meta:=collider-plans= ',name)
          (update-plan-spec ',name ',layers ',plan)
          (make-plan-spec ',name ',layers ',plan))))
+
+(define-collider-plan :default ())

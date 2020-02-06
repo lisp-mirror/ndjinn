@@ -18,6 +18,14 @@
            :initform nil))
   (:sorting :after render))
 
+(pyx:define-material collider ()
+  (:shader pyx.shader:collider
+   :uniforms (:hit-color (v4:vec 0 1 0 1)
+              :miss-color (v4:vec 1 0 0 1))
+   :features (:enable (:line-smooth)
+              :polygon-mode :line
+              :line-width 1.0)))
+
 (defun initialize-collider-visualization (entity)
   (when (visualize entity)
     (when (or (ent:has-component-p entity 'c/mesh:mesh)
@@ -25,10 +33,10 @@
       (error "Entity ~s has a collider to be visualized, but it must not have ~
               a mesh or render component attached." entity))
     (ent:attach-component entity 'c/mesh:mesh
-                          :mesh/file "data/mesh/colliders.glb"
+                          :mesh/asset "meshes/colliders.glb"
                           :mesh/name (format nil "~(~a~)" (shape entity)))
     (ent:attach-component entity 'c/render:render
-                          :render/materials '(ext:collider))))
+                          :render/materials '(collider))))
 
 (defmethod cd:%on-collision-enter ((contact1 collider) (contact2 collider))
   (let ((targets (cd:callback-entities

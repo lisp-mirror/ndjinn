@@ -10,6 +10,40 @@
    #:opacity
    #:sprite))
 
+(define-package #:%pyx.asset
+  (:use #:cl)
+  ;; public
+  (:export
+   #:define-asset-pool
+   #:delete-asset
+   #:find-asset
+   #:resolve-path
+   #:with-asset-cache))
+
+(define-package #:%pyx.asset.image
+  (:use #:cl)
+  (:shadow
+   #:load)
+  (:export
+   #:data
+   #:height
+   #:image
+   #:internal-format
+   #:load
+   #:pixel-format
+   #:pixel-type
+   #:width))
+
+(define-package #:%pyx.asset.mesh
+  (:use #:cl)
+  (:shadow
+   #:load)
+  (:export
+   #:draw-func
+   #:load
+   #:meshes
+   #:primitives))
+
 (define-package #:%pyx.avl-tree
   (:use #:cl)
   (:shadow
@@ -223,13 +257,13 @@
   (:use #:cl)
   (:export
    #:*context*
+   #:assets
    #:clock
    #:current-scene
    #:display
    #:framebuffers
    #:input-data
    #:make-context
-   #:resources
    #:running-p
    #:scenes
    #:shaders))
@@ -383,6 +417,7 @@
   (:export
    #:=animation-states=
    #:=animation-sequences=
+   #:=asset-pools=
    #:=collider-plans=
    #:=framebuffers=
    #:=geometry=
@@ -418,40 +453,6 @@
   ;; public
   (:export
    #:define-render-pass))
-
-(define-package #:%pyx.resource
-  (:use #:cl)
-  (:export
-   #:resolve-path)
-  ;; public api
-  (:export
-   #:delete-resource
-   #:find-resource
-   #:with-resource-cache))
-
-(define-package #:%pyx.resource.image
-  (:use #:cl)
-  (:shadow
-   #:load)
-  (:export
-   #:data
-   #:height
-   #:image
-   #:internal-format
-   #:load
-   #:pixel-format
-   #:pixel-type
-   #:width))
-
-(define-package #:%pyx.resource.mesh
-  (:use #:cl)
-  (:shadow
-   #:load)
-  (:export
-   #:draw-func
-   #:load
-   #:meshes
-   #:primitives))
 
 (define-package #:%pyx.scene
   (:use #:cl)

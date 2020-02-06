@@ -13,6 +13,23 @@
   (#:meta #:%pyx.metadata)
   (#:u #:golden-utils))
 
+(define-local-nicknames #:%pyx.asset
+  (#:a #:alexandria)
+  (#:asset.mesh #:%pyx.asset.mesh)
+  (#:cfg #:%pyx.config)
+  (#:ctx #:%pyx.context)
+  (#:meta #:%pyx.metadata)
+  (#:u #:golden-utils))
+
+(define-local-nicknames #:%pyx.asset.image
+  (#:a #:alexandria)
+  (#:asset #:%pyx.asset))
+
+(define-local-nicknames #:%pyx.asset.mesh
+  (#:a #:alexandria)
+  (#:parse #:%pyx.binary-parser)
+  (#:u #:golden-utils))
+
 (define-local-nicknames #:%pyx.avl-tree
   (#:a #:alexandria)
   (#:u #:golden-utils))
@@ -55,7 +72,6 @@
   (#:a #:alexandria)
   (#:c/transform #:%pyx.component.transform)
   (#:ent #:%pyx.entity)
-  (#:ext #:pyx.extension)
   (#:in #:%pyx.input)
   (#:m4 #:origin.mat4)
   (#:math #:origin)
@@ -71,16 +87,16 @@
   (#:cd #:%pyx.collision-detection)
   (#:ctx #:%pyx.context)
   (#:ent #:%pyx.entity)
-  (#:ext #:pyx.extension)
   (#:mat #:%pyx.material)
-  (#:scene #:%pyx.scene))
+  (#:scene #:%pyx.scene)
+  (#:v4 #:origin.vec4))
 
 (define-local-nicknames #:%pyx.component.font
+  (#:asset #:%pyx.asset)
   (#:c/transform #:%pyx.component.transform)
   (#:clock #:%pyx.clock)
   (#:ent #:%pyx.entity)
   (#:geom #:%pyx.geometry)
-  (#:res #:%pyx.resource)
   (#:tex #:%pyx.texture)
   (#:u #:golden-utils)
   (#:ui.font #:%pyx.ui.font)
@@ -98,9 +114,9 @@
   (#:uuid #:%pyx.uuid))
 
 (define-local-nicknames #:%pyx.component.mesh
+  (#:asset #:%pyx.asset)
+  (#:asset.mesh #:%pyx.asset.mesh)
   (#:ent #:%pyx.entity)
-  (#:res #:%pyx.resource)
-  (#:res.mesh #:%pyx.resource.mesh)
   (#:u #:golden-utils))
 
 (define-local-nicknames #:%pyx.component.node
@@ -126,10 +142,10 @@
   (#:vp #:%pyx.viewport))
 
 (define-local-nicknames #:%pyx.component.sprite
+  (#:asset #:%pyx.asset)
   (#:c/render #:%pyx.component.render)
   (#:ent #:%pyx.entity)
   (#:mat #:%pyx.material)
-  (#:res #:%pyx.resource)
   (#:shader #:%pyx.shader)
   (#:tex #:%pyx.texture)
   (#:u #:golden-utils)
@@ -217,7 +233,7 @@
 
 (define-local-nicknames #:%pyx.input
   (#:a #:alexandria)
-  (#:res #:%pyx.resource)
+  (#:asset #:%pyx.asset)
   (#:cfg #:%pyx.config)
   (#:ctx #:%pyx.context)
   (#:u #:golden-utils)
@@ -231,7 +247,6 @@
   (#:a #:alexandria)
   (#:c/render #:%pyx.component.render)
   (#:ctx #:%pyx.context)
-  (#:ext #:pyx.extension)
   (#:fb #:%pyx.framebuffer)
   (#:live #:%pyx.live-support)
   (#:meta #:%pyx.metadata)
@@ -284,28 +299,12 @@
   (#:v4 #:origin.vec4)
   (#:vp #:%pyx.viewport))
 
-(define-local-nicknames #:%pyx.resource
-  (#:a #:alexandria)
-  (#:u #:golden-utils)
-  (#:cfg #:%pyx.config)
-  (#:ctx #:%pyx.context))
-
-(define-local-nicknames #:%pyx.resource.image
-  (#:a #:alexandria)
-  (#:res #:%pyx.resource))
-
-(define-local-nicknames #:%pyx.resource.mesh
-  (#:a #:alexandria)
-  (#:parse #:%pyx.binary-parser)
-  (#:u #:golden-utils))
-
 (define-local-nicknames #:%pyx.scene
   (#:a #:alexandria)
   (#:c/node #:%pyx.component.node)
   (#:cd #:%pyx.collision-detection)
   (#:ctx #:%pyx.context)
   (#:ent #:%pyx.entity)
-  (#:ext #:pyx.extension)
   (#:live #:%pyx.live-support)
   (#:meta #:%pyx.metadata)
   (#:render #:%pyx.render)
@@ -324,11 +323,11 @@
 
 (define-local-nicknames #:%pyx.texture
   (#:a #:alexandria)
+  (#:asset #:%pyx.asset)
+  (#:asset.img #:%pyx.asset.image)
   (#:ctx #:%pyx.context)
   (#:live #:%pyx.live-support)
   (#:meta #:%pyx.metadata)
-  (#:res #:%pyx.resource)
-  (#:res.img #:%pyx.resource.image)
   (#:tp #:%pyx.thread-pool)
   (#:u #:golden-utils)
   (#:v4 #:origin.vec4))
@@ -371,11 +370,3 @@
   (#:tp #:%pyx.thread-pool)
   (#:u #:golden-utils)
   (#:v2 #:origin.vec2))
-
-(define-local-nicknames #:pyx.extension
-  (#:cd #:%pyx.collision-detection)
-  (#:mat #:%pyx.material)
-  (#:render #:%pyx.render)
-  (#:tex #:%pyx.texture)
-  (#:v4 #:origin.vec4)
-  (#:vp #:%pyx.viewport))

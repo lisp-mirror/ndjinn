@@ -35,3 +35,6 @@
     `(if (u:href meta:=viewports= ',name)
          (update-spec ',name ,x ,y ,width ,height)
          (make-spec ',name ,x ,y ,width ,height))))
+
+(define-viewport :default ()
+  (:x 0 :y 0 :width 1 :height 1))

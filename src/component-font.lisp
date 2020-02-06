@@ -1,9 +1,9 @@
 (in-package #:%pyx.component.font)
 
 (ent:define-component font ()
-  ((%texture :reader texture
-             :initarg :font/texture
-             :initform nil)
+  ((%asset :reader asset
+           :initarg :font/asset
+           :initform nil)
    (%geometry :reader geometry
               :initarg :font/geometry
               :initform nil)
@@ -25,15 +25,12 @@
   (:sorting :after render))
 
 (defun load-font-spec (entity)
-  (with-slots (%texture %spec) entity
-    (unless %texture
-      (error "Font component ~s does not have a spec." entity))
-    (let* ((texture-spec (tex:find-spec %texture))
-           (source (tex:source texture-spec))
-           (spec (res:resolve-path
-                  (make-pathname :defaults source :type "json"))))
-      (setf %spec (res:with-resource-cache :font %texture
-                    (with-open-file (in spec)
+  (with-slots (%asset %spec) entity
+    (unless %asset
+      (error "Font component ~s does not have an asset specified." entity))
+    (let ((path (asset:resolve-path %asset)))
+      (setf %spec (asset:with-asset-cache :font path
+                    (with-open-file (in path)
                       (3b-bmfont-json:read-bmfont-json in)))))))
 
 (defun load-font-geometry (entity)

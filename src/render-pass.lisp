@@ -43,3 +43,7 @@
     `(if (u:href meta:=render-passes= ',name)
          (update-pass-spec ',name ',framebuffer ,clear-color ',clear-buffers)
          (make-pass-spec ',name ',framebuffer ,clear-color ',clear-buffers))))
+
+(define-render-pass :default ()
+  (:clear-color (v4:vec 0 0 0 1)
+   :clear-buffers (:color :depth)))

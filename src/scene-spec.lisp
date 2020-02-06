@@ -31,7 +31,7 @@
                        (if (listp x) x (list x x)))
                      sub-trees))
          (viewports (or viewports
-                        `((ext:default ,(mapcar #'car sub-trees))))))
+                        `((:default ,(mapcar #'car sub-trees))))))
     (dolist (pass passes)
       (a:if-let ((pass-spec (u:href meta:=render-passes= pass)))
         (setf (u:href pass-table pass) pass-spec)
@@ -71,9 +71,9 @@
 
 (defmacro define-scene (name options &body body)
   (declare (ignore options))
-  (destructuring-bind (&key sub-trees viewports (passes '(ext:default))
+  (destructuring-bind (&key sub-trees viewports (passes '(:default))
                          (draw-order '(:default))
-                         (collider-plan 'ext:default))
+                         (collider-plan :default))
       (car body)
     `(if (u:href meta:=scenes= ',name)
          (update-spec ',name ',sub-trees ',viewports ',passes ',draw-order

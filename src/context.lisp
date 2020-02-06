@@ -10,7 +10,7 @@
   (framebuffers (u:dict #'eq))
   display
   input-data
-  (resources (u:dict #'eq))
+  (assets (u:dict #'eq))
   shaders
   (running t))
 
@@ -44,8 +44,8 @@
 (defun (setf input-data) (value)
   (setf (context-input-data *context*) value))
 
-(defun resources ()
-  (context-resources *context*))
+(defun assets ()
+  (context-assets *context*))
 
 (defun shaders ()
   (context-shaders *context*))

@@ -15,7 +15,7 @@
           :initform :perspective)
    (%viewport :accessor viewport
               :initarg :camera/viewport
-              :initform 'ext:default)
+              :initform :default)
    (%clip-near :reader clip-near
                :initarg :camera/clip-near
                :initform 0.1)

@@ -25,8 +25,8 @@
 
 (defmethod make-texture (spec (type (eql :2d)) source)
   (let* ((id (gl:create-texture :texture-2d))
-         (width (res.img:width source))
-         (height (res.img:height source))
+         (width (asset.img:width source))
+         (height (asset.img:height source))
          (texture (%make-texture :spec spec
                                  :target type
                                  :id id
@@ -34,26 +34,26 @@
                                  :height height)))
     (gl:texture-storage-2d id
                            (calculate-mipmap-levels spec width height)
-                           (res.img:internal-format source)
+                           (asset.img:internal-format source)
                            width
                            height)
-    (a:when-let ((data (res.img:data source)))
+    (a:when-let ((data (asset.img:data source)))
       (gl:texture-sub-image-2d id
                                0
                                0
                                0
                                width
                                height
-                               (res.img:pixel-format source)
-                               (res.img:pixel-type source)
+                               (asset.img:pixel-format source)
+                               (asset.img:pixel-type source)
                                data))
     texture))
 
 (defmethod make-texture (spec (type (eql :2d-array)) source)
   (let* ((id (gl:create-texture :texture-2d-array))
          (layer0 (first source))
-         (width (res.img:width layer0))
-         (height (res.img:height layer0))
+         (width (asset.img:width layer0))
+         (height (asset.img:height layer0))
          (texture (%make-texture :spec spec
                                  :target type
                                  :id id
@@ -61,7 +61,7 @@
                                  :height height)))
     (gl:texture-storage-3d id
                            (calculate-mipmap-levels spec width height)
-                           (res.img:internal-format layer0)
+                           (asset.img:internal-format layer0)
                            width
                            height
                            (length source))
@@ -72,19 +72,19 @@
                                        0
                                        0
                                        layer
-                                       (res.img:width image)
-                                       (res.img:height image)
+                                       (asset.img:width image)
+                                       (asset.img:height image)
                                        1
-                                       (res.img:pixel-format image)
-                                       (res.img:pixel-type image)
-                                       (res.img:data image)))
+                                       (asset.img:pixel-format image)
+                                       (asset.img:pixel-type image)
+                                       (asset.img:data image)))
     texture))
 
 (defmethod make-texture (spec (type (eql :cube-map)) source)
   (let* ((id (gl:create-texture :texture-cube-map))
          (layer0 (first source))
-         (width (res.img:width layer0))
-         (height (res.img:height layer0))
+         (width (asset.img:width layer0))
+         (height (asset.img:height layer0))
          (texture (%make-texture :spec spec
                                  :target type
                                  :id id
@@ -92,7 +92,7 @@
                                  :height height)))
     (gl:texture-storage-2d id
                            (calculate-mipmap-levels spec width height)
-                           (res.img:internal-format layer0)
+                           (asset.img:internal-format layer0)
                            width
                            height)
     (loop :for image :in source
@@ -102,12 +102,12 @@
                                        0
                                        0
                                        layer
-                                       (res.img:width image)
-                                       (res.img:height image)
+                                       (asset.img:width image)
+                                       (asset.img:height image)
                                        1
-                                       (res.img:pixel-format image)
-                                       (res.img:pixel-type image)
-                                       (res.img:data image)))
+                                       (asset.img:pixel-format image)
+                                       (asset.img:pixel-type image)
+                                       (asset.img:data image)))
     texture))
 
 (defun bind (texture unit)
@@ -122,19 +122,19 @@
       (gl:texture-parameter id k v))))
 
 (defun load-framebuffer-texture (spec width height)
-  (res.img:load nil
-                :width width
-                :height height
-                :pixel-format (pixel-format spec)
-                :pixel-type (pixel-type spec)
-                :internal-format (internal-format spec)))
+  (asset.img:load nil
+                  :width width
+                  :height height
+                  :pixel-format (pixel-format spec)
+                  :pixel-type (pixel-type spec)
+                  :internal-format (internal-format spec)))
 
 (defgeneric load-source (spec type &key &allow-other-keys)
   (:method :around (spec type &key)
     (let* ((source (call-next-method))
            (source-list (a:ensure-list source)))
-      (unless (and (every #'res.img:width source-list)
-                   (every #'res.img:height source-list))
+      (unless (and (every #'asset.img:width source-list)
+                   (every #'asset.img:height source-list))
         (error "Texture ~s does not have a width and height set." (name spec)))
       source)))
 
@@ -142,8 +142,8 @@
   (typecase (source spec)
     ((or null (integer 1 1))
      (load-framebuffer-texture spec width height))
-    (string
-     (res.img:load (source spec)))
+    (list
+     (asset.img:load (source spec)))
     (t (error "Unsupported source for 2D texture: ~s." (name spec)))))
 
 (defmethod load-source (spec (type (eql :2d-array)) &key width height)
@@ -155,8 +155,8 @@
        (loop :repeat (source spec)
              :collect (load-framebuffer-texture spec width height)))
       ((and (typep source 'a:proper-list)
-            (every #'stringp source))
-       (mapcar #'res.img:load source))
+            (every #'listp source))
+       (mapcar #'asset.img:load source))
       (t (error "Unsupported source for 2D array texture: ~s." (name spec))))))
 
 (defmethod load-source (spec (type (eql :cube-map)) &key width height)
@@ -168,16 +168,16 @@
              :collect (load-framebuffer-texture spec width height)))
       ((and (u:plist-p source)
             (a:set-equal (u:plist-keys source) valid-keys)
-            (every #'stringp (u:plist-values source)))
+            (every #'listp (u:plist-values source)))
        (loop :for (k v) :on source :by #'cddr
              :collect k :into result
-             :collect (res.img:load v) :into result
+             :collect (asset.img:load v) :into result
              :finally (destructuring-bind (&key x+ x- y+ y- z+ z-) result
                         (return (list x+ x- y+ y- z+ z-)))))
       (t (error "Unsupported source for cube map texture: ~s." (name spec))))))
 
 (defun load (name &key width height)
-  (res:with-resource-cache :texture name
+  (asset:with-asset-cache :texture name
     (let* ((spec (find-spec name))
            (type (texture-type spec))
            (source (load-source spec type :width width :height height))
@@ -186,7 +186,7 @@
       texture)))
 
 (live:on-recompile :texture data ()
-  (a:when-let ((texture (res:find-resource :texture data)))
+  (a:when-let ((texture (asset:find-asset :texture data)))
     (gl:delete-texture (id texture))
-    (res:delete-resource :texture data)
+    (asset:delete-asset :texture data)
     (load data :width (width texture) :height (height texture))))

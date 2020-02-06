@@ -4,6 +4,8 @@
   (:use #:cl)
   (:inherit-from #:%pyx.animation
                  #:define-animation-sequence)
+  (:inherit-from #:%pyx.asset
+                 #:define-asset-pool)
   (:inherit-from #:%pyx.clock
                  #:get-fps
                  #:get-frame-count
@@ -89,10 +91,11 @@
                  #:define-prefab)
   (:inherit-from #:%pyx.render
                  #:define-render-pass)
-  (:inherit-from #:%pyx.resource
-                 #:delete-resource
-                 #:find-resource
-                 #:with-resource-cache)
+  (:inherit-from #:%pyx.asset
+                 #:delete-asset
+                 #:find-asset
+                 #:resolve-path
+                 #:with-asset-cache)
   (:inherit-from #:%pyx.scene
                  #:define-scene
                  #:get-registered-scene-names
@@ -112,16 +115,3 @@
 
 (uiop:define-package #:pyx.shader
   (:use-reexport #:shadow.glsl #:umbra.common))
-
-(define-package #:pyx.extension
-  (:use #:cl)
-  (:inherit-from #:%pyx.animation
-                 #:opacity
-                 #:sprite)
-  (:export
-   #:collider
-   #:debug
-   #:default
-   #:full-quad
-   #:mesh
-   #:quad))

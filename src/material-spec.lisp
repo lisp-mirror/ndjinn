@@ -72,7 +72,7 @@
     (destructuring-bind (&optional framebuffer attachments) output
       (setf (master spec) master
             (shader spec) (or shader (and master-spec (shader master-spec)))
-            (pass spec) (or pass 'ext:default)
+            (pass spec) (or pass :default)
             (spec-framebuffer spec) framebuffer
             (spec-attachments spec) attachments
             (render-func spec) func)

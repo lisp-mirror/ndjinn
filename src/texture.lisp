@@ -156,7 +156,7 @@
              :collect (load-framebuffer-texture spec width height)))
       ((and (typep source 'a:proper-list)
             (every #'listp source))
-       (mapcar #'asset.img:load source))
+       (lp:pmapcar #'asset.img:load source))
       (t (error "Unsupported source for 2D array texture: ~s." (name spec))))))
 
 (defmethod load-source (spec (type (eql :cube-map)) &key width height)
@@ -171,9 +171,10 @@
             (every #'listp (u:plist-values source)))
        (loop :for (k v) :on source :by #'cddr
              :collect k :into result
-             :collect (asset.img:load v) :into result
+             :collect v :into result
              :finally (destructuring-bind (&key x+ x- y+ y- z+ z-) result
-                        (return (list x+ x- y+ y- z+ z-)))))
+                        (return (lp:pmapcar #'asset.img:load
+                                            (list x+ x- y+ y- z+ z-))))))
       (t (error "Unsupported source for cube map texture: ~s." (name spec))))))
 
 (defun load (name &key width height)

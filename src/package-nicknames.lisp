@@ -327,6 +327,7 @@
   (#:asset.img #:%pyx.asset.image)
   (#:ctx #:%pyx.context)
   (#:live #:%pyx.live-support)
+  (#:lp #:lparallel)
   (#:meta #:%pyx.metadata)
   (#:tp #:%pyx.thread-pool)
   (#:u #:golden-utils)

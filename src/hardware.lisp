@@ -13,8 +13,8 @@
   (or (handler-case (gl:get* name)
         (error (e)
           (declare (ignore e))
-          :unavailable))
-      :unavailable))
+          "Unavailable"))
+      "Unavailable"))
 
 (defun get-gpu-vendor-full ()
   (get-gpu-parameter :vendor))

@@ -7,10 +7,10 @@
   :source-control (:git "https://github.com/mfiano/pyx.git")
   :bug-tracker "https://github.com/mfiano/pyx/issues"
   :encoding :utf-8
-  :depends-on (#:pyx
-               #:pyx.examples
+  :depends-on (#:cl-renderdoc
                #:printv
-               #:cl-renderdoc)
+               #:pyx
+               #:pyx.examples)
   :pathname "src/dev"
   :serial t
   :components

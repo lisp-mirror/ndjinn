@@ -31,10 +31,9 @@
 
 (defun generate-uniform-func/sampler (material)
   (lambda (k v)
-    (let ((unit (texture-unit-state material))
-          (texture (tex:load v)))
+    (let ((unit (texture-unit-state material)))
       (incf (texture-unit-state material))
-      (tex:bind texture unit)
+      (tex:bind v unit)
       (shadow:uniform-int (shader (spec material)) k unit))))
 
 (defun generate-uniform-func/array (material type)
@@ -47,9 +46,8 @@
     (loop :with unit-state = (texture-unit-state material)
           :with unit-count = (+ unit-state dimensions)
           :for texture-name :in v
-          :for texture = (tex:load texture-name)
           :for unit :from unit-state :to unit-count
-          :do (tex:bind texture unit)
+          :do (tex:bind v unit)
           :collect unit :into units
           :finally (incf (texture-unit-state material) dimensions)
                    (shadow:uniform-int-array (shader (spec material))
@@ -74,13 +72,6 @@
            ((:bool :int :float :vec2 :vec3 :vec4 :mat2 :mat3 :mat4)
             (generate-uniform-func/array material type))))))))
 
-(defun resolve-uniform-value/sampler (uniform)
-  (let ((value (uniform-value uniform)))
-    (if (typep value 'symbol)
-        value
-        (error "Sampler uniform ~s must be a symbol denoting a texture."
-               (uniform-key uniform)))))
-
 (defun as-uniform (func)
   (lambda (entity)
     (declare (ignore entity))
@@ -89,16 +80,21 @@
 (defun resolve-uniform-value (entity uniform)
   (let ((value (uniform-value uniform)))
     (typecase value
-      (boolean value)
+      (null value)
       ((or symbol function) (funcall value entity))
       (t value))))
 
 (defun resolve-uniform-func (entity uniform)
   (funcall (uniform-func uniform)
            (uniform-key uniform)
-           (case (uniform-resolved-type uniform)
-             (:sampler (resolve-uniform-value/sampler uniform))
-             (t (resolve-uniform-value entity uniform)))))
+           (resolve-uniform-value entity uniform)))
+
+(defun load-uniform-texture (uniform)
+  (let ((value (uniform-value uniform)))
+    (when (eq (uniform-resolved-type uniform) :sampler)
+      (etypecase value
+        (symbol (setf (uniform-value uniform) (tex:load value)))
+        (list (setf (uniform-value uniform) (mapcar #'tex:load value)))))))
 
 ;;; Public API
 
@@ -111,5 +107,3 @@
         (setf (uniform-value uniform) v)
         (unless (uniform-func uniform)
           (register-uniform-func material uniform))))))
-
-()

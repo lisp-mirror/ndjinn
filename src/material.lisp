@@ -31,6 +31,7 @@
   (u:do-hash (k v (copy-spec-uniforms (spec material)))
     (let ((uniform (make-uniform :key k :value v)))
       (register-uniform-func material uniform)
+      (load-uniform-texture uniform)
       (setf (u:href (uniforms material) k) uniform))))
 
 (defun make-material (entity name)

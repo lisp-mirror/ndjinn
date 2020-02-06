@@ -8,6 +8,8 @@
   released-buffer-bindings)
 
 (defun initialize ()
+  (unless (ctx:display)
+    (error "Cannot initialize shaders without an active display."))
   (let* ((table (shadow:load-shaders
                  (lambda (x) (tp:enqueue :recompile (list :shaders x)))))
          (shaders (make-shaders :table table)))

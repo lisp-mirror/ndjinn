@@ -44,6 +44,13 @@
    #:meshes
    #:primitives))
 
+(define-package #:%pyx.asset.spritesheet
+  (:use #:cl)
+  (:export
+   #:make-spritesheet
+   #:sprites
+   #:vao))
+
 (define-package #:%pyx.avl-tree
   (:use #:cl)
   (:shadow

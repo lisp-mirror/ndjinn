@@ -30,6 +30,14 @@
   (#:parse #:%pyx.binary-parser)
   (#:u #:golden-utils))
 
+(define-local-nicknames #:%pyx.asset.spritesheet
+  (#:asset #:%pyx.asset)
+  (#:ent #:%pyx.entity)
+  (#:c/render #:%pyx.component.render)
+  (#:shader #:%pyx.shader)
+  (#:u #:golden-utils)
+  (#:v2 #:origin.vec2))
+
 (define-local-nicknames #:%pyx.avl-tree
   (#:a #:alexandria)
   (#:u #:golden-utils))
@@ -142,14 +150,11 @@
   (#:vp #:%pyx.viewport))
 
 (define-local-nicknames #:%pyx.component.sprite
-  (#:asset #:%pyx.asset)
+  (#:asset.sprite #:%pyx.asset.spritesheet)
   (#:c/render #:%pyx.component.render)
   (#:ent #:%pyx.entity)
   (#:mat #:%pyx.material)
-  (#:shader #:%pyx.shader)
-  (#:tex #:%pyx.texture)
-  (#:u #:golden-utils)
-  (#:v2 #:origin.vec2))
+  (#:u #:golden-utils))
 
 (define-local-nicknames #:%pyx.component.transform
   (#:~ #:origin.swizzle)

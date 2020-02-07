@@ -92,7 +92,7 @@
            (pushnew material (tex::materials texture))
            (setf (uniform-value uniform) texture)))
         (list
-         (let ((textures (mapcar
+         (let ((textures (lp:pmapcar
                           (lambda (x)
                             (if load
                                 (tex:load x)

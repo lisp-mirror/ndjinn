@@ -185,18 +185,26 @@
       (configure texture)
       texture)))
 
-(defun maybe-load ())
+(defun reload-texture-source (texture)
+  (tp:submit-job
+   :texture-reload
+   (lambda ()
+     (let ((source (load-source (spec texture)
+                                (target texture)
+                                :width (width texture)
+                                :height (height texture))))
+       (tp:enqueue :recompile `(:texture-load (,texture ,source)))))))
+
+(live:on-recompile :texture-reload data ()
+  (destructuring-bind (texture source) data
+    (gl:delete-texture (id texture))
+    (update-texture (target texture) texture source)
+    (configure texture)))
 
 (defmethod asset:delete-asset ((type (eql :texture)) key)
   (let ((texture (asset:find-asset type key)))
     (gl:delete-texture (id texture))))
 
 (live:on-recompile :texture data ()
-  (a:when-let* ((texture (asset:find-asset :texture data))
-                (source (load-source (spec texture)
-                                     (target texture)
-                                     :width (width texture)
-                                     :height (height texture))))
-    (gl:delete-texture (id texture))
-    (update-texture (target texture) texture source)
-    (configure texture)))
+  (a:when-let ((texture (asset:find-asset :texture data)))
+    (reload-texture-source texture)))

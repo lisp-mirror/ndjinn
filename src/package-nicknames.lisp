@@ -258,6 +258,7 @@
   (#:ctx #:%pyx.context)
   (#:fb #:%pyx.framebuffer)
   (#:live #:%pyx.live-support)
+  (#:lp #:lparallel)
   (#:meta #:%pyx.metadata)
   (#:ogl #:%pyx.opengl)
   (#:render #:%pyx.render)

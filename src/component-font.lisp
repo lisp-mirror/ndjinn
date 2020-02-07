@@ -29,7 +29,7 @@
     (unless %asset
       (error "Font component ~s does not have an asset specified." entity))
     (let ((path (asset:resolve-path %asset)))
-      (setf %spec (asset:with-asset-cache :font path
+      (setf %spec (asset:with-asset-cache :font %asset
                     (with-open-file (in path)
                       (3b-bmfont-json:read-bmfont-json in)))))))
 
@@ -86,4 +86,4 @@
   (setf buffer-data nil))
 
 (ent:define-entity-hook :delete (entity font)
-  (geom:delete-geometry geometry))
+  (asset:delete-asset :font asset))

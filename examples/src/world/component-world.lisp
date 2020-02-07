@@ -87,10 +87,8 @@
     (pyx:make-shader-buffer buffer-name :world 'shader:world))
   (pyx:update-shader-buffer entity))
 
-;; TODO: We don't have any reference counting for resources yet, so this will
-;; delete the resource unconditionally, even if there are other world
-;; components. There are not for this example, so this is safe for the time
-;; being.
+(defmethod pyx:delete-asset ((type (eql 'world)) key)
+  (pyx:delete-shader-buffer key))
+
 (pyx:define-entity-hook :detach (entity world)
-  (pyx:delete-asset 'world buffer-name)
-  (pyx:delete-shader-buffer buffer-name))
+  (pyx:delete-asset 'world buffer-name))

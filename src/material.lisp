@@ -1,19 +1,5 @@
 (in-package #:%pyx.material)
 
-(defstruct (material (:constructor %make-material)
-                     (:conc-name nil)
-                     (:predicate nil)
-                     (:copier nil))
-  spec
-  entity
-  (uniforms (u:dict #'eq))
-  framebuffer
-  attachments
-  (texture-unit-state 0))
-
-(u:define-printer (material stream :type t :identity t)
-  (format stream "~s" (name (spec material))))
-
 (defun ensure-framebuffer (material)
   (a:when-let* ((spec (spec material))
                 (framebuffer-name (spec-framebuffer spec)))
@@ -26,21 +12,27 @@
              (name spec)
              framebuffer-name))))
 
-(defun make-uniforms (material)
+(defun make-uniforms (material &key load-textures)
   (clrhash (uniforms material))
   (u:do-hash (k v (copy-spec-uniforms (spec material)))
     (let ((uniform (make-uniform :key k :value v)))
       (register-uniform-func material uniform)
-      (load-uniform-texture uniform)
+      (register-uniform-texture material uniform :load load-textures)
       (setf (u:href (uniforms material) k) uniform))))
 
 (defun make-material (entity name)
   (let* ((spec (find-spec name))
          (material (%make-material :entity entity :spec spec)))
-    (make-uniforms material)
+    (make-uniforms material :load-textures t)
     (ensure-framebuffer material)
     (push material (u:href (scene:materials (ctx:current-scene)) name))
     material))
+
+(defun delete-material-textures (material)
+  (u:do-hash-values (v (uniforms material))
+    (when (eq (uniform-resolved-type v) :sampler)
+      (let ((asset (tex:name (tex:spec (uniform-value v)))))
+        (asset:delete-asset :texture asset)))))
 
 (live:on-recompile :material data ()
   (let ((shader (shader (find-spec data))))

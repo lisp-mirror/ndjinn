@@ -46,22 +46,6 @@
     (let ((material (current-material entity)))
       (funcall (mat:render-func (mat:spec material)) entity))))
 
-;;; entity hooks
-
-(ent:define-entity-hook :pre-render (entity render)
-  (a:when-let ((camera (vp:camera (vp:active (vp:get-manager)))))
-    (when (ent:has-component-p camera 'c/camera:camera)
-      (mat:set-uniforms current-material
-                        :view (c/camera:view camera)
-                        :proj (c/camera:projection camera)))))
-
-(ent:define-entity-hook :attach (entity render)
-  (setf materials (register-material entity)))
-
-(ent:define-entity-hook :detach (entity render)
-  (u:do-hash-values (viewport (vp:table (vp:get-manager)))
-    (render:deregister-order viewport entity)))
-
 (defun generate-render-func (features)
   (destructuring-bind (&key enable disable blend-mode depth-mode polygon-mode
                          line-width point-size)
@@ -113,3 +97,23 @@
                      `((gl:line-width 1f0)))
                  ,@(when point-size
                      `((gl:point-size 1f0)))))))))))
+
+;;; entity hooks
+
+(ent:define-entity-hook :attach (entity render)
+  (setf materials (register-material entity)))
+
+(ent:define-entity-hook :detach (entity render)
+  (u:do-hash-values (viewport (vp:table (vp:get-manager)))
+    (render:deregister-order viewport entity)))
+
+(ent:define-entity-hook :pre-render (entity render)
+  (a:when-let ((camera (vp:camera (vp:active (vp:get-manager)))))
+    (when (ent:has-component-p camera 'c/camera:camera)
+      (mat:set-uniforms current-material
+                        :view (c/camera:view camera)
+                        :proj (c/camera:projection camera)))))
+
+(ent:define-entity-hook :delete (entity render)
+  (u:do-hash-values (v materials)
+    (mat:delete-material-textures v)))

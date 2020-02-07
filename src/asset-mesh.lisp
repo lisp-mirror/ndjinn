@@ -55,6 +55,7 @@
   mode
   element-count
   component-type
+  vertex-buffers
   index-buffer
   draw-func)
 
@@ -222,8 +223,9 @@
   (jsown:do-json-keys (attr accessor-id)
                       (get-property gltf "attributes" data)
     (let* ((accessor (elt (get-property gltf "accessors") accessor-id))
-           (count (get-property gltf "count" accessor)))
-      (make-buffer gltf :array-buffer accessor)
+           (count (get-property gltf "count" accessor))
+           (buffer (make-buffer gltf :array-buffer accessor)))
+      (push buffer (vertex-buffers primitive))
       (configure-attribute gltf attr accessor)
       (when (string= attr "POSITION")
         (setf (element-count primitive) count)))))
@@ -275,3 +277,12 @@
       (parse-meshes gltf)
       (setf (buffers gltf) nil)
       gltf)))
+
+(defmethod asset:delete-asset ((type (eql :mesh)) key)
+  (let ((asset (asset:find-asset type key)))
+    (u:do-hash-values (v (meshes asset))
+      (loop :for primitive :across (primitives v)
+            :do (gl:delete-buffers (vertex-buffers primitive))
+                (when (index-buffer primitive)
+                  (gl:delete-buffers (list (index-buffer primitive))))
+                (gl:delete-vertex-arrays (list (vao primitive)))))))

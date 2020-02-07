@@ -8,7 +8,8 @@
   target
   id
   width
-  height)
+  height
+  materials)
 
 (u:define-printer (texture stream)
   (format stream "~s" (name (spec texture))))
@@ -21,19 +22,17 @@
             :finally (return levels))
       1))
 
-(defgeneric make-texture (spec type source))
+(defgeneric update-texture (type texture source))
 
-(defmethod make-texture (spec (type (eql :2d)) source)
+(defmethod update-texture ((type (eql :2d)) texture source)
   (let* ((id (gl:create-texture :texture-2d))
          (width (asset.img:width source))
-         (height (asset.img:height source))
-         (texture (%make-texture :spec spec
-                                 :target type
-                                 :id id
-                                 :width width
-                                 :height height)))
+         (height (asset.img:height source)))
+    (setf (id texture) id
+          (width texture) width
+          (height texture) height)
     (gl:texture-storage-2d id
-                           (calculate-mipmap-levels spec width height)
+                           (calculate-mipmap-levels (spec texture) width height)
                            (asset.img:internal-format source)
                            width
                            height)
@@ -49,18 +48,16 @@
                                data))
     texture))
 
-(defmethod make-texture (spec (type (eql :2d-array)) source)
+(defmethod update-texture ((type (eql :2d-array)) texture source)
   (let* ((id (gl:create-texture :texture-2d-array))
          (layer0 (first source))
          (width (asset.img:width layer0))
-         (height (asset.img:height layer0))
-         (texture (%make-texture :spec spec
-                                 :target type
-                                 :id id
-                                 :width width
-                                 :height height)))
+         (height (asset.img:height layer0)))
+    (setf (id texture) id
+          (width texture) width
+          (height texture) height)
     (gl:texture-storage-3d id
-                           (calculate-mipmap-levels spec width height)
+                           (calculate-mipmap-levels (spec texture) width height)
                            (asset.img:internal-format layer0)
                            width
                            height
@@ -80,18 +77,16 @@
                                        (asset.img:data image)))
     texture))
 
-(defmethod make-texture (spec (type (eql :cube-map)) source)
+(defmethod update-texture ((type (eql :cube-map)) texture source)
   (let* ((id (gl:create-texture :texture-cube-map))
          (layer0 (first source))
          (width (asset.img:width layer0))
-         (height (asset.img:height layer0))
-         (texture (%make-texture :spec spec
-                                 :target type
-                                 :id id
-                                 :width width
-                                 :height height)))
+         (height (asset.img:height layer0)))
+    (setf (id texture) id
+          (width texture) width
+          (height texture) height)
     (gl:texture-storage-2d id
-                           (calculate-mipmap-levels spec width height)
+                           (calculate-mipmap-levels (spec texture) width height)
                            (asset.img:internal-format layer0)
                            width
                            height)
@@ -177,6 +172,10 @@
                                             (list x+ x- y+ y- z+ z-))))))
       (t (error "Unsupported source for cube map texture: ~s." (name spec))))))
 
+(defun make-texture (spec type source)
+  (let ((texture (%make-texture :spec spec :target type)))
+    (update-texture type texture source)))
+
 (defun load (name &key width height)
   (asset:with-asset-cache :texture name
     (let* ((spec (find-spec name))
@@ -186,8 +185,18 @@
       (configure texture)
       texture)))
 
+(defun maybe-load ())
+
+(defmethod asset:delete-asset ((type (eql :texture)) key)
+  (let ((texture (asset:find-asset type key)))
+    (gl:delete-texture (id texture))))
+
 (live:on-recompile :texture data ()
-  (a:when-let ((texture (asset:find-asset :texture data)))
+  (a:when-let* ((texture (asset:find-asset :texture data))
+                (source (load-source (spec texture)
+                                     (target texture)
+                                     :width (width texture)
+                                     :height (height texture))))
     (gl:delete-texture (id texture))
-    (asset:delete-asset :texture data)
-    (load data :width (width texture) :height (height texture))))
+    (update-texture (target texture) texture source)
+    (configure texture)))

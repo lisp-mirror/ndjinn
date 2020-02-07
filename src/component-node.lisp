@@ -41,7 +41,8 @@
     (ent:detach-components entity)
     (prefab:deregister-prefab-entity entity)
     (when parent
-      (a:deletef (children parent) entity))))
+      (a:deletef (children parent) entity))
+    (values)))
 
 ;;; entity hooks
 

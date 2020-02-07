@@ -404,6 +404,7 @@
   (:export
    #:as-uniform
    #:attachments
+   #:delete-material-textures
    #:framebuffer
    #:make-material
    #:pass
@@ -500,9 +501,11 @@
   (:export
    #:bind
    #:find-spec
+   #:name
    #:id
    #:load
-   #:source)
+   #:source
+   #:spec)
   ;; public
   (:export
    #:define-texture))

@@ -5,7 +5,11 @@
   (:inherit-from #:%pyx.animation
                  #:define-animation-sequence)
   (:inherit-from #:%pyx.asset
-                 #:define-asset-pool)
+                 #:define-asset-pool
+                 #:delete-asset
+                 #:find-asset
+                 #:resolve-path
+                 #:with-asset-cache)
   (:inherit-from #:%pyx.clock
                  #:get-fps
                  #:get-frame-count

@@ -1,13 +1,5 @@
 (in-package #:%pyx.material)
 
-(defstruct (uniform (:predicate nil)
-                    (:copier nil))
-  key
-  type
-  resolved-type
-  value
-  func)
-
 (defun register-uniform-func (material uniform)
   (let* ((material-spec (spec material))
          (program (shadow:find-program (shader material-spec))))
@@ -80,7 +72,7 @@
 (defun resolve-uniform-value (entity uniform)
   (let ((value (uniform-value uniform)))
     (typecase value
-      (null value)
+      (boolean value)
       ((or symbol function) (funcall value entity))
       (t value))))
 
@@ -89,12 +81,26 @@
            (uniform-key uniform)
            (resolve-uniform-value entity uniform)))
 
-(defun load-uniform-texture (uniform)
+(defun register-uniform-texture (material uniform &key load)
   (let ((value (uniform-value uniform)))
     (when (eq (uniform-resolved-type uniform) :sampler)
       (etypecase value
-        (symbol (setf (uniform-value uniform) (tex:load value)))
-        (list (setf (uniform-value uniform) (mapcar #'tex:load value)))))))
+        (symbol
+         (let ((texture (if load
+                            (tex:load value)
+                            (asset:find-asset :texture value))))
+           (pushnew material (tex::materials texture))
+           (setf (uniform-value uniform) texture)))
+        (list
+         (let ((textures (mapcar
+                          (lambda (x)
+                            (if load
+                                (tex:load x)
+                                (asset:find-asset :textures value)))
+                          value)))
+           (dolist (texture textures)
+             (pushnew material (tex::materials texture)))
+           (setf (uniform-value uniform) textures)))))))
 
 ;;; Public API
 

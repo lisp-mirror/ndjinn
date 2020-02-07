@@ -18,7 +18,7 @@
 
 (ent:define-entity-hook :attach (entity mesh)
   (let* ((path (asset:resolve-path asset))
-         (gltf (asset:with-asset-cache :mesh path
+         (gltf (asset:with-asset-cache :mesh asset
                  (asset.mesh:load path)))
          (mesh (u:href (asset.mesh:meshes gltf) name)))
     (unless mesh
@@ -27,3 +27,6 @@
 
 (ent:define-entity-hook :render (entity mesh)
   (funcall (asset.mesh:draw-func primitive) instances))
+
+(ent:define-entity-hook :delete (entity mesh)
+  (asset:delete-asset :mesh asset))

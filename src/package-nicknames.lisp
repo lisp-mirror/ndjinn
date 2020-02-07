@@ -27,6 +27,8 @@
 
 (define-local-nicknames #:%pyx.asset.mesh
   (#:a #:alexandria)
+  (#:asset #:%pyx.asset)
+  (#:ctx #:%pyx.context)
   (#:parse #:%pyx.binary-parser)
   (#:u #:golden-utils))
 
@@ -150,6 +152,7 @@
   (#:vp #:%pyx.viewport))
 
 (define-local-nicknames #:%pyx.component.sprite
+  (#:asset #:%pyx.asset)
   (#:asset.sprite #:%pyx.asset.spritesheet)
   (#:c/render #:%pyx.component.render)
   (#:ent #:%pyx.entity)
@@ -250,6 +253,7 @@
 
 (define-local-nicknames #:%pyx.material
   (#:a #:alexandria)
+  (#:asset #:%pyx.asset)
   (#:c/render #:%pyx.component.render)
   (#:ctx #:%pyx.context)
   (#:fb #:%pyx.framebuffer)
@@ -353,8 +357,10 @@
   (#:v3 #:origin.vec3))
 
 (define-local-nicknames #:%pyx.ui.font
+  (#:asset #:%pyx.asset)
   (#:c/font #:%pyx.component.font)
   (#:font #:3b-bmfont)
+  (#:geom #:%pyx.geometry)
   (#:u #:golden-utils)
   (#:v2 #:origin.vec2)
   (#:vp #:%pyx.viewport))

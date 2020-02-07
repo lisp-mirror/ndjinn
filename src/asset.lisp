@@ -19,7 +19,9 @@
       (decf (references asset))
       (when (zerop (references asset))
         (call-next-method)
-        (remhash key (u:href (ctx:assets) type))))))
+        (remhash key (u:href (ctx:assets) type))
+        (when (zerop (hash-table-count (u:href (ctx:assets) type)))
+          (remhash type (ctx:assets)))))))
 
 (defun %resolve-path (system path)
   (if cfg:=release=

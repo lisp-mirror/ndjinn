@@ -71,7 +71,10 @@
                 :hash-test hash-test))
          (sentinel (make-node tree nil)))
     (setf (tree-sentinel tree) sentinel
+          (node-left sentinel) sentinel
+          (node-right sentinel) sentinel
           (tree-root tree) sentinel)
+    (clrhash (node-data (tree-sentinel tree)))
     tree))
 
 (u:fn-> make-node (tree t) node)
@@ -310,13 +313,14 @@
                          (t (transplant node (node-left node))
                             (delete-rebalance (node-left node) direction)))))))
     (a:when-let ((node (node-p (nth-value 1 (find tree item)))))
-      (if (<= (hash-table-count (node-data node)) 1)
-          (progn
-            (a:when-let ((new-root (%delete node)))
-              (setf (tree-root tree) new-root))
-            (setf (node-parent (tree-sentinel tree))
-                  (tree-sentinel tree)))
-          (remhash item (node-data node)))
+      (when (u:href (node-data node) item)
+        (if (<= (hash-table-count (node-data node)) 1)
+            (progn
+              (a:when-let ((new-root (%delete node)))
+                (setf (tree-root tree) new-root))
+              (setf (node-parent (tree-sentinel tree)) (tree-sentinel tree))
+              (clrhash (node-data node)))
+            (remhash item (node-data node))))
       node)))
 
 (u:fn-> find (tree t) (values &optional t node))

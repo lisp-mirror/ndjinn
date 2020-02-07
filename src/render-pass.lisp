@@ -12,6 +12,14 @@
 (defun find-pass-spec (name)
   (u:href meta:=render-passes= name))
 
+(defun collect-passes-using-framebuffer (framebuffer-name)
+  (let (passes)
+    (dolist (pass-name (scene:passes (ctx:current-scene)))
+      (let ((pass (find-pass-spec pass-name)))
+        (when (eq (framebuffer pass) framebuffer-name)
+          (push pass-name passes))))
+    passes))
+
 (defun update-pass-spec (name framebuffer-name clear-color clear-buffers)
   (let ((spec (find-pass-spec name)))
     (when framebuffer-name
@@ -34,6 +42,12 @@
     (v4:with-components ((v (clear-color pass)))
       (gl:clear-color vx vy vz vw)
       (apply #'gl:clear (clear-buffers pass)))))
+
+(defun delete-pass (pass-name)
+  (let ((scene (ctx:current-scene)))
+    (when (find pass-name (scene:passes scene))
+      (clear-pass (find-pass-spec pass-name))
+      (a:deletef (scene:passes scene) pass-name))))
 
 ;;; Public API
 

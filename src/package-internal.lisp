@@ -327,14 +327,18 @@
 (define-package #:%pyx.framebuffer
   (:use #:cl)
   (:shadow
+   #:delete
    #:find
    #:load)
   (:export
    #:attachment-names->points
+   #:delete
    #:find
    #:find-spec
    #:load
+   #:name
    #:materials
+   #:spec
    #:with-framebuffer)
   ;; public
   (:export
@@ -401,10 +405,12 @@
 
 (define-package #:%pyx.material
   (:use #:cl)
+  (:shadow
+   #:delete)
   (:export
    #:as-uniform
    #:attachments
-   #:delete-material-textures
+   #:delete
    #:framebuffer
    #:make-material
    #:pass
@@ -452,6 +458,8 @@
   (:use #:cl)
   (:export
    #:clear-pass
+   #:collect-passes-using-framebuffer
+   #:delete-pass
    #:deregister-order
    #:find-pass-spec
    #:make-order-tree
@@ -464,13 +472,14 @@
 
 (define-package #:%pyx.scene
   (:use #:cl)
+  (:shadow
+   #:load)
   (:export
    #:collision-system
    #:draw-order
-   #:get-scene-name
    #:materials
    #:node-tree
-   #:pass-order
+   #:passes
    #:prefabs
    #:spec
    #:uuids

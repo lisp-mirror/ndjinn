@@ -31,9 +31,9 @@
     framebuffer))
 
 (defun load (name)
-  (let ((spec (find-spec name)))
-    (or (find name)
-        (make-framebuffer spec))))
+  (asset:with-asset-cache :framebuffer name
+    (let ((spec (find-spec name)))
+      (make-framebuffer spec))))
 
 (defun attachment-point->gl (point)
   (destructuring-bind (type &optional (index 0)) (a:ensure-list point)
@@ -129,6 +129,21 @@
   (let ((spec (spec framebuffer)))
     (u:do-hash-values (attachment (attachment-specs spec))
       (attach framebuffer (attachment-name attachment)))))
+
+(defun delete (framebuffer)
+  (let* ((spec (spec framebuffer))
+         (name (name spec)))
+    (dolist (pass-name (render:collect-passes-using-framebuffer name))
+      (render:delete-pass pass-name))
+    (u:do-hash-values (v (attachment-specs spec))
+      (destructuring-bind (type &optional texture) (buffer v)
+        (when (eq type :texture)
+          (asset:delete-asset :texture texture))))
+    (asset:delete-asset :framebuffer name)))
+
+(defmethod asset:delete-asset ((type (eql :framebuffer)) key)
+  (let ((framebuffer (asset:find-asset type key)))
+    (gl:delete-framebuffer (id framebuffer))))
 
 (live:on-recompile :framebuffer data ()
   (a:when-let ((spec (find-spec data))

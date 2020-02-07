@@ -197,7 +197,7 @@
 
 (live:on-recompile :texture-reload data ()
   (destructuring-bind (texture source) data
-    (gl:delete-texture (id texture))
+    (asset:delete-asset :texture (name (spec texture)))
     (update-texture (target texture) texture source)
     (configure texture)))
 

@@ -221,11 +221,13 @@
 
 (define-local-nicknames #:%pyx.framebuffer
   (#:a #:alexandria)
+  (#:asset #:%pyx.asset)
   (#:cfg #:%pyx.config)
   (#:ctx #:%pyx.context)
   (#:live #:%pyx.live-support)
   (#:meta #:%pyx.metadata)
   (#:ogl #:%pyx.opengl)
+  (#:render #:%pyx.render)
   (#:tex #:%pyx.texture)
   (#:tp #:%pyx.thread-pool)
   (#:u #:golden-utils))

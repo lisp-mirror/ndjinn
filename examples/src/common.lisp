@@ -11,14 +11,17 @@
   (let ((index (or (position (pyx:get-scene-name) scenes) 0)))
     (cond
       ((pyx:on-button-exit :key :up)
-       (decf index))
+       (decf index)
+       (pyx:switch-scene (elt scenes (mod index (length scenes)))
+                         :clean t))
       ((pyx:on-button-exit :key :down)
-       (incf index))
+       (incf index)
+       (pyx:switch-scene (elt scenes (mod index (length scenes)))
+                         :clean t))
       ((pyx:on-button-enter :key :escape)
        (pyx:stop-engine))
       ((pyx:on-button-enter :mouse :left)
-       (pyx:pick-entity)))
-    (pyx:switch-scene (elt scenes (mod index (length scenes))))))
+       (pyx:pick-entity)))))
 
 (pyx:define-material full-quad ()
   (:shader pyx.shader:full-quad

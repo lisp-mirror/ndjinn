@@ -58,7 +58,7 @@
           (map nil #'c/node:delete entities))
         (c/node:delete (node-tree scene))
         (setf %loaded-p nil)
-        (load-scene data)))))
+        (load data)))))
 
 ;;; Public API
 

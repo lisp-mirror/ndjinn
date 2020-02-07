@@ -22,7 +22,7 @@
     (map nil
          (lambda (x)
            (render-pass (render:find-pass-spec x)))
-         (scene:pass-order (scene:spec scene)))))
+         (scene:passes scene))))
 
 (defun render-pass (pass)
   (ogl:with-debug-group (format nil "Render Pass: ~s" pass)
@@ -116,4 +116,4 @@
 
 (ent:define-entity-hook :delete (entity render)
   (u:do-hash-values (v materials)
-    (mat:delete-material-textures v)))
+    (mat:delete v)))

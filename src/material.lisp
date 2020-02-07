@@ -20,6 +20,12 @@
       (register-uniform-texture material uniform :load load-textures)
       (setf (u:href (uniforms material) k) uniform))))
 
+(defun delete-material-textures (material)
+  (u:do-hash-values (v (uniforms material))
+    (when (eq (uniform-resolved-type v) :sampler)
+      (let ((asset (tex:name (tex:spec (uniform-value v)))))
+        (asset:delete-asset :texture asset)))))
+
 (defun make-material (entity name)
   (let* ((spec (find-spec name))
          (material (%make-material :entity entity :spec spec)))
@@ -28,11 +34,11 @@
     (push material (u:href (scene:materials (ctx:current-scene)) name))
     material))
 
-(defun delete-material-textures (material)
-  (u:do-hash-values (v (uniforms material))
-    (when (eq (uniform-resolved-type v) :sampler)
-      (let ((asset (tex:name (tex:spec (uniform-value v)))))
-        (asset:delete-asset :texture asset)))))
+(defun delete (material)
+  (let ((framebuffer (framebuffer material)))
+    (delete-material-textures material)
+    (when framebuffer
+      (fb:delete framebuffer))))
 
 (live:on-recompile :material data ()
   (let ((shader (shader (find-spec data))))

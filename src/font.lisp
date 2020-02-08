@@ -89,7 +89,3 @@
       (:center-bottom
        (v2:+ (v2:vec (/ (v2:x dims) -2) (1- (v2:y dims))) offset))
       (t (v2:+ (v2:/ dims (v2:vec -2 2)) offset)))))
-
-(defmethod asset:delete-asset ((type (eql :font)) key)
-  (let ((asset (asset:find-asset type key)))
-    (geom:delete-geometry asset)))

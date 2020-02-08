@@ -86,4 +86,4 @@
   (setf buffer-data nil))
 
 (ent:define-entity-hook :delete (entity font)
-  (asset:delete-asset :font asset))
+  (geom:delete-geometry geometry))

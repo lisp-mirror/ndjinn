@@ -6,8 +6,8 @@
                  (:copier nil))
   version
   (variant :rfc-4122)
-  (low 0 :type (unsigned-byte 64))
-  (high 0 :type (unsigned-byte 64)))
+  (low 0 :type u:ub64)
+  (high 0 :type u:ub64))
 
 (u:define-printer (uuid stream)
   (format stream "~a" (uuid->string uuid)))
@@ -52,7 +52,7 @@
     (let* ((string (remove #\- string))
            (high (parse-integer string :end 16 :radix 16))
            (low (parse-integer string :start 16 :radix 16)))
-      (declare (type (unsigned-byte 64) high low))
+      (declare (type u:ub64 high low))
       (%make-uuid :version (ldb (byte 4 12) high)
                   :variant (parse-variant (ldb (byte 3 61) low))
                   :low low

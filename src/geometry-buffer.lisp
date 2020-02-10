@@ -42,12 +42,12 @@
 (defun get-buffer-size (buffer)
   (* (length buffer)
      (etypecase buffer
-       ((simple-array (signed-byte 8) *) 1)
-       ((simple-array (unsigned-byte 8) *) 1)
-       ((simple-array (signed-byte 16) *) 2)
-       ((simple-array (unsigned-byte 16) *) 2)
-       ((simple-array (signed-byte 32) *) 4)
-       ((simple-array (unsigned-byte 32) *) 4)
+       ((simple-array u:b8 *) 1)
+       ((simple-array u:ub8 *) 1)
+       ((simple-array u:b16 *) 2)
+       ((simple-array u:ub16 *) 2)
+       ((simple-array u:b32 *) 4)
+       ((simple-array u:ub32 *) 4)
        ((simple-array single-float *) 4)
        ((simple-array double-float *) 8))))
 

@@ -19,14 +19,14 @@
 (ent:define-entity-hook :attach (entity mesh)
   (let* ((path (asset:resolve-path asset))
          (gltf (asset:with-asset-cache :mesh asset
-                 (asset.mesh:load path)))
-         (mesh (u:href (asset.mesh:meshes gltf) name)))
+                 (mesh:load path)))
+         (mesh (u:href (mesh:meshes gltf) name)))
     (unless mesh
       (error "Mesh name ~s not found in mesh file ~s." name path))
-    (setf primitive (aref (asset.mesh:primitives mesh) index))))
+    (setf primitive (aref (mesh:primitives mesh) index))))
 
 (ent:define-entity-hook :render (entity mesh)
-  (funcall (asset.mesh:draw-func primitive) instances))
+  (funcall (mesh:draw-func primitive) instances))
 
 (ent:define-entity-hook :delete (entity mesh)
   (asset:delete-asset :mesh asset))

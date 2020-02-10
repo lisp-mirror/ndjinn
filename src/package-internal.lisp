@@ -20,6 +20,13 @@
    #:resolve-path
    #:with-asset-cache))
 
+(define-package #:%pyx.asset.hdr
+  (:use #:cl)
+  (:shadow
+   #:load
+   #:read-byte
+   #:read-line))
+
 (define-package #:%pyx.asset.image
   (:use #:cl)
   (:shadow

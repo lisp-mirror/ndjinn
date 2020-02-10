@@ -26,39 +26,39 @@
 
 (defmethod update-texture ((type (eql :2d)) texture source)
   (let* ((id (gl:create-texture :texture-2d))
-         (width (asset.img:width source))
-         (height (asset.img:height source)))
+         (width (img:width source))
+         (height (img:height source)))
     (setf (id texture) id
           (width texture) width
           (height texture) height)
     (gl:texture-storage-2d id
                            (calculate-mipmap-levels (spec texture) width height)
-                           (asset.img:internal-format source)
+                           (img:internal-format source)
                            width
                            height)
-    (a:when-let ((data (asset.img:data source)))
+    (a:when-let ((data (img:data source)))
       (gl:texture-sub-image-2d id
                                0
                                0
                                0
                                width
                                height
-                               (asset.img:pixel-format source)
-                               (asset.img:pixel-type source)
+                               (img:pixel-format source)
+                               (img:pixel-type source)
                                data))
     texture))
 
 (defmethod update-texture ((type (eql :2d-array)) texture source)
   (let* ((id (gl:create-texture :texture-2d-array))
          (layer0 (first source))
-         (width (asset.img:width layer0))
-         (height (asset.img:height layer0)))
+         (width (img:width layer0))
+         (height (img:height layer0)))
     (setf (id texture) id
           (width texture) width
           (height texture) height)
     (gl:texture-storage-3d id
                            (calculate-mipmap-levels (spec texture) width height)
-                           (asset.img:internal-format layer0)
+                           (img:internal-format layer0)
                            width
                            height
                            (length source))
@@ -69,25 +69,25 @@
                                        0
                                        0
                                        layer
-                                       (asset.img:width image)
-                                       (asset.img:height image)
+                                       (img:width image)
+                                       (img:height image)
                                        1
-                                       (asset.img:pixel-format image)
-                                       (asset.img:pixel-type image)
-                                       (asset.img:data image)))
+                                       (img:pixel-format image)
+                                       (img:pixel-type image)
+                                       (img:data image)))
     texture))
 
 (defmethod update-texture ((type (eql :cube-map)) texture source)
   (let* ((id (gl:create-texture :texture-cube-map))
          (layer0 (first source))
-         (width (asset.img:width layer0))
-         (height (asset.img:height layer0)))
+         (width (img:width layer0))
+         (height (img:height layer0)))
     (setf (id texture) id
           (width texture) width
           (height texture) height)
     (gl:texture-storage-2d id
                            (calculate-mipmap-levels (spec texture) width height)
-                           (asset.img:internal-format layer0)
+                           (img:internal-format layer0)
                            width
                            height)
     (loop :for image :in source
@@ -97,12 +97,12 @@
                                        0
                                        0
                                        layer
-                                       (asset.img:width image)
-                                       (asset.img:height image)
+                                       (img:width image)
+                                       (img:height image)
                                        1
-                                       (asset.img:pixel-format image)
-                                       (asset.img:pixel-type image)
-                                       (asset.img:data image)))
+                                       (img:pixel-format image)
+                                       (img:pixel-type image)
+                                       (img:data image)))
     texture))
 
 (defun bind (texture unit)
@@ -117,19 +117,19 @@
       (gl:texture-parameter id k v))))
 
 (defun load-framebuffer-texture (spec width height)
-  (asset.img:load nil
-                  :width width
-                  :height height
-                  :pixel-format (pixel-format spec)
-                  :pixel-type (pixel-type spec)
-                  :internal-format (internal-format spec)))
+  (img:load nil
+            :width width
+            :height height
+            :pixel-format (pixel-format spec)
+            :pixel-type (pixel-type spec)
+            :internal-format (internal-format spec)))
 
 (defgeneric load-source (spec type &key &allow-other-keys)
   (:method :around (spec type &key)
     (let* ((source (call-next-method))
            (source-list (a:ensure-list source)))
-      (unless (and (every #'asset.img:width source-list)
-                   (every #'asset.img:height source-list))
+      (unless (and (every #'img:width source-list)
+                   (every #'img:height source-list))
         (error "Texture ~s does not have a width and height set." (name spec)))
       source)))
 
@@ -138,7 +138,7 @@
     ((or null (integer 1 1))
      (load-framebuffer-texture spec width height))
     (list
-     (asset.img:load (source spec)))
+     (img:load (source spec)))
     (t (error "Unsupported source for 2D texture: ~s." (name spec)))))
 
 (defmethod load-source (spec (type (eql :2d-array)) &key width height)
@@ -151,7 +151,7 @@
              :collect (load-framebuffer-texture spec width height)))
       ((and (typep source 'a:proper-list)
             (every #'listp source))
-       (lp:pmapcar #'asset.img:load source))
+       (lp:pmapcar #'img:load source))
       (t (error "Unsupported source for 2D array texture: ~s." (name spec))))))
 
 (defmethod load-source (spec (type (eql :cube-map)) &key width height)
@@ -168,7 +168,7 @@
              :collect k :into result
              :collect v :into result
              :finally (destructuring-bind (&key x+ x- y+ y- z+ z-) result
-                        (return (lp:pmapcar #'asset.img:load
+                        (return (lp:pmapcar #'img:load
                                             (list x+ x- y+ y- z+ z-))))))
       (t (error "Unsupported source for cube map texture: ~s." (name spec))))))
 

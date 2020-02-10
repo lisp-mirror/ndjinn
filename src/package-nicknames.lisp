@@ -15,11 +15,12 @@
 
 (define-local-nicknames #:%pyx.asset
   (#:a #:alexandria)
-  (#:asset.mesh #:%pyx.asset.mesh)
   (#:cfg #:%pyx.config)
   (#:ctx #:%pyx.context)
+  (#:mesh #:%pyx.asset.mesh)
   (#:meta #:%pyx.metadata)
   (#:u #:golden-utils))
+
 
 (define-local-nicknames #:%pyx.asset.image
   (#:a #:alexandria)
@@ -125,8 +126,8 @@
 
 (define-local-nicknames #:%pyx.component.mesh
   (#:asset #:%pyx.asset)
-  (#:asset.mesh #:%pyx.asset.mesh)
   (#:ent #:%pyx.entity)
+  (#:mesh #:%pyx.asset.mesh)
   (#:u #:golden-utils))
 
 (define-local-nicknames #:%pyx.component.node
@@ -336,8 +337,8 @@
 (define-local-nicknames #:%pyx.texture
   (#:a #:alexandria)
   (#:asset #:%pyx.asset)
-  (#:asset.img #:%pyx.asset.image)
   (#:ctx #:%pyx.context)
+  (#:img #:%pyx.asset.image)
   (#:live #:%pyx.live-support)
   (#:lp #:lparallel)
   (#:meta #:%pyx.metadata)

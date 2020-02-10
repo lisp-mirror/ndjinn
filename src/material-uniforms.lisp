@@ -81,26 +81,18 @@
            (uniform-key uniform)
            (resolve-uniform-value entity uniform)))
 
-(defun register-uniform-texture (material uniform &key load)
+(defun register-uniform-texture (material uniform)
   (let ((value (uniform-value uniform)))
-    (when (eq (uniform-resolved-type uniform) :sampler)
-      (etypecase value
-        (symbol
-         (let ((texture (if load
-                            (tex:load value)
-                            (asset:find-asset :texture value))))
-           (pushnew material (tex::materials texture))
-           (setf (uniform-value uniform) texture)))
-        (list
-         (let ((textures (lp:pmapcar
-                          (lambda (x)
-                            (if load
-                                (tex:load x)
-                                (asset:find-asset :textures value)))
-                          value)))
-           (dolist (texture textures)
-             (pushnew material (tex::materials texture)))
-           (setf (uniform-value uniform) textures)))))))
+    (etypecase value
+      (symbol
+       (let ((texture (tex:load value)))
+         (pushnew material (tex::materials texture))
+         (setf (uniform-value uniform) texture)))
+      (list
+       (let ((textures (lp:pmapcar #'tex:load value)))
+         (dolist (texture textures)
+           (pushnew material (tex::materials texture)))
+         (setf (uniform-value uniform) textures))))))
 
 ;;; Public API
 

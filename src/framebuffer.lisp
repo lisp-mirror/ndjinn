@@ -24,7 +24,7 @@
 (defun make-framebuffer (spec)
   (let* ((target (mode->target (mode spec)))
          (framebuffer (%make-framebuffer :spec spec
-                                         :id (gl:create-framebuffer)
+                                         :id (gl:gen-framebuffer)
                                          :target target)))
     (attach-all framebuffer)
     (setf (u:href (ctx:framebuffers) (name spec)) framebuffer)
@@ -64,7 +64,7 @@
       (:depth/stencil :depth24-stencil8))))
 
 (defun ensure-complete (framebuffer target buffer attachment)
-  (let ((result (gl:check-named-framebuffer-status (id framebuffer) target)))
+  (let ((result (gl:check-framebuffer-status  target)))
     (unless (cl:find result '(:framebuffer-complete :framebuffer-complete-oes))
       (error "Error attaching ~a as attachment ~s of framebuffer ~s: ~a"
              buffer attachment (name (spec framebuffer)) result))))
@@ -76,9 +76,9 @@
                (,target ,(if mode
                              `(mode->target ,mode)
                              `(target ,framebuffer))))
-           ,@(when attachments
-               `((ogl:named-framebuffer-draw-buffers ,id ,attachments)))
            (gl:bind-framebuffer ,target ,id)
+           ,@(when attachments
+               `((gl:draw-buffers ,attachments)))
            (progn ,@body)
            (gl:bind-framebuffer ,target 0))
          (progn ,@body))))
@@ -87,15 +87,17 @@
   (let* ((point (point attachment))
          (gl-point (attachment-point->gl point))
          (internal-format (attachment-point->render-buffer-format point))
-         (buffer-id (gl:create-renderbuffer))
+         (buffer-id (gl:gen-renderbuffer))
          (width (funcall (width attachment)))
-         (height (funcall (height attachment))))
-    (%gl:named-renderbuffer-storage buffer-id internal-format width height)
-    (%gl:named-framebuffer-renderbuffer (id framebuffer)
-                                        gl-point
-                                        :renderbuffer
-                                        buffer-id)
-    (ensure-complete framebuffer (target framebuffer) buffer-id point)
+         (height (funcall (height attachment)))
+         (target (target framebuffer)))
+    (gl:bind-renderbuffer :renderbuffer buffer-id)
+    (gl:renderbuffer-storage :renderbuffer internal-format width height)
+    (gl:bind-renderbuffer :renderbuffer 0)
+    (gl:bind-framebuffer target (id framebuffer))
+    (gl:framebuffer-renderbuffer target gl-point :renderbuffer buffer-id)
+    (ensure-complete framebuffer target buffer-id point)
+    (gl:bind-framebuffer target 0)
     (setf (u:href (attachments framebuffer) point) buffer-id)
     buffer-id))
 
@@ -112,9 +114,12 @@
            (buffer-id (tex:id (tex:load texture-name
                                         :width width
                                         :height height)))
-           (point (attachment-point->gl (point attachment))))
-      (gl:named-framebuffer-texture (id framebuffer) point buffer-id 0)
-      (ensure-complete framebuffer (target framebuffer) buffer-id point)
+           (point (attachment-point->gl (point attachment)))
+           (target (target framebuffer)))
+      (gl:bind-framebuffer target (id framebuffer))
+      (%gl:framebuffer-texture target point buffer-id 0)
+      (ensure-complete framebuffer target buffer-id point)
+      (gl:bind-framebuffer target 0)
       (setf (u:href (attachments framebuffer) point) buffer-id)
       buffer-id)))
 
@@ -143,7 +148,7 @@
 
 (defmethod asset:delete-asset ((type (eql :framebuffer)) key)
   (let ((framebuffer (asset:find-asset type key)))
-    (gl:delete-framebuffer (id framebuffer))))
+    (gl:delete-framebuffers (list (id framebuffer)))))
 
 (live:on-recompile :framebuffer data ()
   (a:when-let ((spec (find-spec data))

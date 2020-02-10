@@ -52,4 +52,5 @@
 
 (defun delete-shader-buffer (key)
   (release-buffer-binding key)
-  (shadow:delete-buffer key))
+  (shadow:delete-buffer key)
+  (shadow:unbind-block key))

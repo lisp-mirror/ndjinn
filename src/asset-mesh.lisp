@@ -261,7 +261,7 @@
             (lambda (x) (draw-primitive/vertices primitive x)))))
 
 (defun make-primitive (gltf data)
-  (let ((primitive (%make-primitive :vao (gl:create-vertex-array)
+  (let ((primitive (%make-primitive :vao (gl:gen-vertex-array)
                                     :mode (get-primitive-mode gltf data))))
     (gl:bind-vertex-array (vao primitive))
     (make-vertex-buffers gltf primitive data)

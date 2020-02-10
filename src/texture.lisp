@@ -25,96 +25,110 @@
 (defgeneric update-texture (type texture source))
 
 (defmethod update-texture ((type (eql :2d)) texture source)
-  (let* ((id (gl:create-texture :texture-2d))
+  (let* ((id (gl:gen-texture))
          (width (img:width source))
          (height (img:height source)))
     (setf (id texture) id
           (width texture) width
           (height texture) height)
-    (gl:texture-storage-2d id
-                           (calculate-mipmap-levels (spec texture) width height)
-                           (img:internal-format source)
-                           width
-                           height)
+    (gl:bind-texture :texture-2d id)
+    (%gl:tex-storage-2d :texture-2d
+                        (calculate-mipmap-levels (spec texture) width height)
+                        (img:internal-format source)
+                        width
+                        height)
     (a:when-let ((data (img:data source)))
-      (gl:texture-sub-image-2d id
-                               0
-                               0
-                               0
-                               width
-                               height
-                               (img:pixel-format source)
-                               (img:pixel-type source)
-                               data))
+      (gl:tex-sub-image-2d :texture-2d
+                           0
+                           0
+                           0
+                           width
+                           height
+                           (img:pixel-format source)
+                           (img:pixel-type source)
+                           data))
+    (gl:bind-texture :texture-2d 0)
     texture))
 
 (defmethod update-texture ((type (eql :2d-array)) texture source)
-  (let* ((id (gl:create-texture :texture-2d-array))
+  (let* ((id (gl:gen-texture))
          (layer0 (first source))
          (width (img:width layer0))
          (height (img:height layer0)))
     (setf (id texture) id
           (width texture) width
           (height texture) height)
-    (gl:texture-storage-3d id
-                           (calculate-mipmap-levels (spec texture) width height)
-                           (img:internal-format layer0)
-                           width
-                           height
-                           (length source))
+    (gl:bind-texture :texture-2d-array id)
+    (%gl:tex-storage-3d :texture-2d-array
+                        (calculate-mipmap-levels (spec texture) width height)
+                        (img:internal-format layer0)
+                        width
+                        height
+                        (length source))
     (loop :for image :in source
           :for layer :from 0
-          :do (gl:texture-sub-image-3d id
-                                       0
-                                       0
-                                       0
-                                       layer
-                                       (img:width image)
-                                       (img:height image)
-                                       1
-                                       (img:pixel-format image)
-                                       (img:pixel-type image)
-                                       (img:data image)))
+          :do (gl:tex-sub-image-3d :texture-2d-array
+                                   0
+                                   0
+                                   0
+                                   layer
+                                   (img:width image)
+                                   (img:height image)
+                                   1
+                                   (img:pixel-format image)
+                                   (img:pixel-type image)
+                                   (img:data image)))
+    (gl:bind-texture :texture-2d-array 0)
     texture))
 
 (defmethod update-texture ((type (eql :cube-map)) texture source)
-  (let* ((id (gl:create-texture :texture-cube-map))
+  (let* ((id (gl:gen-texture))
          (layer0 (first source))
          (width (img:width layer0))
-         (height (img:height layer0)))
+         (height (img:height layer0))
+         (faces '(:texture-cube-map-positive-x
+                  :texture-cube-map-negative-x
+                  :texture-cube-map-positive-y
+                  :texture-cube-map-negative-y
+                  :texture-cube-map-positive-z
+                  :texture-cube-map-negative-z)))
     (setf (id texture) id
           (width texture) width
           (height texture) height)
-    (gl:texture-storage-2d id
-                           (calculate-mipmap-levels (spec texture) width height)
-                           (img:internal-format layer0)
-                           width
-                           height)
+    (gl:bind-texture :texture-cube-map id)
+    (%gl:tex-storage-2d :texture-cube-map
+                        (calculate-mipmap-levels (spec texture) width height)
+                        (img:internal-format layer0)
+                        width
+                        height)
     (loop :for image :in source
-          :for layer :from 0
-          :do (gl:texture-sub-image-3d id
-                                       0
-                                       0
-                                       0
-                                       layer
-                                       (img:width image)
-                                       (img:height image)
-                                       1
-                                       (img:pixel-format image)
-                                       (img:pixel-type image)
-                                       (img:data image)))
+          :for face :in faces
+          :do (gl:tex-sub-image-2d face
+                                   0
+                                   0
+                                   0
+                                   (img:width image)
+                                   (img:height image)
+                                   (img:pixel-format image)
+                                   (img:pixel-type image)
+                                   (img:data image)))
+    (gl:bind-texture :texture-cube-map 0)
     texture))
 
 (defun bind (texture unit)
-  (gl:bind-texture-unit unit (id texture)))
+  (gl:active-texture unit)
+  (gl:bind-texture (target texture) (id texture)))
 
 (defun configure (texture)
   (let ((id (id texture))
+        (target (target texture))
         (spec (spec texture)))
+    (gl:bind-texture target id)
     (when (generate-mipmaps spec)
-      (gl:generate-texture-mipmap id))
+      (gl:generate-mipmap target))
     (u:do-plist (k v (parameters spec))
-      (gl:texture-parameter id k v))))
+      (gl:tex-parameter target k v))
+    (gl:bind-texture target 0)))
 
 (defun load-framebuffer-texture (spec width height)
   (img:load nil
@@ -172,8 +186,11 @@
                                             (list x+ x- y+ y- z+ z-))))))
       (t (error "Unsupported source for cube map texture: ~s." (name spec))))))
 
+(defun make-target (type)
+  (a:format-symbol :keyword "TEXTURE-~a" type))
+
 (defun make-texture (spec type source)
-  (let ((texture (%make-texture :spec spec :target type)))
+  (let ((texture (%make-texture :spec spec :target (make-target type))))
     (update-texture type texture source)))
 
 (defun load (name &key width height)

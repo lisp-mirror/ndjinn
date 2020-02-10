@@ -31,7 +31,7 @@
       (let ((spritesheet (%make-spritesheet
                           :spritesheet-name asset
                           :spec (u:safe-read-file-form path)
-                          :vao (gl:create-vertex-array))))
+                          :vao (gl:gen-vertex-array))))
         (shader:make-shader-buffer asset :spritesheet 'umbra.sprite:sprite)
         (shader:update-shader-buffer spritesheet)
         spritesheet))))

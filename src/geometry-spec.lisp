@@ -4,7 +4,7 @@
                  (:conc-name nil)
                  (:predicate nil)
                  (:copier nil))
-  (id (gl:create-vertex-array))
+  (id (gl:gen-vertex-array))
   layout
   buffers
   (buffer-names (u:dict #'eq))

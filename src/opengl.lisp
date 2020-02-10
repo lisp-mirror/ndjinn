@@ -23,12 +23,6 @@
 
 (a:define-constant +polygon-mode+ '(:front-and-back :fill) :test #'equal)
 
-;;; TODO: Remove these when cl-opengl supports them
-
-(defun named-framebuffer-draw-buffers (id buffers)
-  (gl::with-opengl-sequence (seq '%gl:enum buffers)
-    (%gl:named-framebuffer-draw-buffers id (length buffers) seq)))
-
 (defmacro with-debug-group (name &body body)
   (if (find :pyx.release *features*)
       `(progn ,@body)

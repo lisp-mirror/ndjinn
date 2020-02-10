@@ -206,17 +206,22 @@
   (tp:submit-job
    :texture-reload
    (lambda ()
-     (let ((source (load-source (spec texture)
-                                (target texture)
-                                :width (width texture)
-                                :height (height texture))))
+     (let* ((spec (spec texture))
+            (source (load-source spec
+                                 (texture-type spec)
+                                 :width (width texture)
+                                 :height (height texture))))
        (tp:enqueue :recompile `(:texture-reload (,texture ,source)))))))
 
 (live:on-recompile :texture-reload data ()
   (destructuring-bind (texture source) data
-    (asset:delete-asset :texture (name (spec texture)))
-    (update-texture (target texture) texture source)
-    (configure texture)))
+    (let* ((spec (spec texture))
+           (name (name spec)))
+      (asset:delete-asset :texture name)
+      (if (asset:find-asset :texture name)
+          (update-texture (texture-type spec) texture source)
+          (load name))
+      (configure texture))))
 
 (defmethod asset:delete-asset ((type (eql :texture)) key)
   (let ((texture (asset:find-asset type key)))

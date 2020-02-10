@@ -193,7 +193,7 @@
                                 (target texture)
                                 :width (width texture)
                                 :height (height texture))))
-       (tp:enqueue :recompile `(:texture-load (,texture ,source)))))))
+       (tp:enqueue :recompile `(:texture-reload (,texture ,source)))))))
 
 (live:on-recompile :texture-reload data ()
   (destructuring-bind (texture source) data

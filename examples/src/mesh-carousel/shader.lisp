@@ -147,7 +147,7 @@
                    (normal-scale :float)
                    (uv :vec2)
                    (world-position :vec3)
-                   (tbn :mat3))
+                   (normal :vec3))
   (let* ((pos-dx (d-fdx world-position))
          (pos-dy (d-fdy world-position))
          (tex-dx (d-fdx (vec3 uv 0)))
@@ -156,9 +156,13 @@
                    (* (.t tex-dx) pos-dy))
                 (- (* (.s tex-dx) (.t tex-dy))
                    (* (.s tex-dy) (.t tex-dx)))))
-         (ng (cross pos-dx pos-dy))
+         (ng (normalize normal))
+         (tv (normalize (- tv (* ng (dot ng tv)))))
+         (b (normalize (cross ng tv)))
+         (tbn (mat3 tv b ng))
          (n (.rgb (texture sampler (vec3 uv +normal+)))))
-    (normalize (* tbn (- (* n 2) (vec3 1))
+    (normalize (* tbn
+                  (1- (* 2 n))
                   (vec3 normal-scale normal-scale 1)))))
 
 (defun pbr-mesh/vert ((mesh-attrs mesh-attrs)
@@ -170,21 +174,19 @@
   (with-slots (mesh/pos mesh/normal mesh/tangent mesh/uv1) mesh-attrs
     (let* ((pos (* model (vec4 mesh/pos 1)))
            (world-pos (/ (.xyz pos) (.w pos)))
-           (normal-w (normalize (vec3 (* normal-matrix (vec4 mesh/normal 0)))))
-           (tangent-w (normalize (vec3 (* model (vec4 (.xyz mesh/tangent) 0)))))
-           (bitangent-w (* (cross normal-w tangent-w)) (.w mesh/tangent))
-           (tbn (mat3 tangent-w bitangent-w normal-w))
+           (normal (normalize
+                    (vec3 (* normal-matrix (vec4 (.xyz mesh/normal) 0)))))
            (camera-pos (.xyz (aref (inverse view) 3)))
            (view-dir (normalize (- camera-pos world-pos))))
       (values (* proj view pos)
               world-pos
               view-dir
-              tbn
+              normal
               mesh/uv1))))
 
 (defun pbr-mesh/frag ((world-pos :vec3)
                       (view-dir :vec3)
-                      (tbn :mat3)
+                      (normal :vec3)
                       (uv :vec2)
                       &uniforms
                       (light light-info)
@@ -226,7 +228,7 @@
                                             specular-environment-r90
                                             specular-color))
          (color (vec3 0))
-         (normal (get-normal sampler normal-scale uv world-pos tbn))
+         (normal-w (get-normal sampler normal-scale uv world-pos normal))
          (ao (.r (texture sampler (vec3 uv +ao+))))
          (emissive (* (.rgb (umbra.color:srgb->rgb
                              (texture sampler (vec3 uv +emissive+))))
@@ -234,20 +236,18 @@
     (when use-punctual
       (incf color (apply-directional-light light
                                            material-info
-                                           normal
+                                           normal-w
                                            view-dir)))
     (when use-ibl
       (incf color (get-ibl-contribution material-info
-                                        normal
+                                        normal-w
                                         view-dir
                                         brdf-lut
                                         diffuse-sampler
                                         specular-sampler)))
-    (setf color (mix color (* color ao) occlusion-strength))
-    (incf color emissive)
     (vec4 (umbra.color:rgb->srgb (umbra.color:tone-map/aces color 1))
           (.a base-color))))
 
 (define-shader pbr-mesh ()
   (:vertex (pbr-mesh/vert mesh-attrs))
-  (:fragment (pbr-mesh/frag :vec3 :vec3 :mat3 :vec2)))
+  (:fragment (pbr-mesh/frag :vec3 :vec3 :vec3 :vec2)))

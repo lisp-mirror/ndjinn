@@ -1,5 +1,13 @@
 (in-package #:%pyx.material)
 
+(defstruct (uniform (:predicate nil)
+                    (:copier nil))
+  key
+  type
+  resolved-type
+  value
+  func)
+
 (defun register-uniform-func (material uniform)
   (let* ((material-spec (spec material))
          (program (shadow:find-program (shader material-spec))))
@@ -81,44 +89,10 @@
            (uniform-key uniform)
            (resolve-uniform-value entity uniform)))
 
-(defgeneric %register-uniform-texture (material uniform value)
-  (:method :before (material uniform value)
-    (when (null value)
-      (error "Texture uniform ~s of material ~s must have a value."
-             (uniform-key uniform)
-             (name (spec material))))))
-
-(defmethod %register-uniform-texture (material uniform (value symbol))
-  (let ((texture (or (asset:find-asset :texture value)
-                     (tex:load value))))
-    (pushnew material (tex:materials texture))
-    (setf (uniform-value uniform) texture)))
-
-(defmethod %register-uniform-texture (material uniform (value list))
-  (destructuring-bind (framebuffer attachment) value
-    (let* ((material-name (name (spec material)))
-           (key (uniform-key uniform))
-           (framebuffer (fb:find-spec framebuffer))
-           (attachment (fb:find-attachment-spec framebuffer attachment)))
-      (unless attachment
-        (error "Texture uniform ~s of material ~s specifies a framebuffer ~
-                attachment that does not exist."
-               key
-               material-name))
-      (u:mvlet ((name width height (fb:get-attachment-texture attachment)))
-        (unless name
-          (error "Texture uniform ~s of material ~s specifies a framebuffer ~
-                  attachment that does not have a texture."
-                 key
-                 material-name))
-        (let ((texture (or (asset:find-asset :texture name)
-                           (tex:load name :width width :height height))))
-          (push material (tex:materials texture))
-          (setf (uniform-value uniform) texture))))))
-
-(defun register-uniform-texture (material uniform)
+(defun load-uniform-texture (uniform)
   (let ((value (uniform-value uniform)))
-    (%register-uniform-texture material uniform value)))
+    (when (eq (uniform-resolved-type uniform) :sampler)
+      (setf (uniform-value uniform) (tex:load value)))))
 
 ;;; Public API
 

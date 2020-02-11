@@ -67,19 +67,11 @@
       (setf (ctx:current-scene) current)
       scene)))
 
-(defun delete-scene (scene-name)
-  (a:when-let ((scene (u:href (ctx:scenes) scene-name)))
-    (c/node:delete (node-tree scene))
-    (remhash scene-name (ctx:scenes))))
-
 ;;; Public API
 
 (defun get-scene-name ()
   (name (spec (ctx:current-scene))))
 
-(defun switch-scene (scene-name &key clean)
-  (let ((previous (ctx:current-scene))
-        (next (load scene-name)))
-    (when clean
-      (delete-scene (name (spec previous))))
-    (setf (ctx:current-scene) next)))
+(defun switch-scene (scene-name)
+  (let ((scene (load scene-name)))
+    (setf (ctx:current-scene) scene)))

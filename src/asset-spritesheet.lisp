@@ -35,7 +35,3 @@
         (shader:make-shader-buffer asset :spritesheet 'umbra.sprite:sprite)
         (shader:update-shader-buffer spritesheet)
         spritesheet))))
-
-(defmethod asset:delete-asset ((type (eql :spritesheet)) key)
-  (let ((asset (asset:find-asset type key)))
-    (shadow:delete-buffer (spritesheet-name asset))))

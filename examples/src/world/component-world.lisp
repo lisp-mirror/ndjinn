@@ -87,8 +87,6 @@
     (pyx:make-shader-buffer buffer-name :world 'shader:world))
   (pyx:update-shader-buffer entity))
 
-(defmethod pyx:delete-asset ((type (eql 'world)) key)
-  (pyx:delete-shader-buffer key))
-
 (pyx:define-entity-hook :detach (entity world)
-  (pyx:delete-asset 'world buffer-name))
+  (pyx:delete-asset 'world buffer-name)
+  (pyx:delete-shader-buffer buffer-name))

@@ -8,8 +8,7 @@
   target
   id
   width
-  height
-  materials)
+  height)
 
 (u:define-printer (texture stream)
   (format stream "~s" (name (spec texture))))
@@ -202,32 +201,8 @@
       (configure texture)
       texture)))
 
-(defun reload-texture-source (texture)
-  (tp:submit-job
-   :texture-reload
-   (lambda ()
-     (let* ((spec (spec texture))
-            (source (load-source spec
-                                 (texture-type spec)
-                                 :width (width texture)
-                                 :height (height texture))))
-       (tp:enqueue :recompile `(:texture-reload (,texture ,source)))))))
-
-(live:on-recompile :texture-reload data ()
-  (destructuring-bind (texture source) data
-    (let* ((spec (spec texture))
-           (name (name spec)))
-      (if (asset:find-asset :texture name)
-          (update-texture (texture-type spec) texture source)
-          (progn
-            (asset:delete-asset :texture name)
-            (load name)))
-      (configure texture))))
-
-(defmethod asset:delete-asset ((type (eql :texture)) key)
-  (a:when-let ((texture (asset:find-asset type key)))
-    (gl:delete-texture (id texture))))
-
 (live:on-recompile :texture data ()
   (a:when-let ((texture (asset:find-asset :texture data)))
-    (reload-texture-source texture)))
+    (gl:delete-texture (id texture))
+    (asset:delete-asset :texture data)
+    (load data :width (width texture) :height (height texture))))

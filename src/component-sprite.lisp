@@ -28,6 +28,3 @@
   (gl:bind-vertex-array (asset.sprite:vao spritesheet))
   (gl:draw-arrays :triangle-strip 0 4)
   (gl:bind-vertex-array 0))
-
-(ent:define-entity-hook :delete (entity sprite)
-  (asset:delete-asset :spritesheet asset))

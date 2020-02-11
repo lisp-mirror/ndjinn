@@ -31,9 +31,9 @@
     framebuffer))
 
 (defun load (name)
-  (asset:with-asset-cache :framebuffer name
-    (let ((spec (find-spec name)))
-      (make-framebuffer spec))))
+  (let ((spec (find-spec name)))
+    (or (find name)
+        (make-framebuffer spec))))
 
 (defun attachment-point->gl (point)
   (destructuring-bind (type &optional (index 0)) (a:ensure-list point)
@@ -109,14 +109,11 @@
                 texture name."
              (name framebuffer)
              (attachment-name attachment)))
-    (when (asset:find-asset :texture texture-name)
-      (asset:delete-asset :texture texture-name))
     (let* ((width (funcall (width attachment)))
            (height (funcall (height attachment)))
-           (buffer-id (tex:id (or (asset:find-asset :texture texture-name)
-                                  (tex:load texture-name
-                                            :width width
-                                            :height height))))
+           (buffer-id (tex:id (tex:load texture-name
+                                        :width width
+                                        :height height)))
            (point (attachment-point->gl (point attachment)))
            (target (target framebuffer)))
       (gl:bind-framebuffer target (id framebuffer))
@@ -137,22 +134,6 @@
   (let ((spec (spec framebuffer)))
     (u:do-hash-values (attachment (attachment-specs spec))
       (attach framebuffer (attachment-name attachment)))))
-
-(defun delete (framebuffer)
-  (let* ((spec (spec framebuffer))
-         (name (name spec)))
-    (dolist (pass-name (render:collect-passes-using-framebuffer name))
-      (render:disable-pass pass-name))
-    (u:do-hash-values (v (attachment-specs spec))
-      (destructuring-bind (type &optional texture) (buffer v)
-        (when (and (eq type :texture)
-                   (asset:find-asset :texture texture))
-          (asset:delete-asset :texture texture))))
-    (asset:delete-asset :framebuffer name)))
-
-(defmethod asset:delete-asset ((type (eql :framebuffer)) key)
-  (let ((framebuffer (asset:find-asset type key)))
-    (gl:delete-framebuffers (list (id framebuffer)))))
 
 (live:on-recompile :framebuffer data ()
   (a:when-let ((spec (find-spec data))

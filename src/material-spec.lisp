@@ -1,5 +1,19 @@
 (in-package #:%pyx.material)
 
+(defstruct (spec (:constructor %make-spec)
+                 (:conc-name nil)
+                 (:predicate nil)
+                 (:copier nil))
+  name
+  master
+  slaves
+  shader
+  (spec-uniforms (util:make-nested-dict #'eq :self :resolved))
+  pass
+  spec-framebuffer
+  spec-attachments
+  (render-func (constantly nil)))
+
 (u:define-printer (spec stream)
   (format stream "~s" (name spec)))
 

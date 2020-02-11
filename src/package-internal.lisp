@@ -344,20 +344,16 @@
 (define-package #:%pyx.framebuffer
   (:use #:cl)
   (:shadow
-   #:delete
    #:find
    #:load)
   (:export
    #:attachment-names->points
-   #:delete
    #:find
    #:find-spec
    #:find-attachment-spec
    #:get-attachment-texture
    #:load
-   #:name
    #:materials
-   #:spec
    #:with-framebuffer)
   ;; public
   (:export
@@ -424,12 +420,9 @@
 
 (define-package #:%pyx.material
   (:use #:cl)
-  (:shadow
-   #:delete)
   (:export
    #:as-uniform
    #:attachments
-   #:delete
    #:framebuffer
    #:make-material
    #:pass
@@ -477,14 +470,10 @@
   (:use #:cl)
   (:export
    #:clear-pass
-   #:collect-passes-using-framebuffer
    #:deregister-order
-   #:disable-pass
-   #:enable-pass
    #:find-pass-spec
    #:make-order-tree
    #:name
-   #:pass-enabled-p
    #:pass-order
    #:register-order)
   ;; public
@@ -498,6 +487,7 @@
   (:export
    #:collision-system
    #:draw-order
+   #:load
    #:materials
    #:node-tree
    #:passes
@@ -531,12 +521,8 @@
   (:export
    #:bind
    #:find-spec
-   #:materials
-   #:name
    #:id
-   #:load
-   #:source
-   #:spec)
+   #:load)
   ;; public
   (:export
    #:define-texture))

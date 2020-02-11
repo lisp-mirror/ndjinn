@@ -277,12 +277,3 @@
       (parse-meshes gltf)
       (setf (buffers gltf) nil)
       gltf)))
-
-(defmethod asset:delete-asset ((type (eql :mesh)) key)
-  (a:when-let ((asset (asset:find-asset type key)))
-    (u:do-hash-values (v (meshes asset))
-      (loop :for primitive :across (primitives v)
-            :do (gl:delete-buffers (vertex-buffers primitive))
-                (when (index-buffer primitive)
-                  (gl:delete-buffers (list (index-buffer primitive))))
-                (gl:delete-vertex-arrays (list (vao primitive)))))))

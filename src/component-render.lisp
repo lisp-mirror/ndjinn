@@ -20,10 +20,7 @@
 (defun render-frame ()
   (let ((scene (ctx:current-scene)))
     (map nil
-         (lambda (x)
-           (let ((pass (render:find-pass-spec x)))
-             (when (render::pass-enabled-p pass)
-               (render-pass (render:find-pass-spec x)))))
+         (lambda (x) (render-pass (render:find-pass-spec x)))
          (scene:passes scene))))
 
 (defun render-pass (pass)
@@ -115,7 +112,3 @@
       (mat:set-uniforms current-material
                         :view (c/camera:view camera)
                         :proj (c/camera:projection camera)))))
-
-(ent:define-entity-hook :delete (entity render)
-  (u:do-hash-values (v materials)
-    (mat:delete v)))

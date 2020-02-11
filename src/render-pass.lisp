@@ -5,21 +5,12 @@
                       (:predicate nil)
                       (:copier nil))
   name
-  (enabled t)
   framebuffer
   clear-color
   clear-buffers)
 
 (defun find-pass-spec (name)
   (u:href meta:=render-passes= name))
-
-(defun collect-passes-using-framebuffer (framebuffer-name)
-  (let (passes)
-    (dolist (pass-name (scene:passes (ctx:current-scene)))
-      (let ((pass (find-pass-spec pass-name)))
-        (when (eq (framebuffer pass) framebuffer-name)
-          (push pass-name passes))))
-    passes))
 
 (defun update-pass-spec (name framebuffer-name clear-color clear-buffers)
   (let ((spec (find-pass-spec name)))
@@ -43,18 +34,6 @@
     (v4:with-components ((v (clear-color pass)))
       (gl:clear-color vx vy vz vw)
       (apply #'gl:clear (clear-buffers pass)))))
-
-(defun pass-enabled-p (pass)
-  (enabled pass))
-
-(defun disable-pass (pass-name)
-  (let ((pass (find-pass-spec pass-name)))
-    (setf (enabled pass) nil)
-    (clear-pass pass)))
-
-(defun enable-pass (pass-name)
-  (let ((pass (find-pass-spec pass-name)))
-    (setf (enabled pass) t)))
 
 ;;; Public API
 

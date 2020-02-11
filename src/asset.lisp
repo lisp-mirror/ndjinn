@@ -1,28 +1,10 @@
 (in-package #:%pyx.asset)
 
-(defstruct (cached-asset (:conc-name nil)
-                         (:predicate nil)
-                         (:copier nil))
-  (references 1)
-  value)
-
 (defun find-asset (type key)
-  (a:when-let* ((assets (ctx:assets))
-                (type (u:href assets type))
-                (asset (u:href type key)))
-    (value asset)))
+  (u:href (ctx:assets) type key))
 
-(defgeneric delete-asset (type key)
-  (:method (type key))
-  (:method :around (type key)
-    (a:when-let* ((type-table (u:href (ctx:assets) type))
-                  (asset (u:href type-table key)))
-      (decf (references asset))
-      (when (zerop (references asset))
-        (call-next-method)
-        (remhash key (u:href (ctx:assets) type))
-        (when (zerop (hash-table-count (u:href (ctx:assets) type)))
-          (remhash type (ctx:assets)))))))
+(defun delete-asset (type key)
+  (remhash key (u:href (ctx:assets) type)))
 
 (defun %resolve-path (system path)
   (if cfg:=release=
@@ -57,14 +39,9 @@
         (error "File path not found: ~s." resolved-path))))
 
 (defmacro with-asset-cache (type key &body body)
-  (a:with-gensyms (asset)
-    `(progn
-       (unless (u:href (ctx:assets) ,type)
-         (setf (u:href (ctx:assets) ,type) (u:dict #'equal)))
-       (a:if-let ((,asset (u:href (ctx:assets) ,type ,key)))
-         (progn
-           (incf (references ,asset))
-           (value ,asset))
-         (let ((,asset (make-cached-asset :value (progn ,@body))))
-           (setf (u:href (ctx:assets) ,type ,key) ,asset)
-           (value ,asset))))))
+  (a:with-gensyms (table value found-p)
+    `(symbol-macrolet ((,table (u:href (ctx:assets) ,type)))
+       (u:mvlet ((,value ,found-p ,table))
+         (unless ,found-p
+           (setf ,table (u:dict #'equalp))))
+       (a:ensure-gethash ,key ,table (progn ,@body)))))

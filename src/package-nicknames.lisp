@@ -39,7 +39,6 @@
 
 (define-local-nicknames #:%pyx.asset.mesh
   (#:a #:alexandria)
-  (#:asset #:%pyx.asset)
   (#:ctx #:%pyx.context)
   (#:parse #:%pyx.binary-parser)
   (#:u #:golden-utils))
@@ -233,13 +232,11 @@
 
 (define-local-nicknames #:%pyx.framebuffer
   (#:a #:alexandria)
-  (#:asset #:%pyx.asset)
   (#:cfg #:%pyx.config)
   (#:ctx #:%pyx.context)
   (#:live #:%pyx.live-support)
   (#:meta #:%pyx.metadata)
   (#:ogl #:%pyx.opengl)
-  (#:render #:%pyx.render)
   (#:tex #:%pyx.texture)
   (#:tp #:%pyx.thread-pool)
   (#:u #:golden-utils))
@@ -267,7 +264,6 @@
 
 (define-local-nicknames #:%pyx.material
   (#:a #:alexandria)
-  (#:asset #:%pyx.asset)
   (#:c/render #:%pyx.component.render)
   (#:ctx #:%pyx.context)
   (#:fb #:%pyx.framebuffer)
@@ -372,10 +368,8 @@
   (#:v3 #:origin.vec3))
 
 (define-local-nicknames #:%pyx.ui.font
-  (#:asset #:%pyx.asset)
   (#:c/font #:%pyx.component.font)
   (#:font #:3b-bmfont)
-  (#:geom #:%pyx.geometry)
   (#:u #:golden-utils)
   (#:v2 #:origin.vec2)
   (#:vp #:%pyx.viewport))

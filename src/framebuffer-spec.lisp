@@ -44,11 +44,6 @@
 (defun find-attachment-spec (spec name)
   (u:href (attachment-specs spec) name))
 
-(defun get-attachment-texture (attachment)
-  (values (getf (buffer attachment) :texture)
-          (funcall (width attachment))
-          (funcall (height attachment))))
-
 (defun update-spec (name mode attachments)
   (let ((spec (find-spec name)))
     (setf (mode spec) mode)

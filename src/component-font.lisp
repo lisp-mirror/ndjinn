@@ -29,7 +29,7 @@
     (unless %asset
       (error "Font component ~s does not have an asset specified." entity))
     (let ((path (asset:resolve-path %asset)))
-      (setf %spec (asset:with-asset-cache :font %asset
+      (setf %spec (asset:with-asset-cache :font path
                     (with-open-file (in path)
                       (3b-bmfont-json:read-bmfont-json in)))))))
 

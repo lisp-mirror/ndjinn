@@ -20,13 +20,6 @@
    #:resolve-path
    #:with-asset-cache))
 
-(define-package #:%pyx.asset.hdr
-  (:use #:cl)
-  (:shadow
-   #:load
-   #:read-byte
-   #:read-line))
-
 (define-package #:%pyx.asset.image
   (:use #:cl)
   (:shadow
@@ -37,9 +30,26 @@
    #:image
    #:internal-format
    #:load
+   #:make-image
    #:pixel-format
    #:pixel-type
    #:width))
+
+(define-package #:%pyx.asset.image.hdr
+  (:use #:cl)
+  (:shadow
+   #:load
+   #:read-byte
+   #:read-line)
+  (:export
+   #:load))
+
+(define-package #:%pyx.asset.image.png
+  (:use #:cl)
+  (:shadow
+   #:load)
+  (:export
+   #:load))
 
 (define-package #:%pyx.asset.mesh
   (:use #:cl)

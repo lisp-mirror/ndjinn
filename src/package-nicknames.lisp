@@ -21,10 +21,21 @@
   (#:meta #:%pyx.metadata)
   (#:u #:golden-utils))
 
-
 (define-local-nicknames #:%pyx.asset.image
   (#:a #:alexandria)
-  (#:asset #:%pyx.asset))
+  (#:asset #:%pyx.asset)
+  (#:hdr #:%pyx.asset.image.hdr)
+  (#:png #:%pyx.asset.image.png))
+
+(define-local-nicknames #:%pyx.asset.image.hdr
+  (#:a #:alexandria)
+  (#:img #:%pyx.asset.image)
+  (#:ss #:split-sequence)
+  (#:u #:golden-utils))
+
+(define-local-nicknames #:%pyx.asset.image.png
+  (#:a #:alexandria)
+  (#:img #:%pyx.asset.image))
 
 (define-local-nicknames #:%pyx.asset.mesh
   (#:a #:alexandria)

@@ -10,6 +10,7 @@
   :depends-on (#:3b-bmfont
                #:3b-bmfont/json
                #:alexandria
+               #:babel
                #:cl-cpus
                #:cl-graph
                #:cl-opengl
@@ -24,6 +25,7 @@
                #:origin
                #:pngload-fast
                #:sdl2
+               #:split-sequence
                #:shadow
                #:uiop
                #:umbra)
@@ -50,6 +52,8 @@
    (:file "asset-spec")
    (:file "asset")
    (:file "asset-image")
+   (:file "asset-image-png")
+   (:file "asset-image-hdr")
    (:file "asset-mesh")
    (:file "asset-spritesheet")
    (:file "input-data")

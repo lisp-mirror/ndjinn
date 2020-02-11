@@ -352,6 +352,8 @@
    #:delete
    #:find
    #:find-spec
+   #:find-attachment-spec
+   #:get-attachment-texture
    #:load
    #:name
    #:materials
@@ -476,11 +478,13 @@
   (:export
    #:clear-pass
    #:collect-passes-using-framebuffer
-   #:delete-pass
    #:deregister-order
+   #:disable-pass
+   #:enable-pass
    #:find-pass-spec
    #:make-order-tree
    #:name
+   #:pass-enabled-p
    #:pass-order
    #:register-order)
   ;; public
@@ -527,6 +531,7 @@
   (:export
    #:bind
    #:find-spec
+   #:materials
    #:name
    #:id
    #:load

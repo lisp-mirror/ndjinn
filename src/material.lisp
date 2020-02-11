@@ -4,10 +4,12 @@
   (a:when-let* ((spec (spec material))
                 (framebuffer-name (spec-framebuffer spec)))
     (a:if-let ((framebuffer (fb:load framebuffer-name)))
-      (setf (framebuffer material) framebuffer
-            (attachments material) (fb:attachment-names->points
-                                    framebuffer
-                                    (spec-attachments spec)))
+      (progn
+        (setf (framebuffer material) framebuffer
+              (attachments material) (fb:attachment-names->points
+                                      framebuffer
+                                      (spec-attachments spec)))
+        (render:enable-pass (pass spec)))
       (error "Material ~s uses unknown framebuffer ~s."
              (name spec)
              framebuffer-name))))
@@ -37,10 +39,15 @@
     material))
 
 (defun delete (material)
-  (let ((framebuffer (framebuffer material)))
+  (let ((name (name (spec material)))
+        (framebuffer (framebuffer material))
+        (scene-materials (scene:materials (ctx:current-scene))))
     (delete-material-textures material)
     (when framebuffer
-      (fb:delete framebuffer))))
+      (fb:delete framebuffer))
+    (a:deletef (u:href scene-materials name) material)
+    (unless (u:href scene-materials name)
+      (remhash name scene-materials))))
 
 (live:on-recompile :material data ()
   (let ((shader (shader (find-spec data))))
@@ -48,4 +55,7 @@
     (dolist (material (u:href (scene:materials (ctx:current-scene)) data))
       (delete-material-textures material)
       (make-uniforms material)
-      (ensure-framebuffer material))))
+      (a:when-let ((framebuffer (framebuffer material)))
+        (fb:delete framebuffer)
+        (ensure-framebuffer material)
+        (fb::attach-all framebuffer)))))

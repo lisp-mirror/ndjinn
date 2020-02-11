@@ -217,14 +217,15 @@
   (destructuring-bind (texture source) data
     (let* ((spec (spec texture))
            (name (name spec)))
-      (asset:delete-asset :texture name)
       (if (asset:find-asset :texture name)
           (update-texture (texture-type spec) texture source)
-          (load name))
+          (progn
+            (asset:delete-asset :texture name)
+            (load name)))
       (configure texture))))
 
 (defmethod asset:delete-asset ((type (eql :texture)) key)
-  (let ((texture (asset:find-asset type key)))
+  (a:when-let ((texture (asset:find-asset type key)))
     (gl:delete-texture (id texture))))
 
 (live:on-recompile :texture data ()

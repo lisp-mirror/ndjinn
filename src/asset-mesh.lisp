@@ -279,7 +279,7 @@
       gltf)))
 
 (defmethod asset:delete-asset ((type (eql :mesh)) key)
-  (let ((asset (asset:find-asset type key)))
+  (a:when-let ((asset (asset:find-asset type key)))
     (u:do-hash-values (v (meshes asset))
       (loop :for primitive :across (primitives v)
             :do (gl:delete-buffers (vertex-buffers primitive))

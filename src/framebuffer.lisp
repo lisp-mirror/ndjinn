@@ -109,11 +109,14 @@
                 texture name."
              (name framebuffer)
              (attachment-name attachment)))
+    (when (asset:find-asset :texture texture-name)
+      (asset:delete-asset :texture texture-name))
     (let* ((width (funcall (width attachment)))
            (height (funcall (height attachment)))
-           (buffer-id (tex:id (tex:load texture-name
-                                        :width width
-                                        :height height)))
+           (buffer-id (tex:id (or (asset:find-asset :texture texture-name)
+                                  (tex:load texture-name
+                                            :width width
+                                            :height height))))
            (point (attachment-point->gl (point attachment)))
            (target (target framebuffer)))
       (gl:bind-framebuffer target (id framebuffer))
@@ -139,10 +142,11 @@
   (let* ((spec (spec framebuffer))
          (name (name spec)))
     (dolist (pass-name (render:collect-passes-using-framebuffer name))
-      (render:delete-pass pass-name))
+      (render:disable-pass pass-name))
     (u:do-hash-values (v (attachment-specs spec))
       (destructuring-bind (type &optional texture) (buffer v)
-        (when (eq type :texture)
+        (when (and (eq type :texture)
+                   (asset:find-asset :texture texture))
           (asset:delete-asset :texture texture))))
     (asset:delete-asset :framebuffer name)))
 

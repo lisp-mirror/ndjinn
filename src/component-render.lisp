@@ -21,7 +21,9 @@
   (let ((scene (ctx:current-scene)))
     (map nil
          (lambda (x)
-           (render-pass (render:find-pass-spec x)))
+           (let ((pass (render:find-pass-spec x)))
+             (when (render::pass-enabled-p pass)
+               (render-pass (render:find-pass-spec x)))))
          (scene:passes scene))))
 
 (defun render-pass (pass)

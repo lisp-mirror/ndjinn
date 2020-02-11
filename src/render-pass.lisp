@@ -5,6 +5,7 @@
                       (:predicate nil)
                       (:copier nil))
   name
+  (enabled t)
   framebuffer
   clear-color
   clear-buffers)
@@ -43,11 +44,17 @@
       (gl:clear-color vx vy vz vw)
       (apply #'gl:clear (clear-buffers pass)))))
 
-(defun delete-pass (pass-name)
-  (let ((scene (ctx:current-scene)))
-    (when (find pass-name (scene:passes scene))
-      (clear-pass (find-pass-spec pass-name))
-      (a:deletef (scene:passes scene) pass-name))))
+(defun pass-enabled-p (pass)
+  (enabled pass))
+
+(defun disable-pass (pass-name)
+  (let ((pass (find-pass-spec pass-name)))
+    (setf (enabled pass) nil)
+    (clear-pass pass)))
+
+(defun enable-pass (pass-name)
+  (let ((pass (find-pass-spec pass-name)))
+    (setf (enabled pass) t)))
 
 ;;; Public API
 

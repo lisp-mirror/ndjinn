@@ -81,18 +81,44 @@
            (uniform-key uniform)
            (resolve-uniform-value entity uniform)))
 
+(defgeneric %register-uniform-texture (material uniform value)
+  (:method :before (material uniform value)
+    (when (null value)
+      (error "Texture uniform ~s of material ~s must have a value."
+             (uniform-key uniform)
+             (name (spec material))))))
+
+(defmethod %register-uniform-texture (material uniform (value symbol))
+  (let ((texture (or (asset:find-asset :texture value)
+                     (tex:load value))))
+    (pushnew material (tex:materials texture))
+    (setf (uniform-value uniform) texture)))
+
+(defmethod %register-uniform-texture (material uniform (value list))
+  (destructuring-bind (framebuffer attachment) value
+    (let* ((material-name (name (spec material)))
+           (key (uniform-key uniform))
+           (framebuffer (fb:find-spec framebuffer))
+           (attachment (fb:find-attachment-spec framebuffer attachment)))
+      (unless attachment
+        (error "Texture uniform ~s of material ~s specifies a framebuffer ~
+                attachment that does not exist."
+               key
+               material-name))
+      (u:mvlet ((name width height (fb:get-attachment-texture attachment)))
+        (unless name
+          (error "Texture uniform ~s of material ~s specifies a framebuffer ~
+                  attachment that does not have a texture."
+                 key
+                 material-name))
+        (let ((texture (or (asset:find-asset :texture name)
+                           (tex:load name :width width :height height))))
+          (push material (tex:materials texture))
+          (setf (uniform-value uniform) texture))))))
+
 (defun register-uniform-texture (material uniform)
   (let ((value (uniform-value uniform)))
-    (etypecase value
-      (symbol
-       (let ((texture (tex:load value)))
-         (pushnew material (tex::materials texture))
-         (setf (uniform-value uniform) texture)))
-      (list
-       (let ((textures (lp:pmapcar #'tex:load value)))
-         (dolist (texture textures)
-           (pushnew material (tex::materials texture)))
-         (setf (uniform-value uniform) textures))))))
+    (%register-uniform-texture material uniform value)))
 
 ;;; Public API
 

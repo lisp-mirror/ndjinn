@@ -14,6 +14,8 @@
   (:use #:cl)
   ;; public
   (:export
+   #:resolve-system-path)
+  (:export
    #:define-asset-pool
    #:delete-asset
    #:find-asset

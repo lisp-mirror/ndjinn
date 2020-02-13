@@ -76,8 +76,7 @@
 
 (pyx:define-geometry text ()
   (:layout text
-   :primitive :triangles
-   :vertex-count 6))
+   :primitive :triangles))
 
 (pyx:define-scene font ()
   (:sub-trees (examples camera/orthographic debug-info)))

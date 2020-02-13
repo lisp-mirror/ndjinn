@@ -9,15 +9,13 @@
   buffers
   (buffer-names (u:dict #'eq))
   primitive
-  (primitive-count 0)
-  vertex-count)
+  (primitive-count 0))
 
 (defun make-spec (layout-name
-                  &key (primitive :triangles) (vertex-count 0) buffer-data)
+                  &key (primitive :triangles) buffer-data)
   (lambda ()
     (let ((spec (%make-spec :layout (find-layout layout-name)
-                            :primitive primitive
-                            :vertex-count vertex-count)))
+                            :primitive primitive)))
       (gl:bind-vertex-array (id spec))
       (make-buffers spec)
       (configure-buffers spec)
@@ -29,11 +27,9 @@
 
 (defmacro define-geometry (name options &body body)
   (declare (ignore options))
-  (destructuring-bind (&key layout (primitive :triangles) (vertex-count 0)
-                         buffers)
+  (destructuring-bind (&key layout (primitive :triangles) buffers)
       (car body)
     `(setf (u:href meta:=geometry= ',name)
            (make-spec ',layout
                       :primitive ',primitive
-                      :vertex-count ,vertex-count
                       :buffer-data ',buffers))))

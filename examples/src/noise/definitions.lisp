@@ -1,4 +1,4 @@
-(in-package #:pyx.examples)
+(in-package #:pyx-examples)
 
 (pyx:define-material noise ()
   (:uniforms (:time (pyx:as-uniform 'pyx:get-running-time))))

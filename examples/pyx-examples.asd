@@ -1,4 +1,4 @@
-(asdf:defsystem #:pyx.examples
+(asdf:defsystem #:pyx-examples
   :description "Example scenes for the Pyx game engine."
   :author ("Michael Fiano <mail@michaelfiano.com>")
   :maintainer "Michael Fiano <mail@michaelfiano.com>"
@@ -9,7 +9,7 @@
   :encoding :utf-8
   :depends-on (#:dungen
                #:pyx
-               #:pyx.extension)
+               #:pyx-resources)
   :pathname "src"
   :serial t
   :components

@@ -1,4 +1,4 @@
-(in-package #:pyx.examples)
+(in-package #:pyx-examples)
 
 (pyx:define-texture multi-pass/color ()
   (:min-filter :linear

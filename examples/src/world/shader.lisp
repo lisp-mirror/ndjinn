@@ -1,4 +1,4 @@
-(in-package #:pyx.examples.shader)
+(in-package #:pyx-examples.shader)
 
 (defstruct world-data
   (width :uint :accessor width)

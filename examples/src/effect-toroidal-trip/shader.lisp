@@ -1,4 +1,4 @@
-(in-package #:pyx.examples.shader)
+(in-package #:pyx-examples.shader)
 
 (defun effect/toroidal-trip/check-ray ((distance :float))
   (< distance 1e-3))

@@ -1,10 +1,12 @@
-(in-package #:pyx.examples.shader)
+(in-package #:pyx-examples.shader)
 
 (defconstant +albedo+ 0)
 (defconstant +ao+ 1)
 (defconstant +emissive+ 2)
 (defconstant +metal-roughness+ 3)
 (defconstant +normal+ 4)
+(defconstant +diffuse+ 0)
+(defconstant +specular+ 1)
 
 (defstruct material-info
   (perceptual-roughness :float :accessor perceptual-roughness)
@@ -30,23 +32,25 @@
                              (normal :vec3)
                              (view-dir :vec3)
                              (brdf-lut :sampler-2d)
-                             (diffuse-sampler :sampler-cube)
-                             (specular-sampler :sampler-cube))
+                             (environment-sampler :sampler-cube-array))
   (with-slots (perceptual-roughness diffuse-color specular-color) material-info
     (let* ((n-dot-v (clamp (dot normal view-dir) 0 1))
-           (specular-mipmaps (texture-query-levels specular-sampler))
-           (lod (clamp (* perceptual-roughness specular-mipmaps)
+           (mipmaps (texture-query-levels environment-sampler))
+           (lod (clamp (* perceptual-roughness mipmaps)
                        0
-                       specular-mipmaps))
-           (reflection (normalize (reflect view-dir normal)))
+                       mipmaps))
+           (reflection (normalize (reflect (- view-dir) normal)))
            (brdf-sample-point (clamp (vec2 n-dot-v perceptual-roughness)
                                      (vec2 0)
                                      (vec2 1)))
            (brdf (.rg (texture brdf-lut brdf-sample-point)))
-           (diffuse-sample (texture diffuse-sampler normal))
-           (specular-sample (texture specular-sampler reflection lod))
-           (diffuse-light (.rgb (umbra.color:srgb->rgb diffuse-sample)))
-           (specular-light (.rgb (umbra.color:srgb->rgb specular-sample)))
+           (diffuse-sample (texture environment-sampler
+                                    (vec4 normal +diffuse+)))
+           (specular-sample (texture environment-sampler
+                                     (vec4 reflection +specular+)
+                                     lod))
+           (diffuse-light (.rgb diffuse-sample))
+           (specular-light (.rgb specular-sample))
            (diffuse (* diffuse-light diffuse-color))
            (specular (* specular-light (+ (* specular-color (.x brdf))
                                           (.y brdf)))))
@@ -198,8 +202,7 @@
                       (occlusion-strength :float)
                       (emissive-factor :float)
                       (brdf-lut :sampler-2d)
-                      (diffuse-sampler :sampler-cube)
-                      (specular-sampler :sampler-cube)
+                      (environment-sampler :sampler-cube-array)
                       (use-punctual :bool)
                       (use-ibl :bool))
   (let* ((uv (vec2 (.x uv) (- 1 (.y uv))))
@@ -243,8 +246,7 @@
                                         normal-w
                                         view-dir
                                         brdf-lut
-                                        diffuse-sampler
-                                        specular-sampler)))
+                                        environment-sampler)))
     (vec4 (umbra.color:rgb->srgb (umbra.color:tone-map/aces color 1))
           (.a base-color))))
 

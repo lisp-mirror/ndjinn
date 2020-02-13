@@ -1,4 +1,4 @@
-(in-package #:pyx.examples.shader)
+(in-package #:pyx-examples.shader)
 
 (defun multi-pass/vert ((mesh-attrs mesh-attrs)
                         &uniforms

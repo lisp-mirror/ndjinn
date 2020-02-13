@@ -1,4 +1,4 @@
-(in-package #:pyx.examples)
+(in-package #:pyx-examples)
 
 (pyx:define-texture mesh (:2d-array)
   (:source ((mesh-textures helmet-albedo)
@@ -20,9 +20,8 @@
               :normal-matrix 'pyx:resolve-normal-matrix
               :occlusion-strength 1
               :emissive-factor 1
-              :brdf-lut 'ext:brdf-lut
-              :diffuse-sampler 'ext:papermill-diffuse
-              :specular-sampler 'ext:papermill-specular
+              :brdf-lut 'res:brdf-lut
+              :environment-sampler 'res:pisa
               :use-punctual t
               :use-ibl t)
    :features (:enable (:texture-cube-map-seamless))))

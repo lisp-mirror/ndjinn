@@ -1,4 +1,4 @@
-(in-package #:pyx.examples)
+(in-package #:pyx-examples)
 
 (pyx:define-prefab collider ()
   ((gate/top :add (pyx:collider))

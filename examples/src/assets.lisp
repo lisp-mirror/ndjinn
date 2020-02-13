@@ -1,4 +1,4 @@
-(in-package #:pyx.examples)
+(in-package #:pyx-examples)
 
 (pyx:define-asset-pool meshes (:base "data/meshes")
   (helmet "helmet.glb")

@@ -1,5 +1,8 @@
-(asdf:defsystem #:pyx.dev
-  :description "For internal development use of Pyx."
+(push :pyx.release *features*)
+(push :cl-opengl-no-check-error *features*)
+
+(asdf:defsystem #:pyx-deploy
+  :description "A system used for deploying a game developed with Pyx."
   :author ("Michael Fiano <mail@michaelfiano.com>")
   :maintainer "Michael Fiano <mail@michaelfiano.com>"
   :license "MIT"
@@ -7,11 +10,8 @@
   :source-control (:git "https://github.com/mfiano/pyx.git")
   :bug-tracker "https://github.com/mfiano/pyx/issues"
   :encoding :utf-8
-  :depends-on (#:cl-renderdoc
-               #:printv
-               #:pyx
-               #:pyx.examples)
-  :pathname "src/dev"
+  :depends-on (#:pyx)
+  :pathname "src/deploy"
   :serial t
   :components
-  ((:file "dev")))
+  ((:file "deploy")))

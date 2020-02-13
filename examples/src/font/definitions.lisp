@@ -1,4 +1,4 @@
-(in-package #:pyx.examples)
+(in-package #:pyx-examples)
 
 (defun seconds->duration (seconds)
   (u:mvlet* ((days d-rem (floor seconds 86400))
@@ -50,20 +50,20 @@
 (pyx:define-material font ()
   (:shader pyx.shader:font
    :uniforms (:res (pyx:as-uniform 'pyx:get-viewport-dimensions)
-              :sampler 'ext:font
+              :sampler 'res:font
               :color (v4:vec 0 1 0 0.75))))
 
 (pyx:define-prefab debug-info ()
   ((fps-labels :add (pyx:render pyx:font))
    :font/geometry 'text
-   :font/asset '(ext:metadata ext:font)
+   :font/asset '(res:metadata res:font)
    :font/text 'print-fps-labels
    :font/position :top-left
    :font/offset (v2:vec 0.5 -0.5)
    :render/materials '(font))
   ((fps-times :add (pyx:render pyx:font))
    :font/geometry 'text
-   :font/asset '(ext:metadata ext:font)
+   :font/asset '(res:metadata res:font)
    :font/text 'print-fps-times
    :font/position :top-left
    :font/offset (v2:vec 12 -4.5)

@@ -1,4 +1,4 @@
-(in-package #:pyx.examples.shader)
+(in-package #:pyx-examples.shader)
 
 (defun effect/kaleidoscope/hash ((p :vec2))
   (let* ((p (fract (vec3 (* p (vec2 385.18692 958.5519))

@@ -1,4 +1,4 @@
-(in-package #:pyx.examples.shader)
+(in-package #:pyx-examples.shader)
 
 (defun effect/ocean-waves/wave-dx ((position :vec2)
                                    (direction :vec2)

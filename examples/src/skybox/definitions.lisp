@@ -1,4 +1,4 @@
-(in-package #:pyx.examples)
+(in-package #:pyx-examples)
 
 (pyx:define-component skybox ()
   ((%geometry :accessor geometry
@@ -13,7 +13,7 @@
 
 (pyx:define-material skybox ()
   (:shader shader:skybox
-   :uniforms (:sampler 'ext:sky)
+   :uniforms (:sampler 'res:sky)
    :features (:enable (:texture-cube-map-seamless)
               :depth-mode :lequal)))
 

@@ -1,4 +1,4 @@
-(in-package #:pyx.examples.shader)
+(in-package #:pyx-examples.shader)
 
 (defun effect/truchet/hash ((p :vec2))
   (let* ((p (fract (* p (vec2 385.18692 958.5519))))

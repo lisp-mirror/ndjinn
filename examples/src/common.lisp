@@ -1,4 +1,4 @@
-(in-package #:pyx.examples)
+(in-package #:pyx-examples)
 
 (pyx:define-component scene-switcher ()
   ((%scenes :accessor scenes
@@ -7,7 +7,7 @@
 (pyx:define-entity-hook :update (entity scene-switcher)
   (unless scenes
     (setf scenes (remove 'examples (pyx:get-registered-scene-names
-                                    :pyx.examples))))
+                                    :pyx-examples))))
   (let ((index (or (position (pyx:get-scene-name) scenes) 0)))
     (cond
       ((pyx:on-button-exit :key :up)
@@ -23,11 +23,11 @@
 
 (pyx:define-material full-quad ()
   (:shader pyx.shader:full-quad
-   :uniforms (:sampler 'ext:debug)))
+   :uniforms (:sampler 'res:debug)))
 
 (pyx:define-material quad ()
   (:shader pyx.shader:quad
-   :uniforms (:sampler 'ext:debug)))
+   :uniforms (:sampler 'res:debug)))
 
 (pyx:define-prefab camera (:add (pyx:camera))
   :camera/debug t)
@@ -51,7 +51,7 @@
   :camera/clip-far 1000)
 
 (pyx:define-prefab quad (:add (pyx:mesh pyx:render))
-  :mesh/asset '(ext:meshes ext:plane)
+  :mesh/asset '(res:meshes res:plane)
   :mesh/name "plane"
   :render/materials '(quad))
 

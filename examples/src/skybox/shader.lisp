@@ -1,4 +1,4 @@
-(in-package #:pyx.examples.shader)
+(in-package #:pyx-examples.shader)
 
 (defun skybox/vert ((mesh-attrs mesh-attrs)
                     &uniforms

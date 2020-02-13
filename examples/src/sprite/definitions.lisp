@@ -1,4 +1,4 @@
-(in-package #:pyx.examples)
+(in-package #:pyx-examples)
 
 (pyx:define-texture sprites ()
   (:source (textures sprites)))
@@ -10,7 +10,7 @@
    :features (:depth-mode :lequal)))
 
 (pyx:define-animation-sequence sprite ()
-  (ext:sprite :duration 0.5 :repeat-p t))
+  (res:sprite :duration 0.5 :repeat-p t))
 
 (pyx:define-prefab sprite (:add (pyx:sprite pyx:render))
   :sprite/asset '(metadata sprites)

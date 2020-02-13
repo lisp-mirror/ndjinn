@@ -97,13 +97,11 @@
                (when (= pos end)
                  (setf pos 0
                        end (read-sequence data stream))
-                 (when (zerop end) (cl:read-byte stream)))
+                 (when (zerop end)
+                   (cl:read-byte stream)))
                (aref data (1- (incf pos))))
              (read-pixel ()
                (values (%read-byte) (%read-byte) (%read-byte) (%read-byte)))
-             (valid-pixel-p (r g b e)
-               (declare (ignore e))
-               (or (> r 127) (> g 127) (> b 127)))
              (old-rle-p (r g b e)
                (when (= r g b 1)
                  e))
@@ -115,7 +113,7 @@
                  (setf (ldb (byte 8 1) w) r
                        (ldb (byte 8 10) w) g
                        (ldb (byte 8 19) w) b
-                       (ldb (byte 5 27) w) (- e 113))
+                       (ldb (byte 5 27) w) (min 31 (max 0 (- e 113))))
                  (setf (aref destination (+ offset p)) w)))
              (write-component (p c v)
                (declare (type u:ub8 v))
@@ -124,9 +122,9 @@
                    (0 (setf (ldb (byte 8 1) i) v))
                    (1 (setf (ldb (byte 8 10) i) v))
                    (2 (setf (ldb (byte 8 19) i) v))
-                   (3 (setf (ldb (byte 5 27) i) (- v 113)))))))
-      (declare (inline read-pixel valid-pixel-p old-rle-p new-rle-p
-                       write-pixel write-component))
+                   (3 (setf (ldb (byte 5 27) i) (min 31 (max 0 (- v 113)))))))))
+      (declare (inline read-pixel old-rle-p new-rle-p write-pixel
+                       write-component))
       (loop :with p :of-type u:ub24 = 0
             :with rle :of-type (or null u:ub16) = 0
             :with lr :of-type u:ub8 = 0
@@ -137,9 +135,6 @@
             :do (u:mvlet ((r g b e (read-pixel)))
                   (declare (type u:ub8 r g b e))
                   (cond
-                    ((valid-pixel-p r g b e)
-                     (write-pixel p r g b e)
-                     (incf p))
                     ((setf rle (old-rle-p r g b e))
                      (loop :repeat rle
                            :do (write-pixel p r g b e))
@@ -159,7 +154,10 @@
                                                    :do (write-component
                                                         p2 c (%read-byte))
                                                        (incf p2)))))
-                     (incf p rle)))
+                     (incf p rle))
+                    (t
+                     (write-pixel p r g b e)
+                     (incf p)))
                   (setf lr r lg g lb b le e)))
       (setf (buffer-position buffer) pos
             (buffer-end buffer) end))))

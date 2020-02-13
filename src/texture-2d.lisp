@@ -26,8 +26,8 @@
     (gl:bind-texture :texture-2d 0)
     texture))
 
-(defmethod load-source (spec (type (eql :2d)) &key width height)
-  (typecase (source spec)
+(defmethod load-source (spec (type (eql :2d)) source &key width height)
+  (typecase source
     ((or null (integer 1 1))
      (load-framebuffer-texture spec width height))
     (list

@@ -22,7 +22,8 @@
                         height)
     (loop :for image :in source
           :for face :in faces
-          :do (gl:tex-sub-image-2d face
+          :do (img::path image)
+              (gl:tex-sub-image-2d face
                                    0
                                    0
                                    0
@@ -34,9 +35,8 @@
     (gl:bind-texture :texture-cube-map 0)
     texture))
 
-(defmethod load-source (spec (type (eql :cube-map)) &key width height)
-  (let ((source (source spec))
-        (valid-keys '(:x+ :x- :y+ :y- :z+ :z-)))
+(defmethod load-source (spec (type (eql :cube-map)) source &key width height)
+  (let ((valid-keys '(:x+ :x- :y+ :y- :z+ :z-)))
     (cond
       ((typep source '(or null (integer 1 1)))
        (loop :repeat 6

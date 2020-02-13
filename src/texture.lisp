@@ -46,14 +46,14 @@
             :pixel-type (pixel-type spec)
             :internal-format (internal-format spec)))
 
-(defgeneric load-source (spec type &key &allow-other-keys)
-  (:method :around (spec type &key)
-    (let* ((source (call-next-method))
-           (source-list (a:ensure-list source)))
+(defgeneric load-source (spec type source &key &allow-other-keys)
+  (:method :around (spec type source &key)
+    (let* ((loaded (call-next-method))
+           (source-list (a:flatten (a:ensure-list loaded))))
       (unless (and (every #'img:width source-list)
                    (every #'img:height source-list))
         (error "Texture ~s does not have a width and height set." (name spec)))
-      source)))
+      loaded)))
 
 (defun make-target (type)
   (a:format-symbol :keyword "TEXTURE-~a" type))
@@ -66,7 +66,7 @@
   (asset:with-asset-cache :texture name
     (let* ((spec (find-spec name))
            (type (texture-type spec))
-           (source (load-source spec type :width width :height height))
+           (source (load-source spec type (source spec) :width width :height height))
            (texture (make-texture spec type source)))
       (configure texture)
       texture)))

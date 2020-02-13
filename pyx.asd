@@ -68,6 +68,7 @@
    (:file "texture-2d")
    (:file "texture-2d-array")
    (:file "texture-cube-map")
+   (:file "texture-cube-map-array")
    (:file "framebuffer-spec")
    (:file "framebuffer")
    (:file "viewport-spec")

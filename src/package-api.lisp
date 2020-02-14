@@ -85,7 +85,10 @@
   (:inherit-from #:%pyx.hardware
                  #:get-hardware-info)
   (:inherit-from #:%pyx.input
+                 #:disable-relative-motion
+                 #:enable-relative-motion
                  #:get-mouse-position
+                 #:mouse-motion-relative-p
                  #:on-button-enabled
                  #:on-button-enter
                  #:on-button-exit)

@@ -6,6 +6,9 @@
 
 (defstruct (mouse-motion-state (:predicate nil)
                                (:copier nil))
+  relative
+  (warp-x 0)
+  (warp-y 0)
   (x 0)
   (y 0)
   (dx 0)
@@ -29,10 +32,12 @@
       (setf (u:href states '(:mouse :scroll-vertical)) y))))
 
 (defun on-mouse-move (data x y dx dy)
-  (let ((motion-state (u:href (states data) '(:mouse :motion))))
-    (setf (mouse-motion-state-x motion-state) x
-          (mouse-motion-state-y motion-state) (- cfg:=window-height= y)
-          (mouse-motion-state-dx motion-state) dx
+  (let ((motion-state (u:href (states data) '(:mouse :motion)))
+        (relative (sdl2:relative-mouse-mode-p)))
+    (unless relative
+      (setf (mouse-motion-state-x motion-state) x
+            (mouse-motion-state-y motion-state) (- cfg:=window-height= y)))
+    (setf (mouse-motion-state-dx motion-state) dx
           (mouse-motion-state-dy motion-state) (- dy))))
 
 (defun reset-mouse-state (data)
@@ -58,3 +63,25 @@
     (ecase axis
       (:horizontal (u:href states '(:mouse :scroll-horizontal)))
       (:vertical (u:href states '(:mouse :scroll-vertical))))))
+
+(defun enable-relative-motion ()
+  (let* ((motion-state (u:href (states (ctx:input-data)) '(:mouse :motion)))
+         (x (mouse-motion-state-x motion-state))
+         (y (- cfg:=window-height= (mouse-motion-state-y motion-state))))
+    (sdl2:set-relative-mouse-mode 1)
+    (setf (mouse-motion-state-relative motion-state) t
+          (mouse-motion-state-warp-x motion-state) x
+          (mouse-motion-state-warp-y motion-state) y)))
+
+(defun disable-relative-motion (&key (warp t))
+  (let ((motion-state (u:href (states (ctx:input-data)) '(:mouse :motion))))
+    (sdl2:set-relative-mouse-mode 0)
+    (setf (mouse-motion-state-relative motion-state) nil)
+    (when warp
+      (let ((x (mouse-motion-state-warp-x motion-state))
+            (y (mouse-motion-state-warp-y motion-state)))
+        (sdl2:warp-mouse-in-window nil x y)))))
+
+(defun mouse-motion-relative-p ()
+  (let ((motion-state (u:href (states (ctx:input-data)) '(:mouse :motion))))
+    (mouse-motion-state-relative motion-state)))

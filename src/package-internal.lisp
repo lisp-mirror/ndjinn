@@ -406,9 +406,12 @@
    #:shutdown-gamepads)
   ;; public api
   (:export
+   #:disable-relative-motion
+   #:enable-relative-motion
    #:get-gamepad-analog
    #:get-mouse-position
    #:get-mouse-scroll
+   #:mouse-motion-relative-p
    #:on-button-enabled
    #:on-button-enter
    #:on-button-exit

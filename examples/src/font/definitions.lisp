@@ -55,28 +55,17 @@
 
 (pyx:define-prefab debug-info ()
   ((fps-labels :add (pyx:render pyx:font))
-   :font/geometry 'text
    :font/asset '(res:metadata res:font)
    :font/text 'print-fps-labels
    :font/position :top-left
    :font/offset (v2:vec 0.5 -0.5)
    :render/materials '(font))
   ((fps-times :add (pyx:render pyx:font))
-   :font/geometry 'text
    :font/asset '(res:metadata res:font)
    :font/text 'print-fps-times
    :font/position :top-left
    :font/offset (v2:vec 12 -4.5)
    :render/materials '(font)))
-
-(pyx:define-geometry-layout text ()
-  (:data (:format interleaved)
-         (position :type float :count 2)
-         (uv :type float :count 2)))
-
-(pyx:define-geometry text ()
-  (:layout text
-   :primitive :triangles))
 
 (pyx:define-scene font ()
   (:sub-trees (examples camera/orthographic debug-info)))

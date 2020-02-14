@@ -50,9 +50,8 @@
   :camera/clip-near -1000
   :camera/clip-far 1000)
 
-(pyx:define-prefab quad (:add (pyx:mesh pyx:render))
-  :mesh/asset '(res:meshes res:plane)
-  :mesh/name "plane"
+(pyx:define-prefab quad (:add (pyx:geometry pyx:render))
+  :geometry/name 'res:quad
   :render/materials '(quad))
 
 (pyx:define-prefab full-quad (:template quad)

@@ -27,6 +27,8 @@
                  #:collider)
   (:inherit-from #:%pyx.component.font
                  #:font)
+  (:inherit-from #:%pyx.component.geometry
+                 #:geometry)
   (:inherit-from #:%pyx.component.id
                  #:id)
   (:inherit-from #:%pyx.component.mesh

@@ -15,5 +15,5 @@
      10)))
 
 (define-shader graph ()
-  (:vertex (pyx.shader:full-quad/vert mesh-attrs))
+  (:vertex (pyx.shader:full-quad/vert :vec3 :vec2))
   (:fragment (graph/frag :vec2)))

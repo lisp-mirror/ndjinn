@@ -23,6 +23,7 @@
    (:file "effect-truchet/definitions")
    (:file "effect-toroidal-trip/shader")
    (:file "effect-toroidal-trip/definitions")
+   (:file "effect-rainy-window/shader")
    (:file "effect-rainy-window/definitions")
    (:file "effect-ocean-waves/shader")
    (:file "effect-ocean-waves/definitions")

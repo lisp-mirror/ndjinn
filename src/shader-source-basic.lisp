@@ -1,30 +1,34 @@
 (in-package #:pyx.shader)
 
-(defun full-quad/vert ((mesh-attrs mesh-attrs)
+(defun full-quad/vert ((pos2 :vec3)
+                       (uv :vec2)
                        &uniforms
                        (model :mat4)
                        (view :mat4)
                        (proj :mat4))
-  (with-slots (mesh/pos mesh/uv1) mesh-attrs
-    (values (vec4 (* (.xy mesh/pos) 2) 0 1)
-            mesh/uv1)))
+  (values (vec4 (* (.xy pos2) 2) 0 1)
+          uv))
 
-(defun full-quad-no-uv/vert ((mesh-attrs mesh-attrs)
+(defun full-quad-no-uv/vert ((pos2 :vec3)
                              &uniforms
                              (model :mat4)
                              (view :mat4)
                              (proj :mat4))
-  (with-slots (mesh/pos) mesh-attrs
-    (vec4 (* (.xy mesh/pos) 2) 0 1)))
+  (vec4 (* (.xy pos2) 2) 0 1))
 
-(defun quad/vert ((mesh-attrs mesh-attrs)
+(defun quad/vert ((pos2 :vec3)
+                  (uv :vec2)
                   &uniforms
                   (model :mat4)
                   (view :mat4)
                   (proj :mat4))
-  (with-slots (mesh/pos mesh/uv1) mesh-attrs
-    (values (* proj view model (vec4 (.xy mesh/pos) 0 1))
-            mesh/uv1)))
+  (values (* proj view model (vec4 (.xy pos2) 0 1))
+          uv))
+
+(defun quad/frag ((uv :vec2)
+                  &uniforms
+                  (sampler :sampler-2d))
+  (texture sampler uv))
 
 (defun mesh/vert ((mesh-attrs mesh-attrs)
                   &uniforms
@@ -57,12 +61,12 @@
       miss-color))
 
 (define-shader full-quad ()
-  (:vertex (full-quad/vert mesh-attrs))
-  (:fragment (mesh/frag :vec2)))
+  (:vertex (full-quad/vert :vec3 :vec2))
+  (:fragment (quad/frag :vec2)))
 
 (define-shader quad ()
-  (:vertex (quad/vert mesh-attrs))
-  (:fragment (mesh/frag :vec2)))
+  (:vertex (quad/vert :vec3 :vec2))
+  (:fragment (quad/frag :vec2)))
 
 (define-shader mesh ()
   (:vertex (mesh/vert mesh-attrs))

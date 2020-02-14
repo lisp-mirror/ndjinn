@@ -16,7 +16,7 @@
                    :initform 0)
    (%hit-p :accessor hit-p
            :initform nil))
-  (:sorting :after render))
+  (:sorting :after c/render:render))
 
 (pyx:define-material collider ()
   (:shader pyx.shader:collider

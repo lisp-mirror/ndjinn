@@ -84,6 +84,9 @@
 (define-local-nicknames #:%pyx.component.animate
   (#:a #:alexandria)
   (#:anim #:%pyx.animation)
+  (#:c/mesh #:%pyx.component.mesh)
+  (#:c/render #:%pyx.component.render)
+  (#:c/sprite #:%pyx.component.sprite)
   (#:dll #:doubly-linked-list)
   (#:ent #:%pyx.entity)
   (#:meta #:%pyx.metadata)
@@ -91,6 +94,7 @@
 
 (define-local-nicknames #:%pyx.component.camera
   (#:a #:alexandria)
+  (#:c/render #:%pyx.component.render)
   (#:c/transform #:%pyx.component.transform)
   (#:ent #:%pyx.entity)
   (#:in #:%pyx.input)
@@ -114,6 +118,8 @@
 
 (define-local-nicknames #:%pyx.component.font
   (#:asset #:%pyx.asset)
+  (#:c/geom #:%pyx.component.geometry)
+  (#:c/render #:%pyx.component.render)
   (#:c/transform #:%pyx.component.transform)
   (#:clock #:%pyx.clock)
   (#:ent #:%pyx.entity)
@@ -123,6 +129,11 @@
   (#:ui.font #:%pyx.ui.font)
   (#:v2 #:origin.vec2)
   (#:v3 #:origin.vec3))
+
+(define-local-nicknames #:%pyx.component.geometry
+  (#:c/render #:%pyx.component.render)
+  (#:ent #:%pyx.entity)
+  (#:geom #:%pyx.geometry))
 
 (define-local-nicknames #:%pyx.component.id
   (#:a #:alexandria)
@@ -136,6 +147,7 @@
 
 (define-local-nicknames #:%pyx.component.mesh
   (#:asset #:%pyx.asset)
+  (#:c/render #:%pyx.component.render)
   (#:ent #:%pyx.entity)
   (#:mesh #:%pyx.asset.mesh)
   (#:u #:golden-utils))
@@ -151,6 +163,8 @@
   (#:a #:alexandria)
   (#:avl #:%pyx.avl-tree)
   (#:c/camera #:%pyx.component.camera)
+  (#:c/sprite #:%pyx.component.sprite)
+  (#:c/transform #:%pyx.component.transform)
   (#:c/id #:%pyx.component.id)
   (#:ctx #:%pyx.context)
   (#:fb #:%pyx.framebuffer)

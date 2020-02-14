@@ -47,5 +47,5 @@
       (vec4 color 1))))
 
 (define-shader effect/kaleidoscope ()
-  (:vertex (pyx.shader:full-quad-no-uv/vert mesh-attrs))
+  (:vertex (pyx.shader:full-quad-no-uv/vert :vec3))
   (:fragment (effect/kaleidoscope/frag)))

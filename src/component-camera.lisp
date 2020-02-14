@@ -41,7 +41,7 @@
           :initform (m4:mat 1))
    (%projection :reader projection
                 :initform (m4:mat 1)))
-  (:sorting :before render :after c/transform:transform))
+  (:sorting :before c/render:render :after c/transform:transform))
 
 (defun set-camera-projection (entity)
   (%set-camera-projection entity (mode entity)))

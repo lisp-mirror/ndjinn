@@ -172,6 +172,12 @@
   (:export
    #:font))
 
+(define-package #:%pyx.component.geometry
+  (:use #:cl)
+  ;; public
+  (:export
+   #:geometry))
+
 (define-package #:%pyx.component.id
   (:use #:cl)
   (:export

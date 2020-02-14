@@ -16,7 +16,17 @@
       (error "Release must be deployed on SBCL to load assets.")
       (asdf:system-relative-pathname system path)))
 
-(defun resolve-path (asset)
+(defun resolve-system-path (path &optional (system :pyx))
+  (let* ((system (asdf:find-system system))
+         (path (uiop:merge-pathnames*
+                path
+                (uiop:ensure-directory-pathname "data")))
+         (resolved-path (%resolve-path system path)))
+    resolved-path))
+
+(defgeneric resolve-path (asset))
+
+(defmethod resolve-path ((asset list))
   (destructuring-bind (pool-name spec-name) asset
     (let* ((spec (find-spec pool-name spec-name))
            (system (get-pool-system pool-name))
@@ -26,13 +36,8 @@
           (error "File path not found for asset ~s of pool ~s.~%Path: ~s."
                  spec-name pool-name path)))))
 
-(defun resolve-system-path (path &optional (system :pyx))
-  (let* ((system (asdf:find-system system))
-         (path (uiop:merge-pathnames*
-                path
-                (uiop:ensure-directory-pathname "data")))
-         (resolved-path (%resolve-path system path)))
-    resolved-path))
+(defmethod resolve-path ((asset string))
+  (resolve-system-path asset :pyx))
 
 (defmacro with-asset-cache (type key &body body)
   (a:with-gensyms (table value found-p)

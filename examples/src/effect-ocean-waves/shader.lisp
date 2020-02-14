@@ -96,10 +96,8 @@
   (let* ((uv (* (- (* uv 2.0) 1.0)
                 (vec2 (/ (.x res) (.y res)) 1.0)))
          (proj (normalize
-                (+ (vec3 (.x uv) (.y uv) 1.0)
-                   (* (vec3 (.x uv) (.y uv) -1.0)
-                      (pow (length uv) 2.0)
-                      0.05)))))
+                (+ (vec3 uv 1.0)
+                   (* (vec3 uv -1.0) (pow (length uv) 2.0) 0.05)))))
     (when (< (.x res) 400)
       (return proj))
     (* (effect/ocean-waves/rotmat (vec3 0 -1 0)
@@ -186,5 +184,5 @@
           (vec4 c 1)))))
 
 (define-shader effect/ocean-waves ()
-  (:vertex (pyx.shader:full-quad-no-uv/vert mesh-attrs))
+  (:vertex (pyx.shader:full-quad-no-uv/vert :vec3))
   (:fragment (effect/ocean-waves/frag)))

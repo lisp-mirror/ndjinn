@@ -21,7 +21,7 @@
               :occlusion-strength 1
               :emissive-factor 1
               :brdf-lut 'res:brdf-lut
-              :environment-sampler 'res:pisa
+              :environment-sampler 'res:papermill
               :use-punctual t
               :use-ibl t)
    :features (:enable (:texture-cube-map-seamless))))

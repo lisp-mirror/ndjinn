@@ -11,7 +11,7 @@
    (%spritesheet :accessor spritesheet)
    (%index :accessor index)
    (%initial-index :accessor initial-index))
-  (:sorting :after render))
+  (:sorting :after c/render:render))
 
 ;;; entity hooks
 

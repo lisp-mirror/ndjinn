@@ -6,7 +6,7 @@
    (%sequence :reader animation-sequence
               :initarg :animate/sequence
               :initform nil))
-  (:sorting :before (mesh sprite) :after render))
+  (:sorting :before (c/mesh:mesh c/sprite:sprite) :after c/render:render))
 
 ;;; entity hooks
 

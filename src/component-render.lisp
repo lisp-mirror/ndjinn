@@ -8,7 +8,7 @@
            :initform :default)
    (%current-material :accessor current-material
                       :initform nil))
-  (:sorting :after transform :before sprite))
+  (:sorting :after c/transform:transform :before c/sprite:sprite))
 
 (defun register-material (entity)
   (let ((materials (u:dict #'eq)))

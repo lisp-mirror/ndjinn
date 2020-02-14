@@ -4,9 +4,6 @@
   ((%asset :reader asset
            :initarg :font/asset
            :initform nil)
-   (%geometry :reader geometry
-              :initarg :font/geometry
-              :initform nil)
    (%text :reader text
           :initarg :font/text
           :initform "")
@@ -22,7 +19,17 @@
                  :initform nil)
    (%dimensions :accessor dimensions
                 :initform (v2:vec)))
-  (:sorting :after render))
+  (:sorting :before c/geom:geometry :after c/render:render))
+
+(geom:define-geometry-layout text ()
+  (:data (:format interleaved)
+         (position :type float :count 2)
+         (uv :type float :count 2)))
+
+(geom:define-geometry text ()
+  (:layout text
+   :vertex-count 6
+   :primitive :triangles))
 
 (defun load-font-spec (entity)
   (with-slots (%asset %spec) entity
@@ -32,12 +39,6 @@
       (setf %spec (asset:with-asset-cache :font path
                     (with-open-file (in path)
                       (3b-bmfont-json:read-bmfont-json in)))))))
-
-(defun load-font-geometry (entity)
-  (with-slots (%geometry %buffer-data) entity
-    (unless %geometry
-      (error "Font component ~s does not have any geometry." entity))
-    (setf %geometry (geom:make-geometry %geometry))))
 
 (defun resolve-font-text (entity)
   (with-slots (%text) entity
@@ -63,7 +64,7 @@
 
 (ent:define-entity-hook :attach (entity font)
   (load-font-spec entity)
-  (load-font-geometry entity))
+  (ent:attach-component entity 'c/geom:geometry :geometry/name 'text))
 
 (ent:define-entity-hook :physics-update (entity font)
   (c/transform:translate-entity entity
@@ -81,9 +82,5 @@
                (width height (ui.font:map-glyphs spec func text)))
       (v2:with-components ((fd dimensions))
         (setf fdx width fdy height))
-      (geom:update-geometry geometry :data buffer-data)))
-  (geom:draw-geometry geometry 1)
+      (geom:update-geometry (c/geom:geometry entity) :data buffer-data)))
   (setf buffer-data nil))
-
-(ent:define-entity-hook :delete (entity font)
-  (geom:delete-geometry geometry))

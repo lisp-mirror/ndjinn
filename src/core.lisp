@@ -17,7 +17,8 @@
 (defun deinitialize ()
   (display:kill)
   (tp:destroy)
-  (in:shutdown-gamepads))
+  (in:shutdown-gamepads)
+  (sdl2:quit))
 
 (defun update ()
   (let ((alpha (clock:get-alpha)))

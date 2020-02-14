@@ -109,6 +109,7 @@
    (:file "component-camera")
    (:file "component-render")
    (:file "component-mesh")
+   (:file "component-geometry")
    (:file "component-sprite")
    (:file "component-collider")
    (:file "component-animate")

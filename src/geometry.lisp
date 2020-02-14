@@ -6,7 +6,7 @@
   (funcall (u:href meta:=geometry= name)))
 
 (defun update-geometry (geometry buffer-name data)
-  (let ((data (or data (make-array (primitive-count geometry)
+  (let ((data (or data (make-array (vertex-count geometry)
                                    :initial-element 0))))
     (fill-buffer geometry buffer-name data)
     (setf (primitive-count geometry) (length data))))
@@ -15,7 +15,8 @@
   (gl:bind-vertex-array (id geometry))
   (%gl:draw-arrays-instanced (primitive geometry)
                              0
-                             (primitive-count geometry)
+                             (* (primitive-count geometry)
+                                (vertex-count geometry))
                              instance-count)
   (gl:bind-vertex-array 0))
 

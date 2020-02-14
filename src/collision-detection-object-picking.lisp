@@ -49,7 +49,7 @@
     (avl:walk
      object-tree
      (lambda (x)
-       (when (and (ent:has-component-p x 'c/collider:collider))
+       (when (ent:has-component-p x 'c/collider:collider)
          (a:when-let ((n (pick-shape ray (c/collider:shape x))))
            (push (cons n x) picked)))))
     (when picked

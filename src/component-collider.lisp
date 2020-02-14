@@ -34,9 +34,9 @@
               a mesh or render component attached." entity))
     (ent:attach-component entity 'c/mesh:mesh
                           :mesh/asset "meshes/colliders.glb"
-                          :mesh/name (format nil "~(~a~)" (shape entity)))
-    (ent:attach-component entity 'c/render:render
-                          :render/materials '(collider))))
+                          :mesh/name (format nil "~(~a~)" (shape entity))))
+  (ent:attach-component entity 'c/render:render
+                        :render/materials '(collider)))
 
 (defmethod cd:%on-collision-enter ((contact1 collider) (contact2 collider))
   (let ((targets (cd:callback-entities

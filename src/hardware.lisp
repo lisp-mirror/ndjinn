@@ -56,8 +56,6 @@
         =max-texture-size= (get-gpu/max-texture-size)
         =max-ssbo-bindings= (get-gpu/max-ssbo-bindings)))
 
-;;; Public API
-
 (defun get-hardware-info (key)
   (let ((global (a:format-symbol :%pyx.hardware "=~a=" key)))
     (when (boundp global)

@@ -37,8 +37,6 @@
       (c/node:delete entity)
       (load-prefab data :parent parent))))
 
-;;; Public API
-
 (defmacro define-prefab (name options &body body)
   (a:with-gensyms (data)
     (u:mvlet ((body decls doc (a:parse-body body :documentation t)))

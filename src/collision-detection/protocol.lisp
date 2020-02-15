@@ -21,8 +21,6 @@
 (defgeneric on-collision-picked (target layer entity)
   (:method (target layer entity)))
 
-;;; Public API
-
 (defmacro define-collision-hook (name (target &optional layer) &body body)
   (a:with-gensyms (target-symbol)
     (let ((hook-types '(:enter :continue :exit :picked)))

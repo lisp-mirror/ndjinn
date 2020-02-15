@@ -339,7 +339,7 @@
    #:make-input-data
    #:prepare-gamepads
    #:shutdown-gamepads)
-  ;; public api
+  ;; public
   (:export
    #:disable-relative-motion
    #:enable-relative-motion

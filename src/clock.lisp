@@ -98,15 +98,11 @@
     (update/periodic clock periodic-func)
     (calculate-frame-rate clock)))
 
-;;; Internal API
-
 (defun get-alpha ()
   (alpha (ctx:clock)))
 
 (defun debug-time-p ()
   (zerop (debug-time (ctx:clock))))
-
-;;; Public API
 
 (defun get-fps ()
   (let ((clock (ctx:clock)))

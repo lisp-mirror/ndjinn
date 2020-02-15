@@ -34,8 +34,6 @@
 (util::on-recompile :shaders data ()
   (shadow:recompile-shaders data))
 
-;;; Public API
-
 (setf (fdefinition 'write-shader-buffer) #'shadow:write-buffer-path)
 
 (setf (fdefinition 'read-shader-buffer) #'shadow:read-buffer-path)

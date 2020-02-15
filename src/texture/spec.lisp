@@ -72,8 +72,6 @@
           :texture-wrap-t wrap-t
           :texture-wrap-r wrap-r)))
 
-;;; Public API
-
 (defmacro define-texture (name (&optional (type :2d)) &body body)
   (destructuring-bind (&rest args
                        &key source width height (generate-mipmaps t)

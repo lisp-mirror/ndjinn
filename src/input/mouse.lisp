@@ -48,8 +48,6 @@
           (mouse-motion-state-dx motion-state) 0
           (mouse-motion-state-dy motion-state) 0)))
 
-;;; Public API
-
 (defun get-mouse-position ()
   (let* ((motion-state (u:href (states (ctx:input-data)) '(:mouse :motion)))
          (x (mouse-motion-state-x motion-state))

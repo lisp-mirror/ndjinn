@@ -131,8 +131,6 @@
     (button-transition-in data (list id :any))
     (button-transition-in data '(:button :any))))
 
-;;; Public API
-
 (defgeneric get-gamepad-analog (deadzone-type input))
 
 (defmethod get-gamepad-analog ((deadzone-type (eql :axial)) input)

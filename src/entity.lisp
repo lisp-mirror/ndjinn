@@ -69,8 +69,6 @@
   (:method-combination progn :most-specific-last)
   (:method progn (entity type)))
 
-;;; Public API
-
 (defmacro make-entity ((&rest components) &body body)
   (let ((components (compute-component-order components)))
     `(%make-entity ',components (u:plist->hash (list ,@body) :test #'eq))))

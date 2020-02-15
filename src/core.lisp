@@ -49,8 +49,6 @@
         (update)
         (display:render display)))))
 
-;;; Public API
-
 (defun start-engine (scene-name &rest args)
   (let ((ctx:*context* (ctx:make-context)))
     (unwind-protect (initialize scene-name args)

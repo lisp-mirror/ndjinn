@@ -39,7 +39,5 @@
   (u:do-plist (k v args)
     (set (a:format-symbol :%pyx.config "=~a=" k) v)))
 
-;;; Public API
-
 (defun get-config-option (key)
   (symbol-value (a:format-symbol :%pyx.config "=~a=" key)))

@@ -97,8 +97,6 @@
                       (clear-type))
                     (setf (u:href =component-initargs= v) type))))))
 
-;;; Public API
-
 (defmacro define-component (name super-classes &body slots/options)
   (destructuring-bind (&optional slots . options) slots/options
     (let ((sorting (cdr (find :sorting options :key #'car)))

@@ -123,8 +123,6 @@
          (declare (ignorable ,entity ,state))
          ,@body))))
 
-;;; Public API
-
 (defmacro define-animation-sequence (name options &body body)
   (declare (ignore options))
   (a:with-gensyms (state entity)

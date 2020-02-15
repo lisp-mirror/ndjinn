@@ -29,8 +29,6 @@
     (update-spec name x y width height)
     spec))
 
-;;; Public API
-
 (defmacro define-viewport (name options &body body)
   (declare (ignore options))
   (destructuring-bind (&key (x 0) (y 0) (width 1) (height 1)) (car body)

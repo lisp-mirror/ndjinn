@@ -69,8 +69,6 @@
   (mat:set-uniforms (c/render:current-material entity)
                     :model model))
 
-;;; Public API
-
 (defun get-rotation (entity)
   (tfm:current (rotation entity)))
 

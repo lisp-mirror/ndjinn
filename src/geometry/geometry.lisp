@@ -1,7 +1,5 @@
 (in-package #:%pyx.geometry)
 
-;;; Public API
-
 (defun make-geometry (name)
   (funcall (u:href meta:=geometry= name)))
 

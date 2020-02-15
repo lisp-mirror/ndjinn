@@ -38,8 +38,6 @@
       (math:unproject! (end ray) (v3:vec x y 1) view proj viewport)
       (values (start ray) (end ray)))))
 
-;;; Public API
-
 (defun pick-entity ()
   (let* ((viewport (vp:active (vp:get-manager)))
          (ray (vp:picking-ray viewport))

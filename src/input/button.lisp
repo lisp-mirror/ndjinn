@@ -40,8 +40,6 @@
               (button-state-exit state) nil)))
     (setf exiting nil)))
 
-;;; Public API
-
 (defun on-button-enter (&rest args)
   (a:when-let* ((data (ctx:input-data))
                 (state (u:href (states data) args)))

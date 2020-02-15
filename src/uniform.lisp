@@ -94,8 +94,6 @@
     (when (eq (uniform-resolved-type uniform) :sampler)
       (setf (uniform-value uniform) (tex:load value)))))
 
-;;; Public API
-
 (defun set-uniforms (material &rest args)
   (let ((uniforms (uniforms material)))
     (u:do-plist (k v args)

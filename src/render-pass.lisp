@@ -35,8 +35,6 @@
       (gl:clear-color vx vy vz vw)
       (apply #'gl:clear (clear-buffers pass)))))
 
-;;; Public API
-
 (defmacro define-render-pass (name options &body body)
   (declare (ignore options))
   (destructuring-bind (&key framebuffer clear-color clear-buffers) (car body)

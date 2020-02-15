@@ -33,8 +33,6 @@
     (update-plan-spec name layers plan)
     spec))
 
-;;; Public API
-
 (defmacro define-collider-plan (name options &body body)
   (declare (ignore options))
   (destructuring-bind (&key layers plan) (car body)

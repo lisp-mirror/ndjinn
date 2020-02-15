@@ -25,8 +25,6 @@
         (update-geometry spec k v))
       spec)))
 
-;;; Public API
-
 (defmacro define-geometry (name options &body body)
   (declare (ignore options))
   (destructuring-bind (&key layout (primitive :triangles) (vertex-count 0)

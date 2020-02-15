@@ -33,7 +33,7 @@
 
 (defun render-viewport (viewport pass)
   (vp:configure viewport)
-  (avl:walk
+  (util:avl-walk
    (vp:draw-order viewport)
    (lambda (x)
      (a:when-let ((material (u:href (materials x) (render:name pass))))

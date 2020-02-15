@@ -1,4 +1,4 @@
-(in-package #:%pyx.live-support)
+(in-package #:%pyx.util)
 
 (defmacro with-continuable (report &body body)
   `(restart-case (progn ,@body)
@@ -51,7 +51,7 @@
        (defmethod recompile ((type (eql ',type)) ,data)
          (declare (ignorable ,data))
          ,@body)
-       (defmethod tp:handle-queued-event ((,purpose (eql :recompile))
-                                          (,event-type (eql ',type))
-                                          ,data)
+       (defmethod handle-queued-event ((,purpose (eql :recompile))
+                                       (,event-type (eql ',type))
+                                       ,data)
          (funcall #'recompile ,event-type ,data)))))

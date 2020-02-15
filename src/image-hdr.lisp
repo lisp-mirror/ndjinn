@@ -1,53 +1,53 @@
-(in-package #:%pyx.asset.image.hdr)
+(in-package #:%pyx.image)
 
-(defstruct (buffer (:predicate nil)
-                   (:copier nil))
+(defstruct (hdr-buffer (:predicate nil)
+                       (:copier nil))
   stream
   (position 0)
   (end 0)
   data)
 
-(defun empty-p (buffer)
-  (>= (buffer-position buffer)
-      (buffer-end buffer)))
+(defun hdr-buffer-empty-p (buffer)
+  (>= (hdr-buffer-position buffer)
+      (hdr-buffer-end buffer)))
 
-(defun refill (buffer)
-  (when (empty-p buffer)
-    (setf (buffer-position buffer) 0
-          (buffer-end buffer) (read-sequence (buffer-data buffer)
-                                             (buffer-stream buffer)))))
+(defun refill-hdr-buffer (buffer)
+  (when (hdr-buffer-empty-p buffer)
+    (setf (hdr-buffer-position buffer) 0
+          (hdr-buffer-end buffer) (read-sequence (hdr-buffer-data buffer)
+                                                 (hdr-buffer-stream buffer)))))
 
-(defun eof-p (buffer)
-  (refill buffer)
-  (empty-p buffer))
+(defun hdr-eof-p (buffer)
+  (refill-hdr-buffer buffer)
+  (hdr-buffer-empty-p buffer))
 
 (declaim (inline read-byte))
-(defun read-byte (buffer)
-  (if (eof-p buffer)
-      (cl:read-byte (buffer-stream buffer))
-      (aref (buffer-data buffer) (1- (incf (buffer-position buffer))))))
+(defun read-hdr-byte (buffer)
+  (if (hdr-eof-p buffer)
+      (read-byte (hdr-buffer-stream buffer))
+      (aref (hdr-buffer-data buffer) (1- (incf (hdr-buffer-position buffer))))))
 
-(defun peek-byte (buffer)
-  (if (eof-p buffer)
-      (cl:read-byte (buffer-stream buffer))
-      (aref (buffer-data buffer) (buffer-position buffer))))
+(defun peek-hdr-byte (buffer)
+  (if (hdr-eof-p buffer)
+      (read-byte (hdr-buffer-stream buffer))
+      (aref (hdr-buffer-data buffer) (hdr-buffer-position buffer))))
 
-(defun read-line (buffer)
+(defun read-hdr-line (buffer)
   (let ((n nil)
         (next nil))
     (prog1 (babel:octets-to-string
-            (coerce (loop :until (or (member (setf n (peek-byte buffer))
+            (coerce (loop :until (or (member (setf n (peek-hdr-byte buffer))
                                              '(10 13))
-                                     (eof-p buffer))
-                          :collect (read-byte buffer))
+                                     (hdr-eof-p buffer))
+                          :collect (read-hdr-byte buffer))
                     '(vector u:ub8)))
-      (unless (eof-p buffer)
-        (loop :do (read-byte buffer)
-              :while (and (not (eof-p buffer))
-                          (not (eql n (setf next (peek-byte buffer))))
+      (unless (hdr-eof-p buffer)
+        (loop :do (read-hdr-byte buffer)
+              :while (and (not (hdr-eof-p buffer))
+                          (not (eql n (setf next (peek-hdr-byte buffer))))
                           (member next '(10 13))))))))
 
-(defun read-header (buffer)
+(defun read-hdr-header (buffer)
   (labels ((trim (string)
              (string-trim '(#\space #\newline #\tab) string))
            (parse-key (line)
@@ -72,24 +72,24 @@
                  (error "Unsupported HDR orientation: ~s." line))
                (list :width (parse-integer dimension2)
                      :height (parse-integer dimension1)))))
-    (loop :for line = (read-line buffer)
+    (loop :for line = (read-hdr-line buffer)
           :for (k v) = (parse-key (trim line))
           :unless line
             :do (error "Invalid HDR header.")
-          :until (equal line "")
+          :until (zerop (length line))
           :if k
             :collect k :into kv
             :and
               :collect v :into kv
-          :finally (return (append (parse-xy (read-line buffer)) kv)))))
+          :finally (return (append (parse-xy (read-hdr-line buffer)) kv)))))
 
-(defun read-scanline (buffer length destination &key (offset 0))
+(defun read-hdr-scanline (buffer length destination &key (offset 0))
   (declare (optimize speed)
            (fixnum length offset))
-  (let ((stream (buffer-stream buffer))
-        (data (buffer-data buffer))
-        (pos (buffer-position buffer))
-        (end (buffer-end buffer)))
+  (let ((stream (hdr-buffer-stream buffer))
+        (data (hdr-buffer-data buffer))
+        (pos (hdr-buffer-position buffer))
+        (end (hdr-buffer-end buffer)))
     (declare (type (simple-array u:ub32 (*)) destination)
              (type (simple-array u:ub8 (*)) data)
              (type u:ub24 pos end))
@@ -98,7 +98,7 @@
                  (setf pos 0
                        end (read-sequence data stream))
                  (when (zerop end)
-                   (cl:read-byte stream)))
+                   (read-byte stream)))
                (aref data (1- (incf pos))))
              (read-pixel ()
                (values (%read-byte) (%read-byte) (%read-byte) (%read-byte)))
@@ -159,25 +159,25 @@
                      (write-pixel p r g b e)
                      (incf p)))
                   (setf lr r lg g lb b le e)))
-      (setf (buffer-position buffer) pos
-            (buffer-end buffer) end))))
+      (setf (hdr-buffer-position buffer) pos
+            (hdr-buffer-end buffer) end))))
 
-(defun load (path)
+(defmethod %load ((type (eql :hdr)) path)
   (u:with-binary-input (in path)
     (let* ((data (make-array 8192 :element-type 'u:ub8 :initial-element 0))
-           (buffer (make-buffer :stream in :data data))
-           (header (read-header buffer))
+           (buffer (make-hdr-buffer :stream in :data data))
+           (header (read-hdr-header buffer))
            (width (getf header :width))
            (height (getf header :height))
            (data (make-array (* width height)
                              :element-type 'u:ub32
                              :initial-element #xffffffff)))
       (loop :for y :below height
-            :do (read-scanline buffer width data :offset (* y width)))
-      (img:make-image :path path
-                      :width width
-                      :height height
-                      :pixel-format :rgb
-                      :pixel-type :unsigned-int-5-9-9-9-rev
-                      :internal-format :rgb9-e5
-                      :data data))))
+            :do (read-hdr-scanline buffer width data :offset (* y width)))
+      (make-image :path path
+                  :width width
+                  :height height
+                  :pixel-format :rgb
+                  :pixel-type :unsigned-int-5-9-9-9-rev
+                  :internal-format :rgb9-e5
+                  :data data))))

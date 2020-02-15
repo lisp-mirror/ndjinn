@@ -61,8 +61,8 @@
         (pushnew viewport viewports)))
     (or viewports (list (default scene-viewports)))))
 
-(live:on-recompile :viewport data ()
-  (live:recompile :scene (scene:get-scene-name)))
+(util:on-recompile :viewport data ()
+  (util:recompile :scene (scene:get-scene-name)))
 
 ;;; Public API
 

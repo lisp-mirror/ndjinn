@@ -17,30 +17,8 @@
   (#:a #:alexandria)
   (#:cfg #:%pyx.config)
   (#:ctx #:%pyx.context)
-  (#:mesh #:%pyx.asset.mesh)
+  (#:mesh #:%pyx.mesh)
   (#:meta #:%pyx.metadata)
-  (#:u #:golden-utils))
-
-(define-local-nicknames #:%pyx.asset.image
-  (#:a #:alexandria)
-  (#:asset #:%pyx.asset)
-  (#:hdr #:%pyx.asset.image.hdr)
-  (#:png #:%pyx.asset.image.png))
-
-(define-local-nicknames #:%pyx.asset.image.hdr
-  (#:a #:alexandria)
-  (#:img #:%pyx.asset.image)
-  (#:ss #:split-sequence)
-  (#:u #:golden-utils))
-
-(define-local-nicknames #:%pyx.asset.image.png
-  (#:a #:alexandria)
-  (#:img #:%pyx.asset.image))
-
-(define-local-nicknames #:%pyx.asset.mesh
-  (#:a #:alexandria)
-  (#:ctx #:%pyx.context)
-  (#:parse #:%pyx.binary-parser)
   (#:u #:golden-utils))
 
 (define-local-nicknames #:%pyx.asset.spritesheet
@@ -51,10 +29,6 @@
   (#:u #:golden-utils)
   (#:v2 #:origin.vec2))
 
-(define-local-nicknames #:%pyx.avl-tree
-  (#:a #:alexandria)
-  (#:u #:golden-utils))
-
 (define-local-nicknames #:%pyx.clock
   (#:a #:alexandria)
   (#:cfg #:%pyx.config)
@@ -63,7 +37,6 @@
 
 (define-local-nicknames #:%pyx.collision-detection
   (#:a #:alexandria)
-  (#:avl #:%pyx.avl-tree)
   (#:c/camera #:%pyx.component.camera)
   (#:c/collider #:%pyx.component.collider)
   (#:c/transform #:%pyx.component.transform)
@@ -77,6 +50,7 @@
   (#:meta #:%pyx.metadata)
   (#:scene #:%pyx.scene)
   (#:u #:golden-utils)
+  (#:util #:%pyx.util)
   (#:v3 #:origin.vec3)
   (#:v4 #:origin.vec4)
   (#:vp #:%pyx.viewport))
@@ -143,13 +117,13 @@
   (#:ent #:%pyx.entity)
   (#:scene #:%pyx.scene)
   (#:u #:golden-utils)
-  (#:uuid #:%pyx.uuid))
+  (#:util #:%pyx.util))
 
 (define-local-nicknames #:%pyx.component.mesh
   (#:asset #:%pyx.asset)
   (#:c/render #:%pyx.component.render)
   (#:ent #:%pyx.entity)
-  (#:mesh #:%pyx.asset.mesh)
+  (#:mesh #:%pyx.mesh)
   (#:u #:golden-utils))
 
 (define-local-nicknames #:%pyx.component.node
@@ -161,7 +135,6 @@
 
 (define-local-nicknames #:%pyx.component.render
   (#:a #:alexandria)
-  (#:avl #:%pyx.avl-tree)
   (#:c/camera #:%pyx.component.camera)
   (#:c/sprite #:%pyx.component.sprite)
   (#:c/transform #:%pyx.component.transform)
@@ -174,6 +147,7 @@
   (#:render #:%pyx.render)
   (#:scene #:%pyx.scene)
   (#:u #:golden-utils)
+  (#:util #:%pyx.util)
   (#:vp #:%pyx.viewport))
 
 (define-local-nicknames #:%pyx.component.sprite
@@ -220,10 +194,8 @@
   (#:display #:%pyx.display)
   (#:hw #:%pyx.hardware)
   (#:in #:%pyx.input)
-  (#:live #:%pyx.live-support)
   (#:scene #:%pyx.scene)
   (#:shader #:%pyx.shader)
-  (#:tp #:%pyx.thread-pool)
   (#:u #:golden-utils)
   (#:util #:%pyx.util))
 
@@ -248,12 +220,11 @@
   (#:a #:alexandria)
   (#:cfg #:%pyx.config)
   (#:ctx #:%pyx.context)
-  (#:live #:%pyx.live-support)
   (#:meta #:%pyx.metadata)
   (#:ogl #:%pyx.opengl)
   (#:tex #:%pyx.texture)
-  (#:tp #:%pyx.thread-pool)
-  (#:u #:golden-utils))
+  (#:u #:golden-utils)
+  (#:util #:%pyx.util))
 
 (define-local-nicknames #:%pyx.geometry
   (#:a #:alexandria)
@@ -264,6 +235,12 @@
   (#:a #:alexandria)
   (#:glob #:global-vars))
 
+(define-local-nicknames #:%pyx.image
+  (#:a #:alexandria)
+  (#:asset #:%pyx.asset)
+  (#:ss #:split-sequence)
+  (#:u #:golden-utils))
+
 (define-local-nicknames #:%pyx.input
   (#:a #:alexandria)
   (#:asset #:%pyx.asset)
@@ -272,23 +249,23 @@
   (#:u #:golden-utils)
   (#:v2 #:origin.vec2))
 
-(define-local-nicknames #:%pyx.live-support
-  (#:a #:alexandria)
-  (#:tp #:%pyx.thread-pool))
-
 (define-local-nicknames #:%pyx.material
   (#:a #:alexandria)
   (#:c/render #:%pyx.component.render)
   (#:ctx #:%pyx.context)
   (#:fb #:%pyx.framebuffer)
-  (#:live #:%pyx.live-support)
   (#:lp #:lparallel)
   (#:meta #:%pyx.metadata)
   (#:ogl #:%pyx.opengl)
   (#:render #:%pyx.render)
   (#:scene #:%pyx.scene)
   (#:tex #:%pyx.texture)
-  (#:tp #:%pyx.thread-pool)
+  (#:u #:golden-utils)
+  (#:util #:%pyx.util))
+
+(define-local-nicknames #:%pyx.mesh
+  (#:a #:alexandria)
+  (#:ctx #:%pyx.context)
   (#:u #:golden-utils)
   (#:util #:%pyx.util))
 
@@ -306,30 +283,26 @@
   (#:c/node #:%pyx.component.node)
   (#:c/render #:%pyx.component.render)
   (#:ctx #:%pyx.context)
-  (#:live #:%pyx.live-support)
   (#:ent #:%pyx.entity)
   (#:meta #:%pyx.metadata)
   (#:render #:%pyx.render)
   (#:scene #:%pyx.scene)
-  (#:tp #:%pyx.thread-pool)
   (#:u #:golden-utils)
   (#:util #:%pyx.util)
   (#:vp #:%pyx.viewport))
 
 (define-local-nicknames #:%pyx.render
   (#:a #:alexandria)
-  (#:avl #:%pyx.avl-tree)
   (#:c/render #:%pyx.component.render)
   (#:ctx #:%pyx.context)
   (#:ent #:%pyx.entity)
   (#:fb #:%pyx.framebuffer)
-  (#:live #:%pyx.live-support)
   (#:mat #:%pyx.material)
   (#:meta #:%pyx.metadata)
   (#:ogl #:%pyx.opengl)
   (#:scene #:%pyx.scene)
-  (#:tp #:%pyx.thread-pool)
   (#:u #:golden-utils)
+  (#:util #:%pyx.util)
   (#:v4 #:origin.vec4)
   (#:vp #:%pyx.viewport))
 
@@ -339,42 +312,30 @@
   (#:cd #:%pyx.collision-detection)
   (#:ctx #:%pyx.context)
   (#:ent #:%pyx.entity)
-  (#:live #:%pyx.live-support)
   (#:meta #:%pyx.metadata)
   (#:render #:%pyx.render)
   (#:prefab #:%pyx.prefab)
-  (#:tp #:%pyx.thread-pool)
   (#:u #:golden-utils)
+  (#:util #:%pyx.util)
   (#:vp #:%pyx.viewport))
 
 (define-local-nicknames #:%pyx.shader
   (#:a #:alexandria)
   (#:ctx #:%pyx.context)
   (#:hw #:%pyx.hardware)
-  (#:live #:%pyx.live-support)
-  (#:tp #:%pyx.thread-pool)
-  (#:u #:golden-utils))
+  (#:u #:golden-utils)
+  (#:util #:%pyx.util))
 
 (define-local-nicknames #:%pyx.texture
   (#:a #:alexandria)
   (#:asset #:%pyx.asset)
   (#:ctx #:%pyx.context)
-  (#:img #:%pyx.asset.image)
-  (#:live #:%pyx.live-support)
+  (#:img #:%pyx.image)
   (#:lp #:lparallel)
   (#:meta #:%pyx.metadata)
-  (#:tp #:%pyx.thread-pool)
   (#:u #:golden-utils)
+  (#:util #:%pyx.util)
   (#:v4 #:origin.vec4))
-
-(define-local-nicknames #:%pyx.thread-pool
-  (#:a #:alexandria)
-  (#:cfg #:%pyx.config)
-  (#:glob #:global-vars)
-  (#:hw #:%pyx.hardware)
-  (#:lp #:lparallel)
-  (#:q #:lparallel.queue)
-  (#:u #:golden-utils))
 
 (define-local-nicknames #:%pyx.transform
   (#:math #:origin)
@@ -389,9 +350,12 @@
   (#:vp #:%pyx.viewport))
 
 (define-local-nicknames #:%pyx.util
-  (#:u #:golden-utils))
-
-(define-local-nicknames #:%pyx.uuid
+  (#:a #:alexandria)
+  (#:cfg #:%pyx.config)
+  (#:glob #:global-vars)
+  (#:hw #:%pyx.hardware)
+  (#:lp #:lparallel)
+  (#:q #:lparallel.queue)
   (#:u #:golden-utils))
 
 (define-local-nicknames #:%pyx.viewport
@@ -399,9 +363,8 @@
   (#:c/id #:%pyx.component.id)
   (#:cfg #:%pyx.config)
   (#:ctx #:%pyx.context)
-  (#:live #:%pyx.live-support)
   (#:meta #:%pyx.metadata)
   (#:scene #:%pyx.scene)
-  (#:tp #:%pyx.thread-pool)
   (#:u #:golden-utils)
+  (#:util #:%pyx.util)
   (#:v2 #:origin.vec2))

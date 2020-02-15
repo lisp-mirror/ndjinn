@@ -71,7 +71,7 @@
       (configure texture)
       texture)))
 
-(live:on-recompile :texture data ()
+(util:on-recompile :texture data ()
   (a:when-let ((texture (asset:find-asset :texture data)))
     (gl:delete-texture (id texture))
     (asset:delete-asset :texture data)

@@ -1,7 +1,6 @@
-(in-package #:%pyx.uuid)
+(in-package #:%pyx.util)
 
 (defstruct (uuid (:constructor %make-uuid)
-                 (:conc-name nil)
                  (:predicate nil)
                  (:copier nil))
   version
@@ -21,8 +20,8 @@
                                               (ldb (byte 4 ,(- bits (* i 4)))
                                                    ,word))))))
     (check-type uuid uuid)
-    (let ((high (high uuid))
-          (low (low uuid))
+    (let ((high (uuid-high uuid))
+          (low (uuid-low uuid))
           (string (make-string 36 :element-type 'base-char)))
       (locally (declare (optimize (safety 0)))
         (psetf (aref string 8) #\-

@@ -34,7 +34,7 @@
           (generate-mipmaps spec) generate-mipmaps
           (parameters spec) parameters
           (source spec) source)
-    (tp:enqueue :recompile (list :texture name))))
+    (util:enqueue :recompile (list :texture name))))
 
 (defun make-spec (name &rest args)
   (let ((spec (%make-spec :name name)))

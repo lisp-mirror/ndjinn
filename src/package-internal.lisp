@@ -22,82 +22,12 @@
    #:resolve-path
    #:with-asset-cache))
 
-(define-package #:%pyx.asset.image
-  (:use #:cl)
-  (:shadow
-   #:load)
-  (:export
-   #:data
-   #:height
-   #:image
-   #:internal-format
-   #:load
-   #:make-image
-   #:pixel-format
-   #:pixel-type
-   #:width))
-
-(define-package #:%pyx.asset.image.hdr
-  (:use #:cl)
-  (:shadow
-   #:load
-   #:read-byte
-   #:read-line)
-  (:export
-   #:load))
-
-(define-package #:%pyx.asset.image.png
-  (:use #:cl)
-  (:shadow
-   #:load)
-  (:export
-   #:load))
-
-(define-package #:%pyx.asset.mesh
-  (:use #:cl)
-  (:shadow
-   #:load)
-  (:export
-   #:draw-func
-   #:load
-   #:meshes
-   #:primitives))
-
 (define-package #:%pyx.asset.spritesheet
   (:use #:cl)
   (:export
    #:make-spritesheet
    #:sprites
    #:vao))
-
-(define-package #:%pyx.avl-tree
-  (:use #:cl)
-  (:shadow
-   #:delete
-   #:find
-   #:min
-   #:max
-   #:tree)
-  (:export
-   #:delete
-   #:find
-   #:insert
-   #:make-tree
-   #:max
-   #:min
-   #:tree
-   #:walk))
-
-(define-package #:%pyx.binary-parser
-  (:use #:cl)
-  (:export
-   #:octets=
-   #:parse-bytes
-   #:parse-string
-   #:parse-int/be
-   #:parse-int/le
-   #:parse-uint/be
-   #:parse-uint/le))
 
 (define-package #:%pyx.clock
   (:use #:cl)
@@ -209,16 +139,6 @@
   ;; public
   (:export
    #:node))
-
-(define-package #:%pyx.prefab
-  (:use #:cl)
-  (:export
-   #:define-prefab
-   #:deregister-prefab-entity
-   #:load-prefab)
-  ;; public
-  (:export
-   #:define-prefab))
 
 (define-package #:%pyx.component.render
   (:use #:cl)
@@ -396,6 +316,21 @@
   (:export
    #:get-hardware-info))
 
+(define-package #:%pyx.image
+  (:use #:cl)
+  (:shadow
+   #:load)
+  (:export
+   #:data
+   #:height
+   #:image
+   #:internal-format
+   #:load
+   #:make-image
+   #:pixel-format
+   #:pixel-type
+   #:width))
+
 (define-package #:%pyx.input
   (:use #:cl)
   (:export
@@ -420,15 +355,6 @@
    #:on-gamepad-detach
    #:on-gamepad-enabled))
 
-(define-package #:%pyx.live-support
-  (:use #:cl)
-  (:export
-   #:on-recompile
-   #:recompile
-   #:setup-repl
-   #:update-repl
-   #:with-continuable))
-
 (define-package #:%pyx.material
   (:use #:cl)
   (:export
@@ -448,6 +374,16 @@
   (:export
    #:define-material
    #:set-uniforms))
+
+(define-package #:%pyx.mesh
+  (:use #:cl)
+  (:shadow
+   #:load)
+  (:export
+   #:draw-func
+   #:load
+   #:meshes
+   #:primitives))
 
 (define-package #:%pyx.metadata
   (:use #:cl)
@@ -476,6 +412,16 @@
    #:+polygon-mode+
    #:named-framebuffer-draw-buffers
    #:with-debug-group))
+
+(define-package #:%pyx.prefab
+  (:use #:cl)
+  (:export
+   #:define-prefab
+   #:deregister-prefab-entity
+   #:load-prefab)
+  ;; public
+  (:export
+   #:define-prefab))
 
 (define-package #:%pyx.render
   (:use #:cl)
@@ -538,21 +484,6 @@
   (:export
    #:define-texture))
 
-(define-package #:%pyx.thread-pool
-  (:use #:cl)
-  (:export
-   #:define-event-handler
-   #:deqeueue
-   #:destroy
-   #:get-job-results
-   #:enqueue
-   #:handle-queued-event
-   #:kill-jobs
-   #:make-thread-pool
-   #:process-queue
-   #:queue-empty-p
-   #:submit-job))
-
 (define-package #:%pyx.transform
   (:use #:cl)
   (:export
@@ -581,15 +512,47 @@
   (:use #:cl)
   (:export
    #:make-nested-dict
-   #:initialize-rng))
-
-(define-package #:%pyx.uuid
-  (:use #:cl)
-  (:export
+   #:initialize-rng
+   ;; thread-pool
+   #:define-event-handler
+   #:deqeueue
+   #:destroy-thread-pool
+   #:get-job-results
+   #:enqueue
+   #:handle-queued-event
+   #:kill-jobs
+   #:make-thread-pool
+   #:process-queue
+   #:queue-empty-p
+   #:submit-job
+   ;; live-support
+   #:on-recompile
+   #:recompile
+   #:setup-repl
+   #:update-repl
+   #:with-continuable
+   ;; avl-tree
+   #:avl-delete
+   #:avl-find
+   #:avl-insert
+   #:avl-max
+   #:avl-min
+   #:avl-tree
+   #:avl-walk
+   #:make-avl-tree
+   ;; uuid
    #:make-uuid
    #:string->uuid
    #:uuid
-   #:uuid->string))
+   #:uuid->string
+   ;; parser
+   #:octets=
+   #:parse-bytes
+   #:parse-string
+   #:parse-int/be
+   #:parse-int/le
+   #:parse-uint/be
+   #:parse-uint/le))
 
 (define-package #:%pyx.viewport
   (:use #:cl)

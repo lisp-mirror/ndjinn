@@ -9,3 +9,8 @@
 
 (defun initialize-rng ()
   (setf *random-state* (make-random-state t)))
+
+(defun split-string (string delimiter)
+  (let ((pos (position delimiter string)))
+    (values (subseq string 0 pos)
+            (subseq string (1+ pos)))))

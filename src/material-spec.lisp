@@ -64,7 +64,7 @@
         (a:deletef (fb:materials v) framebuffer-material-name))))
   (when framebuffer-name
     (push material-name (fb:materials (fb:find-spec framebuffer-name)))
-    (tp:enqueue :recompile (list :framebuffer framebuffer-name))))
+    (util:enqueue :recompile (list :framebuffer framebuffer-name))))
 
 (defun update-spec (name master shader uniforms pass output func)
   (let ((spec (find-spec name))
@@ -79,7 +79,7 @@
       (update-spec-framebuffer-link name framebuffer)
       (update-spec-uniforms spec uniforms)
       (update-spec-relationships spec)
-      (tp:enqueue :recompile (list :material name))
+      (util:enqueue :recompile (list :material name))
       (update-slave-specs spec))))
 
 (defun make-spec (name master shader uniforms pass output func)

@@ -19,7 +19,7 @@
           (spec-y spec) (a:clamp (float y 1f0) 0f0 1f0)
           (spec-width spec) (a:clamp (float width 1f0) 0f0 1f0)
           (spec-height spec) (a:clamp (float height 1f0) 0f0 1f0))
-    (tp:enqueue :recompile (list :viewport))))
+    (util:enqueue :recompile (list :viewport))))
 
 (defun make-spec (name x y width height)
   (let ((spec (%make-spec :name name)))

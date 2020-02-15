@@ -1,4 +1,4 @@
-(in-package #:%pyx.asset.image)
+(in-package #:%pyx.image)
 
 (defstruct (image (:conc-name nil)
                   (:predicate nil)
@@ -14,6 +14,10 @@
 (defun get-image-type (path)
   (a:make-keyword (string-upcase (pathname-type path))))
 
+(defgeneric %load (type path)
+  (:method (type path)
+    (error "Unsupported image type ~s for asset: ~s." type path)))
+
 (defgeneric load (asset &key &allow-other-keys))
 
 (defmethod load ((asset null)
@@ -27,7 +31,4 @@
 (defmethod load (asset &key)
   (let* ((path (asset:resolve-path asset))
          (type (get-image-type path)))
-    (case type
-      (:png (png:load path))
-      (:hdr (hdr:load path))
-      (t (error "Unsupported image asset type: ~s." type)))))
+    (%load type path)))

@@ -1,4 +1,4 @@
-(in-package #:%pyx.thread-pool)
+(in-package #:%pyx.util)
 
 (glob:define-global-var =thread-pool= nil)
 
@@ -16,7 +16,7 @@
     (setf lparallel:*kernel* (lp:make-kernel worker-count)
           =thread-pool= thread-pool)))
 
-(defun destroy ()
+(defun destroy-thread-pool ()
   (lparallel:end-kernel :wait t)
   (when =thread-pool=
     (setf lp:*kernel* nil

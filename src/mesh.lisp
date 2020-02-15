@@ -1,4 +1,4 @@
-(in-package #:%pyx.asset.mesh)
+(in-package #:%pyx.mesh)
 
 (a:define-constant +attribute-locations+
     '(("POSITION" . 0)
@@ -76,25 +76,25 @@
 (defun parse-header (gltf)
   (let* ((header (make-header))
          (buffer (fast-io:make-input-buffer
-                  :vector (parse:parse-bytes (buffer gltf) 12)))
-         (magic (parse:parse-string buffer :byte-count 4)))
+                  :vector (util:parse-bytes (buffer gltf) 12)))
+         (magic (util:parse-string buffer :byte-count 4)))
     (if (string= magic "glTF")
         (setf (magic header) magic
-              (version header) (parse:parse-uint/le buffer 4)
-              (format-length header) (parse:parse-uint/le buffer 4))
+              (version header) (util:parse-uint/le buffer 4)
+              (format-length header) (util:parse-uint/le buffer 4))
         (error "Invalid glTF2 file."))
     header))
 
 (defgeneric parse-chunk-data (gltf chunk-type chunk &key)
   (:method :around (gltf chunk-type chunk &key)
     (let ((buffer (fast-io:make-input-buffer
-                   :vector (parse:parse-bytes (buffer gltf)
-                                              (chunk-length chunk)))))
+                   :vector (util:parse-bytes (buffer gltf)
+                                             (chunk-length chunk)))))
       (call-next-method gltf chunk-type chunk :buffer buffer))))
 
 (defmethod parse-chunk-data (gltf (chunk-type (eql :json-content)) chunk
                              &key buffer)
-  (let ((data (parse:parse-string buffer :encoding :utf-8)))
+  (let ((data (util:parse-string buffer :encoding :utf-8)))
     (setf (json gltf) (jsown:parse data))
     data))
 
@@ -105,7 +105,7 @@
         :for data-buffer :in buffers
         :for index :below (length buffers)
         :for size = (get-property gltf "byteLength" data-buffer)
-        :do (setf (aref data index) (parse:parse-bytes buffer size))
+        :do (setf (aref data index) (util:parse-bytes buffer size))
         :finally (setf (buffers gltf) data))
   nil)
 
@@ -115,8 +115,8 @@
 
 (defun parse-chunk (gltf)
   (let* ((buffer (buffer gltf))
-         (chunk (make-chunk :length (parse:parse-uint/le buffer 4)
-                            :type (parse:parse-uint/le buffer 4))))
+         (chunk (make-chunk :length (util:parse-uint/le buffer 4)
+                            :type (util:parse-uint/le buffer 4))))
     (setf (chunk-data chunk) (parse-chunk-data
                               gltf (get-chunk-type chunk) chunk))))
 

@@ -25,13 +25,13 @@
 
 (defun update-prefab-subtree (prefab)
   (parse-prefab prefab)
-  (tp:enqueue :recompile (list :prefab (name prefab)))
+  (util:enqueue :recompile (list :prefab (name prefab)))
   (dolist (spec (slaves prefab))
     (let ((slave (u:href meta:=prefabs= spec)))
       (clrhash (nodes slave))
       (update-prefab-subtree slave))))
 
-(live:on-recompile :prefab data ()
+(util:on-recompile :prefab data ()
   (dolist (entity (u:href (scene:prefabs (ctx:current-scene)) data))
     (let ((parent (c/node:parent entity)))
       (c/node:delete entity)

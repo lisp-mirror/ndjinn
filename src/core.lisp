@@ -7,16 +7,16 @@
   (display:make-display)
   (in:make-input-data)
   (hw:load)
-  (tp:make-thread-pool)
+  (util:make-thread-pool)
   (shader:initialize)
   (scene:switch-scene scene-name)
   (clock:make-clock)
-  (live:setup-repl)
+  (util:setup-repl)
   (start-loop))
 
 (defun deinitialize ()
   (display:kill)
-  (tp:destroy)
+  (util:destroy-thread-pool)
   (in:shutdown-gamepads)
   (sdl2:quit))
 
@@ -33,8 +33,8 @@
   (cd:compute-collisions))
 
 (defun periodic-update ()
-  #-pyx.release (live:update-repl)
-  (tp:process-queue :recompile))
+  #-pyx.release (util:update-repl)
+  (util:process-queue :recompile))
 
 (defun start-loop ()
   (let* ((clock (ctx:clock))
@@ -43,7 +43,7 @@
          (refresh-rate (display:refresh-rate display)))
     (update)
     (u:while (ctx:running-p)
-      (live:with-continuable "Pyx"
+      (util:with-continuable "Pyx"
         (in:handle-events input-data)
         (clock:tick clock refresh-rate #'physics-update #'periodic-update)
         (update)

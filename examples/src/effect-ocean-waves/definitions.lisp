@@ -6,8 +6,7 @@
   (u:mvlet ((res (pyx:get-viewport-dimensions))
             (x y (pyx:get-mouse-position)))
     (when (pyx:on-button-enabled :mouse :left)
-      (pyx:set-uniforms (pyx:current-material entity)
-                        :mouse (v2:/ (v2:vec x y) res)))))
+      (pyx:set-uniforms entity :mouse (v2:/ (v2:vec x y) res)))))
 
 (pyx:define-material effect/ocean-waves ()
   (:shader shader:effect/ocean-waves

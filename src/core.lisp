@@ -22,14 +22,14 @@
 
 (defun update ()
   (let ((alpha (clock:get-alpha)))
-    (c/node:do-nodes (node)
-      (c/transform:resolve-model node alpha)
+    (comp::do-nodes (node)
+      (comp::resolve-model node alpha)
       (ent:on-update node))))
 
 (defun physics-update ()
-  (c/node:map-nodes #'ent:on-physics-update)
-  (c/node:do-nodes (node)
-    (c/transform:transform-node node))
+  (comp::map-nodes #'ent:on-physics-update)
+  (comp::do-nodes (node)
+    (comp:transform-node node))
   (cd:compute-collisions))
 
 (defun periodic-update ()

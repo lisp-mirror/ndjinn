@@ -68,106 +68,41 @@
    #:define-collision-hook
    #:pick-entity))
 
-(define-package #:%pyx.component.animate
+(define-package #:%pyx.component
   (:use #:cl)
+  ;; animate
   (:export
-   #:states)
-  ;; public
+   #:animate)
+  ;; camera
   (:export
-   #:animate))
-
-(define-package #:%pyx.component.camera
-  (:use #:cl)
+   #:camera)
+  ;; collider
   (:export
-   #:camera
-   #:get-current-camera
-   #:projection
-   #:view)
-  ;; public
+   #:collider)
+  ;; font
   (:export
-   #:camera))
-
-(define-package #:%pyx.component.collider
-  (:use #:cl)
+   #:font)
+  ;; geometry
   (:export
-   #:shape
-   #:target)
-  ;; public
+   #:geometry)
+  ;; id
   (:export
-   #:collider))
-
-(define-package #:%pyx.component.font
-  (:use #:cl)
-  ;; public
+   #:id)
+  ;; mesh
   (:export
-   #:font))
-
-(define-package #:%pyx.component.geometry
-  (:use #:cl)
-  ;; public
+   #:mesh)
+  ;; node
   (:export
-   #:geometry))
-
-(define-package #:%pyx.component.id
-  (:use #:cl)
+   #:node
+   #:node/children
+   #:node/parent)
+  ;; render
   (:export
-   #:display
-   #:views)
-  ;; public
+   #:render)
+  ;; sprite
   (:export
-   #:id))
-
-(define-package #:%pyx.component.mesh
-  (:use #:cl)
-  ;; public
-  (:export
-   #:mesh))
-
-(define-package #:%pyx.component.node
-  (:use #:cl)
-  (:shadow
-   #:delete)
-  (:export
-   #:children
-   #:delete
-   #:do-nodes
-   #:map-nodes
-   #:parent
-   #:prefab
-   #:prefab-path
-   #:root-p)
-  ;; public
-  (:export
-   #:node))
-
-(define-package #:%pyx.component.render
-  (:use #:cl)
-  (:export
-   #:generate-render-func
-   #:order
-   #:render-frame)
-  ;; public
-  (:export
-   #:current-material
-   #:render))
-
-(define-package #:%pyx.component.sprite
-  (:use #:cl)
-  (:export
-   #:frames
-   #:index
-   #:initial-index)
-  ;; public
-  (:export
-   #:sprite))
-
-(define-package #:%pyx.component.transform
-  (:use #:cl)
-  (:export
-   #:model
-   #:resolve-model
-   #:rotation)
-  ;; public
+   #:sprite)
+  ;; transform
   (:export
    #:get-rotation
    #:get-scale

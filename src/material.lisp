@@ -106,7 +106,7 @@
 (defmacro define-material (name (&optional master) &body body)
   (destructuring-bind (&key shader uniforms features pass output) (car body)
     (a:with-gensyms (func)
-      `(let ((,func ,(c/render:generate-render-func features)))
+      `(let ((,func ,(comp::generate-render-func features)))
          (if (u:href meta:=materials= ',name)
              (update-spec ',name ',master ',shader (list ,@uniforms) ',pass
                           ',output ,func)

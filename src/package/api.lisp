@@ -19,28 +19,20 @@
                  #:define-collider-plan
                  #:define-collision-hook
                  #:pick-entity)
-  (:inherit-from #:%pyx.component.animate
-                 #:animate)
-  (:inherit-from #:%pyx.component.camera
-                 #:camera)
-  (:inherit-from #:%pyx.component.collider
-                 #:collider)
-  (:inherit-from #:%pyx.component.font
-                 #:font)
-  (:inherit-from #:%pyx.component.geometry
-                 #:geometry)
-  (:inherit-from #:%pyx.component.id
-                 #:id)
-  (:inherit-from #:%pyx.component.mesh
-                 #:mesh)
-  (:inherit-from #:%pyx.component.node
-                 #:node)
-  (:inherit-from #:%pyx.component.render
-                 #:current-material
-                 #:render)
-  (:inherit-from #:%pyx.component.sprite
-                 #:sprite)
-  (:inherit-from #:%pyx.component.transform
+  (:inherit-from #:%pyx.component
+                 ;; types
+                 #:animate
+                 #:camera
+                 #:collider
+                 #:font
+                 #:geometry
+                 #:id
+                 #:mesh
+                 #:node
+                 #:render
+                 #:sprite
+                 #:transform
+                 ;; transform
                  #:get-rotation
                  #:get-scale
                  #:get-translation
@@ -49,7 +41,6 @@
                  #:rotate-entity/velocity
                  #:scale-entity
                  #:scale-entity/velocity
-                 #:transform
                  #:transform-direction
                  #:transform-point
                  #:transform-vector

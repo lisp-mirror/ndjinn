@@ -74,15 +74,15 @@
     `(%make-entity ',components (u:plist->hash (list ,@body) :test #'eq))))
 
 (defun delete-entity (entity &key reparent-children)
-  (when (c/node:root-p entity)
+  (when (comp::node/root-p entity)
     (error "Cannot remove the root entity."))
-  (c/node:delete entity :reparent-children reparent-children))
+  (comp::delete-node entity :reparent-children reparent-children))
 
 (defun entity-parent (entity)
-  (c/node:parent entity))
+  (comp:node/parent entity))
 
 (defun entity-children (entity)
-  (c/node:children entity))
+  (comp:node/children entity))
 
 (defun has-component-p (entity type)
   (typep entity type))

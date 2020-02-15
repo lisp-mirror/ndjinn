@@ -23,7 +23,7 @@
     (error "Collider plan ~s not found." plan-name)))
 
 (defun get-collision-targets (targets collider)
-  (a:when-let ((target (u:href targets (c/collider:target collider))))
+  (a:when-let ((target (u:href targets (comp::collider/target collider))))
     (u:hash-keys target)))
 
 (defun register-collider (collider layer)
@@ -85,10 +85,10 @@
           (collider-contact-exit system collider k))))))
 
 (defun compute-collider-contact (system collider1 collider2)
-  (when (and (ent:has-component-p collider1 'c/collider:collider)
-             (ent:has-component-p collider2 'c/collider:collider))
-    (a:when-let ((shape1 (c/collider:shape collider1))
-                 (shape2 (c/collider:shape collider2)))
+  (when (and (ent:has-component-p collider1 'comp:collider)
+             (ent:has-component-p collider2 'comp:collider))
+    (a:when-let ((shape1 (comp::collider/shape collider1))
+                 (shape2 (comp::collider/shape collider2)))
       (let ((collided-p (collide-p shape1 shape2))
             (contact-p (collider-contact-p system collider1 collider2)))
         (cond

@@ -1,41 +1,41 @@
-(in-package #:%pyx.component.id)
+(in-package #:%pyx.component)
 
 (ent:define-component id ()
-  ((%display :accessor display
-             :initform "[Anonymous]")
-   (%views :accessor views
-           :initarg :id/views
-           :initform nil)
-   (%contact :reader contact
-             :initarg :id/contact
-             :initform nil)
-   (%uuid :reader uuid
-          :initform (util::make-uuid)))
-  (:sorting :after c/node:node)
+  ((%id/display :accessor id/display
+                :initform "[Anonymous]")
+   (%id/views :accessor id/views
+              :initarg :id/views
+              :initform nil)
+   (%id/contact :reader id/contact
+                :initarg :id/contact
+                :initform nil)
+   (%id/uuid :reader id/uuid
+             :initform (util::make-uuid)))
+  (:sorting :after node)
   (:static t))
 
 (u:define-printer (ent:mixin stream :type nil)
-  (format stream "~a" (display ent:mixin)))
+  (format stream "~a" (id/display ent:mixin)))
 
 (defun register-uuid (entity)
   (let ((uuids (scene:uuids (ctx:current-scene)))
-        (uuid (uuid entity)))
+        (uuid (id/uuid entity)))
     (u:if-found (found (u:href uuids uuid))
                 (error "Entity ~s has a UUID collision with object ~s."
                        entity found)
                 (setf (u:href uuids uuid) entity))))
 
 (defun deregister-uuid (entity)
-  (remhash (uuid entity) (scene:uuids (ctx:current-scene))))
+  (remhash (id/uuid entity) (scene:uuids (ctx:current-scene))))
 
 (defun register-views (entity)
-  (a:when-let ((parent (c/node:parent entity)))
-    (dolist (id (views parent))
-      (pushnew id (views entity)))))
+  (a:when-let ((parent (node/parent entity)))
+    (dolist (id (id/views parent))
+      (pushnew id (id/views entity)))))
 
 (defun register-contact (entity)
   (a:when-let* ((scene (ctx:current-scene))
-                (id (contact entity))
+                (id (id/contact entity))
                 (callback-entities (cd:callback-entities
                                     (scene:collision-system
                                      scene))))
@@ -45,7 +45,7 @@
 
 (defun deregister-contact (entity)
   (a:when-let* ((scene (ctx:current-scene))
-                (id (contact entity))
+                (id (id/contact entity))
                 (callback-entities (cd:callback-entities
                                     (scene:collision-system
                                      scene))))

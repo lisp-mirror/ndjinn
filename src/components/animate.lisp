@@ -1,18 +1,18 @@
-(in-package #:%pyx.component.animate)
+(in-package #:%pyx.component)
 
 (ent:define-component animate ()
-  ((%states :reader states
-            :initform (dll:make-dlist :test #'eq))
-   (%sequence :reader animation-sequence
-              :initarg :animate/sequence
-              :initform nil))
-  (:sorting :before (c/mesh:mesh c/sprite:sprite) :after c/render:render))
+  ((%animate/states :reader animate/states
+                    :initform (dll:make-dlist :test #'eq))
+   (%animate/sequence :reader animate/sequence
+                      :initarg :animate/sequence
+                      :initform nil))
+  (:sorting :before (mesh sprite) :after render))
 
 ;;; entity hooks
 
 (ent:define-entity-hook :attach (instance animate)
   (a:when-let ((sequence (u:href meta:=animation-sequences=
-                                 animation-sequence)))
+                                 animate/sequence)))
     (funcall sequence instance)))
 
 (ent:define-entity-hook :pre-render (entity animate)

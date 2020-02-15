@@ -2,8 +2,8 @@
 
 (defun register-prefab-viewports (entity &key viewports)
   (let ((viewports-table (vp:table (scene:viewports (ctx:current-scene)))))
-    (c/node:do-nodes (node :parent entity)
-      (when (ent:has-component-p node 'c/render:render)
+    (comp::do-nodes (node :parent entity)
+      (when (ent:has-component-p node 'comp:render)
         (if viewports
             (dolist (name viewports)
               (let ((viewport (u:href viewports-table name)))
@@ -17,7 +17,7 @@
     (register-prefab-viewports entity :viewports viewports)))
 
 (defun deregister-prefab-entity (entity)
-  (a:when-let* ((prefab (c/node:prefab entity))
+  (a:when-let* ((prefab (comp::node/prefab entity))
                 (table (scene:prefabs (ctx:current-scene))))
     (a:deletef (u:href table prefab) entity)
     (unless (u:href table prefab)
@@ -33,8 +33,8 @@
 
 (util::on-recompile :prefab data ()
   (dolist (entity (u:href (scene:prefabs (ctx:current-scene)) data))
-    (let ((parent (c/node:parent entity)))
-      (c/node:delete entity)
+    (let ((parent (comp:node/parent entity)))
+      (comp::delete-node entity)
       (load-prefab data :parent parent))))
 
 (defmacro define-prefab (name options &body body)

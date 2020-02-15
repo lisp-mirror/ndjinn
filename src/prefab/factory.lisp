@@ -38,7 +38,7 @@
   (with-slots (%name %root %factory) prefab
     (let ((root (u:href (entities %factory) (path %root))))
       (push root (u:href (scene:prefabs (ctx:current-scene)) %name))
-      (setf (c/node:prefab root) %name)
+      (setf (comp::node/prefab root) %name)
       root)))
 
 (defun build-prefab-factory (prefab)
@@ -54,7 +54,7 @@
                             (skeleton (u:href %entities path))
                             (display-id (format nil "~{~(~a~)~^ -> ~}" path)))
                         (realize-prefab-entity skeleton args)
-                        (setf (c/node:prefab-path skeleton) path
-                              (c/id:display skeleton) display-id)))
+                        (setf (comp::node/prefab-path skeleton) path
+                              (comp::id/display skeleton) display-id)))
                     (setf %current-node nil)
                     (register-prefab-root prefab))))))

@@ -54,16 +54,16 @@
 
 (defmethod update-shape ((shape shape/obb))
   (with-slots (%entity %center %world-center %axes %half-widths) shape
-    (let* ((scale (c/transform:get-scale %entity))
-           (min (c/transform:transform-point
+    (let* ((scale (comp:get-scale %entity))
+           (min (comp:transform-point
                  %entity
                  (v3:+ %center (v3:scale scale -2f0))))
-           (max (c/transform:transform-point
+           (max (comp:transform-point
                  %entity
                  (v3:+ %center (v3:scale scale 2f0))))
            (axes (m4:rotation-to-mat3
                   (m4:normalize-rotation
-                   (c/transform:model %entity))))
+                   (comp::transform/model %entity))))
            (center (v3:lerp min max 0.5))
            (diagonal (v3:- max center))
            (half-widths (v3:vec (v3:dot diagonal (m3:get-column axes 0))

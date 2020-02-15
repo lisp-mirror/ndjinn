@@ -2,10 +2,9 @@
 
 (define-local-nicknames #:%pyx.animation
   (#:a #:alexandria)
-  (#:c/anim #:%pyx.component.animate)
-  (#:c/render #:%pyx.component.render)
-  (#:c/sprite #:%pyx.component.sprite)
+  (#:comp #:%pyx.component)
   (#:clock #:%pyx.clock)
+  (#:comp #:%pyx.component)
   (#:dll #:doubly-linked-list)
   (#:ff #:filtered-functions)
   (#:mat #:%pyx.material)
@@ -24,7 +23,7 @@
 (define-local-nicknames #:%pyx.asset.spritesheet
   (#:asset #:%pyx.asset)
   (#:ent #:%pyx.entity)
-  (#:c/render #:%pyx.component.render)
+  (#:comp #:%pyx.component)
   (#:shader #:%pyx.shader)
   (#:u #:golden-utils)
   (#:v2 #:origin.vec2))
@@ -37,9 +36,7 @@
 
 (define-local-nicknames #:%pyx.collision-detection
   (#:a #:alexandria)
-  (#:c/camera #:%pyx.component.camera)
-  (#:c/collider #:%pyx.component.collider)
-  (#:c/transform #:%pyx.component.transform)
+  (#:comp #:%pyx.component)
   (#:ctx #:%pyx.context)
   (#:ent #:%pyx.entity)
   (#:in #:%pyx.input)
@@ -55,125 +52,40 @@
   (#:v4 #:origin.vec4)
   (#:vp #:%pyx.viewport))
 
-(define-local-nicknames #:%pyx.component.animate
-  (#:a #:alexandria)
-  (#:anim #:%pyx.animation)
-  (#:c/mesh #:%pyx.component.mesh)
-  (#:c/render #:%pyx.component.render)
-  (#:c/sprite #:%pyx.component.sprite)
-  (#:dll #:doubly-linked-list)
-  (#:ent #:%pyx.entity)
-  (#:meta #:%pyx.metadata)
-  (#:u #:golden-utils))
-
-(define-local-nicknames #:%pyx.component.camera
-  (#:a #:alexandria)
-  (#:c/render #:%pyx.component.render)
-  (#:c/transform #:%pyx.component.transform)
-  (#:ent #:%pyx.entity)
-  (#:in #:%pyx.input)
-  (#:m4 #:origin.mat4)
-  (#:math #:origin)
-  (#:q #:origin.quat)
-  (#:tfm #:%pyx.transform)
-  (#:u #:golden-utils)
-  (#:v3 #:origin.vec3)
-  (#:vp #:%pyx.viewport))
-
-(define-local-nicknames #:%pyx.component.collider
-  (#:c/mesh #:%pyx.component.mesh)
-  (#:c/render #:%pyx.component.render)
-  (#:cd #:%pyx.collision-detection)
-  (#:ctx #:%pyx.context)
-  (#:ent #:%pyx.entity)
-  (#:mat #:%pyx.material)
-  (#:scene #:%pyx.scene)
-  (#:v4 #:origin.vec4))
-
-(define-local-nicknames #:%pyx.component.font
-  (#:asset #:%pyx.asset)
-  (#:c/geom #:%pyx.component.geometry)
-  (#:c/render #:%pyx.component.render)
-  (#:c/transform #:%pyx.component.transform)
-  (#:clock #:%pyx.clock)
-  (#:ent #:%pyx.entity)
-  (#:geom #:%pyx.geometry)
-  (#:tex #:%pyx.texture)
-  (#:u #:golden-utils)
-  (#:ui.font #:%pyx.ui.font)
-  (#:v2 #:origin.vec2)
-  (#:v3 #:origin.vec3))
-
-(define-local-nicknames #:%pyx.component.geometry
-  (#:c/render #:%pyx.component.render)
-  (#:ent #:%pyx.entity)
-  (#:geom #:%pyx.geometry))
-
-(define-local-nicknames #:%pyx.component.id
-  (#:a #:alexandria)
-  (#:c/node #:%pyx.component.node)
-  (#:cd #:%pyx.collision-detection)
-  (#:ctx #:%pyx.context)
-  (#:ent #:%pyx.entity)
-  (#:scene #:%pyx.scene)
-  (#:u #:golden-utils)
-  (#:util #:%pyx.util))
-
-(define-local-nicknames #:%pyx.component.mesh
-  (#:asset #:%pyx.asset)
-  (#:c/render #:%pyx.component.render)
-  (#:ent #:%pyx.entity)
-  (#:mesh #:%pyx.mesh)
-  (#:u #:golden-utils))
-
-(define-local-nicknames #:%pyx.component.node
-  (#:a #:alexandria)
-  (#:ctx #:%pyx.context)
-  (#:ent #:%pyx.entity)
-  (#:prefab #:%pyx.prefab)
-  (#:scene #:%pyx.scene))
-
-(define-local-nicknames #:%pyx.component.render
-  (#:a #:alexandria)
-  (#:c/camera #:%pyx.component.camera)
-  (#:c/sprite #:%pyx.component.sprite)
-  (#:c/transform #:%pyx.component.transform)
-  (#:c/id #:%pyx.component.id)
-  (#:ctx #:%pyx.context)
-  (#:fb #:%pyx.framebuffer)
-  (#:ent #:%pyx.entity)
-  (#:mat #:%pyx.material)
-  (#:ogl #:%pyx.opengl)
-  (#:render #:%pyx.render)
-  (#:scene #:%pyx.scene)
-  (#:u #:golden-utils)
-  (#:util #:%pyx.util)
-  (#:vp #:%pyx.viewport))
-
-(define-local-nicknames #:%pyx.component.sprite
-  (#:asset #:%pyx.asset)
-  (#:asset.sprite #:%pyx.asset.spritesheet)
-  (#:c/render #:%pyx.component.render)
-  (#:ent #:%pyx.entity)
-  (#:mat #:%pyx.material)
-  (#:u #:golden-utils))
-
-(define-local-nicknames #:%pyx.component.transform
+(define-local-nicknames #:%pyx.component
   (#:~ #:origin.swizzle)
   (#:a #:alexandria)
-  (#:c/camera #:%pyx.component.camera)
-  (#:c/node #:%pyx.component.node)
-  (#:c/render #:%pyx.component.render)
+  (#:anim #:%pyx.animation)
+  (#:asset #:%pyx.asset)
+  (#:asset.sprite #:%pyx.asset.spritesheet)
+  (#:cd #:%pyx.collision-detection)
   (#:cfg #:%pyx.config)
   (#:clock #:%pyx.clock)
+  (#:ctx #:%pyx.context)
+  (#:dll #:doubly-linked-list)
   (#:ent #:%pyx.entity)
+  (#:fb #:%pyx.framebuffer)
+  (#:geom #:%pyx.geometry)
+  (#:in #:%pyx.input)
   (#:m4 #:origin.mat4)
   (#:mat #:%pyx.material)
   (#:math #:origin)
+  (#:mesh #:%pyx.mesh)
+  (#:meta #:%pyx.metadata)
+  (#:ogl #:%pyx.opengl)
+  (#:prefab #:%pyx.prefab)
   (#:q #:origin.quat)
+  (#:render #:%pyx.render)
+  (#:scene #:%pyx.scene)
+  (#:tex #:%pyx.texture)
   (#:tfm #:%pyx.transform)
+  (#:u #:golden-utils)
+  (#:ui.font #:%pyx.ui.font)
+  (#:util #:%pyx.util)
+  (#:v2 #:origin.vec2)
   (#:v3 #:origin.vec3)
-  (#:v4 #:origin.vec4))
+  (#:v4 #:origin.vec4)
+  (#:vp #:%pyx.viewport))
 
 (define-local-nicknames #:%pyx.config
   (#:a #:alexandria)
@@ -184,11 +96,10 @@
   (#:u #:golden-utils))
 
 (define-local-nicknames #:%pyx.core
-  (#:c/node #:%pyx.component.node)
-  (#:c/transform #:%pyx.component.transform)
   (#:cd #:%pyx.collision-detection)
   (#:cfg #:%pyx.config)
   (#:clock #:%pyx.clock)
+  (#:comp #:%pyx.component)
   (#:ctx #:%pyx.context)
   (#:ent #:%pyx.entity)
   (#:display #:%pyx.display)
@@ -201,16 +112,16 @@
 
 (define-local-nicknames #:%pyx.display
   (#:a #:alexandria)
-  (#:c/render #:%pyx.component.render)
   (#:cfg #:%pyx.config)
   (#:clock #:%pyx.clock)
+  (#:comp #:%pyx.component)
   (#:ctx #:%pyx.context)
   (#:ogl #:%pyx.opengl)
   (#:v2 #:origin.vec2))
 
 (define-local-nicknames #:%pyx.entity
   (#:a #:alexandria)
-  (#:c/node #:%pyx.component.node)
+  (#:comp #:%pyx.component)
   (#:ff #:filtered-functions)
   (#:glob #:global-vars)
   (#:gph #:cl-graph)
@@ -251,7 +162,7 @@
 
 (define-local-nicknames #:%pyx.material
   (#:a #:alexandria)
-  (#:c/render #:%pyx.component.render)
+  (#:comp #:%pyx.component)
   (#:ctx #:%pyx.context)
   (#:fb #:%pyx.framebuffer)
   (#:lp #:lparallel)
@@ -279,9 +190,7 @@
 
 (define-local-nicknames #:%pyx.prefab
   (#:a #:alexandria)
-  (#:c/id #:%pyx.component.id)
-  (#:c/node #:%pyx.component.node)
-  (#:c/render #:%pyx.component.render)
+  (#:comp #:%pyx.component)
   (#:ctx #:%pyx.context)
   (#:ent #:%pyx.entity)
   (#:meta #:%pyx.metadata)
@@ -293,7 +202,7 @@
 
 (define-local-nicknames #:%pyx.render
   (#:a #:alexandria)
-  (#:c/render #:%pyx.component.render)
+  (#:comp #:%pyx.component)
   (#:ctx #:%pyx.context)
   (#:ent #:%pyx.entity)
   (#:fb #:%pyx.framebuffer)
@@ -308,8 +217,8 @@
 
 (define-local-nicknames #:%pyx.scene
   (#:a #:alexandria)
-  (#:c/node #:%pyx.component.node)
   (#:cd #:%pyx.collision-detection)
+  (#:comp #:%pyx.component)
   (#:ctx #:%pyx.context)
   (#:ent #:%pyx.entity)
   (#:meta #:%pyx.metadata)
@@ -343,7 +252,7 @@
   (#:v3 #:origin.vec3))
 
 (define-local-nicknames #:%pyx.ui.font
-  (#:c/font #:%pyx.component.font)
+  (#:comp #:%pyx.component)
   (#:font #:3b-bmfont)
   (#:u #:golden-utils)
   (#:v2 #:origin.vec2)
@@ -360,8 +269,8 @@
 
 (define-local-nicknames #:%pyx.viewport
   (#:a #:alexandria)
-  (#:c/id #:%pyx.component.id)
   (#:cfg #:%pyx.config)
+  (#:comp #:%pyx.component)
   (#:ctx #:%pyx.context)
   (#:meta #:%pyx.metadata)
   (#:scene #:%pyx.scene)

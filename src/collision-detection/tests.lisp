@@ -6,20 +6,18 @@
 (defmethod collide-p ((shape1 shape/sphere) (shape2 shape/sphere))
   (let ((entity1 (entity shape1))
         (entity2 (entity shape2)))
-    (<= (v3:distance (c/transform:transform-point entity1 (center shape1))
-                     (c/transform:transform-point entity2 (center shape2)))
-        (+ (v3:length (c/transform:transform-vector entity1 (v3:vec 1 0 0)))
-           (v3:length (c/transform:transform-vector entity2 (v3:vec 1 0 0)))))))
+    (<= (v3:distance (comp:transform-point entity1 (center shape1))
+                     (comp:transform-point entity2 (center shape2)))
+        (+ (v3:length (comp:transform-vector entity1 (v3:vec 1 0 0)))
+           (v3:length (comp:transform-vector entity2 (v3:vec 1 0 0)))))))
 
 (defun %collide-p/sphere-obb (sphere obb)
   (let* ((sphere-entity (entity sphere))
-         (sphere-center (c/transform:transform-point sphere-entity
-                                                     (center sphere)))
+         (sphere-center (comp:transform-point sphere-entity (center sphere)))
          (point (v3:- (get-closest-point/obb-point obb sphere-center)
                       sphere-center)))
     (<= (v3:dot point point)
-        (expt (v3:length (c/transform:transform-vector sphere-entity
-                                                       (v3:vec 1 0 0)))
+        (expt (v3:length (comp:transform-vector sphere-entity (v3:vec 1 0 0)))
               2))))
 
 (defmethod collide-p ((shape1 shape/sphere) (shape2 shape/obb))

@@ -6,7 +6,7 @@
 
 (defmethod initialize-instance :after ((instance shape/sphere) &key)
   (with-slots (%entity %radius) instance
-    (v3:with-components ((s (c/transform:get-scale %entity)))
+    (v3:with-components ((s (comp:get-scale %entity)))
       (unless (= sx sy sz)
         (error "Sphere shape for entity ~s can only have a uniform scale."
                %entity))

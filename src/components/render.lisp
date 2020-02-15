@@ -1,18 +1,18 @@
-(in-package #:%pyx.component.render)
+(in-package #:%pyx.component)
 
 (ent:define-component render ()
-  ((%materials :accessor materials
-               :initarg :render/materials)
-   (%order :reader order
-           :initarg :render/order
-           :initform :default)
-   (%current-material :accessor current-material
-                      :initform nil))
-  (:sorting :after c/transform:transform :before c/sprite:sprite))
+  ((%render/materials :accessor render/materials
+                      :initarg :render/materials)
+   (%render/order :reader render/order
+                  :initarg :render/order
+                  :initform :default)
+   (%render/current-material :accessor render/current-material
+                             :initform nil))
+  (:sorting :after transform :before sprite))
 
 (defun register-material (entity)
   (let ((materials (u:dict #'eq)))
-    (dolist (spec-name (materials entity))
+    (dolist (spec-name (render/materials entity))
       (let ((material (mat:make-material entity spec-name)))
         (setf (u:href materials (mat:pass (mat:spec material))) material)))
     materials))
@@ -36,13 +36,13 @@
   (util::avl-walk
    (vp:draw-order viewport)
    (lambda (x)
-     (a:when-let ((material (u:href (materials x) (render:name pass))))
-       (setf (current-material x) material)
+     (a:when-let ((material (u:href (render/materials x) (render:name pass))))
+       (setf (render/current-material x) material)
        (render-entity x)))))
 
 (defun render-entity (entity)
-  (ogl:with-debug-group (format nil "Entity: ~a" (c/id:display entity))
-    (let ((material (current-material entity)))
+  (ogl:with-debug-group (format nil "Entity: ~a" (id/display entity))
+    (let ((material (render/current-material entity)))
       (funcall (mat:render-func (mat:spec material)) entity))))
 
 (defun generate-render-func (features)
@@ -59,7 +59,7 @@
             (polygon-mode (and (not (equal polygon-mode ogl:+polygon-mode+))
                                polygon-mode)))
         `(lambda (,entity)
-           (let ((,material (current-material ,entity)))
+           (let ((,material (render/current-material ,entity)))
              (fb:with-framebuffer (mat:framebuffer ,material)
                  (:attachments (mat:attachments ,material))
                (shadow:with-shader (mat:shader (mat:spec ,material))
@@ -100,7 +100,7 @@
 ;;; entity hooks
 
 (ent:define-entity-hook :attach (entity render)
-  (setf materials (register-material entity)))
+  (setf render/materials (register-material entity)))
 
 (ent:define-entity-hook :detach (entity render)
   (u:do-hash-values (viewport (vp:table (vp:get-manager)))
@@ -108,7 +108,7 @@
 
 (ent:define-entity-hook :pre-render (entity render)
   (a:when-let ((camera (vp:camera (vp:active (vp:get-manager)))))
-    (when (ent:has-component-p camera 'c/camera:camera)
-      (mat:set-uniforms current-material
-                        :view (c/camera:view camera)
-                        :proj (c/camera:projection camera)))))
+    (when (ent:has-component-p camera 'camera)
+      (mat:set-uniforms entity
+                        :view (camera/view camera)
+                        :proj (camera/projection camera)))))

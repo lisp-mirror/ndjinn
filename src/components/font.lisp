@@ -1,25 +1,25 @@
-(in-package #:%pyx.component.font)
+(in-package #:%pyx.component)
 
 (ent:define-component font ()
-  ((%asset :reader asset
-           :initarg :font/asset
-           :initform nil)
-   (%text :reader text
-          :initarg :font/text
-          :initform "")
-   (%position :reader font-position
-              :initarg :font/position
-              :initform nil)
-   (%offset :reader offset
-            :initarg :font/offset
-            :initform (v2:vec))
-   (%spec :reader spec
-          :initform nil)
-   (%buffer-data :accessor buffer-data
-                 :initform nil)
-   (%dimensions :accessor dimensions
-                :initform (v2:vec)))
-  (:sorting :before c/geom:geometry :after c/render:render))
+  ((%font/asset :reader font/asset
+                :initarg :font/asset
+                :initform nil)
+   (%font/text :reader font/text
+               :initarg :font/text
+               :initform "")
+   (%font/position :reader font/position
+                   :initarg :font/position
+                   :initform nil)
+   (%font/offset :reader font/offset
+                 :initarg :font/offset
+                 :initform (v2:vec))
+   (%font/spec :reader font/spec
+               :initform nil)
+   (%font/buffer-data :accessor font/buffer-data
+                      :initform nil)
+   (%font/dimensions :accessor font/dimensions
+                     :initform (v2:vec)))
+  (:sorting :before geometry :after render))
 
 (geom:define-geometry-layout text ()
   (:data (:format interleaved)
@@ -32,20 +32,20 @@
    :primitive :triangles))
 
 (defun load-font-spec (entity)
-  (with-slots (%asset %spec) entity
-    (unless %asset
+  (with-slots (%font/asset %font/spec) entity
+    (unless %font/asset
       (error "Font component ~s does not have an asset specified." entity))
-    (let ((path (asset:resolve-path %asset)))
-      (setf %spec (asset:with-asset-cache :font path
-                    (with-open-file (in path)
-                      (3b-bmfont-json:read-bmfont-json in)))))))
+    (let ((path (asset:resolve-path %font/asset)))
+      (setf %font/spec (asset:with-asset-cache :font path
+                         (with-open-file (in path)
+                           (3b-bmfont-json:read-bmfont-json in)))))))
 
 (defun resolve-font-text (entity)
-  (with-slots (%text) entity
-    (typecase %text
-      (string %text)
+  (with-slots (%font/text) entity
+    (typecase %font/text
+      (string %font/text)
       ((or function symbol)
-       (let ((text (funcall %text)))
+       (let ((text (funcall %font/text)))
          (unless (stringp text)
            (error "Font component ~s has text that is not a string." entity))
          text)))))
@@ -58,29 +58,30 @@
             (,x+ ,y+ ,u+ ,v+)
             (,x- ,y- ,u- ,v-)
             (,x+ ,y- ,u+ ,v-))
-          (buffer-data entity))))
+          (font/buffer-data entity))))
 
 ;;; entity hooks
 
 (ent:define-entity-hook :attach (entity font)
   (load-font-spec entity)
-  (ent:attach-component entity 'c/geom:geometry :geometry/name 'text))
+  (ent:attach-component entity 'geometry :geometry/name 'text))
 
 (ent:define-entity-hook :physics-update (entity font)
-  (c/transform:translate-entity entity
-                                (v3:vec (ui.font:calculate-position
-                                         spec
-                                         font-position
-                                         dimensions
-                                         offset))
-                                :replace-p t))
+  (translate-entity entity
+                    (v3:vec (ui.font:calculate-position
+                             font/spec
+                             font/position
+                             font/dimensions
+                             font/offset))
+                    :replace-p t))
 
 (ent:define-entity-hook :render (entity font)
   (when (clock:debug-time-p)
     (u:mvlet* ((text (resolve-font-text entity))
                (func (funcall #'generate-font-data entity))
-               (width height (ui.font:map-glyphs spec func text)))
-      (v2:with-components ((fd dimensions))
+               (width height (ui.font:map-glyphs font/spec func text)))
+      (v2:with-components ((fd font/dimensions))
         (setf fdx width fdy height))
-      (geom:update-geometry (c/geom:geometry entity) :data buffer-data)))
-  (setf buffer-data nil))
+      (geom:update-geometry (geometry/geometry entity)
+                            :data font/buffer-data)))
+  (setf font/buffer-data nil))

@@ -32,14 +32,14 @@
 
 (defun register-animation-state (entity state &key (where :tail) target)
   (dll:insert-dlist-node where
-                         (c/anim:states entity)
+                         (comp::animate/states entity)
                          (name state)
                          state
                          :target-key target)
   (%on-animation-start entity state))
 
 (defun deregister-animation-state (entity state)
-  (dll:remove-dlist-node (c/anim:states entity) (name state)))
+  (dll:remove-dlist-node (comp::animate/states entity) (name state)))
 
 (defun replace-animation-state (state name &rest args)
   (with-slots (%elapsed %finished-p) state
@@ -56,7 +56,7 @@
                              (a:clamp (/ %elapsed %duration) 0f0 1f0)))))
 
 (defun process-animation-states (entity)
-  (loop :with states = (c/anim:states entity)
+  (loop :with states = (comp::animate/states entity)
         :for (nil . state) :in (dll:dlist-elements states)
         :do (%on-animation-update entity state)
         :when (finished-p state)

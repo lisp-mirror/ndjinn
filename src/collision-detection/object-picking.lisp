@@ -13,7 +13,7 @@
   (with-slots (%entity %center %radius) shape
     (let* ((line (v3:- (end ray) (start ray)))
            (direction (v3:normalize line))
-           (m (v3:- (start ray) (c/transform:transform-point %entity %center)))
+           (m (v3:- (start ray) (comp:transform-point %entity %center)))
            (b (v3:dot m direction))
            (c (- (v3:dot m m) (expt %radius 2))))
       (unless (and (plusp c) (plusp b))
@@ -28,8 +28,8 @@
     (a:when-let* ((viewport (vp:get-by-coordinates x y))
                   (ray (vp:picking-ray viewport))
                   (camera (vp:camera viewport))
-                  (view (c/camera:view camera))
-                  (proj (c/camera:projection camera))
+                  (view (comp::camera/view camera))
+                  (proj (comp::camera/projection camera))
                   (viewport (v4:vec (vp:x viewport)
                                     (vp:y viewport)
                                     (vp:width viewport)
@@ -47,9 +47,9 @@
     (util::avl-walk
      object-tree
      (lambda (x)
-       (when (ent:has-component-p x 'c/collider:collider)
-         (a:when-let ((n (pick-shape ray (c/collider:shape x))))
+       (when (ent:has-component-p x 'comp:collider)
+         (a:when-let ((n (pick-shape ray (comp::collider/shape x))))
            (push (cons n x) picked)))))
     (when picked
       (let ((entity (cdar (stable-sort picked #'< :key #'car))))
-        (on-collision-picked (c/collider:target entity) nil entity)))))
+        (on-collision-picked (comp::collider/target entity) nil entity)))))

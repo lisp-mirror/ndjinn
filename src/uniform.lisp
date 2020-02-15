@@ -94,8 +94,9 @@
     (when (eq (uniform-resolved-type uniform) :sampler)
       (setf (uniform-value uniform) (tex:load value)))))
 
-(defun set-uniforms (material &rest args)
-  (let ((uniforms (uniforms material)))
+(defun set-uniforms (entity &rest args)
+  (let* ((material (comp::render/current-material entity))
+         (uniforms (uniforms material)))
     (u:do-plist (k v args)
       (unless (u:href uniforms k)
         (setf (u:href uniforms k) (make-uniform :key k)))

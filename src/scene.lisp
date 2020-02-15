@@ -57,8 +57,8 @@
     (with-slots (%spec %prefabs %loaded-p) scene
       (when (eq data (name %spec))
         (u:do-hash-values (entities %prefabs)
-          (map nil #'c/node:delete entities))
-        (c/node:delete (node-tree scene))
+          (map nil #'comp::delete-node entities))
+        (comp::delete-node (node-tree scene))
         (setf %loaded-p nil)
         (load data)))))
 

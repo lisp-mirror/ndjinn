@@ -46,7 +46,7 @@
   (sdl2:sdl-quit))
 
 (defun render (display)
-  (c/render:render-frame)
+  (comp::render-frame)
   (sdl2:gl-swap-window (window display))
   (incf (clock:frame-count (ctx:clock))))
 

@@ -97,7 +97,7 @@
 (defun get-entity-viewports (entity)
   (let ((scene-viewports (get-manager))
         (viewports nil))
-    (dolist (id (c/id:views entity))
+    (dolist (id (comp::id/views entity))
       (let ((viewport (u:href (table scene-viewports) id)))
         (pushnew viewport viewports)))
     (or viewports (list (default scene-viewports)))))

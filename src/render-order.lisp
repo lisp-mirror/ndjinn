@@ -6,8 +6,8 @@
        (u:href order y))))
 
 (defun make-order-tree ()
-  (util::make-avl-tree :item-type 'c/render:render
-                       :key #'c/render:order
+  (util::make-avl-tree :item-type 'comp:render
+                       :key #'comp::render/order
                        :sort #'order-comparator
                        :hash-test #'eq))
 

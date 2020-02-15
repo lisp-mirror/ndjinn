@@ -42,7 +42,7 @@
           (pass-table spec) pass-table
           (draw-order spec) draw-order-table
           (collider-plan spec) collider-plan)
-    (util:enqueue :recompile (list :scene name))))
+    (util::enqueue :recompile (list :scene name))))
 
 (defun make-spec (name sub-trees viewports passes draw-order collider-plan)
   (let ((spec (%make-spec :name name)))
@@ -50,7 +50,7 @@
     (update-spec name sub-trees viewports passes draw-order collider-plan)
     spec))
 
-(util:on-recompile :scene data ()
+(util::on-recompile :scene data ()
   (let ((scene (ctx:current-scene)))
     (with-slots (%spec %prefabs %loaded-p) scene
       (when (eq data (name %spec))

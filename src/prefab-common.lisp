@@ -32,7 +32,7 @@
                      :initform (u:dict #'eq))
    (%component-args :reader component-args
                     :initarg :component-args
-                    :initform (util:make-nested-dict #'eq :self :resolved))))
+                    :initform (util::make-nested-dict #'eq :self :resolved))))
 
 (defclass prefab-factory ()
   ((%prefab-name :reader prefab-name

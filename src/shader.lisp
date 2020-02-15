@@ -11,7 +11,7 @@
   (unless (ctx:display)
     (error "Cannot initialize shaders without an active display."))
   (let* ((table (shadow:load-shaders
-                 (lambda (x) (util:enqueue :recompile (list :shaders x)))))
+                 (lambda (x) (util::enqueue :recompile (list :shaders x)))))
          (shaders (make-shaders :table table)))
     (setf (ctx:shaders) shaders)))
 
@@ -31,7 +31,7 @@
     (setf (released-buffer-bindings shaders)
           (sort (copy-seq (released-buffer-bindings shaders)) #'<))))
 
-(util:on-recompile :shaders data ()
+(util::on-recompile :shaders data ()
   (shadow:recompile-shaders data))
 
 ;;; Public API

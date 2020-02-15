@@ -10,7 +10,7 @@
              :initarg :id/contact
              :initform nil)
    (%uuid :reader uuid
-          :initform (util:make-uuid)))
+          :initform (util::make-uuid)))
   (:sorting :after c/node:node)
   (:static t))
 
@@ -56,10 +56,10 @@
 ;;; protocol
 
 (defgeneric find-by-uuid (uuid)
-  (:method ((uuid util:uuid))
+  (:method ((uuid util::uuid))
     (u:href (scene:uuids (ctx:current-scene)) uuid))
   (:method ((uuid string))
-    (u:href (scene:uuids (ctx:current-scene)) (util:string->uuid uuid))))
+    (u:href (scene:uuids (ctx:current-scene)) (util::string->uuid uuid))))
 
 ;;; entity hooks
 

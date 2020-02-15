@@ -135,9 +135,9 @@
     (u:do-hash-values (attachment (attachment-specs spec))
       (attach framebuffer (attachment-name attachment)))))
 
-(util:on-recompile :framebuffer data ()
+(util::on-recompile :framebuffer data ()
   (a:when-let ((spec (find-spec data))
                (data (find data)))
     (attach-all data)
     (dolist (material (materials spec))
-      (util:enqueue :recompile (list :material material)))))
+      (util::enqueue :recompile (list :material material)))))

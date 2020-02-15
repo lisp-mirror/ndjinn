@@ -42,9 +42,9 @@
     (push material (u:href (scene:materials (ctx:current-scene)) name))
     material))
 
-(util:on-recompile :material data ()
+(util::on-recompile :material data ()
   (let ((shader (shader (find-spec data))))
-    (util:recompile :shaders (list shader))
+    (util::recompile :shaders (list shader))
     (dolist (material (u:href (scene:materials (ctx:current-scene)) data))
       (make-uniforms material)
       (ensure-framebuffer material))))

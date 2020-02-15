@@ -50,7 +50,7 @@
     (dolist (x attachments)
       (destructuring-bind (name &key &allow-other-keys) x
         (setf (u:href (attachment-specs spec) name) (make-attachment-spec x))))
-    (util:enqueue :recompile (list :framebuffer name))))
+    (util::enqueue :recompile (list :framebuffer name))))
 
 (defun make-spec (name mode attachments)
   (let ((spec (%make-spec :name name)))

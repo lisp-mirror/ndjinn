@@ -509,50 +509,7 @@
    #:map-glyphs))
 
 (define-package #:%pyx.util
-  (:use #:cl)
-  (:export
-   #:make-nested-dict
-   #:initialize-rng
-   ;; thread-pool
-   #:define-event-handler
-   #:deqeueue
-   #:destroy-thread-pool
-   #:get-job-results
-   #:enqueue
-   #:handle-queued-event
-   #:kill-jobs
-   #:make-thread-pool
-   #:process-queue
-   #:queue-empty-p
-   #:submit-job
-   ;; live-support
-   #:on-recompile
-   #:recompile
-   #:setup-repl
-   #:update-repl
-   #:with-continuable
-   ;; avl-tree
-   #:avl-delete
-   #:avl-find
-   #:avl-insert
-   #:avl-max
-   #:avl-min
-   #:avl-tree
-   #:avl-walk
-   #:make-avl-tree
-   ;; uuid
-   #:make-uuid
-   #:string->uuid
-   #:uuid
-   #:uuid->string
-   ;; parser
-   #:octets=
-   #:parse-bytes
-   #:parse-string
-   #:parse-int/be
-   #:parse-int/le
-   #:parse-uint/be
-   #:parse-uint/le))
+  (:use #:cl))
 
 (define-package #:%pyx.viewport
   (:use #:cl)

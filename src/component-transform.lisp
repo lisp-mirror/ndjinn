@@ -83,7 +83,8 @@
 (defun translate-entity (entity vec &key replace-p instant-p)
   (let ((state (translation entity)))
     (v3:+! (tfm:current state)
-           (if replace-p v3:+zero+ (tfm:current state)) vec)
+           (if replace-p v3:+zero+ (tfm:current state))
+           vec)
     (when instant-p
       (v3:copy! (tfm:previous state)
                 (tfm:current state)))))
@@ -95,7 +96,8 @@
 (defun rotate-entity (entity quat &key replace-p instant-p)
   (let ((state (rotation entity)))
     (q:rotate! (tfm:current state)
-               (if replace-p q:+id+ (tfm:current state)) quat)
+               (if replace-p q:+id+ (tfm:current state))
+               quat)
     (when instant-p
       (q:copy! (tfm:previous state)
                (tfm:current state)))))
@@ -107,7 +109,8 @@
 (defun scale-entity (entity vec &key replace-p instant-p)
   (let ((state (scale entity)))
     (v3:+! (tfm:current state)
-           (if replace-p v3:+zero+ (tfm:current state)) vec)
+           (if replace-p v3:+zero+ (tfm:current state))
+           vec)
     (when instant-p
       (v3:copy! (tfm:previous state)
                 (tfm:current state)))))

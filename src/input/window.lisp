@@ -1,4 +1,4 @@
-(in-package #:%pyx.input)
+(in-package #:pyx)
 
 (a:define-constant +window-event-names+
     #(nil :show :hide nil :move :resize nil :minimize :maximize :restore

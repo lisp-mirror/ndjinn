@@ -1,6 +1,6 @@
-(in-package #:%pyx.component)
+(in-package #:pyx.component)
 
-(ent:define-component geometry ()
+(pyx:define-component geometry ()
   ((%geometry/name :reader geometry/name
                    :initarg :geometry/name
                    :initform nil)
@@ -13,13 +13,13 @@
 
 ;;; entity hooks
 
-(ent:define-entity-hook :attach (entity geometry)
+(pyx:define-entity-hook :attach (entity geometry)
   (unless geometry/name
     (error "Geometry component ~s does not have a name specified." entity))
-  (setf geometry/geometry (geom:make-geometry geometry/name)))
+  (setf geometry/geometry (pyx::make-geometry geometry/name)))
 
-(ent:define-entity-hook :render (entity geometry)
-  (geom:draw-geometry geometry/geometry geometry/instances))
+(pyx:define-entity-hook :render (entity geometry)
+  (pyx::draw-geometry geometry/geometry geometry/instances))
 
-(ent:define-entity-hook :delete (entity geometry)
-  (geom:delete-geometry geometry/geometry))
+(pyx:define-entity-hook :delete (entity geometry)
+  (pyx::delete-geometry geometry/geometry))

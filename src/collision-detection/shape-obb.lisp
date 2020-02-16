@@ -1,8 +1,8 @@
-(in-package #:%pyx.collision-detection)
+(in-package #:pyx)
 
 ;;;; TODO: This is wrong. Do not use OBB's until this is investigated.
 
-(defclass shape/obb (shape)
+(defclass collider-shape/obb (collider-shape)
   ((%world-center :reader world-center
                   :initform (v3:vec))
    (%axes :reader axes
@@ -52,7 +52,7 @@
             (v3:dot translation (m3:get-column axes1 1))
             (v3:dot translation (m3:get-column axes1 2)))))
 
-(defmethod update-shape ((shape shape/obb))
+(defmethod update-collider-shape ((shape collider-shape/obb))
   (with-slots (%entity %center %world-center %axes %half-widths) shape
     (let* ((scale (comp:get-scale %entity))
            (min (comp:transform-point

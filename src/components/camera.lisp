@@ -1,6 +1,6 @@
-(in-package #:%pyx.component)
+(in-package #:pyx.component)
 
-(ent:define-component camera ()
+(pyx:define-component camera ()
   ((%camera/active-p :reader camera/active-p
                      :initarg :camera/active-p
                      :initform t)
@@ -15,7 +15,7 @@
                  :initform :perspective)
    (%camera/viewport :accessor camera/viewport
                      :initarg :camera/viewport
-                     :initform :default)
+                     :initform 'pyx::default)
    (%camera/clip-near :accessor camera/clip-near
                       :initarg :camera/clip-near
                       :initform 0.1)
@@ -51,15 +51,15 @@
     (m4:set-projection/perspective! (camera/projection entity)
                                     (/ (camera/fov-y entity)
                                        (camera/zoom entity))
-                                    (/ (vp:width %camera/viewport)
-                                       (vp:height %camera/viewport))
+                                    (/ (pyx::width %camera/viewport)
+                                       (pyx::height %camera/viewport))
                                     (camera/clip-near entity)
                                     (camera/clip-far entity))))
 
 (defmethod %set-camera-projection ((entity camera) (mode (eql :orthographic)))
   (with-slots (%camera/zoom %camera/viewport) entity
-    (let ((w (/ (vp:width %camera/viewport) %camera/zoom 2))
-          (h (/ (vp:height %camera/viewport) %camera/zoom 2)))
+    (let ((w (/ (pyx::width %camera/viewport) %camera/zoom 2))
+          (h (/ (pyx::height %camera/viewport) %camera/zoom 2)))
       (m4:set-projection/orthographic! (camera/projection entity)
                                        (- w)
                                        w
@@ -74,7 +74,7 @@
                     q:+id+
                     (v3:vec (- (asin (/ (sqrt 3)))) 0 math:pi/4)))))
     (%set-camera-projection entity :orthographic)
-    (tfm:initialize-rotation (transform/rotation entity) rotation)))
+    (pyx::initialize-rotation (transform/rotation entity) rotation)))
 
 (defun set-camera-view (entity)
   (with-slots (%camera/view %camera/target) entity
@@ -93,7 +93,7 @@
       (m4:set-view! %camera/view eye target up)
       (unless (camera/translate-view entity)
         (m4:set-translation! %camera/view %camera/view v3:+zero+))
-      (vp:configure (camera/viewport entity)))))
+      (pyx::configure-viewport (camera/viewport entity)))))
 
 (defun zoom-camera (entity direction)
   (with-slots (%camera/zoom) entity
@@ -103,33 +103,33 @@
 ;;; TODO: This is just a quick hack to be able to translate the camera for
 ;;; debugging purposes. Figure out a proper camera controlling system.
 (defun camera-debug-transform (entity)
-  (u:mvlet* ((x y dx dy (in:get-mouse-position))
-             (viewport (vp:get-by-coordinates x y))
+  (u:mvlet* ((x y dx dy (pyx:get-mouse-position))
+             (viewport (pyx::get-viewport-by-coordinates x y))
              (speed (camera/debug-speed entity)))
-    (when (and (camera/debug-p entity) (eq entity (vp:camera viewport)))
-      (when (in:on-button-enabled :key :lctrl)
+    (when (and (camera/debug-p entity) (eq entity (pyx::camera viewport)))
+      (when (pyx:on-button-enabled :key :lctrl)
         (translate-entity entity (v3:vec (* dx speed) (* dy speed))))
-      (when (in:on-button-enabled :key :lalt)
+      (when (pyx:on-button-enabled :key :lalt)
         (translate-entity entity (v3:vec 0 0 (* dy speed)))))))
 
 (defun get-current-camera ()
-  (vp:camera (vp:active (vp:get-manager))))
+  (pyx::camera (pyx::active (pyx::get-viewport-manager))))
 
 ;;; entity hooks
 
-(ent:define-entity-hook :attach (entity camera)
-  (let ((entity-viewport (first (vp:get-entity-viewports entity))))
+(pyx:define-entity-hook :attach (entity camera)
+  (let ((entity-viewport (first (pyx::get-entity-viewports entity))))
     (unless camera/viewport
       (error "Camera ~s does not have a viewport tag known to this scene."
              entity))
     (when camera/active-p
-      (setf (vp:camera entity-viewport) entity))
+      (setf (pyx::camera entity-viewport) entity))
     (setf camera/fov-y (float (* camera/fov-y (/ pi 180)) 1f0)
           camera/clip-near (float camera/clip-near 1f0)
           camera/clip-far (float camera/clip-far 1f0)
           camera/viewport entity-viewport)
     (set-camera-projection entity)))
 
-(ent:define-entity-hook :update (entity camera)
+(pyx:define-entity-hook :update (entity camera)
   (camera-debug-transform entity)
   (set-camera-view entity))

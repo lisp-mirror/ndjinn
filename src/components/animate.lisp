@@ -1,6 +1,6 @@
-(in-package #:%pyx.component)
+(in-package #:pyx.component)
 
-(ent:define-component animate ()
+(pyx:define-component animate ()
   ((%animate/states :reader animate/states
                     :initform (dll:make-dlist :test #'eq))
    (%animate/sequence :reader animate/sequence
@@ -10,10 +10,9 @@
 
 ;;; entity hooks
 
-(ent:define-entity-hook :attach (instance animate)
-  (a:when-let ((sequence (u:href meta:=animation-sequences=
-                                 animate/sequence)))
+(pyx:define-entity-hook :attach (instance animate)
+  (a:when-let ((sequence (u:href pyx::=animation-sequences= animate/sequence)))
     (funcall sequence instance)))
 
-(ent:define-entity-hook :pre-render (entity animate)
-  (anim:process-animation-states entity))
+(pyx:define-entity-hook :pre-render (entity animate)
+  (pyx::process-animation-states entity))

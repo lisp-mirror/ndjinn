@@ -1,12 +1,12 @@
-(in-package #:%pyx.geometry)
+(in-package #:pyx)
 
 (defun make-geometry (name)
-  (funcall (u:href meta:=geometry= name)))
+  (funcall (u:href =geometry= name)))
 
 (defun update-geometry (geometry buffer-name data)
   (let ((data (or data (make-array (vertex-count geometry)
                                    :initial-element 0))))
-    (fill-buffer geometry buffer-name data)
+    (fill-geometry-buffer geometry buffer-name data)
     (setf (primitive-count geometry) (length data))))
 
 (defun draw-geometry (geometry instance-count)

@@ -10,7 +10,7 @@
    :features (:depth-mode :lequal)))
 
 (pyx:define-animation-sequence sprite ()
-  (res:sprite :duration 0.5 :repeat-p t))
+  (pyx:animate/sprite :duration 0.5 :repeat-p t))
 
 (pyx:define-prefab sprite (:add (pyx:sprite pyx:render))
   :sprite/asset '(metadata sprites)

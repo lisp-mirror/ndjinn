@@ -1,4 +1,4 @@
-(in-package #:%pyx.prefab)
+(in-package #:pyx)
 
 ;;; Begin parsing the raw data of the prefab. If any part of the parsing fails,
 ;;; clean up by removing the prefab entry from the metadata store.
@@ -16,7 +16,7 @@
            (build-prefab-factory prefab)
            (setf success-p t))
       (unless success-p
-        (remhash (name prefab) meta:=prefabs=)))))
+        (remhash (name prefab) =prefabs=)))))
 
 ;;; Populate the prefab object with all of its explicitly defined nodes by
 ;;; recursively parsing the raw data. The resulting nodes are not fully realized
@@ -64,7 +64,7 @@
 (defun populate-implicit-prefab-nodes (prefab)
   (flet ((populate (parent template)
            (let ((template-path (path template)))
-             (u:do-hash (path node (nodes (u:href meta:=prefabs=
+             (u:do-hash (path node (nodes (u:href =prefabs=
                                                   (car template-path))))
                (let ((target-path (append
                                    (path parent)
@@ -110,7 +110,7 @@
     (u:do-hash-values (node (nodes prefab))
       (record-prefab-template-dependency prefab (template node)))
     (dolist (master-spec old-masters)
-      (let ((master (u:href meta:=prefabs= master-spec)))
+      (let ((master (u:href =prefabs= master-spec)))
         (unless (find master-spec (masters prefab))
           (a:deletef (slaves master) (name prefab)))))))
 
@@ -133,20 +133,20 @@
                       (u:href (component-types %template) :resolved)))))
         (destructuring-bind (&key add remove &allow-other-keys) %options
           (dolist (type remove)
-            (unless (u:href ent:=component-order= type)
+            (unless (u:href =component-order= type)
               (error "Cannot remove component from prefab ~s: component ~s is ~
                       not a defined component."
                      (name prefab)
                      type))
             (a:deletef types type))
           (dolist (type add)
-            (unless (u:href ent:=component-order= type)
+            (unless (u:href =component-order= type)
               (error "Cannot add component to prefab ~s: ~s is not a defined ~
                       component."
                      (name prefab)
                      type))
             (pushnew type types))
-          (let ((types (ent:compute-component-order types)))
+          (let ((types (compute-component-order types)))
             (setf (u:href %component-types :self) add
                   (u:href %component-types :removed) remove
                   (u:href %component-types :resolved) types)))))))
@@ -159,9 +159,9 @@
 (defun resolve-prefab-component-args (prefab)
   (u:do-hash (path node (nodes prefab))
     (with-slots (%template %component-types %component-args) node
-      (let ((removed (mapcan #'ent:compute-component-initargs
+      (let ((removed (mapcan #'compute-component-initargs
                              (u:href %component-types :removed)))
-            (valid (mapcan #'ent:compute-component-initargs
+            (valid (mapcan #'compute-component-initargs
                            (u:href %component-types :resolved)))
             (args (if %template
                       (u:hash-merge (u:href (component-args %template)

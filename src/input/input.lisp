@@ -1,4 +1,4 @@
-(in-package #:%pyx.input)
+(in-package #:pyx)
 
 (defmacro event-case ((event) &body handlers)
   (let (events)
@@ -68,7 +68,7 @@
       data gamepad-id (aref +gamepad-button-names+ button)))))
 
 (defun perform-input-tasks ()
-  (let ((data (ctx:input-data)))
+  (let ((data (input-data)))
     (button-enable-entering data)
     (button-disable-exiting data)
     (gamepad-enable-entering data)

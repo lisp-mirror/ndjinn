@@ -1,9 +1,10 @@
-(in-package #:%pyx.collision-detection)
+(in-package #:pyx)
 
 (defgeneric collide-p (shape1 shape2)
   (:method (shape1 shape2)))
 
-(defmethod collide-p ((shape1 shape/sphere) (shape2 shape/sphere))
+(defmethod collide-p ((shape1 collider-shape/sphere)
+                      (shape2 collider-shape/sphere))
   (let ((entity1 (entity shape1))
         (entity2 (entity shape2)))
     (<= (v3:distance (comp:transform-point entity1 (center shape1))
@@ -20,13 +21,15 @@
         (expt (v3:length (comp:transform-vector sphere-entity (v3:vec 1 0 0)))
               2))))
 
-(defmethod collide-p ((shape1 shape/sphere) (shape2 shape/obb))
+(defmethod collide-p ((shape1 collider-shape/sphere)
+                      (shape2 collider-shape/obb))
   (%collide-p/sphere-obb shape1 shape2))
 
-(defmethod collide-p ((shape1 shape/obb) (shape2 shape/sphere))
+(defmethod collide-p ((shape1 collider-shape/obb)
+                      (shape2 collider-shape/sphere))
   (%collide-p/sphere-obb shape2 shape1))
 
-(defmethod collide-p ((shape1 shape/obb) (shape2 shape/obb))
+(defmethod collide-p ((shape1 collider-shape/obb) (shape2 collider-shape/obb))
   (u:mvlet ((r r-abs (make-obb-obb-rotation shape1 shape2)))
     (m3:with-components ((r r) (ar r-abs))
       (v3:with-components ((tr (make-obb-obb-translation shape1 shape2))

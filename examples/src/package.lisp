@@ -6,7 +6,6 @@
 (defpackage #:pyx-examples
   (:local-nicknames
    (#:a #:alexandria)
-   (#:anim #:%pyx.animation)
    (#:math #:origin)
    (#:q #:origin.quat)
    (#:res #:pyx-resources)

@@ -1,14 +1,14 @@
-(in-package #:%pyx.prefab)
+(in-package #:pyx)
 
 (defun make-prefab-entity-skeleton (node)
   (with-slots (%component-types %component-args) node
     (let* ((types (u:href %component-types :resolved))
            (args (u:href %component-args :resolved))
            (entity (make-instance 'prefab-entity-skeleton
-                                  :mixin-class (ent:make-class types)
+                                  :mixin-class (make-entity-class types)
                                   :types types
                                   :args args)))
-      (dolist (slot (ent:get-slots types))
+      (dolist (slot (get-entity-slots types))
         (let ((key (a:make-keyword (string-left-trim "%" (symbol-name slot)))))
           (setf (u:href (slots entity) slot) (u:href args key))))
       entity)))
@@ -18,7 +18,7 @@
     (with-slots (%mixin-class) skeleton
       (when (typep skeleton 'prefab-entity-skeleton)
         (apply #'change-class skeleton %mixin-class args))
-      (ent:register skeleton types))))
+      (register-entity skeleton types))))
 
 (defun resolve-prefab-entity-args (node parent)
   (with-slots (%prefab %parent %component-args) node
@@ -31,13 +31,13 @@
       (setf (u:href args :node/parent)
             (if %parent
                 (u:href (entities (factory %prefab)) (path %parent))
-                (or parent (scene:node-tree (ctx:current-scene)))))
+                (or parent (node-tree (current-scene)))))
       (u:hash->plist args))))
 
 (defun register-prefab-root (prefab)
   (with-slots (%name %root %factory) prefab
     (let ((root (u:href (entities %factory) (path %root))))
-      (push root (u:href (scene:prefabs (ctx:current-scene)) %name))
+      (push root (u:href (prefabs (current-scene)) %name))
       (setf (comp::node/prefab root) %name)
       root)))
 

@@ -1,6 +1,6 @@
-(in-package #:%pyx.component)
+(in-package #:pyx.component)
 
-(ent:define-component node ()
+(pyx:define-component node ()
   ((%node/root-p :reader node/root-p
                  :initarg :node/root-p
                  :initform nil)
@@ -17,13 +17,13 @@
 
 (defun add-child (entity &key parent)
   (with-slots (%node/parent %node/children) entity
-    (setf %node/parent (or parent (scene:node-tree (ctx:current-scene))))
+    (setf %node/parent (or parent (pyx::node-tree (pyx::current-scene))))
     (push entity (node/children %node/parent))
     (dolist (child %node/children)
       (add-child child :parent entity))))
 
 (defun map-nodes (func &optional parent)
-  (let ((parent (or parent (scene:node-tree (ctx:current-scene)))))
+  (let ((parent (or parent (pyx::node-tree (pyx::current-scene)))))
     (funcall func parent)
     (dolist (child (node/children parent))
       (map-nodes func child))))
@@ -37,15 +37,15 @@
       (if reparent-children
           (add-child child :parent parent)
           (delete-node child)))
-    (ent:on-delete entity)
-    (ent:detach-components entity)
-    (prefab:deregister-prefab-entity entity)
+    (pyx::on-delete entity)
+    (pyx:detach-components entity)
+    (pyx::deregister-prefab-entity entity)
     (when parent
       (a:deletef (node/children parent) entity))
     (values)))
 
 ;;; entity hooks
 
-(ent:define-entity-hook :create (entity node)
+(pyx:define-entity-hook :create (entity node)
   (unless node/root-p
     (add-child entity :parent node/parent)))

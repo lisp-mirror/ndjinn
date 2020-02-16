@@ -1,20 +1,24 @@
-(in-package #:%pyx.collision-detection)
+(in-package #:pyx)
 
-(defstruct (system (:constructor %make-system)
-                   (:conc-name nil)
-                   (:predicate nil)
-                   (:copier nil))
-  spec
-  (registered (u:dict #'eq))
-  (deregistered (u:dict #'eq))
-  (active (u:dict #'eq))
-  (contacts (u:dict #'eq))
-  (callback-entities (u:dict #'eq))
-  (buffer (make-array 8 :adjustable t :fill-pointer t)))
+(defclass collision-system ()
+  ((%spec :reader spec
+          :initarg :spec)
+   (%registered :reader registered
+                :initform (u:dict #'eq))
+   (%deregistered :reader deregistered
+                  :initform (u:dict #'eq))
+   (%active :reader active
+            :initform (u:dict #'eq))
+   (%contacts :reader contacts
+              :initform (u:dict #'eq))
+   (%callback-entities :reader callback-entities
+                       :initform (u:dict #'eq))
+   (%buffer :reader buffer
+            :initform (make-array 8 :adjustable t :fill-pointer t))))
 
 (defun make-collision-system (plan-name)
-  (a:if-let ((spec (u:href meta:=collider-plans= plan-name)))
-    (let ((system (%make-system :spec spec)))
+  (a:if-let ((spec (u:href =collider-plans= plan-name)))
+    (let ((system (make-instance 'collision-system :spec spec)))
       (dolist (layer (layers spec))
         (setf (u:href (registered system) layer) (u:dict #'eq)
               (u:href (deregistered system) layer) (u:dict #'eq)
@@ -27,7 +31,7 @@
     (u:hash-keys target)))
 
 (defun register-collider (collider layer)
-  (let* ((system (scene:collision-system (ctx:current-scene)))
+  (let* ((system (collision-system (current-scene)))
          (registered (registered system)))
     (unless (u:href registered layer)
       (error "Collider ~s has a layer that is not in the scene's collider ~
@@ -36,7 +40,7 @@
     (setf (u:href registered layer collider) collider)))
 
 (defun deregister-collider (collider layer)
-  (let* ((system (scene:collision-system (ctx:current-scene)))
+  (let* ((system (collision-system (current-scene)))
          (deregistered (deregistered system)))
     (setf (u:href deregistered layer collider) collider)))
 
@@ -85,8 +89,8 @@
           (collider-contact-exit system collider k))))))
 
 (defun compute-collider-contact (system collider1 collider2)
-  (when (and (ent:has-component-p collider1 'comp:collider)
-             (ent:has-component-p collider2 'comp:collider))
+  (when (and (has-component-p collider1 'comp:collider)
+             (has-component-p collider2 'comp:collider))
     (a:when-let ((shape1 (comp::collider/shape collider1))
                  (shape2 (comp::collider/shape collider2)))
       (let ((collided-p (collide-p shape1 shape2))
@@ -101,9 +105,10 @@
 
 (defun compute-collisions/active (system)
   (let* ((active (active system))
-         (buffer (buffer system)))
+         (buffer (buffer system))
+         (table (table (spec system))))
     (dolist (collider1-layer (layers (spec system)))
-      (dolist (collider2-layer (u:href (plan (spec system)) collider1-layer))
+      (dolist (collider2-layer (u:href table collider1-layer))
         (if (eq collider1-layer collider2-layer)
             (a:when-let ((colliders (u:href active collider1-layer)))
               (setf (fill-pointer buffer) 0)
@@ -122,13 +127,14 @@
 
 (defun compute-collisions/registered (system)
   (let* ((active (active system))
-         (registered (registered system)))
+         (registered (registered system))
+         (table (table (spec system))))
     (dolist (c1-layer (layers (spec system)))
       (let ((layer-registered (u:href registered c1-layer)))
         (u:do-hash-keys (c1 layer-registered)
           (remhash c1 layer-registered)
           (unless (u:href active c1)
-            (let ((c2-layers (u:href (plan (spec system)) c1-layer)))
+            (let ((c2-layers (u:href table c1-layer)))
               (dolist (c2-layer c2-layers)
                 (u:do-hash-keys (c2 (u:href active c2-layer))
                   (compute-collider-contact system c1 c2)))
@@ -148,7 +154,7 @@
             (remhash k layer-deregistered)))))))
 
 (defun compute-collisions ()
-  (let ((system (scene:collision-system (ctx:current-scene))))
+  (let ((system (collision-system (current-scene))))
     (compute-collisions/active system)
     (compute-collisions/registered system)
     (compute-collisions/deregistered system)))

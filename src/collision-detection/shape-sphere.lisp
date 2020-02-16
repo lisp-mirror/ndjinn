@@ -1,10 +1,10 @@
-(in-package #:%pyx.collision-detection)
+(in-package #:pyx)
 
-(defclass shape/sphere (shape)
+(defclass collider-shape/sphere (collider-shape)
   ((%radius :reader radius
             :initform 1)))
 
-(defmethod initialize-instance :after ((instance shape/sphere) &key)
+(defmethod initialize-instance :after ((instance collider-shape/sphere) &key)
   (with-slots (%entity %radius) instance
     (v3:with-components ((s (comp:get-scale %entity)))
       (unless (= sx sy sz)

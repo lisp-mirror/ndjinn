@@ -1,4 +1,4 @@
-(in-package #:%pyx.input)
+(in-package #:pyx)
 
 (a:define-constant +mouse-button-names+
     #(nil :left :middle :right :x1 :x2)
@@ -36,7 +36,7 @@
         (relative (sdl2:relative-mouse-mode-p)))
     (unless relative
       (setf (mouse-motion-state-x motion-state) x
-            (mouse-motion-state-y motion-state) (- cfg:=window-height= y)))
+            (mouse-motion-state-y motion-state) (- =window-height= y)))
     (setf (mouse-motion-state-dx motion-state) dx
           (mouse-motion-state-dy motion-state) (- dy))))
 
@@ -49,7 +49,7 @@
           (mouse-motion-state-dy motion-state) 0)))
 
 (defun get-mouse-position ()
-  (let* ((motion-state (u:href (states (ctx:input-data)) '(:mouse :motion)))
+  (let* ((motion-state (u:href (states (input-data)) '(:mouse :motion)))
          (x (mouse-motion-state-x motion-state))
          (y (mouse-motion-state-y motion-state))
          (dx (mouse-motion-state-dx motion-state))
@@ -57,22 +57,22 @@
     (values x y dx dy)))
 
 (defun get-mouse-scroll (axis)
-  (let ((states (states (ctx:input-data))))
+  (let ((states (states (input-data))))
     (ecase axis
       (:horizontal (u:href states '(:mouse :scroll-horizontal)))
       (:vertical (u:href states '(:mouse :scroll-vertical))))))
 
 (defun enable-relative-motion ()
-  (let* ((motion-state (u:href (states (ctx:input-data)) '(:mouse :motion)))
+  (let* ((motion-state (u:href (states (input-data)) '(:mouse :motion)))
          (x (mouse-motion-state-x motion-state))
-         (y (- cfg:=window-height= (mouse-motion-state-y motion-state))))
+         (y (- =window-height= (mouse-motion-state-y motion-state))))
     (sdl2:set-relative-mouse-mode 1)
     (setf (mouse-motion-state-relative motion-state) t
           (mouse-motion-state-warp-x motion-state) x
           (mouse-motion-state-warp-y motion-state) y)))
 
 (defun disable-relative-motion (&key (warp t))
-  (let ((motion-state (u:href (states (ctx:input-data)) '(:mouse :motion))))
+  (let ((motion-state (u:href (states (input-data)) '(:mouse :motion))))
     (sdl2:set-relative-mouse-mode 0)
     (setf (mouse-motion-state-relative motion-state) nil)
     (when warp
@@ -81,5 +81,5 @@
         (sdl2:warp-mouse-in-window nil x y)))))
 
 (defun mouse-motion-relative-p ()
-  (let ((motion-state (u:href (states (ctx:input-data)) '(:mouse :motion))))
+  (let ((motion-state (u:href (states (input-data)) '(:mouse :motion))))
     (mouse-motion-state-relative motion-state)))

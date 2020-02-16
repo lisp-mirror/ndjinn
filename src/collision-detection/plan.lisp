@@ -1,20 +1,19 @@
-(in-package #:%pyx.collision-detection)
+(in-package #:pyx)
 
-(defstruct (plan-spec (:constructor %make-plan-spec)
-                      (:conc-name nil)
-                      (:predicate nil)
-                      (:copier nil))
-  name
-  layers
-  (plan (u:dict #'eq)))
+(defclass collider-plan-spec ()
+  ((%name :reader name
+          :initarg :name)
+   (%layers :accessor layers)
+   (%table :reader table
+           :initform (u:dict #'eq))))
 
-(u:define-printer (plan-spec stream)
-  (format stream "~s" (name plan-spec)))
+(u:define-printer (collider-plan-spec stream)
+  (format stream "~s" (name collider-plan-spec)))
 
-(defun update-plan-spec (name layers plan)
-  (let ((spec (u:href meta:=collider-plans= name)))
+(defun update-collider-plan-spec (name layers plan)
+  (let ((spec (u:href =collider-plans= name)))
     (setf (layers spec) layers)
-    (clrhash (plan spec))
+    (clrhash (table spec))
     (dolist (x plan)
       (destructuring-bind (k v) x
         (unless (find k layers)
@@ -22,22 +21,22 @@
         (dolist (x v)
           (unless (find x layers)
             (error "Collider plan layer ~s is not registered." x))
-          (when (find k (u:href (plan spec) x))
+          (when (find k (u:href (table spec) x))
             (a:deletef v x)))
         (when v
-          (setf (u:href (plan spec) k) v))))))
+          (setf (u:href (table spec) k) v))))))
 
-(defun make-plan-spec (name layers plan)
-  (let ((spec (%make-plan-spec :name name)))
-    (setf (u:href meta:=collider-plans= name) spec)
-    (update-plan-spec name layers plan)
+(defun make-collider-plan-spec (name layers plan)
+  (let ((spec (make-instance 'collider-plan-spec :name name)))
+    (setf (u:href =collider-plans= name) spec)
+    (update-collider-plan-spec name layers plan)
     spec))
 
 (defmacro define-collider-plan (name options &body body)
   (declare (ignore options))
   (destructuring-bind (&key layers plan) (car body)
-    `(if (u:href meta:=collider-plans= ',name)
-         (update-plan-spec ',name ',layers ',plan)
-         (make-plan-spec ',name ',layers ',plan))))
+    `(if (u:href =collider-plans= ',name)
+         (update-collider-plan-spec ',name ',layers ',plan)
+         (make-collider-plan-spec ',name ',layers ',plan))))
 
-(define-collider-plan :default ())
+(define-collider-plan default ())

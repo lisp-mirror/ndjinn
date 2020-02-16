@@ -1,6 +1,6 @@
-(in-package #:%pyx.component)
+(in-package #:pyx.component)
 
-(ent:define-component mesh ()
+(pyx:define-component mesh ()
   ((%mesh/asset :reader mesh/asset
                 :initarg :mesh/asset)
    (%mesh/name :reader mesh/name
@@ -16,14 +16,14 @@
 
 ;;; entity hooks
 
-(ent:define-entity-hook :attach (entity mesh)
-  (let* ((path (asset:resolve-path mesh/asset))
-         (gltf (asset:with-asset-cache :mesh path
-                 (mesh:load path)))
-         (mesh (u:href (mesh:meshes gltf) mesh/name)))
+(pyx:define-entity-hook :attach (entity mesh)
+  (let* ((path (pyx:resolve-path mesh/asset))
+         (gltf (pyx:with-asset-cache :mesh path
+                 (pyx::load-gltf path)))
+         (mesh (u:href (pyx::meshes gltf) mesh/name)))
     (unless mesh
       (error "Mesh name ~s not found in mesh file ~s." mesh/name path))
-    (setf mesh/primitive (aref (mesh:primitives mesh) mesh/index))))
+    (setf mesh/primitive (aref (pyx::primitives mesh) mesh/index))))
 
-(ent:define-entity-hook :render (entity mesh)
-  (funcall (mesh:draw-func mesh/primitive) mesh/instances))
+(pyx:define-entity-hook :render (entity mesh)
+  (funcall (pyx::draw-func mesh/primitive) mesh/instances))

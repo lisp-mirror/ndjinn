@@ -1,16 +1,16 @@
-(in-package #:%pyx.collision-detection)
+(in-package #:pyx)
 
-(defclass shape ()
+(defclass collider-shape ()
   ((%entity :reader entity
             :initarg :entity)
    (%center :reader center
             :initarg :center
             :initform (v3:vec))))
 
-(defun make-shape (entity shape-spec)
+(defun make-collider-shape (entity shape-spec)
   (destructuring-bind (type . args) (a:ensure-list shape-spec)
-    (let ((class (a:format-symbol :%pyx.collision-detection "SHAPE/~a" type)))
+    (let ((class (a:format-symbol :pyx "COLLIDER-SHAPE/~a" type)))
       (apply #'make-instance class :entity entity args))))
 
-(defgeneric update-shape (shape)
+(defgeneric update-collider-shape (shape)
   (:method (shape)))

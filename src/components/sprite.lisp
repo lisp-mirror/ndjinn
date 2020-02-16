@@ -1,6 +1,6 @@
-(in-package #:%pyx.component)
+(in-package #:pyx.component)
 
-(ent:define-component sprite ()
+(pyx:define-component sprite ()
   ((%sprite/name :reader sprite/name
                  :initarg :sprite/name)
    (%sprite/asset :reader sprite/asset
@@ -15,16 +15,15 @@
 
 ;;; entity hooks
 
-(ent:define-entity-hook :attach (entity sprite)
-  (setf sprite/spritesheet (asset.sprite:make-spritesheet sprite/asset)
-        sprite/index (u:href (asset.sprite:sprites sprite/spritesheet)
-                             sprite/name)
+(pyx:define-entity-hook :attach (entity sprite)
+  (setf sprite/spritesheet (pyx::make-spritesheet sprite/asset)
+        sprite/index (u:href (pyx::sprites sprite/spritesheet) sprite/name)
         sprite/initial-index sprite/index))
 
-(ent:define-entity-hook :pre-render (entity sprite)
-  (mat:set-uniforms entity :sprite.index sprite/index))
+(pyx:define-entity-hook :pre-render (entity sprite)
+  (pyx:set-uniforms entity :sprite.index sprite/index))
 
-(ent:define-entity-hook :render (entity sprite)
-  (gl:bind-vertex-array (asset.sprite:vao sprite/spritesheet))
+(pyx:define-entity-hook :render (entity sprite)
+  (gl:bind-vertex-array (pyx::vao sprite/spritesheet))
   (gl:draw-arrays :triangle-strip 0 4)
   (gl:bind-vertex-array 0))

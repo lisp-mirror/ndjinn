@@ -1,19 +1,18 @@
-(in-package #:%pyx.texture)
+(in-package #:pyx)
 
-(defstruct (texture (:constructor %make-texture)
-                    (:conc-name nil)
-                    (:predicate nil)
-                    (:copier nil))
-  spec
-  target
-  id
-  width
-  height)
+(defclass texture ()
+  ((%spec :reader spec
+          :initarg :spec)
+   (%target :reader target
+            :initarg :target)
+   (%id :accessor id)
+   (%width :accessor width)
+   (%height :accessor height)))
 
 (u:define-printer (texture stream)
   (format stream "~s" (name (spec texture))))
 
-(defun calculate-mipmap-levels (spec width height)
+(defun calculate-texture-mipmap-levels (spec width height)
   (if (generate-mipmaps spec)
       (loop :for levels = 0 :then (incf levels)
             :while (or (> (ash width (- levels)) 1)
@@ -23,11 +22,11 @@
 
 (defgeneric update-texture (type texture source))
 
-(defun bind (texture unit)
+(defun bind-texture (texture unit)
   (gl:active-texture unit)
   (gl:bind-texture (target texture) (id texture)))
 
-(defun configure (texture)
+(defun configure-texture (texture)
   (let ((id (id texture))
         (target (target texture))
         (spec (spec texture)))
@@ -39,40 +38,46 @@
     (gl:bind-texture target 0)))
 
 (defun load-framebuffer-texture (spec width height)
-  (img:load nil
-            :width width
-            :height height
-            :pixel-format (pixel-format spec)
-            :pixel-type (pixel-type spec)
-            :internal-format (internal-format spec)))
+  (load-image nil
+              :width width
+              :height height
+              :pixel-format (pixel-format spec)
+              :pixel-type (pixel-type spec)
+              :internal-format (internal-format spec)))
 
-(defgeneric load-source (spec type source &key &allow-other-keys)
+(defgeneric load-texture-source (spec type source &key &allow-other-keys)
   (:method :around (spec type source &key)
     (let* ((loaded (call-next-method))
            (source-list (a:flatten (a:ensure-list loaded))))
-      (unless (and (every #'img:width source-list)
-                   (every #'img:height source-list))
+      (unless (and (every #'width source-list)
+                   (every #'height source-list))
         (error "Texture ~s does not have a width and height set." (name spec)))
       loaded)))
 
-(defun make-target (type)
+(defun make-texture-target (type)
   (a:format-symbol :keyword "TEXTURE-~a" type))
 
 (defun make-texture (spec type source)
-  (let ((texture (%make-texture :spec spec :target (make-target type))))
+  (let ((texture (make-instance 'texture
+                                :spec spec
+                                :target (make-texture-target type))))
     (update-texture type texture source)))
 
-(defun load (name &key width height)
-  (asset:with-asset-cache :texture name
-    (let* ((spec (find-spec name))
+(defun load-texture (name &key width height)
+  (with-asset-cache :texture name
+    (let* ((spec (find-texture-spec name))
            (type (texture-type spec))
-           (source (load-source spec type (source spec) :width width :height height))
+           (source (load-texture-source spec
+                                        type
+                                        (source spec)
+                                        :width width
+                                        :height height))
            (texture (make-texture spec type source)))
-      (configure texture)
+      (configure-texture texture)
       texture)))
 
-(util::on-recompile :texture data ()
-  (a:when-let ((texture (asset:find-asset :texture data)))
+(on-recompile :texture data ()
+  (a:when-let ((texture (find-asset :texture data)))
     (gl:delete-texture (id texture))
-    (asset:delete-asset :texture data)
-    (load data :width (width texture) :height (height texture))))
+    (delete-asset :texture data)
+    (load-texture data :width (width texture) :height (height texture))))

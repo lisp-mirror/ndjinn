@@ -31,38 +31,20 @@
                #:umbra)
   :pathname "src"
   :components
-  ((:module "package"
-    :components
-    ((:file "package")
-     (:file "internal")
-     (:file "api")
-     (:file "nicknames")))
-
-   (:file "config")
-   (:file "context")
-   (:file "metadata")
-   (:file "hardware")
-
-   (:module "util"
+  ((:file "package")
+   (:module "base"
     :components
     ((:file "general")
+     (:file "config")
+     (:file "metadata")
+     (:file "hardware")
      (:file "thread-pool")
      (:file "live-support")
      (:file "avl-tree")
      (:file "parser")
-     (:file "uuid")))
-
-   (:file "opengl")
-   (:file "shader")
-   (:file "shader-source-basic")
-   (:file "shader-source-font")
-   (:file "asset")
-   (:file "image")
-   (:file "image-png")
-   (:file "image-hdr")
-   (:file "mesh")
-   (:file "spritesheet")
-
+     (:file "uuid")
+     (:file "asset")
+     (:file "context")))
    (:module "input"
     :components
     ((:file "data")
@@ -72,7 +54,6 @@
      (:file "window")
      (:file "button")
      (:file "input")))
-
    (:module "texture"
     :components
     ((:file "spec")
@@ -81,12 +62,6 @@
      (:file "2d-array")
      (:file "cube-map")
      (:file "cube-map-array")))
-
-   (:file "framebuffer")
-   (:file "viewport")
-   (:file "material")
-   (:file "uniform")
-
    (:module "geometry"
     :components
     ((:file "spec")
@@ -95,18 +70,6 @@
      (:file "layout")
      (:file "buffer")
      (:file "geometry")))
-
-   (:file "component")
-   (:file "entity-mixin")
-   (:file "entity")
-   (:file "clock")
-   (:file "display")
-   (:file "transform")
-   (:file "scene")
-   (:file "render-pass")
-   (:file "render-order")
-   (:file "font")
-
    (:module "collision-detection"
     :components
     ((:file "plan")
@@ -118,10 +81,20 @@
      (:file "object-picking")
      (:file "system")))
 
-   (:file "animation")
-   (:file "animation-states")
-
+   (:module "shader"
+    :components
+    ((:file "basic")
+     (:file "font")))
+   (:module "prefab"
+    :depends-on ("components")
+    :components
+    ((:file "common")
+     (:file "factory")
+     (:file "parser")
+     (:file "reference")
+     (:file "prefab")))
    (:module "components"
+    :depends-on ("core")
     :components
     ((:file "node")
      (:file "transform")
@@ -134,13 +107,29 @@
      (:file "collider")
      (:file "animate")
      (:file "font")))
-
-   (:module "prefab"
+   (:module "core"
     :components
-    ((:file "common")
-     (:file "factory")
-     (:file "parser")
-     (:file "reference")
-     (:file "prefab")))
-
-   (:file "core")))
+    ((:file "opengl")
+     (:file "shader")
+     (:file "image")
+     (:file "image-png")
+     (:file "image-hdr")
+     (:file "gltf")
+     (:file "spritesheet")
+     (:file "framebuffer")
+     (:file "viewport")
+     (:file "material")
+     (:file "uniform")
+     (:file "component")
+     (:file "entity-mixin")
+     (:file "entity")
+     (:file "clock")
+     (:file "display")
+     (:file "transform")
+     (:file "scene")
+     (:file "render-pass")
+     (:file "render-order")
+     (:file "font")
+     (:file "animation")
+     (:file "animation-states")))
+   (:file "pyx")))

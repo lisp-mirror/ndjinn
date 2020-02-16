@@ -1,4 +1,4 @@
-(in-package #:%pyx.input)
+(in-package #:pyx)
 
 (defstruct (button-state (:predicate nil)
                          (:copier nil))
@@ -41,16 +41,16 @@
     (setf exiting nil)))
 
 (defun on-button-enter (&rest args)
-  (a:when-let* ((data (ctx:input-data))
+  (a:when-let* ((data (input-data))
                 (state (u:href (states data) args)))
     (button-state-enter state)))
 
 (defun on-button-enabled (&rest args)
-  (a:when-let* ((data (ctx:input-data))
+  (a:when-let* ((data (input-data))
                 (state (u:href (states data) args)))
     (button-state-enabled state)))
 
 (defun on-button-exit (&rest args)
-  (a:when-let* ((data (ctx:input-data))
+  (a:when-let* ((data (input-data))
                 (state (u:href (states data) args)))
     (button-state-exit state)))

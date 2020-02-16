@@ -1,6 +1,6 @@
-(in-package #:%pyx.component)
+(in-package #:pyx.component)
 
-(ent:define-component collider ()
+(pyx:define-component collider ()
   ((%collider/shape :accessor collider/shape
                     :initarg :collider/shape
                     :initform 'sphere)
@@ -28,63 +28,63 @@
 
 (defun initialize-collider-visualization (entity)
   (when (collider/visualize entity)
-    (when (or (ent:has-component-p entity 'mesh)
-              (ent:has-component-p entity 'render))
+    (when (or (pyx:has-component-p entity 'mesh)
+              (pyx:has-component-p entity 'render))
       (error "Entity ~s has a collider to be visualized, but it must not have ~
               a mesh or render component attached." entity))
-    (ent:attach-component entity 'mesh
+    (pyx:attach-component entity 'mesh
                           :mesh/asset "meshes/colliders.glb"
                           :mesh/name (format nil "~(~a~)"
                                              (collider/shape entity))))
-  (ent:attach-component entity 'render :render/materials '(collider)))
+  (pyx:attach-component entity 'render :render/materials '(collider)))
 
-(defmethod cd:%on-collision-enter ((contact1 collider) (contact2 collider))
-  (let ((targets (cd:callback-entities
-                  (scene:collision-system (ctx:current-scene)))))
+(defmethod pyx::%on-collision-enter ((contact1 collider) (contact2 collider))
+  (let ((targets (pyx::callback-entities
+                  (pyx::collision-system (pyx::current-scene)))))
     (incf (collider/contact-count contact1))
     (when (plusp (collider/contact-count contact1))
       (setf (collider/hit-p contact1) t))
     (when (plusp (collider/contact-count contact2))
       (setf (collider/hit-p contact2) t))
-    (dolist (entity (cd:get-collision-targets targets contact1))
-      (cd:on-collision-enter (collider/target contact1)
-                             (collider/layer contact2)
-                             entity))))
+    (dolist (entity (pyx::get-collision-targets targets contact1))
+      (pyx::on-collision-enter (collider/target contact1)
+                               (collider/layer contact2)
+                               entity))))
 
-(defmethod cd:%on-collision-continue ((contact1 collider) (contact2 collider))
-  (let ((targets (cd:callback-entities
-                  (scene:collision-system (ctx:current-scene)))))
-    (dolist (entity (cd:get-collision-targets targets contact1))
-      (cd:on-collision-continue (collider/target contact1)
-                                (collider/layer contact2)
-                                entity))))
+(defmethod pyx::%on-collision-continue ((contact1 collider) (contact2 collider))
+  (let ((targets (pyx::callback-entities
+                  (pyx::collision-system (pyx::current-scene)))))
+    (dolist (entity (pyx::get-collision-targets targets contact1))
+      (pyx::on-collision-continue (collider/target contact1)
+                                  (collider/layer contact2)
+                                  entity))))
 
-(defmethod cd:%on-collision-exit ((contact1 collider) (contact2 collider))
-  (let ((targets (cd:callback-entities
-                  (scene:collision-system (ctx:current-scene)))))
+(defmethod pyx::%on-collision-exit ((contact1 collider) (contact2 collider))
+  (let ((targets (pyx::callback-entities
+                  (pyx::collision-system (pyx::current-scene)))))
     (decf (collider/contact-count contact1))
     (when (zerop (collider/contact-count contact1))
       (setf (collider/hit-p contact1) nil))
     (when (zerop (collider/contact-count contact2))
       (setf (collider/hit-p contact2) nil))
-    (dolist (entity (cd:get-collision-targets targets contact1))
-      (cd:on-collision-exit (collider/target contact1)
-                            (collider/layer contact2)
-                            entity))))
+    (dolist (entity (pyx::get-collision-targets targets contact1))
+      (pyx::on-collision-exit (collider/target contact1)
+                              (collider/layer contact2)
+                              entity))))
 
 ;;; component protocol
 
-(ent:define-entity-hook :attach (entity collider)
+(pyx:define-entity-hook :attach (entity collider)
   (initialize-collider-visualization entity)
-  (setf collider/shape (cd:make-shape entity collider/shape))
-  (cd:register-collider entity collider/layer))
+  (setf collider/shape (pyx::make-collider-shape entity collider/shape))
+  (pyx::register-collider entity collider/layer))
 
-(ent:define-entity-hook :detach (entity collider)
-  (cd:deregister-collider entity collider/layer)
+(pyx:define-entity-hook :detach (entity collider)
+  (pyx::deregister-collider entity collider/layer)
   (setf collider/target nil))
 
-(ent:define-entity-hook :physics-update (entity collider)
-  (cd:update-shape collider/shape))
+(pyx:define-entity-hook :physics-update (entity collider)
+  (pyx::update-collider-shape collider/shape))
 
-(ent:define-entity-hook :pre-render (entity collider)
-  (mat:set-uniforms entity :contact collider/hit-p))
+(pyx:define-entity-hook :pre-render (entity collider)
+  (pyx:set-uniforms entity :contact collider/hit-p))

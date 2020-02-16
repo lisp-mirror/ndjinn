@@ -1,6 +1,6 @@
-(in-package #:%pyx.component)
+(in-package #:pyx.component)
 
-(ent:define-component font ()
+(pyx:define-component font ()
   ((%font/asset :reader font/asset
                 :initarg :font/asset
                 :initform nil)
@@ -21,12 +21,12 @@
                      :initform (v2:vec)))
   (:sorting :before geometry :after render))
 
-(geom:define-geometry-layout text ()
+(pyx:define-geometry-layout text ()
   (:data (:format interleaved)
          (position :type float :count 2)
          (uv :type float :count 2)))
 
-(geom:define-geometry text ()
+(pyx:define-geometry text ()
   (:layout text
    :vertex-count 6
    :primitive :triangles))
@@ -35,8 +35,8 @@
   (with-slots (%font/asset %font/spec) entity
     (unless %font/asset
       (error "Font component ~s does not have an asset specified." entity))
-    (let ((path (asset:resolve-path %font/asset)))
-      (setf %font/spec (asset:with-asset-cache :font path
+    (let ((path (pyx:resolve-path %font/asset)))
+      (setf %font/spec (pyx:with-asset-cache :font path
                          (with-open-file (in path)
                            (3b-bmfont-json:read-bmfont-json in)))))))
 
@@ -62,26 +62,25 @@
 
 ;;; entity hooks
 
-(ent:define-entity-hook :attach (entity font)
+(pyx:define-entity-hook :attach (entity font)
   (load-font-spec entity)
-  (ent:attach-component entity 'geometry :geometry/name 'text))
+  (pyx:attach-component entity 'geometry :geometry/name 'text))
 
-(ent:define-entity-hook :physics-update (entity font)
+(pyx:define-entity-hook :physics-update (entity font)
   (translate-entity entity
-                    (v3:vec (ui.font:calculate-position
+                    (v3:vec (pyx::calculate-font-position
                              font/spec
                              font/position
                              font/dimensions
                              font/offset))
                     :replace-p t))
 
-(ent:define-entity-hook :render (entity font)
-  (when (clock:debug-time-p)
+(pyx:define-entity-hook :render (entity font)
+  (when (pyx::debug-time-p)
     (u:mvlet* ((text (resolve-font-text entity))
                (func (funcall #'generate-font-data entity))
-               (width height (ui.font:map-glyphs font/spec func text)))
+               (width height (pyx::map-font-glyphs font/spec func text)))
       (v2:with-components ((fd font/dimensions))
         (setf fdx width fdy height))
-      (geom:update-geometry (geometry/geometry entity)
-                            :data font/buffer-data)))
+      (pyx:update-geometry (geometry/geometry entity) :data font/buffer-data)))
   (setf font/buffer-data nil))

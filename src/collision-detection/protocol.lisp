@@ -1,4 +1,4 @@
-(in-package #:%pyx.collision-detection)
+(in-package #:pyx)
 
 (defgeneric %on-collision-enter (contact1 contact2)
   (:method (contact1 contact2)))
@@ -33,7 +33,6 @@
          ,@(unless (symbolp layer)
              `((error "Layer of a collision hook must be a symbol: ~s."
                       ',layer)))
-         (defmethod ,(a:format-symbol :%pyx.collision-detection
-                                      "ON-COLLISION-~a" name)
+         (defmethod ,(a:format-symbol :pyx "ON-COLLISION-~a" name)
              ((,target-symbol (eql ',target)) (layer (eql ',layer)) ,target)
            ,@body)))))

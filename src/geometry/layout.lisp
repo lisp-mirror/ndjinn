@@ -1,31 +1,29 @@
-(in-package #:%pyx.geometry)
+(in-package #:pyx)
 
-(defstruct (layout (:constructor %make-layout)
-                   (:conc-name nil)
-                   (:predicate nil)
-                   (:copier nil))
-  layout-name
-  groups
-  group-order)
+(defclass geometry-layout ()
+  ((%name :reader name
+          :initarg :name)
+   (%groups :accessor groups)
+   (%group-order :accessor group-order)))
 
-(defun find-layout (layout-name)
-  (or (u:href meta:=geometry-layouts= layout-name)
+(defun find-geometry-layout (layout-name)
+  (or (u:href =geometry-layouts= layout-name)
       (error "Geometry layout ~s not found." layout-name)))
 
-(defun make-layout (name groups order)
-  (let ((layout (%make-layout :layout-name name)))
-    (setf (u:href meta:=geometry-layouts= name) layout)
-    (update-layout name groups order)))
+(defun make-geometry-layout (name groups order)
+  (let ((layout (make-instance 'geometry-layout :name name)))
+    (setf (u:href =geometry-layouts= name) layout)
+    (update-geometry-layout name groups order)))
 
-(defun update-layout (name groups order)
-  (let ((layout (u:href meta:=geometry-layouts= name)))
+(defun update-geometry-layout (name groups order)
+  (let ((layout (u:href =geometry-layouts= name)))
     (setf (groups layout) groups
           (group-order layout) order)))
 
 (defmacro define-geometry-layout (name options &body body)
   (declare (ignore options))
   (a:with-gensyms (groups order)
-    `(u:mvlet ((,groups ,order (make-groups ',body)))
-       (if (u:href meta:=geometry-layouts= ',name)
-           (update-layout ',name ,groups ,order)
-           (make-layout ',name ,groups ,order)))))
+    `(u:mvlet ((,groups ,order (make-geometry-groups ',body)))
+       (if (u:href =geometry-layouts= ',name)
+           (update-geometry-layout ',name ,groups ,order)
+           (make-geometry-layout ',name ,groups ,order)))))

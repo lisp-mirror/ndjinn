@@ -1,48 +1,47 @@
-(in-package #:%pyx.texture)
+(in-package #:pyx)
 
-(defstruct (spec (:constructor %make-spec)
-                 (:conc-name nil)
-                 (:predicate nil)
-                 (:copier nil))
-  name
-  texture-type
-  spec-width
-  spec-height
-  pixel-format
-  pixel-type
-  internal-format
-  generate-mipmaps
-  parameters
-  source)
+(defclass texture-spec ()
+  ((%name :reader name
+          :initarg :name)
+   (%type :accessor texture-type)
+   (%width :accessor width)
+   (%height :accessor height)
+   (%pixel-format :accessor pixel-format)
+   (%pixel-type :accessor pixel-type)
+   (%internal-format :accessor internal-format)
+   (%generate-mipmaps :accessor generate-mipmaps)
+   (%parameters :accessor parameters)
+   (%source :accessor source)))
 
-(u:define-printer (spec stream)
-  (format stream "~s" (name spec)))
+(u:define-printer (texture-spec stream)
+  (format stream "~s" (name texture-spec)))
 
-(defun find-spec (name)
-  (or (u:href meta:=textures= name)
+(defun find-texture-spec (name)
+  (or (u:href =textures= name)
       (error "Texture ~s is not defined." name)))
 
-(defun update-spec (name type source width height pixel-format pixel-type
-                    internal-format generate-mipmaps parameters)
-  (let ((spec (find-spec name)))
+(defun update-texture-spec (name type source width height pixel-format
+                            pixel-type internal-format generate-mipmaps
+                            parameters)
+  (let ((spec (find-texture-spec name)))
     (setf (texture-type spec) type
-          (spec-width spec) width
-          (spec-height spec) height
+          (width spec) width
+          (height spec) height
           (pixel-format spec) (or pixel-format :rgba)
           (pixel-type spec) (or pixel-type :unsigned-byte)
           (internal-format spec) (or internal-format :rgba8)
           (generate-mipmaps spec) generate-mipmaps
           (parameters spec) parameters
           (source spec) source)
-    (util::enqueue :recompile (list :texture name))))
+    (enqueue :recompile (list :texture name))))
 
-(defun make-spec (name &rest args)
-  (let ((spec (%make-spec :name name)))
-    (setf (u:href meta:=textures= name) spec)
-    (apply #'update-spec name args)
+(defun make-texture-spec (name &rest args)
+  (let ((spec (make-instance 'texture-spec :name name)))
+    (setf (u:href =textures= name) spec)
+    (apply #'update-texture-spec name args)
     spec))
 
-(defun make-parameters (args)
+(defun make-texture-parameters (args)
   (destructuring-bind (&key (depth-stencil-mode :depth-component) (base-level 0)
                          (border-color (v4:vec)) (compare-func :lequal)
                          (compare-mode :none) (lod-bias 0f0)
@@ -78,11 +77,11 @@
                          pixel-format pixel-type internal-format
                        &allow-other-keys)
       (car body)
-    (let ((parameters (make-parameters args)))
-      `(if (u:href meta:=textures= ',name)
-           (update-spec ',name ,type ',source ,width ,height ,pixel-format
-                        ,pixel-type ,internal-format ,generate-mipmaps
-                        ',parameters)
-           (make-spec ',name ,type ',source ,width ,height ,pixel-format
-                      ,pixel-type ,internal-format ,generate-mipmaps
-                      ',parameters)))))
+    (let ((parameters (make-texture-parameters args)))
+      `(if (u:href =textures= ',name)
+           (update-texture-spec ',name ,type ',source ,width ,height
+                                ,pixel-format ,pixel-type ,internal-format
+                                ,generate-mipmaps ',parameters)
+           (make-texture-spec ',name ,type ',source ,width ,height ,pixel-format
+                              ,pixel-type ,internal-format ,generate-mipmaps
+                              ',parameters)))))

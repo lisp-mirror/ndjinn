@@ -1,18 +1,20 @@
-(in-package #:%pyx.texture)
+(in-package #:pyx)
 
 (defmethod update-texture ((type (eql :cube-map-array)) texture source)
   (let* ((id (gl:gen-texture))
          (first-layer (first source))
          (first-layer-face (first first-layer))
-         (width (img:width first-layer-face))
-         (height (img:height first-layer-face)))
+         (width (width first-layer-face))
+         (height (height first-layer-face)))
     (setf (id texture) id
           (width texture) width
           (height texture) height)
     (gl:bind-texture :texture-cube-map-array id)
     (%gl:tex-storage-3d :texture-cube-map-array
-                        (calculate-mipmap-levels (spec texture) width height)
-                        (img:internal-format first-layer-face)
+                        (calculate-texture-mipmap-levels (spec texture)
+                                                         width
+                                                         height)
+                        (internal-format first-layer-face)
                         width
                         height
                         (* (length source) 6))
@@ -25,18 +27,18 @@
                                              0
                                              0
                                              (+ (* layer-index 6) face-index)
-                                             (img:width image)
-                                             (img:height image)
+                                             (width image)
+                                             (height image)
                                              1
-                                             (img:pixel-format image)
-                                             (img:pixel-type image)
-                                             (img:data image))))
+                                             (pixel-format image)
+                                             (pixel-type image)
+                                             (data image))))
     (gl:bind-texture :texture-cube-map-array 0)
     texture))
 
-(defmethod load-source (spec (type (eql :cube-map-array)) source
-                        &key width height)
+(defmethod load-texture-source (spec (type (eql :cube-map-array)) source
+                                &key width height)
   (mapcar
    (lambda (x)
-     (load-source spec :cube-map x :width width :height height))
+     (load-texture-source spec :cube-map x :width width :height height))
    source))

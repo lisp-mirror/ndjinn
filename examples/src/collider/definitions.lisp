@@ -21,6 +21,7 @@
    :transform/translate/velocity (math:make-velocity v3:+right+ 15f0)
    :collider/target 'player
    :collider/layer 'player
+   :collider/visualize nil
    ((mesh :template mesh/helmet)
     :transform/rotate (q:orient :local :x math:pi/2 :y math:pi/2))))
 

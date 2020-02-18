@@ -55,4 +55,8 @@
            (push (cons n x) picked)))))
     (when picked
       (let ((entity (cdar (stable-sort picked #'< :key #'car))))
+        (setf (picked-entity (current-scene)) entity)
         (on-collision-picked (comp::collider/target entity) nil entity)))))
+
+(defun entity-picked-p (entity)
+  (eq entity (picked-entity (current-scene))))

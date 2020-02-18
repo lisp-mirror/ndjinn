@@ -38,5 +38,17 @@
   :transform/scale 17
   :transform/rotate/velocity (math:make-velocity v3:+forward+ (- math:pi/6)))
 
+(pyx:define-prefab mesh/pickable-helmet ()
+  ((mesh :add (pyx:collider pyx:mouse-control))
+   :transform/scale 17
+   :collider/layer 'picked
+   :collider/visualize nil
+   ((mesh :template mesh/helmet))))
+
+(pyx:define-collider-plan mesh ()
+  (:layers (picked)
+   :plan ((picked nil))))
+
 (pyx:define-scene mesh-carousel ()
-  (:sub-trees (examples camera/perspective mesh-carousel)))
+  (:collider-plan mesh
+   :sub-trees (examples camera/perspective mesh/pickable-helmet)))

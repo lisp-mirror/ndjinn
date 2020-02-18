@@ -54,6 +54,9 @@
   ;; mesh
   (:export
    #:mesh)
+  ;; mouse-control
+  (:export
+   #:mouse-control)
   ;; node
   (:export
    #:node
@@ -117,6 +120,7 @@
                  #:geometry
                  #:id
                  #:mesh
+                 #:mouse-control
                  #:node
                  #:render
                  #:sprite
@@ -157,6 +161,7 @@
   (:export
    #:define-collider-plan
    #:define-collision-hook
+   #:entity-picked-p
    #:pick-entity)
   ;; config
   (:export

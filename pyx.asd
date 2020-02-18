@@ -80,19 +80,10 @@
      (:file "tests")
      (:file "object-picking")
      (:file "system")))
-
    (:module "shader"
     :components
     ((:file "basic")
      (:file "font")))
-   (:module "prefab"
-    :depends-on ("components")
-    :components
-    ((:file "common")
-     (:file "factory")
-     (:file "parser")
-     (:file "reference")
-     (:file "prefab")))
    (:module "components"
     :depends-on ("core")
     :components
@@ -106,7 +97,15 @@
      (:file "sprite")
      (:file "collider")
      (:file "animate")
-     (:file "font")))
+     (:file "font")
+     (:file "mouse-control")))
+   (:module "prefab"
+    :components
+    ((:file "common")
+     (:file "factory")
+     (:file "parser")
+     (:file "reference")
+     (:file "prefab")))
    (:module "core"
     :components
     ((:file "opengl")

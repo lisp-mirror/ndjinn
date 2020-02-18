@@ -97,6 +97,8 @@
              :initform (u:dict #'eq))
    (%collision-system :accessor collision-system
                       :initform nil)
+   (%picked-entity :accessor picked-entity
+                   :initform nil)
    (%uuids :reader uuids
            :initform (u:dict #'eq))))
 

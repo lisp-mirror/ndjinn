@@ -1,7 +1,7 @@
 (in-package #:pyx)
 
 (defmethod update-texture ((type (eql :cube-map-array)) texture source)
-  (let* ((id (make-gpu-object :texture))
+  (let* ((id (gl:gen-texture))
          (first-layer (first source))
          (first-layer-face (first first-layer))
          (width (width first-layer-face))

@@ -44,14 +44,12 @@
     (setf (u:href (buffer-bindings (shaders)) key) binding)
     (shadow:create-block-alias :buffer block-id shader key)
     (shadow:bind-block key binding)
-    (push (shadow:create-buffer key key)
-          (u:href (gpu-objects) :buffer))
+    (shadow:create-buffer key key)
     (shadow:bind-buffer key binding)))
 
 (defgeneric update-shader-buffer (object))
 
 (defun delete-shader-buffer (key)
-  (let ((buffer-id (shadow:delete-buffer key)))
-    (a:deletef (u:href (gpu-objects) :buffer) buffer-id)
-    (release-shader-buffer-binding key)
-    (shadow:unbind-block key)))
+  (release-shader-buffer-binding key)
+  (shadow:delete-buffer key)
+  (shadow:unbind-block key))

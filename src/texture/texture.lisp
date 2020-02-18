@@ -79,6 +79,6 @@
 
 (on-recompile :texture data ()
   (a:when-let ((texture (find-asset :texture data)))
-    (free-gpu-object :texture (id texture))
+    (gl:delete-texture (id texture))
     (delete-asset :texture data)
     (load-texture data :width (width texture) :height (height texture))))

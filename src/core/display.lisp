@@ -3,6 +3,8 @@
 (defclass display ()
   ((%window :reader window
             :initarg :window)
+   (%context :accessor context
+             :initform nil)
    (%resolution :reader resolution
                 :initarg :resolution)
    (%refresh-rate :reader refresh-rate
@@ -14,11 +16,12 @@
                      :context-profile-mask 1
                      :multisamplebuffers 1
                      :multisamplesamples 4)
-  (sdl2:gl-create-context (window display))
-  (apply #'gl:enable +enabled-capabilities+)
-  (apply #'gl:disable +disabled-capabilities+)
-  (apply #'gl:blend-func +blend-mode+)
-  (gl:depth-func +depth-mode+))
+  (let ((context (sdl2:gl-create-context (window display))))
+    (setf (context display) context)
+    (apply #'gl:enable +enabled-capabilities+)
+    (apply #'gl:disable +disabled-capabilities+)
+    (apply #'gl:blend-func +blend-mode+)
+    (gl:depth-func +depth-mode+)))
 
 (defun make-window ()
   (sdl2:create-window :title "Pyx"
@@ -43,6 +46,7 @@
 
 (defun kill-display ()
   (a:when-let ((display (display)))
+    (sdl2:gl-delete-context (context display))
     (sdl2:destroy-window (window display)))
   (sdl2:sdl-quit))
 

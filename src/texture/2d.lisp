@@ -1,7 +1,7 @@
 (in-package #:pyx)
 
 (defmethod update-texture ((type (eql :2d)) texture source)
-  (let* ((id (make-gpu-object :texture))
+  (let* ((id (gl:gen-texture))
          (width (width source))
          (height (height source)))
     (setf (id texture) id

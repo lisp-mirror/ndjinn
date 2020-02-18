@@ -15,7 +15,6 @@
   (start-loop))
 
 (defun deinitialize ()
-  (free-gpu-objects)
   (kill-display)
   (destroy-thread-pool)
   (shutdown-gamepads)

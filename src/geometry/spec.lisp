@@ -20,7 +20,7 @@
                              buffer-data)
   (lambda ()
     (let ((spec (make-instance 'geometry-spec
-                               :id (make-gpu-object :vertex-array)
+                               :id (gl:gen-vertex-array)
                                :layout (find-geometry-layout layout-name)
                                :vertex-count vertex-count
                                :primitive primitive)))

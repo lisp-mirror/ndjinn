@@ -19,6 +19,5 @@
   (gl:bind-vertex-array 0))
 
 (defun delete-geometry (geometry)
-  (dolist (buffer (buffers geometry))
-    (free-gpu-object :buffer buffer))
-  (free-gpu-object :vertex-array (id geometry)))
+  (gl:delete-buffers (buffers geometry))
+  (gl:delete-vertex-arrays (list (id geometry))))

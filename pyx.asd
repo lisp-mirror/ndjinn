@@ -125,6 +125,7 @@
      (:file "clock")
      (:file "display")
      (:file "transform")
+     (:file "free-look-state")
      (:file "scene")
      (:file "render-pass")
      (:file "render-order")

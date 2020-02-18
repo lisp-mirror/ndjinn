@@ -51,4 +51,4 @@
 
 (pyx:define-scene mesh-carousel ()
   (:collider-plan mesh
-   :sub-trees (examples camera/perspective mesh/pickable-helmet)))
+   :sub-trees (examples camera/free-look mesh/pickable-helmet)))

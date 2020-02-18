@@ -50,6 +50,9 @@
   :camera/clip-near -1000
   :camera/clip-far 1000)
 
+(pyx:define-prefab camera/free-look (:template camera/perspective)
+  :camera/free-look t)
+
 (pyx:define-prefab quad (:add (pyx:geometry pyx:render))
   :geometry/name 'res:quad
   :render/materials '(quad))

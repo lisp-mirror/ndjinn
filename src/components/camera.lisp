@@ -40,7 +40,12 @@
    (%camera/view :reader camera/view
                  :initform (m4:mat 1))
    (%camera/projection :reader camera/projection
-                       :initform (m4:mat 1)))
+                       :initform (m4:mat 1))
+   (%camera/free-look :accessor camera/free-look
+                      :initarg :camera/free-look
+                      :initform nil)
+   (%camera/free-look-state :accessor camera/free-look-state
+                            :initform nil))
   (:sorting :before render :after transform))
 
 (defun set-camera-projection (entity)
@@ -78,7 +83,8 @@
 
 (defun set-camera-view (entity)
   (with-slots (%camera/view %camera/target) entity
-    (let* ((model (transform/model entity))
+    (let* ((free-look-state (camera/free-look-state entity))
+           (model (m4:copy (transform/model entity)))
            (target (camera/target entity))
            (eye (if target
                     (v3:with-components ((v (m4:get-translation
@@ -93,24 +99,13 @@
       (m4:set-view! %camera/view eye target up)
       (unless (camera/translate-view entity)
         (m4:set-translation! %camera/view %camera/view v3:+zero+))
-      (pyx::configure-viewport (camera/viewport entity)))))
+      (when free-look-state
+        (pyx::set-initial-free-look-orientation free-look-state model)))))
 
 (defun zoom-camera (entity direction)
   (with-slots (%camera/zoom) entity
     (setf %camera/zoom (a:clamp (+ %camera/zoom (/ direction 2)) 1 10))
     (set-camera-projection entity)))
-
-;;; TODO: This is just a quick hack to be able to translate the camera for
-;;; debugging purposes. Figure out a proper camera controlling system.
-(defun camera-debug-transform (entity)
-  (u:mvlet* ((x y dx dy (pyx:get-mouse-position))
-             (viewport (pyx::get-viewport-by-coordinates x y))
-             (speed (camera/debug-speed entity)))
-    (when (and (camera/debug-p entity) (eq entity (pyx::camera viewport)))
-      (when (pyx:on-button-enabled :key :lctrl)
-        (translate-entity entity (v3:vec (* dx speed) (* dy speed))))
-      (when (pyx:on-button-enabled :key :lalt)
-        (translate-entity entity (v3:vec 0 0 (* dy speed)))))))
 
 (defun get-current-camera ()
   (pyx::camera (pyx::active (pyx::get-viewport-manager))))
@@ -124,6 +119,8 @@
              entity))
     (when camera/active-p
       (setf (pyx::camera entity-viewport) entity))
+    (when camera/free-look
+      (setf camera/free-look-state (pyx::make-free-look-state entity)))
     (setf camera/fov-y (float (* camera/fov-y (/ pi 180)) 1f0)
           camera/clip-near (float camera/clip-near 1f0)
           camera/clip-far (float camera/clip-far 1f0)
@@ -131,5 +128,6 @@
     (set-camera-projection entity)))
 
 (pyx:define-entity-hook :update (entity camera)
-  (camera-debug-transform entity)
+  (when camera/free-look
+    (pyx::update-free-look-state camera/free-look-state))
   (set-camera-view entity))

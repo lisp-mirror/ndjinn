@@ -1,7 +1,7 @@
 (in-package #:pyx)
 
 (defmethod update-texture ((type (eql :2d-array)) texture source)
-  (let* ((id (gl:gen-texture))
+  (let* ((id (make-gpu-object :texture))
          (layer0 (first source))
          (width (width layer0))
          (height (height layer0)))
@@ -30,8 +30,7 @@
                                    (pixel-format image)
                                    (pixel-type image)
                                    (data image)))
-    (gl:bind-texture :texture-2d-array 0)
-    texture))
+    (gl:bind-texture :texture-2d-array 0)))
 
 (defmethod load-texture-source (spec (type (eql :2d-array)) source
                                 &key width height)

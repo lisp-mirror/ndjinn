@@ -16,7 +16,9 @@
             :initform (u:dict #'eq))
    (%shaders :accessor %shaders)
    (%running :accessor %running
-             :initform t)))
+             :initform t)
+   (%gpu-objects :reader %gpu-objects
+                 :initform (u:dict #'eq))))
 
 (defun clock ()
   (%clock *context*))
@@ -62,3 +64,6 @@
 
 (defun (setf running-p) (value)
   (setf (%running *context*) value))
+
+(defun gpu-objects ()
+  (%gpu-objects *context*))

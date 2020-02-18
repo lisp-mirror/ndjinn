@@ -207,7 +207,7 @@
                     :element-type 'u:octet
                     :initial-contents (subseq buffer offset (+ offset size))))
              (pointer (sv:static-vector-pointer data))
-             (buffer-id (gl:gen-buffer)))
+             (buffer-id (make-gpu-object :buffer)))
         (gl:bind-buffer target buffer-id)
         (%gl:buffer-data target size pointer :static-draw)
         (sv:free-static-vector data)
@@ -269,7 +269,7 @@
 
 (defun make-gltf-primitive (gltf data)
   (let ((primitive (make-instance 'gltf-primitive
-                                  :vao (gl:gen-vertex-array)
+                                  :vao (make-gpu-object :vertex-array)
                                   :mode (get-gltf-primitive-mode gltf data))))
     (gl:bind-vertex-array (vao primitive))
     (make-gltf-vertex-buffers gltf primitive data)

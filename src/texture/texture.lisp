@@ -61,7 +61,8 @@
   (let ((texture (make-instance 'texture
                                 :spec spec
                                 :target (make-texture-target type))))
-    (update-texture type texture source)))
+    (update-texture type texture source)
+    texture))
 
 (defun load-texture (name &key width height)
   (with-asset-cache :texture name
@@ -78,6 +79,6 @@
 
 (on-recompile :texture data ()
   (a:when-let ((texture (find-asset :texture data)))
-    (gl:delete-texture (id texture))
+    (free-gpu-object :texture (id texture))
     (delete-asset :texture data)
     (load-texture data :width (width texture) :height (height texture))))

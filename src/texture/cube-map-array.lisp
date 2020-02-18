@@ -1,7 +1,7 @@
 (in-package #:pyx)
 
 (defmethod update-texture ((type (eql :cube-map-array)) texture source)
-  (let* ((id (gl:gen-texture))
+  (let* ((id (make-gpu-object :texture))
          (first-layer (first source))
          (first-layer-face (first first-layer))
          (width (width first-layer-face))
@@ -33,8 +33,7 @@
                                              (pixel-format image)
                                              (pixel-type image)
                                              (data image))))
-    (gl:bind-texture :texture-cube-map-array 0)
-    texture))
+    (gl:bind-texture :texture-cube-map-array 0)))
 
 (defmethod load-texture-source (spec (type (eql :cube-map-array)) source
                                 &key width height)

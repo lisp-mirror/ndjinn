@@ -17,7 +17,7 @@
     (dolist (group-name (group-order layout))
       (let ((group (u:href (groups layout) group-name)))
         (dolist (name (get-geometry-buffer-names (layout geometry) group))
-          (let ((buffer (gl:gen-buffer)))
+          (let ((buffer (make-gpu-object :buffer)))
             (setf (u:href (buffer-names geometry) name) buffer)
             (vector-push-extend buffer (buffers geometry))))))))
 

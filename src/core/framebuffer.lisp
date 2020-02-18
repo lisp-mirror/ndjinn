@@ -97,7 +97,7 @@
   (let* ((target (framebuffer-mode->target (mode spec)))
          (framebuffer (make-instance 'framebuffer
                                      :spec spec
-                                     :id (gl:gen-framebuffer)
+                                     :id (make-gpu-object :framebuffer)
                                      :target target)))
     (framebuffer-attach-all framebuffer)
     (setf (u:href (framebuffers) (name spec)) framebuffer)
@@ -161,7 +161,7 @@
          (gl-point (framebuffer-attachment-point->gl point))
          (internal-format (framebuffer-attachment-point->render-buffer-format
                            point))
-         (buffer-id (gl:gen-renderbuffer))
+         (buffer-id (make-gpu-object :render-buffer))
          (width (funcall (width attachment)))
          (height (funcall (height attachment)))
          (target (target framebuffer)))

@@ -134,18 +134,16 @@
 (defun transform-vector (entity vector &key (space :model))
   (v3:with-components ((v vector))
     (let ((model (m4:copy (transform/model entity))))
-      (m4:set-translation! model model v3:+zero+)
       (~:.xyz
        (ecase space
-         (:model (m4:*v4 model (v4:vec vx vy vz 1)))
-         (:world (m4:*v4 (m4:invert model) (v4:vec vx vy vz 1))))))))
+         (:model (m4:*v4 model (v4:vec vx vy vz 0)))
+         (:world (m4:*v4 (m4:invert model) (v4:vec vx vy vz 0))))))))
 
 (defun transform-direction (entity direction &key (space :model))
   (v3:with-components ((v direction))
     (let ((model (m4:copy (transform/model entity))))
-      (m4:set-translation! model model v3:+zero+)
       (m4:normalize-rotation! model model)
       (~:.xyz
        (ecase space
-         (:model (m4:*v4 model (v4:vec vx vy vz 1)))
-         (:world (m4:*v4 (m4:invert model) (v4:vec vx vy vz 1))))))))
+         (:model (m4:*v4 model (v4:vec vx vy vz 0)))
+         (:world (m4:*v4 (m4:invert model) (v4:vec vx vy vz 0))))))))

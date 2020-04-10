@@ -69,9 +69,3 @@
   (:method (purpose event-type data)
     (error "Unhandled queue event type ~s for queue purpose ~a."
            event-type purpose)))
-
-(defmacro define-event-handler (purpose event-type &optional func)
-  `(defmethod handle-queued-event ((purpose (eql ,purpose))
-                                   (event-type (eql ,event-type))
-                                   data)
-     (funcall ,@(when func `(#',func)) data)))

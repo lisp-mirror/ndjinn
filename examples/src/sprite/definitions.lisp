@@ -9,9 +9,6 @@
               :opacity 1.0)
    :features (:depth-mode :lequal)))
 
-(pyx:define-animation-sequence sprite ()
-  (pyx:animate/sprite :duration 0.5 :repeat-p t))
-
 (pyx:define-prefab sprite (:add (pyx:sprite pyx:render))
   :sprite/asset '(metadata sprites)
   :render/materials '(sprite))
@@ -26,13 +23,13 @@
   :transform/translate (v3:vec 0 -120)
   :sprite/name "ship29"
   :render/order 'ships
-  ((exhaust :template sprite :add (pyx:animate))
+  ((exhaust :template sprite)
    :transform/translate (v3:vec 0 -145)
    :transform/scale (v3:vec 1 0.65 1)
    :sprite/name "exhaust01-01"
    :sprite/frames 8
-   :render/order 'ships
-   :animate/sequence 'sprite))
+   :sprite/duration 0.5
+   :render/order 'ships))
 
 (pyx:define-scene sprite ()
   (:draw-order (background ships)

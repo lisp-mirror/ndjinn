@@ -16,7 +16,6 @@
                #:cl-opengl
                #:cl-slug
                #:closer-mop
-               #:doubly-linked-list
                #:fast-io
                #:filtered-functions
                #:global-vars
@@ -97,7 +96,6 @@
      (:file "geometry")
      (:file "sprite")
      (:file "collider")
-     (:file "animate")
      (:file "font")
      (:file "mouse-control")))
    (:module "prefab"
@@ -130,7 +128,5 @@
      (:file "scene")
      (:file "render-pass")
      (:file "render-order")
-     (:file "font")
-     (:file "animation")
-     (:file "animation-states")))
+     (:file "font")))
    (:file "pyx")))

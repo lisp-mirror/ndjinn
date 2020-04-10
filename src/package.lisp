@@ -24,7 +24,6 @@
   (:local-nicknames
    (#:~ #:origin.swizzle)
    (#:a #:alexandria)
-   (#:dll #:doubly-linked-list)
    (#:m4 #:origin.mat4)
    (#:math #:origin)
    (#:q #:origin.quat)
@@ -33,9 +32,6 @@
    (#:v3 #:origin.vec3)
    (#:v4 #:origin.vec4))
   (:use #:cl)
-  ;; animate
-  (:export
-   #:animate)
   ;; camera
   (:export
    #:camera)
@@ -93,7 +89,6 @@
   (:local-nicknames
    (#:a #:alexandria)
    (#:comp #:pyx.component)
-   (#:dll #:doubly-linked-list)
    (#:ff #:filtered-functions)
    (#:font #:3b-bmfont)
    (#:glob #:global-vars)
@@ -113,7 +108,6 @@
   (:use #:cl)
   (:inherit-from #:pyx.component
                  ;; types
-                 #:animate
                  #:camera
                  #:collider
                  #:font
@@ -139,11 +133,6 @@
                  #:transform-vector
                  #:translate-entity
                  #:translate-entity/velocity)
-  ;; animate
-  (:export
-   #:define-animation-sequence
-   #:animate/opacity
-   #:animate/sprite)
   ;; asset
   (:export
    #:define-asset-pool

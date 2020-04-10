@@ -13,10 +13,12 @@
 (u:define-printer (asset-spec stream :type nil)
   (format stream "~s (pool: ~s)" (name asset-spec) (pool asset-spec)))
 
+(defun find-asset-pool (name)
+  (u:href =asset-pools= name))
+
 (defun make-asset-spec (pool-name base-path data)
   (destructuring-bind (name path) data
-    (let* ((success nil)
-           (pool (find-asset-pool pool-name))
+    (let* ((pool (find-asset-pool pool-name))
            (base-path (uiop:ensure-directory-pathname base-path))
            (path (uiop:merge-pathnames* path base-path))
            (asset (make-instance 'asset-spec
@@ -24,9 +26,6 @@
                                  :name name
                                  :path path)))
       (setf (u:href pool name) asset)
-      (unwind-protect (setf success (resolve-path (list pool-name name)))
-        (unless success
-          (remhash name pool)))
       asset)))
 
 (defun find-asset-spec (pool-name spec-name)
@@ -35,9 +34,6 @@
         (error "Asset ~s not found in pool ~s." spec-name pool-name))
     (error "Asset pool ~s does not exist." pool-name)))
 
-(defun find-asset-pool (name)
-  (u:href =asset-pools= name))
-
 (defun get-asset-pool-system (pool-name)
   (let ((package-name (package-name (symbol-package pool-name))))
     (or (asdf:find-system (a:make-keyword package-name) nil)
@@ -45,22 +41,56 @@
                 as its ASDF system."
                pool-name))))
 
-(defun update-asset-pool (pool-name base-path asset-specs)
-  (let ((pool (find-asset-pool pool-name)))
-    (clrhash pool)
-    (dolist (spec asset-specs)
-      (make-asset-spec pool-name base-path spec))))
+(defun make-asset-symbol (path)
+  (intern
+   (string-upcase
+    (cl-slug:slugify
+     (pathname-name path)))))
 
-(defun make-asset-pool (name base-path asset-specs)
+(defun asset-path-collect-p (path filter)
+  (flet ((normalize-type (type)
+           (string-downcase (string-left-trim "." type))))
+    (let ((path-type (string-downcase (pathname-type path))))
+      (some
+       (lambda (x)
+         (string= path-type (normalize-type x)))
+       (a:ensure-list filter)))))
+
+(defun update-asset-pool (pool-name path filter)
+  (let ((pool (find-asset-pool pool-name)))
+    (let* ((path (uiop:ensure-directory-pathname path))
+           (system (get-asset-pool-system pool-name))
+           (resolved-path (%resolve-path system path)))
+      (clrhash pool)
+      (u:map-files
+       resolved-path
+       (lambda (x)
+         (let* ((asset-name (make-asset-symbol x))
+                (file-name (file-namestring x))
+                (spec (list asset-name file-name)))
+           (u:if-found (existing (u:href pool asset-name))
+                       (error "Asset pool ~s has ambiguously named assets:~%~
+                               File 1: ~a~%File 2: ~a~%Normalized name: ~a"
+                              pool-name
+                              file-name
+                              (file-namestring (path existing))
+                              asset-name)
+                       (make-asset-spec pool-name path spec))))
+       :test (lambda (x) (if filter (asset-path-collect-p x filter) t))
+       :recursive-p nil))))
+
+(defun make-asset-pool (name path filter)
   (let ((pool (u:dict #'eq)))
     (setf (u:href =asset-pools= name) pool)
-    (update-asset-pool name base-path asset-specs)
+    (update-asset-pool name path filter)
     pool))
 
-(defmacro define-asset-pool (name (&key base) &body body)
-  `(if (u:href =asset-pools= ',name)
-       (update-asset-pool ',name ,base ',body)
-       (make-asset-pool ',name ,base ',body)))
+(defmacro define-asset-pool (name options &body body)
+  (declare (ignore options))
+  (destructuring-bind (&key path filter) body
+    `(if (u:href =asset-pools= ',name)
+         (update-asset-pool ',name ,path ',filter)
+         (make-asset-pool ',name ,path ',filter))))
 
 ;;; implementation
 

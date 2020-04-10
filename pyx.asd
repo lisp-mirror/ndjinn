@@ -14,6 +14,7 @@
                #:cl-cpus
                #:cl-graph
                #:cl-opengl
+               #:cl-slug
                #:closer-mop
                #:doubly-linked-list
                #:fast-io

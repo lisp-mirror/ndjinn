@@ -27,7 +27,7 @@
   (parse-prefab prefab)
   (enqueue :recompile (list :prefab (name prefab)))
   (dolist (spec (slaves prefab))
-    (let ((slave (u:href =prefabs= spec)))
+    (a:when-let ((slave (u:href =prefabs= spec)))
       (clrhash (nodes slave))
       (update-prefab-subtree slave))))
 

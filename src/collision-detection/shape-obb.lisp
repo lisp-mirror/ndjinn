@@ -1,7 +1,5 @@
 (in-package #:pyx)
 
-;;;; TODO: This is wrong. Do not use OBB's until this is investigated.
-
 (defclass collider-shape/obb (collider-shape)
   ((%world-center :reader world-center
                   :initform (v3:vec))

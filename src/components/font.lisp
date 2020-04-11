@@ -73,7 +73,7 @@
                              font/position
                              font/dimensions
                              font/offset))
-                    :replace-p t))
+                    :replace t))
 
 (pyx:define-entity-hook :render (entity font)
   (when (pyx::debug-time-p)

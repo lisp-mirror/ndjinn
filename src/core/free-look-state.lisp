@@ -26,8 +26,8 @@
   (let* ((model (initial-orientation state))
          (translation (m4:get-translation model))
          (rotation (q:from-mat4 model)))
-    (translate-entity (camera state) translation :replace-p t)
-    (rotate-entity (camera state) rotation :replace-p t)))
+    (translate-entity (camera state) translation :replace t)
+    (rotate-entity (camera state) rotation :replace t)))
 
 (defun update-free-look-key-state (state)
   (let ((key-state (key-state state)))

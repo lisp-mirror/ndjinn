@@ -35,17 +35,10 @@
                          transform/scale/velocity))
 
 (defun transform-node (entity)
-  (let ((delta pyx::=delta-time=)
-        (frame-time (pyx:get-frame-time)))
-    (pyx::transform-node/vector (transform/scale entity)
-                                delta
-                                frame-time)
-    (pyx::transform-node/quaternion (transform/rotation entity)
-                                    delta
-                                    frame-time)
-    (pyx::transform-node/vector (transform/translation entity)
-                                delta
-                                frame-time)))
+  (let ((delta pyx::=delta-time=))
+    (pyx::transform-node/vector (transform/scale entity) delta)
+    (pyx::transform-node/quaternion (transform/rotation entity) delta)
+    (pyx::transform-node/vector (transform/translation entity) delta)))
 
 (defun resolve-local (entity factor)
   (let ((translation (transform/translation entity))
@@ -84,40 +77,34 @@
 (defun get-translation (entity)
   (pyx::current (transform/translation entity)))
 
-(defun translate-entity (entity vec &key replace-p instant-p)
+(defun translate-entity (entity vec &key replace instant)
   (let ((state (transform/translation entity)))
-    (v3:+! (pyx::current state)
-           (if replace-p v3:+zero+ (pyx::current state))
-           vec)
-    (when instant-p
-      (v3:copy! (pyx::previous state)
-                (pyx::current state)))))
+    (symbol-macrolet ((current (pyx::current state)))
+      (v3:+! current (if replace v3:+zero+ current) vec)
+      (when instant
+        (v3:copy! (pyx::previous state) current)))))
 
 (defun translate-entity/velocity (entity axis rate)
   (let ((state (transform/translation entity)))
     (setf (pyx::incremental state) (math:make-velocity axis rate))))
 
-(defun rotate-entity (entity quat &key replace-p instant-p)
+(defun rotate-entity (entity quat &key replace instant)
   (let ((state (transform/rotation entity)))
-    (q:rotate! (pyx::current state)
-               (if replace-p q:+id+ (pyx::current state))
-               quat)
-    (when instant-p
-      (q:copy! (pyx::previous state)
-               (pyx::current state)))))
+    (symbol-macrolet ((current (pyx::current state)))
+      (q:rotate! current (if replace q:+id+ current) quat)
+      (when instant
+        (q:copy! (pyx::previous state) current)))))
 
 (defun rotate-entity/velocity (entity axis rate)
   (let ((state (transform/rotation entity)))
     (setf (pyx::incremental state) (math:make-velocity axis rate))))
 
-(defun scale-entity (entity vec &key replace-p instant-p)
+(defun scale-entity (entity vec &key replace instant)
   (let ((state (transform/scale entity)))
-    (v3:+! (pyx::current state)
-           (if replace-p v3:+zero+ (pyx::current state))
-           vec)
-    (when instant-p
-      (v3:copy! (pyx::previous state)
-                (pyx::current state)))))
+    (symbol-macrolet ((current (pyx::current state)))
+      (v3:+! current (if replace v3:+zero+ current) vec)
+      (when instant
+        (v3:copy! (pyx::previous state) current)))))
 
 (defun scale-entity/velocity (entity axis rate)
   (let ((state (transform/scale entity)))
@@ -125,25 +112,22 @@
 
 (defun transform-point (entity point &key (space :model))
   (let ((model (transform/model entity)))
-    (v3:with-components ((v point))
-      (~:.xyz
-       (ecase space
-         (:model (m4:*v4 model (v4:vec vx vy vz 1)))
-         (:world (m4:*v4 (m4:invert model) (v4:vec vx vy vz 1))))))))
+    (v3:vec
+     (ecase space
+       (:model (m4:*v4 model (v4:vec point 1)))
+       (:world (m4:*v4 (m4:invert model) (v4:vec point 1)))))))
 
 (defun transform-vector (entity vector &key (space :model))
-  (v3:with-components ((v vector))
-    (let ((model (m4:copy (transform/model entity))))
-      (~:.xyz
-       (ecase space
-         (:model (m4:*v4 model (v4:vec vx vy vz 0)))
-         (:world (m4:*v4 (m4:invert model) (v4:vec vx vy vz 0))))))))
+  (let ((model (transform/model entity)))
+    (v3:vec
+     (ecase space
+       (:model (m4:*v4 model (v4:vec vector)))
+       (:world (m4:*v4 (m4:invert model) (v4:vec vector)))))))
 
 (defun transform-direction (entity direction &key (space :model))
-  (v3:with-components ((v direction))
-    (let ((model (m4:copy (transform/model entity))))
-      (m4:normalize-rotation! model model)
-      (~:.xyz
-       (ecase space
-         (:model (m4:*v4 model (v4:vec vx vy vz 0)))
-         (:world (m4:*v4 (m4:invert model) (v4:vec vx vy vz 0))))))))
+  (let ((model (transform/model entity)))
+    (m4:normalize-rotation! model model)
+    (v3:vec
+     (ecase space
+       (:model (m4:*v4 model (v4:vec direction)))
+       (:world (m4:*v4 (m4:invert model) (v4:vec direction)))))))

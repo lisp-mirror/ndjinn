@@ -68,7 +68,7 @@
                                                :y (+ rx (* vx %speed))
                                                :x (- (+ ry (* vy %speed))))
                                      %initial)
-                           :replace-p t)))))
+                           :replace t)))))
 
 (defun mouse-control/finish-rotation (entity)
   (u:mvlet ((state (mouse-control/rotation entity))

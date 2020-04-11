@@ -1,6 +1,6 @@
 (in-package #:pyx-examples)
 
-(pyx:define-prefab colliders-1 ()
+(pyx:define-prefab colliders1 ()
   ((gate/top :add (pyx:collider))
    :transform/translate (v3:vec 0 8 0)
    :transform/scale 5
@@ -25,7 +25,7 @@
    ((mesh :template mesh/helmet)
     :transform/rotate (q:orient :local :x math:pi/2 :y math:pi/2))))
 
-(pyx:define-collider-plan colliders-1 ()
+(pyx:define-collider-plan colliders1 ()
   (:layers (player gate destroyer)
    :plan ((player (gate destroyer)))))
 
@@ -41,9 +41,9 @@
 (pyx:define-collision-hook :picked (player)
   (format t "Player selected: ~s~%" player))
 
-(pyx:define-scene colliders-1 ()
-  (:collider-plan colliders-1
-   :sub-trees (examples camera/perspective colliders-1)))
+(pyx:define-scene colliders1 ()
+  (:collider-plan colliders1
+   :sub-trees (examples camera/perspective colliders1)))
 
 (pyx:define-prefab colliders-2 ()
   ((camera :template camera/orthographic)

@@ -59,7 +59,7 @@
           (map nil #'comp::delete-node entities))
         (comp::delete-node (node-tree scene))
         (setf %loaded-p nil)
-        (load data)))))
+        (load-scene data)))))
 
 (defun get-registered-scene-names (&optional package-name)
   (let ((package-name (or package-name *package*)))

@@ -33,16 +33,16 @@
              a21 (v3:dot (m3:get-column axes1 2) (m3:get-column axes2 1))
              a02 (v3:dot (m3:get-column axes1 0) (m3:get-column axes2 2))
              a12 (v3:dot (m3:get-column axes1 1) (m3:get-column axes2 2))
-             a22 (v3:dot (m3:get-column axes1 2) (m3:get-column axes2 2))
-             b00 (+ (abs a00) 1e-7)
-             b10 (+ (abs a10) 1e-7)
-             b20 (+ (abs a20) 1e-7)
-             b01 (+ (abs a01) 1e-7)
-             b11 (+ (abs a11) 1e-7)
-             b21 (+ (abs a21) 1e-7)
-             b02 (+ (abs a02) 1e-7)
-             b12 (+ (abs a12) 1e-7)
-             b22 (+ (abs a22) 1e-7))
+             a22 (v3:dot (m3:get-column axes1 2) (m3:get-column axes2 2)))
+      (setf b00 (+ (abs a00) 1e-7)
+            b10 (+ (abs a10) 1e-7)
+            b20 (+ (abs a20) 1e-7)
+            b01 (+ (abs a01) 1e-7)
+            b11 (+ (abs a11) 1e-7)
+            b21 (+ (abs a21) 1e-7)
+            b02 (+ (abs a02) 1e-7)
+            b12 (+ (abs a12) 1e-7)
+            b22 (+ (abs a22) 1e-7))
       (values a b))))
 
 (defun make-obb-obb-translation (obb1 obb2)
@@ -57,10 +57,10 @@
     (let* ((scale (comp:get-scale %entity))
            (min (comp:transform-point
                  %entity
-                 (v3:+ %center (v3:scale scale -2f0))))
+                 (v3:+ %center (v3:scale scale -0.5f0))))
            (max (comp:transform-point
                  %entity
-                 (v3:+ %center (v3:scale scale 2f0))))
+                 (v3:+ %center (v3:scale scale 0.5f0))))
            (axes (m4:rotation-to-mat3
                   (m4:normalize-rotation
                    (comp::transform/model %entity))))

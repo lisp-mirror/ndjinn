@@ -7,7 +7,9 @@
             :initarg :target)
    (%id :accessor id)
    (%width :accessor width)
-   (%height :accessor height)))
+   (%height :accessor height)
+   (%materials :accessor materials
+               :initform nil)))
 
 (u:define-printer (texture stream)
   (format stream "~s" (name (spec texture))))
@@ -81,4 +83,6 @@
   (a:when-let ((texture (find-asset :texture data)))
     (gl:delete-texture (id texture))
     (delete-asset :texture data)
-    (load-texture data :width (width texture) :height (height texture))))
+    (load-texture data :width (width texture) :height (height texture))
+    (dolist (material-name (materials texture))
+      (recompile :material material-name))))

@@ -89,10 +89,14 @@
            (uniform-key uniform)
            (resolve-uniform-value entity uniform)))
 
-(defun load-uniform-texture (uniform)
+(defun load-uniform-texture (material uniform)
   (let ((value (uniform-value uniform)))
     (when (eq (uniform-resolved-type uniform) :sampler)
-      (setf (uniform-value uniform) (load-texture value)))))
+      (let ((material-name (name (spec material)))
+            (texture (load-texture value)))
+        (setf (uniform-value uniform) texture)
+        (pushnew material-name (materials texture))
+        (pushnew value (textures material))))))
 
 (defun set-uniforms (entity &rest args)
   (let* ((material (comp::render/current-material entity))

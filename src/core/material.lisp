@@ -134,7 +134,9 @@
    (%attachments :accessor attachments
                  :initform nil)
    (%texture-unit-state :accessor texture-unit-state
-                        :initform 0)))
+                        :initform 0)
+   (%textures :accessor textures
+              :initform nil)))
 
 (u:define-printer (material stream :type t :identity t)
   (format stream "~s" (name (spec material))))
@@ -153,10 +155,14 @@
 
 (defun make-material-uniforms (material)
   (clrhash (uniforms material))
+  (dolist (texture-name (textures material))
+    (let ((texture (find-asset :texture texture-name)))
+      (a:deletef (materials texture) (name (spec material)))))
+  (setf (textures material) nil)
   (u:do-hash (k v (copy-material-spec-uniforms (spec material)))
     (let ((uniform (make-uniform :key k :value v)))
       (register-uniform-func material uniform)
-      (load-uniform-texture uniform)
+      (load-uniform-texture material uniform)
       (setf (u:href (uniforms material) k) uniform))))
 
 (defun make-material (entity name)

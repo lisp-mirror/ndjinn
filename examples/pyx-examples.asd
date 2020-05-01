@@ -14,8 +14,9 @@
   :serial t
   :components
   ((:file "package")
-   (:file "common")
-   (:file "assets")
+   (:file "base/assets")
+   (:file "base/components")
+   (:file "base/definitions")
    (:file "deferred-shading/definitions")
    (:file "effect-kaleidoscope/shader")
    (:file "effect-kaleidoscope/definitions")

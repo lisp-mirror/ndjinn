@@ -1,20 +1,15 @@
-# new-project
-
-TODO
-
-## Overview
-
-TODO
+# Pyx
+A declarative, component-based game engine
 
 ## Install
 
 ```lisp
-(ql:quickload :new-project)
+(ql:quickload :pyx)
 ```
 
 ## Usage
 
-TODO
+Sorry, no documentation yet. While it works and games can be written with it, Pyx's API is still in flux.
 
 ## License
 

@@ -26,6 +26,12 @@
         :finally (write-shader-buffer name :pos pos)
                  (write-shader-buffer name :size size)))
 
+(defun find-sprite (spritesheet name)
+  (or (u:href (sprites spritesheet) name)
+      (error "Sprite ~s not found in spritesheet ~s."
+             name
+             (name spritesheet))))
+
 (defun make-spritesheet (asset)
   (let ((path (resolve-path asset)))
     (with-asset-cache :spritesheet asset

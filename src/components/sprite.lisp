@@ -27,7 +27,7 @@
 
 (pyx:define-entity-hook :attach (entity sprite)
   (setf sprite/spritesheet (pyx::make-spritesheet sprite/asset)
-        sprite/index (u:href (pyx::sprites sprite/spritesheet) sprite/name)
+        sprite/index (pyx::find-sprite sprite/spritesheet sprite/name)
         sprite/initial-index sprite/index))
 
 (pyx:define-entity-hook :update (entity sprite)

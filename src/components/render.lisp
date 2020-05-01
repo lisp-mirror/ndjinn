@@ -33,7 +33,7 @@
 
 (defun render-viewport (viewport pass)
   (pyx::configure-viewport viewport)
-  (pyx::avl-walk
+  (avl:walk
    (pyx::draw-order viewport)
    (lambda (x)
      (a:when-let ((material (u:href (render/materials x) (pyx::name pass))))

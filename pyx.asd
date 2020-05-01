@@ -10,6 +10,7 @@
   :depends-on (#:3b-bmfont
                #:3b-bmfont/json
                #:alexandria
+               #:avl-tree
                #:babel
                #:cl-cpus
                #:cl-graph
@@ -40,7 +41,6 @@
      (:file "hardware")
      (:file "thread-pool")
      (:file "live-support")
-     (:file "avl-tree")
      (:file "parser")
      (:file "uuid")
      (:file "asset")

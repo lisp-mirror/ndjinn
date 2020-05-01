@@ -47,7 +47,7 @@
          (object-tree (draw-order viewport))
          (picked nil))
     (update-picking-ray)
-    (avl-walk
+    (avl:walk
      object-tree
      (lambda (x)
        (when (has-component-p x 'comp:collider)

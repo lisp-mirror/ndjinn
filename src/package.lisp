@@ -24,6 +24,7 @@
   (:local-nicknames
    (#:~ #:origin.swizzle)
    (#:a #:alexandria)
+   (#:avl #:avl-tree)
    (#:m4 #:origin.mat4)
    (#:math #:origin)
    (#:q #:origin.quat)
@@ -88,6 +89,7 @@
 (define-package #:pyx
   (:local-nicknames
    (#:a #:alexandria)
+   (#:avl #:avl-tree)
    (#:comp #:pyx.component)
    (#:ff #:filtered-functions)
    (#:font #:3b-bmfont)

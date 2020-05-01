@@ -1,5 +1,5 @@
 # Pyx
-A declarative, component-based game engine
+A declarative, component-based game engine.
 
 ## Install
 
@@ -9,7 +9,8 @@ A declarative, component-based game engine
 
 ## Usage
 
-Sorry, no documentation yet. While it works and games can be written with it, Pyx's API is still in flux.
+Sorry, no documentation yet. While it works and games can be written with it,
+Pyx's API is still in flux.
 
 ## License
 

@@ -108,33 +108,34 @@
    (#:v3 #:origin.vec3)
    (#:v4 #:origin.vec4))
   (:use #:cl)
-  (:inherit-from #:pyx.component
-                 ;; types
-                 #:camera
-                 #:collider
-                 #:font
-                 #:geometry
-                 #:id
-                 #:mesh
-                 #:mouse-control
-                 #:node
-                 #:render
-                 #:sprite
-                 #:transform
-                 ;; transform
-                 #:get-rotation
-                 #:get-scale
-                 #:get-translation
-                 #:resolve-normal-matrix
-                 #:rotate-entity
-                 #:rotate-entity/velocity
-                 #:scale-entity
-                 #:scale-entity/velocity
-                 #:transform-direction
-                 #:transform-point
-                 #:transform-vector
-                 #:translate-entity
-                 #:translate-entity/velocity)
+  (:inherit-from
+   #:pyx.component
+   ;; types
+   #:camera
+   #:collider
+   #:font
+   #:geometry
+   #:id
+   #:mesh
+   #:mouse-control
+   #:node
+   #:render
+   #:sprite
+   #:transform
+   ;; transform
+   #:get-rotation
+   #:get-scale
+   #:get-translation
+   #:resolve-normal-matrix
+   #:rotate-entity
+   #:rotate-entity/velocity
+   #:scale-entity
+   #:scale-entity/velocity
+   #:transform-direction
+   #:transform-point
+   #:transform-vector
+   #:translate-entity
+   #:translate-entity/velocity)
   ;; asset
   (:export
    #:define-asset-pool
@@ -157,6 +158,10 @@
   ;; config
   (:export
    #:get-config-option)
+  ;; context
+  (:export
+   #:define-context
+   #:user-data)
   ;; core
   (:export
    #:start-engine

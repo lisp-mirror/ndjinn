@@ -1,5 +1,8 @@
 (in-package #:pyx-examples)
 
+(pyx:define-context examples ()
+  (:scene examples))
+
 (pyx:define-material full-quad ()
   (:shader pyx.shader:full-quad
    :uniforms (:sampler 'res:debug)))

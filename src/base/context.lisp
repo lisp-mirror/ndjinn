@@ -16,7 +16,39 @@
             :initform (u:dict #'eq))
    (%shaders :accessor %shaders)
    (%running :accessor %running
-             :initform t)))
+             :initform t)
+   (%user-data :accessor %user-data
+               :initform nil)))
+
+(defun make-context (context-name)
+  (if (find-class context-name nil)
+      (make-instance context-name)
+      (error "Context ~s not defined." context-name)))
+
+(defmacro define-context (name options &body body)
+  (declare (ignore options))
+  (a:with-gensyms (context-binding)
+    (destructuring-bind (&key on-create on-destroy scene options) (car body)
+      `(progn
+         (defclass ,name (context) ())
+         (defmethod get-context-config ((,context-binding ,name))
+           ',options)
+         (defmethod on-context-create ((,context-binding ,name))
+           (switch-scene ',scene)
+           ,@(when (fboundp on-create)
+               `((funcall ',on-create ,context-binding))))
+         (defmethod on-context-destroy ((,context-binding ,name))
+           ,@(when (fboundp on-destroy)
+               `((funcall ',on-destroy ,context-binding))))))))
+
+(defgeneric on-context-create (context)
+  (:method (context)))
+
+(defgeneric on-context-destroy (context)
+  (:method (context)))
+
+(defgeneric get-context-config (context)
+  (:method (context)))
 
 (defun clock ()
   (%clock *context*))
@@ -62,3 +94,9 @@
 
 (defun (setf running-p) (value)
   (setf (%running *context*) value))
+
+(defun user-data ()
+  (%user-data *context*))
+
+(defun (setf user-data) (value)
+  (setf (%user-data *context*) value))

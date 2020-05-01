@@ -1,7 +1,8 @@
 (in-package #:pyx)
 
-(defun initialize (scene-name args)
-  (apply #'load-config args)
+(defun initialize ()
+  (setup-repl)
+  (load-config)
   (initialize-rng)
   (prepare-gamepads)
   (make-display)
@@ -9,12 +10,12 @@
   (load-hardware-info)
   (make-thread-pool)
   (initialize-shaders)
-  (switch-scene scene-name)
   (make-clock)
-  (setup-repl)
+  (on-context-create *context*)
   (start-loop))
 
 (defun deinitialize ()
+  (on-context-destroy *context*)
   (kill-display)
   (destroy-thread-pool)
   (shutdown-gamepads)
@@ -49,9 +50,9 @@
         (update)
         (render display)))))
 
-(defun start-engine (scene-name &rest args)
-  (let ((*context* (make-instance 'context)))
-    (unwind-protect (initialize scene-name args)
+(defun start-engine (context-name)
+  (let ((*context* (make-context context-name)))
+    (unwind-protect (initialize)
       (deinitialize))))
 
 (defun stop-engine ()

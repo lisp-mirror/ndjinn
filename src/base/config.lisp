@@ -34,9 +34,9 @@
         =window-width= +window-width+
         =window-height= +window-height+))
 
-(defun load-config (&rest args)
+(defun load-config ()
   (reset-config)
-  (u:do-plist (k v args)
+  (u:do-plist (k v (get-context-config *context*))
     (set (a:format-symbol :pyx "=~a=" k) v)))
 
 (defun get-config-option (key)

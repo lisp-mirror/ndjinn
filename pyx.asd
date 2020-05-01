@@ -36,6 +36,7 @@
    (:module "base"
     :components
     ((:file "general")
+     (:file "context")
      (:file "config")
      (:file "metadata")
      (:file "hardware")
@@ -43,8 +44,7 @@
      (:file "live-support")
      (:file "parser")
      (:file "uuid")
-     (:file "asset")
-     (:file "context")))
+     (:file "asset")))
    (:module "input"
     :components
     ((:file "data")

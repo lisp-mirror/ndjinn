@@ -14,6 +14,12 @@
    (%sprite/repeat :reader sprite/repeat
                    :initarg :sprite/repeat
                    :initform t)
+   (%sprite/instances :reader sprite/instances
+                      :initarg :sprite/instances
+                      :initform 1)
+   (%sprite/buffer-spec :reader sprite/buffer-spec
+                        :initarg :sprite/buffer-spec
+                        :initform '(:spritesheet umbra.sprite:sprite))
    (%sprite/spritesheet :accessor sprite/spritesheet)
    (%sprite/index :accessor sprite/index)
    (%sprite/initial-index :accessor sprite/initial-index)
@@ -26,7 +32,8 @@
 ;;; entity hooks
 
 (pyx:define-entity-hook :attach (entity sprite)
-  (setf sprite/spritesheet (pyx::make-spritesheet sprite/asset)
+  (setf sprite/spritesheet (pyx::make-spritesheet sprite/asset
+                                                  sprite/buffer-spec)
         sprite/index (pyx::find-sprite sprite/spritesheet sprite/name)
         sprite/initial-index sprite/index))
 
@@ -47,5 +54,5 @@
 
 (pyx:define-entity-hook :render (entity sprite)
   (gl:bind-vertex-array (pyx::vao sprite/spritesheet))
-  (gl:draw-arrays :triangle-strip 0 4)
+  (gl:draw-arrays-instanced :triangle-strip 0 4 sprite/instances)
   (gl:bind-vertex-array 0))

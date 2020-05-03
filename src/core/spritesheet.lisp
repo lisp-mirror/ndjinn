@@ -32,13 +32,13 @@
              name
              (name spritesheet))))
 
-(defun make-spritesheet (asset)
+(defun make-spritesheet (asset buffer-spec)
   (let ((path (resolve-path asset)))
     (with-asset-cache :spritesheet asset
       (let ((spritesheet (make-instance 'spritesheet
                                         :name asset
                                         :spec (u:safe-read-file-form path)
                                         :vao (gl:gen-vertex-array))))
-        (make-shader-buffer asset :spritesheet 'umbra.sprite:sprite)
+        (apply #'make-shader-buffer asset buffer-spec)
         (update-shader-buffer spritesheet)
         spritesheet))))

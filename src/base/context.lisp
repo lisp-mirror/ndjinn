@@ -17,7 +17,7 @@
    (%shaders :accessor %shaders)
    (%running :accessor %running
              :initform t)
-   (%user-data :accessor %user-data
+   (%user-data :accessor user-data
                :initform nil)))
 
 (defun make-context (context-name)
@@ -34,9 +34,9 @@
          (defmethod get-context-config ((,context-binding ,name))
            ',options)
          (defmethod on-context-create ((,context-binding ,name))
-           (switch-scene ',scene)
            ,@(when (fboundp on-create)
-               `((funcall ',on-create ,context-binding))))
+               `((funcall ',on-create ,context-binding)))
+           (switch-scene ',scene))
          (defmethod on-context-destroy ((,context-binding ,name))
            ,@(when (fboundp on-destroy)
                `((funcall ',on-destroy ,context-binding))))))))
@@ -94,9 +94,3 @@
 
 (defun (setf running-p) (value)
   (setf (%running *context*) value))
-
-(defun user-data ()
-  (%user-data *context*))
-
-(defun (setf user-data) (value)
-  (setf (%user-data *context*) value))

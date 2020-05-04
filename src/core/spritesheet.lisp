@@ -20,8 +20,8 @@
         :for i :from 0
         :do (destructuring-bind (&key id x y w h &allow-other-keys) sprite
               (when (and id x y w h)
-                (setf (aref pos i) (v2:vec x y)
-                      (aref size i) (v2:vec w h)
+                (setf (aref pos i) (vector x y)
+                      (aref size i) (vector w h)
                       (u:href (sprites object) id) i)))
         :finally (write-shader-buffer name :pos pos)
                  (write-shader-buffer name :size size)))

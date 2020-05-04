@@ -1,6 +1,7 @@
 (in-package #:pyx)
 
 (a:define-constant +allow-screensaver+ nil)
+(a:define-constant +anti-alias+ t)
 (a:define-constant +debug+ t)
 (a:define-constant +debug-interval+ nil)
 (a:define-constant +delta-time+ (/ 60f0))
@@ -12,6 +13,7 @@
 (a:define-constant +window-height+ 720)
 
 (glob:define-global-var =allow-screensaver= +allow-screensaver+)
+(glob:define-global-var =anti-alias= +anti-alias+)
 (glob:define-global-var =debug= +debug+)
 (glob:define-global-var =debug-interval= +debug-interval+)
 (glob:define-global-var =delta-time= +delta-time+)
@@ -24,6 +26,7 @@
 
 (defun reset-config ()
   (setf =allow-screensaver= +allow-screensaver+
+        =anti-alias= +anti-alias+
         =debug= +debug+
         =debug-interval= +debug-interval+
         =delta-time= +delta-time+

@@ -14,8 +14,8 @@
   (sdl2:gl-set-attrs :context-major-version 4
                      :context-minor-version 3
                      :context-profile-mask 1
-                     :multisamplebuffers 1
-                     :multisamplesamples 4)
+                     :multisamplebuffers (if =anti-alias= 1 0)
+                     :multisamplesamples (if =anti-alias= 4 0))
   (let ((context (sdl2:gl-create-context (window display))))
     (setf (context display) context)
     (apply #'gl:enable +enabled-capabilities+)

@@ -35,9 +35,11 @@
 (on-recompile :shaders data ()
   (shadow:recompile-shaders data))
 
-(setf (fdefinition 'write-shader-buffer) #'shadow:write-buffer-path)
+(defun write-shader-buffer (key path value)
+  (shadow:write-buffer-path key path value))
 
-(setf (fdefinition 'read-shader-buffer) #'shadow:read-buffer-path)
+(defun read-shader-buffer (key path)
+  (shadow:read-buffer-path key path))
 
 (defun make-shader-buffer (key block-id shader)
   (let ((binding (select-shader-buffer-binding)))
@@ -51,5 +53,9 @@
 
 (defun delete-shader-buffer (key)
   (release-shader-buffer-binding key)
+  (shadow::clear-buffer key)
   (shadow:delete-buffer key)
   (shadow:unbind-block key))
+
+(defun clear-shader-buffer (key)
+  (shadow:clear-buffer key))

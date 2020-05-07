@@ -225,6 +225,7 @@
    #:switch-scene)
   ;; shader
   (:export
+   #:clear-shader-buffer
    #:delete-shader-buffer
    #:make-shader-buffer
    #:read-shader-buffer

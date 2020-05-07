@@ -32,9 +32,9 @@
 ;;; entity hooks
 
 (pyx:define-entity-hook :attach (entity sprite)
-  (setf sprite/spritesheet (pyx::make-spritesheet sprite/asset
-                                                  sprite/buffer-spec)
-        sprite/index (pyx::find-sprite sprite/spritesheet sprite/name)
+  (setf sprite/spritesheet (pyx:make-spritesheet sprite/asset
+                                                 sprite/buffer-spec)
+        sprite/index (pyx:find-sprite sprite/spritesheet sprite/name)
         sprite/initial-index sprite/index))
 
 (pyx:define-entity-hook :update (entity sprite)
@@ -53,6 +53,6 @@
   (pyx:set-uniforms entity :sprite.index sprite/index))
 
 (pyx:define-entity-hook :render (entity sprite)
-  (gl:bind-vertex-array (pyx::vao sprite/spritesheet))
+  (gl:bind-vertex-array (pyx:vao sprite/spritesheet))
   (gl:draw-arrays-instanced :triangle-strip 0 4 sprite/instances)
   (gl:bind-vertex-array 0))

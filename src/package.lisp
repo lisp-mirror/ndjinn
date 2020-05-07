@@ -236,4 +236,9 @@
   ;; viewport
   (:export
    #:define-viewport
-   #:get-viewport-dimensions))
+   #:get-viewport-dimensions)
+  ;; sprite
+  (:export
+   #:find-sprite
+   #:make-spritesheet
+   #:vao))

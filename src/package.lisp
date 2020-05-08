@@ -35,7 +35,8 @@
   (:use #:cl)
   ;; camera
   (:export
-   #:camera)
+   #:camera
+   #:zoom-camera)
   ;; collider
   (:export
    #:collider)
@@ -135,7 +136,9 @@
    #:transform-point
    #:transform-vector
    #:translate-entity
-   #:translate-entity/velocity)
+   #:translate-entity/velocity
+   ;; camera
+   #:zoom-camera)
   ;; asset
   (:export
    #:define-asset-pool

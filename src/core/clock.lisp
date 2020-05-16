@@ -95,7 +95,8 @@
       (smooth-delta-time clock refresh-rate))
     (clock-update clock update-func)
     (clock-update/periodic clock periodic-func)
-    (calculate-frame-rate clock)))
+    (when (plusp (get-frame-count))
+      (calculate-frame-rate clock))))
 
 (defun get-alpha ()
   (clock-alpha (clock)))

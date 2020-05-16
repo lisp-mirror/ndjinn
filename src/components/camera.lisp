@@ -102,9 +102,9 @@
       (when free-look-state
         (pyx::set-initial-free-look-orientation free-look-state model)))))
 
-(defun zoom-camera (entity direction)
+(defun zoom-camera (entity direction min max)
   (with-slots (%camera/zoom) entity
-    (setf %camera/zoom (a:clamp (+ %camera/zoom (/ direction 2)) 1 10))
+    (setf %camera/zoom (a:clamp (+ %camera/zoom (/ direction 2)) min max))
     (set-camera-projection entity)))
 
 (defun get-current-camera ()

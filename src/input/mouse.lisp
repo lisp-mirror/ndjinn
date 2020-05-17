@@ -59,8 +59,8 @@
 (defun get-mouse-scroll (axis)
   (let ((states (states (input-data))))
     (ecase axis
-      (:horizontal (u:href states '(:mouse :scroll-horizontal)))
-      (:vertical (u:href states '(:mouse :scroll-vertical))))))
+      (:horizontal (or (u:href states '(:mouse :scroll-horizontal)) 0))
+      (:vertical (or (u:href states '(:mouse :scroll-vertical)) 0)))))
 
 (defun enable-relative-motion ()
   (let* ((motion-state (u:href (states (input-data)) '(:mouse :motion)))

@@ -32,7 +32,7 @@
       `(progn
          (defclass ,name (context) ())
          (defmethod get-context-config ((,context-binding ,name))
-           ',options)
+           (list ,@options))
          (defmethod on-context-create ((,context-binding ,name))
            ,@(when (fboundp on-create)
                `((funcall ',on-create ,context-binding)))

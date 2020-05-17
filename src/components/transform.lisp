@@ -35,7 +35,7 @@
                          transform/scale/velocity))
 
 (defun transform-node (entity)
-  (let ((delta pyx::=delta-time=))
+  (let ((delta (float pyx::=delta-time= 1f0)))
     (pyx::transform-node/vector (transform/scale entity) delta)
     (pyx::transform-node/quaternion (transform/rotation entity) delta)
     (pyx::transform-node/vector (transform/translation entity) delta)))

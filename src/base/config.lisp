@@ -4,7 +4,7 @@
 (a:define-constant +anti-alias+ t)
 (a:define-constant +debug+ t)
 (a:define-constant +debug-interval+ nil)
-(a:define-constant +delta-time+ (/ 60f0))
+(a:define-constant +delta-time+ 1/60)
 (a:define-constant +title+ "Pyx Engine" :test #'string=)
 (a:define-constant +release+ nil)
 (a:define-constant +threads+ nil)

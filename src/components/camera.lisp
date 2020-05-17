@@ -45,7 +45,9 @@
                       :initarg :camera/free-look
                       :initform nil)
    (%camera/free-look-state :accessor camera/free-look-state
-                            :initform nil))
+                            :initform nil)
+   (%camera/zoom-p :accessor camera/zoom-p
+                   :initform nil))
   (:sorting :before render :after transform))
 
 (defun set-camera-projection (entity)
@@ -104,8 +106,7 @@
 
 (defun zoom-camera (entity direction min max)
   (with-slots (%camera/zoom) entity
-    (setf %camera/zoom (a:clamp (+ %camera/zoom (/ direction 2)) min max))
-    (set-camera-projection entity)))
+    (setf %camera/zoom (a:clamp (+ %camera/zoom (/ direction 2)) min max))))
 
 (defun get-current-camera ()
   (pyx::camera (pyx::active (pyx::get-viewport-manager))))
@@ -130,4 +131,6 @@
 (pyx:define-entity-hook :update (entity camera)
   (when camera/free-look
     (pyx::update-free-look-state camera/free-look-state))
-  (set-camera-view entity))
+  ;; TODO: Have a flag so not updating these every frame
+  (set-camera-view entity)
+  (set-camera-projection entity))

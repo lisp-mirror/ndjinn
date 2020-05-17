@@ -104,12 +104,15 @@
       (when free-look-state
         (pyx::set-initial-free-look-orientation free-look-state model)))))
 
+(defun get-current-camera ()
+  (pyx::camera (pyx::active (pyx::get-viewport-manager))))
+
 (defun zoom-camera (entity direction min max)
   (with-slots (%camera/zoom) entity
     (setf %camera/zoom (a:clamp (+ %camera/zoom (/ direction 2)) min max))))
 
-(defun get-current-camera ()
-  (pyx::camera (pyx::active (pyx::get-viewport-manager))))
+(defun get-camera-zoom ()
+  (camera/zoom (get-current-camera)))
 
 ;;; entity hooks
 

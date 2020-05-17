@@ -36,6 +36,7 @@
   ;; camera
   (:export
    #:camera
+   #:get-camera-zoom
    #:zoom-camera)
   ;; collider
   (:export
@@ -138,6 +139,7 @@
    #:translate-entity
    #:translate-entity/velocity
    ;; camera
+   #:get-camera-zoom
    #:zoom-camera)
   ;; asset
   (:export

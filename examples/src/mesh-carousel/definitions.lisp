@@ -1,4 +1,4 @@
-(in-package #:pyx-examples)
+(in-package #:net.mfiano.lisp.pyx.examples)
 
 (pyx:define-texture mesh (:2d-array)
   (:source ((mesh-textures helmet-albedo)

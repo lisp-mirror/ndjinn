@@ -1,4 +1,4 @@
-(in-package #:pyx)
+(in-package #:net.mfiano.lisp.pyx)
 
 (defclass free-look-state ()
   ((%camera :reader camera
@@ -31,7 +31,7 @@
 
 (defun update-free-look-key-state (state)
   (let ((key-state (key-state state)))
-    (when (pyx:on-button-enter :key :backspace)
+    (when (on-button-enter :key :backspace)
       (reset-free-look-state state))
     (cond
       ((on-button-enabled :key :w)

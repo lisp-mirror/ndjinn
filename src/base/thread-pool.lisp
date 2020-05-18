@@ -1,4 +1,4 @@
-(in-package #:pyx)
+(in-package #:net.mfiano.lisp.pyx)
 
 (glob:define-global-var =thread-pool= nil)
 
@@ -24,11 +24,11 @@
 
 (defun ensure-channel (purpose)
   (let ((channels (channels =thread-pool=)))
-    (a:ensure-gethash purpose channels (lp:make-channel))))
+    (u:ensure-gethash purpose channels (lp:make-channel))))
 
 (defun ensure-queue (purpose)
   (let ((queues (queues =thread-pool=)))
-    (a:ensure-gethash purpose queues (lpq:make-queue))))
+    (u:ensure-gethash purpose queues (lpq:make-queue))))
 
 (defun submit-job (purpose job &optional (priority :default))
   (when =thread-pool=

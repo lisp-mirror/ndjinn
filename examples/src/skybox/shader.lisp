@@ -1,4 +1,4 @@
-(in-package #:pyx-examples.shader)
+(in-package #:net.mfiano.lisp.pyx.examples.shader)
 
 (defun skybox/vert ((pos :vec3)
                     &uniforms

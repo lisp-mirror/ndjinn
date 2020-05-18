@@ -1,4 +1,4 @@
-(in-package #:pyx-examples)
+(in-package #:net.mfiano.lisp.pyx.examples)
 
 (defun seconds->duration (seconds)
   (u:mvlet* ((days d-rem (floor seconds 86400))

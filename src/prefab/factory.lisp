@@ -1,4 +1,4 @@
-(in-package #:pyx)
+(in-package #:net.mfiano.lisp.pyx)
 
 (defun make-prefab-entity-skeleton (node)
   (with-slots (%component-types %component-args) node
@@ -9,7 +9,7 @@
                                   :types types
                                   :args args)))
       (dolist (slot (get-entity-slots types))
-        (let ((key (a:make-keyword (string-left-trim "%" (symbol-name slot)))))
+        (let ((key (u:make-keyword (string-left-trim "%" (symbol-name slot)))))
           (setf (u:href (slots entity) slot) (u:href args key))))
       entity)))
 
@@ -38,7 +38,7 @@
   (with-slots (%name %root %factory) prefab
     (let ((root (u:href (entities %factory) (path %root))))
       (push root (u:href (prefabs (current-scene)) %name))
-      (setf (comp::node/prefab root) %name)
+      (setf (node/prefab root) %name)
       root)))
 
 (defun build-prefab-factory (prefab)
@@ -54,7 +54,7 @@
                             (skeleton (u:href %entities path))
                             (display-id (format nil "~{~(~a~)~^ -> ~}" path)))
                         (realize-prefab-entity skeleton args)
-                        (setf (comp::node/prefab-path skeleton) path
-                              (comp::id/display skeleton) display-id)))
+                        (setf (node/prefab-path skeleton) path
+                              (id/display skeleton) display-id)))
                     (setf %current-node nil)
                     (register-prefab-root prefab))))))

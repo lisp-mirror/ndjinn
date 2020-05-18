@@ -1,4 +1,4 @@
-(in-package #:pyx-examples)
+(in-package #:net.mfiano.lisp.pyx.examples)
 
 (pyx:define-component scene-switcher ()
   ((%scenes :accessor scenes
@@ -7,7 +7,7 @@
 (pyx:define-entity-hook :update (entity scene-switcher)
   (unless scenes
     (setf scenes (remove 'examples (pyx:get-registered-scene-names
-                                    :pyx-examples)))
+                                    :net.mfiano.lisp.pyx.examples)))
     (when (eq (pyx:get-scene-name) 'examples)
       (pyx:switch-scene (first scenes))))
   (let ((index (or (position (pyx:get-scene-name) scenes) 0)))

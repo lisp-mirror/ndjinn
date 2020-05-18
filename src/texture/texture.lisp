@@ -1,4 +1,4 @@
-(in-package #:pyx)
+(in-package #:net.mfiano.lisp.pyx)
 
 (defclass texture ()
   ((%spec :reader spec
@@ -50,14 +50,14 @@
 (defgeneric load-texture-source (spec type source &key &allow-other-keys)
   (:method :around (spec type source &key)
     (let* ((loaded (call-next-method))
-           (source-list (a:flatten (a:ensure-list loaded))))
+           (source-list (u:flatten (u:ensure-list loaded))))
       (unless (and (every #'width source-list)
                    (every #'height source-list))
         (error "Texture ~s does not have a width and height set." (name spec)))
       loaded)))
 
 (defun make-texture-target (type)
-  (a:format-symbol :keyword "TEXTURE-~a" type))
+  (u:format-symbol :keyword "TEXTURE-~a" type))
 
 (defun make-texture (spec type source)
   (let ((texture (make-instance 'texture
@@ -80,9 +80,9 @@
       texture)))
 
 (on-recompile :texture data ()
-  (a:when-let ((texture (find-asset :texture data)))
-    (gl:delete-texture (id texture))
-    (delete-asset :texture data)
-    (load-texture data :width (width texture) :height (height texture))
-    (dolist (material-name (materials texture))
-      (recompile :material material-name))))
+              (u:when-let ((texture (find-asset :texture data)))
+                (gl:delete-texture (id texture))
+                (delete-asset :texture data)
+                (load-texture data :width (width texture) :height (height texture))
+                (dolist (material-name (materials texture))
+                  (recompile :material material-name))))

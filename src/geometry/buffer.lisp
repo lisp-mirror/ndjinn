@@ -1,4 +1,4 @@
-(in-package #:pyx)
+(in-package #:net.mfiano.lisp.pyx)
 
 (defgeneric get-geometry-buffer-names (spec geometry-group))
 
@@ -8,7 +8,7 @@
 (defmethod get-geometry-buffer-names (spec (group geometry-group/separate))
   (let (names)
     (u:do-hash-keys (k (attributes group))
-      (push (a:format-symbol :keyword "~a/~a" (name group) k) names))
+      (push (u:format-symbol :keyword "~a/~a" (name group) k) names))
     (nreverse names)))
 
 (defun make-geometry-buffers (geometry)
@@ -52,7 +52,7 @@
        ((simple-array double-float *) 8))))
 
 (defmacro with-geometry-buffer ((ptr size vector) &body body)
-  (a:with-gensyms (sv)
+  (u:with-gensyms (sv)
     `(sv:with-static-vector
          (,sv (length ,vector)
               :element-type (array-element-type ,vector)

@@ -1,16 +1,13 @@
-(asdf:defsystem #:pyx
+(asdf:defsystem #:net.mfiano.lisp.pyx
   :description "A professional-quality game engine with an emphasis on productivity."
-  :author ("Michael Fiano <mail@michaelfiano.com>")
-  :maintainer "Michael Fiano <mail@michaelfiano.com>"
+  :author ("Michael Fiano <mail@mfiano.net>")
   :license "MIT"
-  :homepage "https://www.michaelfiano.com/projects/pyx"
-  :source-control (:git "https://github.com/mfiano/pyx.git")
+  :homepage "https://mfiano.net/projects/pyx"
+  :source-control (:git "https://github.com/mfiano/pyx")
   :bug-tracker "https://github.com/mfiano/pyx/issues"
   :encoding :utf-8
   :depends-on (#:3b-bmfont
                #:3b-bmfont/json
-               #:alexandria
-               #:avl-tree
                #:babel
                #:cl-cpus
                #:cl-graph
@@ -20,16 +17,17 @@
                #:fast-io
                #:filtered-functions
                #:global-vars
-               #:golden-utils
                #:jsown
                #:lparallel
-               #:origin
+               #:net.mfiano.lisp.algae
+               #:net.mfiano.lisp.golden-utils
+               #:net.mfiano.lisp.origin
+               #:net.mfiano.lisp.shadow
+               #:net.mfiano.lisp.umbra
                #:pngload
                #:sdl2
                #:split-sequence
-               #:shadow
-               #:uiop
-               #:umbra)
+               #:uiop)
   :pathname "src"
   :components
   ((:file "package")

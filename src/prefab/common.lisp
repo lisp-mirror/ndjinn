@@ -1,4 +1,4 @@
-(in-package #:pyx)
+(in-package #:net.mfiano.lisp.pyx)
 
 (defclass prefab ()
   ((%name :reader name
@@ -91,8 +91,8 @@
   (make-instance 'prefab-factory :prefab-name name))
 
 (defun find-prefab-node-template (spec path)
-  (let* ((spec (a:ensure-list spec))
+  (let* ((spec (u:ensure-list spec))
          (prefab (u:href =prefabs= (first spec))))
     (or (and prefab (u:href (nodes prefab) spec))
         (error "Template ~{~a~^/~} not found for prefab node ~{~a~^/~}."
-               (a:ensure-list spec) path))))
+               (u:ensure-list spec) path))))

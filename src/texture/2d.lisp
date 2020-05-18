@@ -1,4 +1,4 @@
-(in-package #:pyx)
+(in-package #:net.mfiano.lisp.pyx)
 
 (defmethod update-texture ((type (eql :2d)) texture source)
   (let* ((id (gl:gen-texture))
@@ -15,7 +15,7 @@
                         (internal-format source)
                         width
                         height)
-    (a:when-let ((data (data source)))
+    (u:when-let ((data (data source)))
       (gl:tex-sub-image-2d :texture-2d
                            0
                            0

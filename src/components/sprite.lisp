@@ -1,6 +1,6 @@
-(in-package #:pyx.component)
+(in-package #:net.mfiano.lisp.pyx)
 
-(pyx:define-component sprite ()
+(define-component sprite ()
   ((%sprite/name :reader sprite/name
                  :initarg :sprite/name)
    (%sprite/asset :reader sprite/asset
@@ -31,28 +31,28 @@
 
 ;;; entity hooks
 
-(pyx:define-entity-hook :attach (entity sprite)
-  (setf sprite/spritesheet (pyx:make-spritesheet sprite/asset
-                                                 sprite/buffer-spec)
-        sprite/index (pyx:find-sprite sprite/spritesheet sprite/name)
+(define-entity-hook :attach (entity sprite)
+  (setf sprite/spritesheet (make-spritesheet sprite/asset
+                                             sprite/buffer-spec)
+        sprite/index (find-sprite sprite/spritesheet sprite/name)
         sprite/initial-index sprite/index))
 
-(pyx:define-entity-hook :update (entity sprite)
+(define-entity-hook :update (entity sprite)
   (unless sprite/pause
-    (incf sprite/elapsed (pyx:get-frame-time))
+    (incf sprite/elapsed (get-frame-time))
     (if (>= sprite/elapsed sprite/duration)
         (setf sprite/elapsed 0
               sprite/pause (unless sprite/repeat t))
         (let* ((step (/ sprite/elapsed sprite/duration))
                (min sprite/initial-index)
                (max (1- (+ min sprite/frames)))
-               (index (floor (a:clamp (a:lerp step min (1+ max)) min max))))
+               (index (floor (u:clamp (u:lerp step min (1+ max)) min max))))
           (setf sprite/index index)))))
 
-(pyx:define-entity-hook :pre-render (entity sprite)
-  (pyx:set-uniforms entity :sprite.index sprite/index))
+(define-entity-hook :pre-render (entity sprite)
+  (set-uniforms entity :sprite.index sprite/index))
 
-(pyx:define-entity-hook :render (entity sprite)
-  (gl:bind-vertex-array (pyx:vao sprite/spritesheet))
+(define-entity-hook :render (entity sprite)
+  (gl:bind-vertex-array (vao sprite/spritesheet))
   (gl:draw-arrays-instanced :triangle-strip 0 4 sprite/instances)
   (gl:bind-vertex-array 0))

@@ -1,4 +1,4 @@
-(in-package #:pyx-examples)
+(in-package #:net.mfiano.lisp.pyx.examples)
 
 (pyx:define-texture sprites ()
   (:source (textures sprites)))

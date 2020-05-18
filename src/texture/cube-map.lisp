@@ -1,4 +1,4 @@
-(in-package #:pyx)
+(in-package #:net.mfiano.lisp.pyx)
 
 (defmethod update-texture ((type (eql :cube-map)) texture source)
   (let* ((id (gl:gen-texture))
@@ -44,7 +44,7 @@
        (loop :repeat 6
              :collect (load-framebuffer-texture spec width height)))
       ((and (u:plist-p source)
-            (a:set-equal (u:plist-keys source) valid-keys)
+            (u:set-equal (u:plist-keys source) valid-keys)
             (every #'listp (u:plist-values source)))
        (loop :for (k v) :on source :by #'cddr
              :collect k :into result

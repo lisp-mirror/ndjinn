@@ -1,4 +1,4 @@
-(in-package #:pyx)
+(in-package #:net.mfiano.lisp.pyx)
 
 (defgeneric %on-collision-enter (contact1 contact2)
   (:method (contact1 contact2)))
@@ -22,7 +22,7 @@
   (:method (target layer entity)))
 
 (defmacro define-collision-hook (name (target &optional layer) &body body)
-  (a:with-gensyms (target-symbol)
+  (u:with-gensyms (target-symbol)
     (let ((hook-types '(:enter :continue :exit :picked)))
       `(progn
          ,@(unless (find name hook-types)
@@ -33,6 +33,7 @@
          ,@(unless (symbolp layer)
              `((error "Layer of a collision hook must be a symbol: ~s."
                       ',layer)))
-         (defmethod ,(a:format-symbol :pyx "ON-COLLISION-~a" name)
+         (defmethod ,(u:format-symbol :net.mfiano.lisp.pyx
+                                      "ON-COLLISION-~a" name)
              ((,target-symbol (eql ',target)) (layer (eql ',layer)) ,target)
            ,@body)))))

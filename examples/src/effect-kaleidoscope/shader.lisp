@@ -1,4 +1,4 @@
-(in-package #:pyx-examples.shader)
+(in-package #:net.mfiano.lisp.pyx.examples.shader)
 
 (defun effect/kaleidoscope/hash ((p :vec2))
   (let* ((p (fract (vec3 (* p (vec2 385.18692 958.5519))
@@ -47,5 +47,5 @@
       (vec4 color 1))))
 
 (define-shader effect/kaleidoscope ()
-  (:vertex (pyx.shader:full-quad-no-uv/vert :vec3))
+  (:vertex (full-quad-no-uv/vert :vec3))
   (:fragment (effect/kaleidoscope/frag)))

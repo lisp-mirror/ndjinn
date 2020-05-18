@@ -1,4 +1,4 @@
-(in-package #:pyx-examples)
+(in-package #:net.mfiano.lisp.pyx.examples)
 
 (pyx:define-material effect/ocean-waves ()
   (:shader shader:effect/ocean-waves

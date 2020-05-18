@@ -1,4 +1,4 @@
-(in-package #:pyx)
+(in-package #:net.mfiano.lisp.pyx)
 
 (defun get-entity-slots (types)
   (mapcan
@@ -73,16 +73,19 @@
   (let ((components (compute-component-order components)))
     `(%make-entity ',components (u:plist->hash (list ,@body) :test #'eq))))
 
+(defmacro do-nodes ((entity &key parent) &body body)
+  `(map-nodes (lambda (,entity) ,@body) ,parent))
+
 (defun delete-entity (entity &key reparent-children)
-  (when (comp::node/root-p entity)
+  (when (node/root-p entity)
     (error "Cannot remove the root entity."))
-  (comp::delete-node entity :reparent-children reparent-children))
+  (delete-node entity :reparent-children reparent-children))
 
 (defun entity-parent (entity)
-  (comp:node/parent entity))
+  (node/parent entity))
 
 (defun entity-children (entity)
-  (comp:node/children entity))
+  (node/children entity))
 
 (defun has-component-p (entity type)
   (typep entity type))
@@ -115,11 +118,11 @@
      ,@body))
 
 (defmacro define-entity-hook (hook (entity type) &body body)
-  (let ((method (a:format-symbol :pyx "ON-~a" hook))
+  (let ((method (u:format-symbol :net.mfiano.lisp.pyx "ON-~a" hook))
         (parameters (get-flow-hook-parameters hook entity type))
         (accessors (mapcar
                     (lambda (x)
-                      (list (a:symbolicate x) x))
+                      (list (u:symbolicate x) x))
                     (compute-component-accessors type))))
     `(defmethod ,method progn ,parameters
        (with-accessors ,accessors ,entity

@@ -1,4 +1,4 @@
-(in-package #:pyx)
+(in-package #:net.mfiano.lisp.pyx)
 
 (defstruct (clock (:constructor %make-clock)
                   (:predicate nil)
@@ -25,7 +25,7 @@
   (let ((clock (%make-clock)))
     (setf (clock-init-time clock) (sb-ext:get-time-of-day)
           (clock-running-time clock) (get-time clock))
-    (a:when-let ((debug-interval =debug-interval=))
+    (u:when-let ((debug-interval =debug-interval=))
       (setf (clock-debug-interval clock) debug-interval))
     (setf (clock) clock)))
 

@@ -1,4 +1,4 @@
-(in-package #:pyx-examples.shader)
+(in-package #:net.mfiano.lisp.pyx.examples.shader)
 
 (defun graph/frag ((uv :vec2)
                    &uniforms
@@ -15,5 +15,5 @@
      10)))
 
 (define-shader graph ()
-  (:vertex (pyx.shader:full-quad/vert :vec3 :vec2))
+  (:vertex (full-quad/vert :vec3 :vec2))
   (:fragment (graph/frag :vec2)))

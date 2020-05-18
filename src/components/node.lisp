@@ -1,6 +1,6 @@
-(in-package #:pyx.component)
+(in-package #:net.mfiano.lisp.pyx)
 
-(pyx:define-component node ()
+(define-component node ()
   ((%node/root-p :reader node/root-p
                  :initarg :node/root-p
                  :initform nil)
@@ -17,19 +17,16 @@
 
 (defun add-child (entity &key parent)
   (with-slots (%node/parent %node/children) entity
-    (setf %node/parent (or parent (pyx::node-tree (pyx::current-scene))))
+    (setf %node/parent (or parent (node-tree (current-scene))))
     (push entity (node/children %node/parent))
     (dolist (child %node/children)
       (add-child child :parent entity))))
 
 (defun map-nodes (func &optional parent)
-  (let ((parent (or parent (pyx::node-tree (pyx::current-scene)))))
+  (let ((parent (or parent (node-tree (current-scene)))))
     (funcall func parent)
     (dolist (child (node/children parent))
       (map-nodes func child))))
-
-(defmacro do-nodes ((entity &key parent) &body body)
-  `(map-nodes (lambda (,entity) ,@body) ,parent))
 
 (defun delete-node (entity &key reparent-children)
   (let ((parent (node/parent entity)))
@@ -37,15 +34,15 @@
       (if reparent-children
           (add-child child :parent parent)
           (delete-node child)))
-    (pyx::on-delete entity)
-    (pyx:detach-components entity)
-    (pyx::deregister-prefab-entity entity)
+    (on-delete entity)
+    (detach-components entity)
+    (deregister-prefab-entity entity)
     (when parent
-      (a:deletef (node/children parent) entity))
+      (u:deletef (node/children parent) entity))
     (values)))
 
 ;;; entity hooks
 
-(pyx:define-entity-hook :create (entity node)
+(define-entity-hook :create (entity node)
   (unless node/root-p
     (add-child entity :parent node/parent)))

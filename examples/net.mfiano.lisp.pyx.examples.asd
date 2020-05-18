@@ -1,15 +1,14 @@
-(asdf:defsystem #:pyx-examples
+(asdf:defsystem #:net.mfiano.lisp.pyx.examples
   :description "Example scenes for the Pyx game engine."
-  :author ("Michael Fiano <mail@michaelfiano.com>")
-  :maintainer "Michael Fiano <mail@michaelfiano.com>"
+  :author ("Michael Fiano <mail@mfiano.net>")
   :license "MIT"
-  :homepage "https://www.michaelfiano.com/projects/pyx"
-  :source-control (:git "https://github.com/mfiano/pyx.git")
+  :homepage "https://mfiano.net/projects/pyx"
+  :source-control (:git "https://github.com/mfiano/pyx")
   :bug-tracker "https://github.com/mfiano/pyx/issues"
   :encoding :utf-8
   :depends-on (#:dungen
-               #:pyx
-               #:pyx-resources)
+               #:net.mfiano.lisp.pyx
+               #:net.mfiano.lisp.pyx.resources)
   :pathname "src"
   :serial t
   :components

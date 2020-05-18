@@ -1,4 +1,4 @@
-(in-package #:pyx)
+(in-package #:net.mfiano.lisp.pyx)
 
 (defstruct (button-state (:predicate nil)
                          (:copier nil))
@@ -16,7 +16,7 @@
     (push input (u:href (entering data) :button))))
 
 (defun button-transition-out (data input)
-  (a:when-let ((state (u:href (states data) input)))
+  (u:when-let ((state (u:href (states data) input)))
     (setf (button-state-enter state) nil
           (button-state-enabled state) nil
           (button-state-exit state) t)
@@ -41,16 +41,16 @@
     (setf exiting nil)))
 
 (defun on-button-enter (&rest args)
-  (a:when-let* ((data (input-data))
+  (u:when-let* ((data (input-data))
                 (state (u:href (states data) args)))
     (button-state-enter state)))
 
 (defun on-button-enabled (&rest args)
-  (a:when-let* ((data (input-data))
+  (u:when-let* ((data (input-data))
                 (state (u:href (states data) args)))
     (button-state-enabled state)))
 
 (defun on-button-exit (&rest args)
-  (a:when-let* ((data (input-data))
+  (u:when-let* ((data (input-data))
                 (state (u:href (states data) args)))
     (button-state-exit state)))

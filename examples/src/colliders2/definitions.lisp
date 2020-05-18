@@ -1,4 +1,4 @@
-(in-package #:pyx-examples)
+(in-package #:net.mfiano.lisp.pyx.examples)
 
 (pyx:define-prefab colliders2/object (:add (pyx:collider))
   :collider/shape 'obb

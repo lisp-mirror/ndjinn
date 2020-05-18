@@ -1,4 +1,4 @@
-(in-package #:pyx)
+(in-package #:net.mfiano.lisp.pyx)
 
 (defclass geometry-layout ()
   ((%name :reader name
@@ -22,7 +22,7 @@
 
 (defmacro define-geometry-layout (name options &body body)
   (declare (ignore options))
-  (a:with-gensyms (groups order)
+  (u:with-gensyms (groups order)
     `(u:mvlet ((,groups ,order (make-geometry-groups ',body)))
        (if (u:href =geometry-layouts= ',name)
            (update-geometry-layout ',name ,groups ,order)

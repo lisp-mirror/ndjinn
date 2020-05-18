@@ -1,6 +1,6 @@
-(in-package #:pyx)
+(in-package #:net.mfiano.lisp.pyx)
 
-(a:define-constant +window-event-names+
+(u:define-constant +window-event-names+
     #(nil :show :hide nil :move :resize nil :minimize :maximize :restore
       :mouse-focus-enter :mouse-focus-exit :keyboard-focus-enter
       :keyboard-focus-exit :close nil nil)

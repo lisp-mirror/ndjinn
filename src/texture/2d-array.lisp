@@ -1,4 +1,4 @@
-(in-package #:pyx)
+(in-package #:net.mfiano.lisp.pyx)
 
 (defmethod update-texture ((type (eql :2d-array)) texture source)
   (let* ((id (gl:gen-texture))
@@ -40,7 +40,7 @@
     ((typep source '(integer 1))
      (loop :repeat (source spec)
            :collect (load-framebuffer-texture spec width height)))
-    ((and (typep source 'a:proper-list)
+    ((and (typep source 'u:proper-list)
           (every #'listp source))
      (lp:pmapcar #'load-image source))
     (t (error "Unsupported source for 2D array texture: ~s." (name spec)))))

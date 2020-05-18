@@ -1,4 +1,4 @@
-(in-package #:pyx)
+(in-package #:net.mfiano.lisp.pyx)
 
 ;;; spec
 
@@ -63,14 +63,14 @@
       (setf (u:href uniforms :resolved k) v))))
 
 (defun update-material-spec-relationships (spec)
-  (a:when-let ((master (u:href =materials= (master spec))))
+  (u:when-let ((master (u:href =materials= (master spec))))
     (pushnew (name spec) (slaves master))))
 
 (defun update-material-spec-framebuffer-link (material-name framebuffer-name)
   (u:do-hash-values (v =framebuffers=)
     (dolist (framebuffer-material-name (materials v))
       (when (eq material-name framebuffer-material-name)
-        (a:deletef (materials v) framebuffer-material-name))))
+        (u:deletef (materials v) framebuffer-material-name))))
   (when framebuffer-name
     (push material-name (materials (find-framebuffer-spec framebuffer-name)))
     (enqueue :recompile (list :framebuffer framebuffer-name))))
@@ -112,8 +112,8 @@
 
 (defmacro define-material (name (&optional master) &body body)
   (destructuring-bind (&key shader uniforms features pass output) (car body)
-    (a:with-gensyms (func)
-      `(let ((,func ,(comp::generate-render-func features)))
+    (u:with-gensyms (func)
+      `(let ((,func ,(generate-render-func features)))
          (if (u:href =materials= ',name)
              (update-material-spec ',name ',master ',shader (list ,@uniforms)
                                    ',pass ',output ,func)
@@ -142,9 +142,9 @@
   (format stream "~s" (name (spec material))))
 
 (defun ensure-material-framebuffer (material)
-  (a:when-let* ((spec (spec material))
+  (u:when-let* ((spec (spec material))
                 (framebuffer-name (framebuffer spec)))
-    (a:if-let ((framebuffer (load-framebuffer framebuffer-name)))
+    (u:if-let ((framebuffer (load-framebuffer framebuffer-name)))
       (setf (framebuffer material) framebuffer
             (attachments material) (framebuffer-attachment-names->points
                                     framebuffer
@@ -157,7 +157,7 @@
   (clrhash (uniforms material))
   (dolist (texture-name (textures material))
     (let ((texture (find-asset :texture texture-name)))
-      (a:deletef (materials texture) (name (spec material)))))
+      (u:deletef (materials texture) (name (spec material)))))
   (setf (textures material) nil)
   (u:do-hash (k v (copy-material-spec-uniforms (spec material)))
     (let ((uniform (make-uniform :key k :value v)))

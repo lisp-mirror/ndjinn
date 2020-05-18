@@ -1,4 +1,4 @@
-(in-package #:pyx)
+(in-package #:net.mfiano.lisp.pyx)
 
 (defclass geometry-group ()
   ((%name :reader name
@@ -23,7 +23,8 @@
       (destructuring-bind (name (&key (format 'interleaved) (divisor 0))
                            . attrs)
           group
-        (u:mvlet ((group-type (a:format-symbol :pyx "GEOMETRY-GROUP/~a"
+        (u:mvlet ((group-type (u:format-symbol :net.mfiano.lisp.pyx
+                                               "GEOMETRY-GROUP/~a"
                                                format))
                   (attributes attribute-order (make-geometry-attributes attrs)))
           (push name order)

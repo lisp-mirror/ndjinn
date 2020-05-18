@@ -1,4 +1,4 @@
-(in-package #:pyx.shader)
+(in-package #:net.mfiano.lisp.pyx.shader)
 
 (defun full-quad/vert ((pos2 :vec3)
                        (uv :vec2)

@@ -1,11 +1,11 @@
-(in-package #:pyx.component)
+(in-package #:net.mfiano.lisp.pyx)
 
-(pyx:define-component render ()
+(define-component render ()
   ((%render/materials :accessor render/materials
                       :initarg :render/materials)
    (%render/order :reader render/order
                   :initarg :render/order
-                  :initform 'pyx::default)
+                  :initform 'default)
    (%render/current-material :accessor render/current-material
                              :initform nil))
   (:sorting :after transform :before sprite))
@@ -13,56 +13,56 @@
 (defun register-material (entity)
   (let ((materials (u:dict #'eq)))
     (dolist (spec-name (render/materials entity))
-      (let ((material (pyx::make-material entity spec-name)))
-        (setf (u:href materials (pyx::pass (pyx::spec material))) material)))
+      (let ((material (make-material entity spec-name)))
+        (setf (u:href materials (pass (spec material))) material)))
     materials))
 
 (defun render-frame ()
-  (let ((scene (pyx::current-scene)))
+  (let ((scene (current-scene)))
     (map nil
-         (lambda (x) (render-pass (pyx::find-render-pass-spec x)))
-         (pyx::passes scene))))
+         (lambda (x) (render-pass (find-render-pass-spec x)))
+         (passes scene))))
 
 (defun render-pass (pass)
-  (pyx::with-debug-group (format nil "Render Pass: ~s" pass)
-    (let ((viewport-manager (pyx::get-viewport-manager)))
-      (pyx::clear-render-pass pass)
-      (u:do-hash-values (viewport (pyx::table viewport-manager))
-        (setf (pyx::active viewport-manager) viewport)
+  (with-debug-group (format nil "Render Pass: ~s" pass)
+    (let ((viewport-manager (get-viewport-manager)))
+      (clear-render-pass pass)
+      (u:do-hash-values (viewport (table viewport-manager))
+        (setf (active viewport-manager) viewport)
         (render-viewport viewport pass)))))
 
 (defun render-viewport (viewport pass)
-  (pyx::configure-viewport viewport)
+  (configure-viewport viewport)
   (avl:walk
-   (pyx::draw-order viewport)
+   (draw-order viewport)
    (lambda (x)
-     (a:when-let ((material (u:href (render/materials x) (pyx::name pass))))
+     (u:when-let ((material (u:href (render/materials x) (name pass))))
        (setf (render/current-material x) material)
        (render-entity x)))))
 
 (defun render-entity (entity)
-  (pyx::with-debug-group (format nil "Entity: ~a" (id/display entity))
+  (with-debug-group (format nil "Entity: ~a" (id/display entity))
     (let ((material (render/current-material entity)))
-      (funcall (pyx::render-func (pyx::spec material)) entity))))
+      (funcall (render-func (spec material)) entity))))
 
 (defun generate-render-func (features)
   (destructuring-bind (&key enable disable blend-mode depth-mode polygon-mode
                          line-width point-size)
       features
-    (a:with-gensyms (entity material)
-      (let ((enable (set-difference enable pyx::+enabled-capabilities+))
-            (disable (set-difference disable pyx::+disabled-capabilities+))
-            (blend-mode (and (not (equal blend-mode pyx::+blend-mode+))
+    (u:with-gensyms (entity material)
+      (let ((enable (set-difference enable +enabled-capabilities+))
+            (disable (set-difference disable +disabled-capabilities+))
+            (blend-mode (and (not (equal blend-mode +blend-mode+))
                              blend-mode))
-            (depth-mode (and (not (equal depth-mode pyx::+depth-mode+))
+            (depth-mode (and (not (equal depth-mode +depth-mode+))
                              depth-mode))
-            (polygon-mode (and (not (equal polygon-mode pyx::+polygon-mode+))
+            (polygon-mode (and (not (equal polygon-mode +polygon-mode+))
                                polygon-mode)))
         `(lambda (,entity)
            (let ((,material (render/current-material ,entity)))
-             (pyx::with-framebuffer (pyx::framebuffer ,material)
-                 (:attachments (pyx::attachments ,material))
-               (shadow:with-shader (pyx::shader (pyx::spec ,material))
+             (with-framebuffer (framebuffer ,material)
+                 (:attachments (attachments ,material))
+               (shadow:with-shader (shader (spec ,material))
                  ,@(when enable
                      `((gl:enable ,@enable)))
                  ,@(when disable
@@ -77,21 +77,21 @@
                      `((gl:line-width ,line-width)))
                  ,@(when point-size
                      `((gl:point-size ,point-size)))
-                 (pyx::on-pre-render ,entity)
-                 (u:do-hash-values (v (pyx::uniforms ,material))
-                   (pyx::resolve-uniform-func ,entity v))
-                 (pyx::on-render ,entity)
-                 (setf (pyx::texture-unit-state ,material) 0)
+                 (on-pre-render ,entity)
+                 (u:do-hash-values (v (uniforms ,material))
+                   (resolve-uniform-func ,entity v))
+                 (on-render ,entity)
+                 (setf (texture-unit-state ,material) 0)
                  ,@(when disable
                      `((gl:enable ,@disable)))
                  ,@(when enable
                      `((gl:disable ,@enable)))
                  ,@(when blend-mode
-                     `((gl:blend-func ,@pyx::+blend-mode+)))
+                     `((gl:blend-func ,@+blend-mode+)))
                  ,@(when depth-mode
-                     `((gl:depth-func ,pyx::+depth-mode+)))
+                     `((gl:depth-func ,+depth-mode+)))
                  ,@(when polygon-mode
-                     `((gl:polygon-mode ,@pyx::+polygon-mode+)))
+                     `((gl:polygon-mode ,@+polygon-mode+)))
                  ,@(when line-width
                      `((gl:line-width 1f0)))
                  ,@(when point-size
@@ -99,16 +99,16 @@
 
 ;;; entity hooks
 
-(pyx:define-entity-hook :attach (entity render)
+(define-entity-hook :attach (entity render)
   (setf render/materials (register-material entity)))
 
-(pyx:define-entity-hook :detach (entity render)
-  (u:do-hash-values (viewport (pyx::table (pyx::get-viewport-manager)))
-    (pyx::deregister-render-order viewport entity)))
+(define-entity-hook :detach (entity render)
+  (u:do-hash-values (viewport (table (get-viewport-manager)))
+    (deregister-render-order viewport entity)))
 
-(pyx:define-entity-hook :pre-render (entity render)
-  (a:when-let ((camera (pyx::camera (pyx::active (pyx::get-viewport-manager)))))
-    (when (pyx:has-component-p camera 'camera)
-      (pyx:set-uniforms entity
-                        :view (camera/view camera)
-                        :proj (camera/projection camera)))))
+(define-entity-hook :pre-render (entity render)
+  (u:when-let ((camera (camera (active (get-viewport-manager)))))
+    (when (has-component-p camera 'camera)
+      (set-uniforms entity
+                    :view (camera/view camera)
+                    :proj (camera/projection camera)))))

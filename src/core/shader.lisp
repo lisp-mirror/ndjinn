@@ -1,4 +1,4 @@
-(in-package #:pyx)
+(in-package #:net.mfiano.lisp.pyx)
 
 (defclass shaders ()
   ((%table :reader table
@@ -25,7 +25,7 @@
         (1+ id-count))))
 
 (defun release-shader-buffer-binding (key)
-  (a:when-let* ((shaders (shaders))
+  (u:when-let* ((shaders (shaders))
                 (id (u:href (buffer-bindings shaders) key)))
     (remhash key (buffer-bindings shaders))
     (pushnew id (released-buffer-bindings shaders))

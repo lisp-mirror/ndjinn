@@ -1,6 +1,6 @@
-(in-package #:pyx.component)
+(in-package #:net.mfiano.lisp.pyx)
 
-(pyx:define-component camera ()
+(define-component camera ()
   ((%camera/active-p :reader camera/active-p
                      :initarg :camera/active-p
                      :initform t)
@@ -15,7 +15,7 @@
                  :initform :perspective)
    (%camera/viewport :accessor camera/viewport
                      :initarg :camera/viewport
-                     :initform 'pyx::default)
+                     :initform 'default)
    (%camera/clip-near :accessor camera/clip-near
                       :initarg :camera/clip-near
                       :initform 0.1)
@@ -58,15 +58,15 @@
     (m4:set-projection/perspective! (camera/projection entity)
                                     (/ (camera/fov-y entity)
                                        (camera/zoom entity))
-                                    (/ (pyx::width %camera/viewport)
-                                       (pyx::height %camera/viewport))
+                                    (/ (width %camera/viewport)
+                                       (height %camera/viewport))
                                     (camera/clip-near entity)
                                     (camera/clip-far entity))))
 
 (defmethod %set-camera-projection ((entity camera) (mode (eql :orthographic)))
   (with-slots (%camera/zoom %camera/viewport) entity
-    (let ((w (/ (pyx::width %camera/viewport) %camera/zoom 2))
-          (h (/ (pyx::height %camera/viewport) %camera/zoom 2)))
+    (let ((w (/ (width %camera/viewport) %camera/zoom 2))
+          (h (/ (height %camera/viewport) %camera/zoom 2)))
       (m4:set-projection/orthographic! (camera/projection entity)
                                        (- w)
                                        w
@@ -81,7 +81,7 @@
                     q:+id+
                     (v3:vec (- (asin (/ (sqrt 3)))) 0 math:pi/4)))))
     (%set-camera-projection entity :orthographic)
-    (pyx::initialize-rotation (transform/rotation entity) rotation)))
+    (initialize-rotation (transform/rotation entity) rotation)))
 
 (defun set-camera-view (entity)
   (with-slots (%camera/view %camera/target) entity
@@ -102,38 +102,38 @@
       (unless (camera/translate-view entity)
         (m4:set-translation! %camera/view %camera/view v3:+zero+))
       (when free-look-state
-        (pyx::set-initial-free-look-orientation free-look-state model)))))
+        (set-initial-free-look-orientation free-look-state model)))))
 
 (defun get-current-camera ()
-  (pyx::camera (pyx::active (pyx::get-viewport-manager))))
+  (camera (active (get-viewport-manager))))
 
 (defun zoom-camera (entity direction min max)
   (with-slots (%camera/zoom) entity
-    (setf %camera/zoom (a:clamp (+ %camera/zoom (/ direction 2)) min max))))
+    (setf %camera/zoom (u:clamp (+ %camera/zoom (/ direction 2)) min max))))
 
 (defun get-camera-zoom ()
   (camera/zoom (get-current-camera)))
 
 ;;; entity hooks
 
-(pyx:define-entity-hook :attach (entity camera)
-  (let ((entity-viewport (first (pyx::get-entity-viewports entity))))
+(define-entity-hook :attach (entity camera)
+  (let ((entity-viewport (first (get-entity-viewports entity))))
     (unless camera/viewport
       (error "Camera ~s does not have a viewport tag known to this scene."
              entity))
     (when camera/active-p
-      (setf (pyx::camera entity-viewport) entity))
+      (setf (camera entity-viewport) entity))
     (when camera/free-look
-      (setf camera/free-look-state (pyx::make-free-look-state entity)))
+      (setf camera/free-look-state (make-free-look-state entity)))
     (setf camera/fov-y (float (* camera/fov-y (/ pi 180)) 1f0)
           camera/clip-near (float camera/clip-near 1f0)
           camera/clip-far (float camera/clip-far 1f0)
           camera/viewport entity-viewport)
     (set-camera-projection entity)))
 
-(pyx:define-entity-hook :update (entity camera)
+(define-entity-hook :update (entity camera)
   (when camera/free-look
-    (pyx::update-free-look-state camera/free-look-state))
+    (update-free-look-state camera/free-look-state))
   ;; TODO: Have a flag so not updating these every frame
   (set-camera-view entity)
   (set-camera-projection entity))

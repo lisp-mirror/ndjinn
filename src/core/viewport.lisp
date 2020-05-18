@@ -1,4 +1,4 @@
-(in-package #:pyx)
+(in-package #:net.mfiano.lisp.pyx)
 
 ;;; spec
 
@@ -15,10 +15,10 @@
 
 (defun update-viewport-spec (name x y width height)
   (let ((spec (u:href =viewports= name)))
-    (setf (x spec) (a:clamp (float x 1f0) 0f0 1f0)
-          (y spec) (a:clamp (float y 1f0) 0f0 1f0)
-          (width spec) (a:clamp (float width 1f0) 0f0 1f0)
-          (height spec) (a:clamp (float height 1f0) 0f0 1f0))
+    (setf (x spec) (u:clamp (float x 1f0) 0f0 1f0)
+          (y spec) (u:clamp (float y 1f0) 0f0 1f0)
+          (width spec) (u:clamp (float width 1f0) 0f0 1f0)
+          (height spec) (u:clamp (float height 1f0) 0f0 1f0))
     (enqueue :recompile (list :viewport))))
 
 (defun make-viewport-spec (name x y width height)
@@ -89,10 +89,10 @@
 
 (defun configure-viewport (viewport)
   (let ((spec (spec viewport)))
-    (setf (x viewport) (a:lerp (x spec) 0 =window-width=)
-          (y viewport) (a:lerp (y spec) 0 =window-height=)
-          (width viewport) (a:lerp (width spec) 0 =window-width=)
-          (height viewport) (a:lerp (height spec) 0 =window-height=)))
+    (setf (x viewport) (u:lerp (x spec) 0 =window-width=)
+          (y viewport) (u:lerp (y spec) 0 =window-height=)
+          (width viewport) (u:lerp (width spec) 0 =window-width=)
+          (height viewport) (u:lerp (height spec) 0 =window-height=)))
   (gl:viewport (x viewport)
                (y viewport)
                (width viewport)
@@ -101,7 +101,7 @@
 (defun get-entity-viewports (entity)
   (let ((scene-viewports (get-viewport-manager))
         (viewports nil))
-    (dolist (id (comp::id/views entity))
+    (dolist (id (id/views entity))
       (let ((viewport (u:href (table scene-viewports) id)))
         (pushnew viewport viewports)))
     (or viewports (list (default scene-viewports)))))

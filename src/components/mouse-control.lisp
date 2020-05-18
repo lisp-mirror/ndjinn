@@ -1,6 +1,6 @@
-(in-package #:pyx.component)
+(in-package #:net.mfiano.lisp.pyx)
 
-(pyx:define-component mouse-control ()
+(define-component mouse-control ()
   ((%mouse-control/rotation-speed :accessor mouse-control/rotation-speed
                                   :initarg :mouse-control/rotation-speed
                                   :initform 0.005f0)
@@ -25,9 +25,9 @@
    (%speed :accessor rotation-speed
            :initarg :speed)))
 
-(pyx:define-entity-hook :attach (entity mouse-control)
-  (let* ((buttons (remove nil (map 'list #'identity pyx::+mouse-button-names+)))
-         (initial-rotation (q:copy (pyx:get-rotation entity)))
+(define-entity-hook :attach (entity mouse-control)
+  (let* ((buttons (remove nil (map 'list #'identity +mouse-button-names+)))
+         (initial-rotation (q:copy (get-rotation entity)))
          (rotation-state (make-instance 'mouse-control/rotation-state
                                         :initial initial-rotation
                                         :speed mouse-control/rotation-speed)))
@@ -35,12 +35,12 @@
       (error "Mouse rotation button must be one of: ~{~s~^, ~}" buttons))
     (setf mouse-control/rotation rotation-state)))
 
-(pyx:define-entity-hook :update (entity mouse-control)
-  (when (pyx:entity-picked-p entity)
+(define-entity-hook :update (entity mouse-control)
+  (when (entity-picked-p entity)
     (with-slots (%rotation-vector %dragging) mouse-control/rotation
       (u:mvlet* ((button mouse-control/rotate-button)
-                 (drag-started (pyx:on-button-enter :mouse button))
-                 (drag-stopped (pyx:on-button-exit :mouse button)))
+                 (drag-started (on-button-enter :mouse button))
+                 (drag-stopped (on-button-exit :mouse button)))
         (when drag-started
           (mouse-control/start-rotation entity))
         (when %dragging
@@ -50,7 +50,7 @@
 
 (defun mouse-control/start-rotation (entity)
   (u:mvlet ((state (mouse-control/rotation entity))
-            (x y (pyx:get-mouse-position)))
+            (x y (get-mouse-position)))
     (with-slots (%rotation-vector %drag-start %dragging) state
       (unless %rotation-vector
         (setf %rotation-vector (v2:vec)))
@@ -59,20 +59,20 @@
 
 (defun mouse-control/rotate (entity)
   (u:mvlet ((state (mouse-control/rotation entity))
-            (x y (pyx:get-mouse-position)))
+            (x y (get-mouse-position)))
     (with-slots (%speed %initial %rotation-vector %drag-start) state
       (v2:with-components ((r %rotation-vector)
                            (v (v2:- (v2:vec x y) %drag-start)))
-        (pyx:rotate-entity entity
-                           (q:rotate (q:orient :local
-                                               :y (+ rx (* vx %speed))
-                                               :x (- (+ ry (* vy %speed))))
-                                     %initial)
-                           :replace t)))))
+        (rotate-entity entity
+                       (q:rotate (q:orient :local
+                                           :y (+ rx (* vx %speed))
+                                           :x (- (+ ry (* vy %speed))))
+                                 %initial)
+                       :replace t)))))
 
 (defun mouse-control/finish-rotation (entity)
   (u:mvlet ((state (mouse-control/rotation entity))
-            (x y (pyx:get-mouse-position)))
+            (x y (get-mouse-position)))
     (with-slots (%rotation-vector %dragging %drag-start %drag-end %speed) state
       (setf %dragging nil
             %drag-end (v2:vec x y))

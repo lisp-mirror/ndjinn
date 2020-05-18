@@ -1,4 +1,4 @@
-(in-package #:pyx-examples.shader)
+(in-package #:net.mfiano.lisp.pyx.examples.shader)
 
 (defconstant +albedo+ 0)
 (defconstant +ao+ 1)

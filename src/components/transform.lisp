@@ -1,12 +1,12 @@
-(in-package #:pyx.component)
+(in-package #:net.mfiano.lisp.pyx)
 
-(pyx:define-component transform ()
+(define-component transform ()
   ((%transform/translation :reader transform/translation
-                           :initform (pyx::make-translate-state))
+                           :initform (make-translate-state))
    (%transform/rotation :reader transform/rotation
-                        :initform (pyx::make-rotate-state))
+                        :initform (make-rotate-state))
    (%transform/scale :reader transform/scale
-                     :initform (pyx::make-scale-state))
+                     :initform (make-scale-state))
    (%transform/local :reader transform/local
                      :initform (m4:mat 1))
    (%transform/model :reader transform/model
@@ -24,91 +24,91 @@
                                        transform/rotate/velocity
                                        transform/scale
                                        transform/scale/velocity)
-  (pyx::initialize-translation (transform/translation instance)
-                               transform/translate
-                               transform/translate/velocity)
-  (pyx::initialize-rotation (transform/rotation instance)
-                            transform/rotate
-                            transform/rotate/velocity)
-  (pyx::initialize-scale (transform/scale instance)
-                         transform/scale
-                         transform/scale/velocity))
+  (initialize-translation (transform/translation instance)
+                          transform/translate
+                          transform/translate/velocity)
+  (initialize-rotation (transform/rotation instance)
+                       transform/rotate
+                       transform/rotate/velocity)
+  (initialize-scale (transform/scale instance)
+                    transform/scale
+                    transform/scale/velocity))
 
 (defun transform-node (entity)
-  (let ((delta (float pyx::=delta-time= 1f0)))
-    (pyx::transform-node/vector (transform/scale entity) delta)
-    (pyx::transform-node/quaternion (transform/rotation entity) delta)
-    (pyx::transform-node/vector (transform/translation entity) delta)))
+  (let ((delta (float =delta-time= 1f0)))
+    (transform-node/vector (transform/scale entity) delta)
+    (transform-node/quaternion (transform/rotation entity) delta)
+    (transform-node/vector (transform/translation entity) delta)))
 
 (defun resolve-local (entity factor)
   (let ((translation (transform/translation entity))
         (rotation (transform/rotation entity))
         (scale (transform/scale entity)))
     (symbol-macrolet ((local (transform/local entity)))
-      (pyx::interpolate-vector scale factor)
-      (pyx::interpolate-quaternion rotation factor)
-      (pyx::interpolate-vector translation factor)
-      (m4:copy! local (q:to-mat4 (pyx::interpolated rotation)))
-      (m4:*! local local (m4:set-scale m4:+id+ (pyx::interpolated scale)))
-      (m4:set-translation! local local (pyx::interpolated translation)))))
+      (interpolate-vector scale factor)
+      (interpolate-quaternion rotation factor)
+      (interpolate-vector translation factor)
+      (m4:copy! local (q:to-mat4 (interpolated rotation)))
+      (m4:*! local local (m4:set-scale m4:+id+ (interpolated scale)))
+      (m4:set-translation! local local (interpolated translation)))))
 
 (defun resolve-model (entity alpha)
-  (a:when-let ((parent (node/parent entity)))
+  (u:when-let ((parent (node/parent entity)))
     (resolve-local entity alpha)
     (m4:*! (transform/model entity)
            (transform/model parent)
            (transform/local entity))))
 
 (defun resolve-normal-matrix (entity)
-  (a:if-let ((camera (get-current-camera)))
+  (u:if-let ((camera (get-current-camera)))
     (m4:transpose (m4:invert (m4:* (camera/view camera)
                                    (transform/model entity))))
     m4:+id+))
 
-(pyx:define-entity-hook :pre-render (entity transform)
-  (pyx:set-uniforms entity :model transform/model))
+(define-entity-hook :pre-render (entity transform)
+  (set-uniforms entity :model transform/model))
 
 (defun get-rotation (entity)
-  (pyx::current (transform/rotation entity)))
+  (current (transform/rotation entity)))
 
 (defun get-scale (entity)
-  (pyx::current (transform/scale entity)))
+  (current (transform/scale entity)))
 
 (defun get-translation (entity)
-  (pyx::current (transform/translation entity)))
+  (current (transform/translation entity)))
 
 (defun translate-entity (entity vec &key replace instant)
   (let ((state (transform/translation entity)))
-    (symbol-macrolet ((current (pyx::current state)))
+    (symbol-macrolet ((current (current state)))
       (v3:+! current (if replace v3:+zero+ current) vec)
       (when instant
-        (v3:copy! (pyx::previous state) current)))))
+        (v3:copy! (previous state) current)))))
 
 (defun translate-entity/velocity (entity axis rate)
   (let ((state (transform/translation entity)))
-    (setf (pyx::incremental state) (math:make-velocity axis rate))))
+    (setf (incremental state) (math:make-velocity axis rate))))
 
 (defun rotate-entity (entity quat &key replace instant)
   (let ((state (transform/rotation entity)))
-    (symbol-macrolet ((current (pyx::current state)))
+    (symbol-macrolet ((current (current state)))
       (q:rotate! current (if replace q:+id+ current) quat)
       (when instant
-        (q:copy! (pyx::previous state) current)))))
+        (q:copy! (previous state) current)))))
 
 (defun rotate-entity/velocity (entity axis rate)
   (let ((state (transform/rotation entity)))
-    (setf (pyx::incremental state) (math:make-velocity axis rate))))
+    (setf (incremental state) (math:make-velocity axis rate))))
 
 (defun scale-entity (entity vec &key replace instant)
   (let ((state (transform/scale entity)))
-    (symbol-macrolet ((current (pyx::current state)))
+    (symbol-macrolet ((current (current state)))
       (v3:+! current (if replace v3:+zero+ current) vec)
       (when instant
-        (v3:copy! (pyx::previous state) current)))))
+        (v3:copy! (previous state) current)))))
 
 (defun scale-entity/velocity (entity axis rate)
   (let ((state (transform/scale entity)))
-    (setf (pyx::incremental state) (math:make-velocity axis rate))))
+    (setf (incremental state) (math:make-velocity axis rate))))
 
 (defun transform-point (entity point &key (space :model))
   (let ((model (transform/model entity)))

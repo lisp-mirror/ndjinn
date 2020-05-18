@@ -1,4 +1,4 @@
-(in-package #:pyx-examples.shader)
+(in-package #:net.mfiano.lisp.pyx.examples.shader)
 
 (defun effect/ocean-waves/wave-dx ((position :vec2)
                                    (direction :vec2)
@@ -184,5 +184,5 @@
           (vec4 c 1)))))
 
 (define-shader effect/ocean-waves ()
-  (:vertex (pyx.shader:full-quad-no-uv/vert :vec3))
+  (:vertex (full-quad-no-uv/vert :vec3))
   (:fragment (effect/ocean-waves/frag)))

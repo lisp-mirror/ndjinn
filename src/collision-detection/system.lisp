@@ -1,4 +1,4 @@
-(in-package #:pyx)
+(in-package #:net.mfiano.lisp.pyx)
 
 (defclass collision-system ()
   ((%spec :reader spec
@@ -17,7 +17,7 @@
             :initform (make-array 8 :adjustable t :fill-pointer t))))
 
 (defun make-collision-system (plan-name)
-  (a:if-let ((spec (u:href =collider-plans= plan-name)))
+  (u:if-let ((spec (u:href =collider-plans= plan-name)))
     (let ((system (make-instance 'collision-system :spec spec)))
       (dolist (layer (layers spec))
         (setf (u:href (registered system) layer) (u:dict #'eq)
@@ -27,7 +27,7 @@
     (error "Collider plan ~s not found." plan-name)))
 
 (defun get-collision-targets (targets collider)
-  (a:when-let ((target (u:href targets (comp::collider/target collider))))
+  (u:when-let ((target (u:href targets (collider/target collider))))
     (u:hash-keys target)))
 
 (defun register-collider (collider layer)
@@ -70,11 +70,11 @@
 (defun collider-contact-exit (system collider1 collider2)
   (assert (not (eq collider1 collider2)))
   (let ((contacts (contacts system)))
-    (a:when-let ((table2 (u:href contacts collider1)))
+    (u:when-let ((table2 (u:href contacts collider1)))
       (remhash collider2 table2)
       (when (zerop (hash-table-count table2))
         (remhash collider1 contacts)))
-    (a:when-let ((table1 (u:href contacts collider2)))
+    (u:when-let ((table1 (u:href contacts collider2)))
       (remhash collider1 table1)
       (when (zerop (hash-table-count table1))
         (remhash collider2 contacts)))
@@ -83,16 +83,16 @@
 
 (defun remove-collider-contacts (system collider)
   (let ((contacts (contacts system)))
-    (a:when-let ((colliders (u:href contacts collider)))
+    (u:when-let ((colliders (u:href contacts collider)))
       (u:do-hash-keys (k colliders)
         (when (collider-contact-p system collider k)
           (collider-contact-exit system collider k))))))
 
 (defun compute-collider-contact (system collider1 collider2)
-  (when (and (has-component-p collider1 'comp:collider)
-             (has-component-p collider2 'comp:collider))
-    (a:when-let ((shape1 (comp::collider/shape collider1))
-                 (shape2 (comp::collider/shape collider2)))
+  (when (and (has-component-p collider1 'collider)
+             (has-component-p collider2 'collider))
+    (u:when-let ((shape1 (collider/shape collider1))
+                 (shape2 (collider/shape collider2)))
       (let ((collided-p (collide-p shape1 shape2))
             (contact-p (collider-contact-p system collider1 collider2)))
         (cond
@@ -110,12 +110,12 @@
     (dolist (collider1-layer (layers (spec system)))
       (dolist (collider2-layer (u:href table collider1-layer))
         (if (eq collider1-layer collider2-layer)
-            (a:when-let ((colliders (u:href active collider1-layer)))
+            (u:when-let ((colliders (u:href active collider1-layer)))
               (setf (fill-pointer buffer) 0)
               (u:do-hash-keys (k colliders)
                 (vector-push-extend k buffer))
               (when (>= (length buffer) 2)
-                (a:map-combinations
+                (u:map-combinations
                  (lambda (x)
                    (compute-collider-contact system (aref x 0) (aref x 1)))
                  buffer

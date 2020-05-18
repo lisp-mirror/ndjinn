@@ -4,7 +4,7 @@ A declarative, component-based game engine.
 ## Install
 
 ```lisp
-(ql:quickload :pyx)
+(ql:quickload :net.mfiano.lisp.pyx)
 ```
 
 ## Usage
@@ -14,6 +14,6 @@ Pyx's API is still in flux.
 
 ## License
 
-Copyright © Michael Fiano <mail@michaelfiano.com>.
+Copyright © Michael Fiano <mail@mfiano.net>.
 
 Licensed under the MIT License.

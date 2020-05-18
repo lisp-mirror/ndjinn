@@ -1,10 +1,10 @@
-(in-package #:pyx)
+(in-package #:net.mfiano.lisp.pyx)
 
-(a:define-constant +enabled-capabilities+
+(u:define-constant +enabled-capabilities+
     '(:blend :cull-face :depth-test :dither :multisample)
   :test #'equal)
 
-(a:define-constant +disabled-capabilities+
+(u:define-constant +disabled-capabilities+
     '(:clip-distance0 :clip-distance1 :clip-distance2 :clip-distance3
       :clip-distance4 :clip-distance5 :clip-distance6 :clip-distance7
       :color-logic-op :debug-output :debug-output-synchronous :depth-clamp
@@ -16,17 +16,17 @@
       :texture-cube-map-seamless :program-point-size)
   :test #'equal)
 
-(a:define-constant +blend-mode+ '(:src-alpha :one-minus-src-alpha)
+(u:define-constant +blend-mode+ '(:src-alpha :one-minus-src-alpha)
   :test #'equal)
 
-(a:define-constant +depth-mode+ :less)
+(u:define-constant +depth-mode+ :less)
 
-(a:define-constant +polygon-mode+ '(:front-and-back :fill) :test #'equal)
+(u:define-constant +polygon-mode+ '(:front-and-back :fill) :test #'equal)
 
 (defmacro with-debug-group (name &body body)
   (if (find :pyx.release *features*)
       `(progn ,@body)
-      (a:once-only (name)
+      (u:once-only (name)
         `(progn
            (cffi:with-foreign-string (s ,name)
              (%gl:push-debug-group

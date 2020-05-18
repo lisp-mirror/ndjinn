@@ -1,4 +1,4 @@
-(in-package #:pyx)
+(in-package #:net.mfiano.lisp.pyx)
 
 (defun initialize ()
   (setup-repl)
@@ -23,14 +23,14 @@
 
 (defun update ()
   (let ((alpha (get-alpha)))
-    (comp::do-nodes (node)
-      (comp::resolve-model node alpha)
+    (do-nodes (node)
+      (resolve-model node alpha)
       (on-update node))))
 
 (defun physics-update ()
-  (comp::map-nodes #'on-physics-update)
-  (comp::do-nodes (node)
-    (comp:transform-node node))
+  (map-nodes #'on-physics-update)
+  (do-nodes (node)
+    (transform-node node))
   (compute-collisions))
 
 (defun periodic-update ()

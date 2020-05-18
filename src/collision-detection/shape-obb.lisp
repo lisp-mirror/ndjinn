@@ -1,4 +1,4 @@
-(in-package #:pyx)
+(in-package #:net.mfiano.lisp.pyx)
 
 (defclass collider-shape/obb (collider-shape)
   ((%world-center :reader world-center
@@ -14,7 +14,7 @@
            (q (v3:copy %world-center)))
       (dotimes (i 3)
         (let* ((e (aref %half-widths i))
-               (dist (a:clamp (v3:dot d (m3:get-column %axes i)) (- e) e)))
+               (dist (u:clamp (v3:dot d (m3:get-column %axes i)) (- e) e)))
           (v3:+! q q (v3:scale (m3:get-column %axes i) dist))))
       q)))
 
@@ -52,16 +52,16 @@
 
 (defmethod update-collider-shape ((shape collider-shape/obb))
   (with-slots (%entity %center %world-center %axes %half-widths) shape
-    (let* ((scale (comp:get-scale %entity))
-           (min (comp:transform-point
+    (let* ((scale (get-scale %entity))
+           (min (transform-point
                  %entity
                  (v3:+ %center (v3:scale scale -0.5f0))))
-           (max (comp:transform-point
+           (max (transform-point
                  %entity
                  (v3:+ %center (v3:scale scale 0.5f0))))
            (axes (m4:rotation-to-mat3
                   (m4:normalize-rotation
-                   (comp::transform/model %entity))))
+                   (transform/model %entity))))
            (center (v3:lerp min max 0.5))
            (diagonal (v3:- max center))
            (half-widths (v3:vec (v3:dot diagonal (m3:get-column axes 0))

@@ -1,4 +1,4 @@
-(in-package #:pyx)
+(in-package #:net.mfiano.lisp.pyx)
 
 (defstruct (uniform (:predicate nil)
                     (:copier nil))
@@ -25,7 +25,7 @@
             (uniform-func uniform) (generate-uniform-func material uniform)))))
 
 (defun %generate-uniform-func (material type)
-  (let ((func (a:format-symbol :shadow "UNIFORM-~a" type)))
+  (let ((func (u:format-symbol :net.mfiano.lisp.shadow "UNIFORM-~a" type)))
     (lambda (k v)
       (funcall func (shader (spec material)) k v))))
 
@@ -37,7 +37,8 @@
       (shadow:uniform-int (shader (spec material)) k unit))))
 
 (defun generate-uniform-func/array (material type)
-  (let ((func (a:format-symbol :shadow "UNIFORM-~a-ARRAY" type)))
+  (let ((func (u:format-symbol :net.mfiano.lisp.shadow
+                               "UNIFORM-~a-ARRAY" type)))
     (lambda (k v)
       (funcall func (shader (spec material)) k v))))
 
@@ -99,7 +100,7 @@
         (pushnew value (textures material))))))
 
 (defun set-uniforms (entity &rest args)
-  (let* ((material (comp::render/current-material entity))
+  (let* ((material (render/current-material entity))
          (uniforms (uniforms material)))
     (u:do-plist (k v args)
       (unless (u:href uniforms k)

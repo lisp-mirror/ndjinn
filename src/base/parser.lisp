@@ -1,4 +1,4 @@
-(in-package #:pyx)
+(in-package #:net.mfiano.lisp.pyx)
 
 (defun get-binary-string-length (buffer byte-count null-terminated-p)
   (let* ((sequence (fast-io:input-buffer-vector buffer))

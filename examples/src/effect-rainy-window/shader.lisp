@@ -1,4 +1,4 @@
-(in-package #:pyx-examples.shader)
+(in-package #:net.mfiano.lisp.pyx.examples.shader)
 
 (defun window-rain/hash ((n :float))
   (fract (* (sin (* n 51384.508)) 6579.492)))
@@ -100,5 +100,5 @@
     (vec4 (.rgb (texture-lod sampler (+ uv2 n) focus)) 1)))
 
 (define-shader window-rain ()
-  (:vertex (pyx.shader:full-quad/vert :vec3 :vec2))
+  (:vertex (full-quad/vert :vec3 :vec2))
   (:fragment (window-rain/f :vec2)))

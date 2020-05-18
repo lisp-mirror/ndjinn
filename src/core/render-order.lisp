@@ -1,4 +1,4 @@
-(in-package #:pyx)
+(in-package #:net.mfiano.lisp.pyx)
 
 (defun render-order-comparator (x y)
   (let ((order (draw-order (spec (current-scene)))))
@@ -6,8 +6,8 @@
        (u:href order y))))
 
 (defun make-render-order-tree ()
-  (avl:make-tree :item-type 'comp:render
-                 :key #'comp::render/order
+  (avl:make-tree :item-type 'render
+                 :key #'render/order
                  :sort #'render-order-comparator
                  :hash-test #'eq))
 

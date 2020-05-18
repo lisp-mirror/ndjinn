@@ -1,4 +1,4 @@
-(in-package #:pyx)
+(in-package #:net.mfiano.lisp.pyx)
 
 (defmacro with-continuable (report &body body)
   `(restart-case (progn ,@body)
@@ -8,7 +8,7 @@
   (let ((repl-package (find-if #'find-package '(:slynk :swank))))
     (macrolet ((sym (sym &optional package)
                  (let ((name (symbol-name sym)))
-                   `(a:ensure-symbol ,name ,(or package 'repl-package)))))
+                   `(u:ensure-symbol ,name ,(or package 'repl-package)))))
       (case repl-package
         ((:slynk :swank)
          (compile '%find-repl
@@ -19,7 +19,7 @@
                   (ecase repl-package
                     (:slynk
                      `(lambda ()
-                        (a:when-let ((repl (find
+                        (u:when-let ((repl (find
                                             (,(sym :current-thread))
                                             (,(sym :channels))
                                             :key #',(sym :channel-thread))))
@@ -28,7 +28,7 @@
                      (constantly nil))))
          (compile '%update-repl
                   `(lambda ()
-                     (a:when-let ((repl (%find-repl)))
+                     (u:when-let ((repl (%find-repl)))
                        (with-continuable "REPL"
                          (,(sym :handle-requests) repl t))))))
         (t (setf (symbol-function '%setup-repl) (constantly nil)
@@ -46,7 +46,7 @@
     (warn "No live recompilation hook defined for spec type: ~s" type)))
 
 (defmacro on-recompile (type data () &body body)
-  (a:with-gensyms (purpose event-type)
+  (u:with-gensyms (purpose event-type)
     `(progn
        (defmethod recompile ((type (eql ',type)) ,data)
          (declare (ignorable ,data))

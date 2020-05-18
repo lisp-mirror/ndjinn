@@ -1,4 +1,4 @@
-(in-package #:pyx)
+(in-package #:net.mfiano.lisp.pyx)
 
 (defvar *context* nil)
 
@@ -27,7 +27,7 @@
 
 (defmacro define-context (name options &body body)
   (declare (ignore options))
-  (a:with-gensyms (context-binding)
+  (u:with-gensyms (context-binding)
     (destructuring-bind (&key on-create on-destroy scene options) (car body)
       `(progn
          (defclass ,name (context) ())

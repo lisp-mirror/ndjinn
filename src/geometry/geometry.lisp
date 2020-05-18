@@ -1,4 +1,4 @@
-(in-package #:pyx)
+(in-package #:net.mfiano.lisp.pyx)
 
 (defun make-geometry (name)
   (funcall (u:href =geometry= name)))

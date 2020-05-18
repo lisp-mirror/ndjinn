@@ -1,4 +1,4 @@
-(in-package #:pyx)
+(in-package #:net.mfiano.lisp.pyx)
 
 (glob:define-global-var =cpu= "Unknown")
 (glob:define-global-var =cpu-count= 1)
@@ -57,6 +57,6 @@
         =max-ssbo-bindings= (get-gpu/max-ssbo-bindings)))
 
 (defun get-hardware-info (key)
-  (let ((global (a:format-symbol :pyx "=~a=" key)))
+  (let ((global (u:format-symbol :net.mfiano.lisp.pyx "=~a=" key)))
     (when (boundp global)
       (symbol-value global))))

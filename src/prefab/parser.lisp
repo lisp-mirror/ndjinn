@@ -1,4 +1,4 @@
-(in-package #:pyx)
+(in-package #:net.mfiano.lisp.pyx)
 
 ;;; Begin parsing the raw data of the prefab. If any part of the parsing fails,
 ;;; clean up by removing the prefab entry from the metadata store.
@@ -51,7 +51,7 @@
 (defun parse-prefab-node-templates (prefab)
   (u:do-hash-values (node (nodes prefab))
     (with-slots (%path %options %template) node
-      (a:when-let ((spec (getf %options :template)))
+      (u:when-let ((spec (getf %options :template)))
         (setf %template (find-prefab-node-template spec %path))))))
 
 ;;; Populate the prefab with the implicit nodes. Prefab nodes before this step
@@ -86,7 +86,7 @@
                                             :parent parent
                                             :template node)))))))))
     (u:do-hash-values (node (nodes prefab))
-      (a:when-let ((template (template node)))
+      (u:when-let ((template (template node)))
         (populate (u:href (nodes prefab) (path node)) template)))))
 
 ;;; Record the dependencies of a prefab. This iterates over all nodes and if it
@@ -112,7 +112,7 @@
     (dolist (master-spec old-masters)
       (let ((master (u:href =prefabs= master-spec)))
         (unless (find master-spec (masters prefab))
-          (a:deletef (slaves master) (name prefab)))))))
+          (u:deletef (slaves master) (name prefab)))))))
 
 ;;; Resolve the component types of all nodes. This iterates over all nodes and
 ;;; combines the specified types of that node with the resolved types of its
@@ -138,7 +138,7 @@
                       not a defined component."
                      (name prefab)
                      type))
-            (a:deletef types type))
+            (u:deletef types type))
           (dolist (type add)
             (unless (u:href =component-order= type)
               (error "Cannot add component to prefab ~s: ~s is not a defined ~
@@ -205,6 +205,6 @@
                                    :collect `(lambda () ,v))))
                       ,(when children
                          `(list ,@(mapcar #'process children)))))))
-    `(macrolet ((,(a:symbolicate "@") (&rest path/query)
+    `(macrolet ((,(u:symbolicate "@") (&rest path/query)
                   `(make-prefab-reference ',path/query)))
        (list ,@(mapcar #'process (list (list* (list* name options) data)))))))

@@ -1,4 +1,4 @@
-(in-package #:pyx-examples.shader)
+(in-package #:net.mfiano.lisp.pyx.examples.shader)
 
 (defun multi-pass/vert ((pos :vec3)
                         (uv :vec2)
@@ -16,5 +16,5 @@
     (vec4 (vec3 (- 1 (.rgb color))) (.a color))))
 
 (define-shader multi-pass ()
-  (:vertex (pyx.shader:full-quad/vert :vec3 :vec2))
+  (:vertex (full-quad/vert :vec3 :vec2))
   (:fragment (multi-pass/frag :vec2)))

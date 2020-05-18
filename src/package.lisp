@@ -1,117 +1,34 @@
 (in-package #:cl-user)
 
-(defpackage #:pyx.package
-  (:use #:cl)
-  (:export
-   #:define-package))
+(uiop:define-package #:net.mfiano.lisp.pyx.shader
+  (:use-reexport
+   #:net.mfiano.lisp.shadow.glsl
+   #:net.mfiano.lisp.umbra.common))
 
-(in-package #:pyx.package)
-
-(defmacro define-package (package &body body)
-  `(defpackage ,package
-     ,@(mapcan
-        (lambda (x)
-          (destructuring-bind (option . items) x
-            (case option
-              (:inherit-from
-               (destructuring-bind (from . symbols) items
-                 `((:import-from ,from ,@symbols)
-                   (:export ,@symbols))))
-              (t `(,x)))))
-        body)))
-
-(define-package #:pyx.component
+(defpackage #:net.mfiano.lisp.pyx
   (:local-nicknames
-   (#:~ #:origin.swizzle)
-   (#:a #:alexandria)
-   (#:avl #:avl-tree)
-   (#:m4 #:origin.mat4)
-   (#:math #:origin)
-   (#:q #:origin.quat)
-   (#:u #:golden-utils)
-   (#:v2 #:origin.vec2)
-   (#:v3 #:origin.vec3)
-   (#:v4 #:origin.vec4))
-  (:use #:cl)
-  ;; camera
-  (:export
-   #:camera
-   #:get-camera-zoom
-   #:zoom-camera)
-  ;; collider
-  (:export
-   #:collider)
-  ;; font
-  (:export
-   #:font)
-  ;; geometry
-  (:export
-   #:geometry)
-  ;; id
-  (:export
-   #:id)
-  ;; mesh
-  (:export
-   #:mesh)
-  ;; mouse-control
-  (:export
-   #:mouse-control)
-  ;; node
-  (:export
-   #:node
-   #:node/children
-   #:node/parent)
-  ;; render
-  (:export
-   #:render)
-  ;; sprite
-  (:export
-   #:sprite)
-  ;; transform
-  (:export
-   #:get-rotation
-   #:get-scale
-   #:get-translation
-   #:resolve-normal-matrix
-   #:rotate-entity
-   #:rotate-entity/velocity
-   #:scale-entity
-   #:scale-entity/velocity
-   #:transform
-   #:transform-node
-   #:transform-direction
-   #:transform-point
-   #:transform-vector
-   #:translate-entity
-   #:translate-entity/velocity))
-
-(uiop:define-package #:pyx.shader
-  (:use-reexport #:shadow.glsl #:umbra.common))
-
-(define-package #:pyx
-  (:local-nicknames
-   (#:a #:alexandria)
-   (#:avl #:avl-tree)
-   (#:comp #:pyx.component)
+   (#:avl #:net.mfiano.lisp.algae.avl-tree)
    (#:ff #:filtered-functions)
    (#:font #:3b-bmfont)
    (#:glob #:global-vars)
    (#:gph #:cl-graph)
    (#:lp #:lparallel)
    (#:lpq #:lparallel.queue)
-   (#:m3 #:origin.mat3)
-   (#:m4 #:origin.mat4)
-   (#:math #:origin)
-   (#:q #:origin.quat)
+   (#:m3 #:net.mfiano.lisp.origin.mat3)
+   (#:m4 #:net.mfiano.lisp.origin.mat4)
+   (#:math #:net.mfiano.lisp.origin)
+   (#:q #:net.mfiano.lisp.origin.quat)
+   (#:shadow #:net.mfiano.lisp.shadow)
+   (#:shader #:net.mfiano.lisp.pyx.shader)
+   (#:umbra.sprite #:net.mfiano.lisp.umbra.sprite)
    (#:ss #:split-sequence)
    (#:sv #:static-vectors)
-   (#:u #:golden-utils)
-   (#:v2 #:origin.vec2)
-   (#:v3 #:origin.vec3)
-   (#:v4 #:origin.vec4))
+   (#:u #:net.mfiano.lisp.golden-utils)
+   (#:v2 #:net.mfiano.lisp.origin.vec2)
+   (#:v3 #:net.mfiano.lisp.origin.vec3)
+   (#:v4 #:net.mfiano.lisp.origin.vec4))
   (:use #:cl)
-  (:inherit-from
-   #:pyx.component
+  (:export
    ;; types
    #:camera
    #:collider

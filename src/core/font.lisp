@@ -1,4 +1,4 @@
-(in-package #:pyx)
+(in-package #:net.mfiano.lisp.pyx)
 
 (defun calculate-font-space-width (font-spec)
   (let ((chars (font:chars font-spec)))

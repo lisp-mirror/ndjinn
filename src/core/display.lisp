@@ -1,4 +1,4 @@
-(in-package #:pyx)
+(in-package #:net.mfiano.lisp.pyx)
 
 (defclass display ()
   ((%window :reader window
@@ -45,13 +45,13 @@
     (setf (display) display)))
 
 (defun kill-display ()
-  (a:when-let ((display (display)))
+  (u:when-let ((display (display)))
     (sdl2:gl-delete-context (context display))
     (sdl2:destroy-window (window display)))
   (sdl2:sdl-quit))
 
 (defun render (display)
-  (comp::render-frame)
+  (render-frame)
   (sdl2:gl-swap-window (window display))
   (incf (clock-frame-count (clock))))
 

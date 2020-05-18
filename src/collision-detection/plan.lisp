@@ -1,4 +1,4 @@
-(in-package #:pyx)
+(in-package #:net.mfiano.lisp.pyx)
 
 (defclass collider-plan-spec ()
   ((%name :reader name
@@ -22,7 +22,7 @@
           (unless (find x layers)
             (error "Collider plan layer ~s is not registered." x))
           (when (find k (u:href (table spec) x))
-            (a:deletef v x)))
+            (u:deletef v x)))
         (when v
           (setf (u:href (table spec) k) v))))))
 

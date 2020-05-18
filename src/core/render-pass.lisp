@@ -1,4 +1,4 @@
-(in-package #:pyx)
+(in-package #:net.mfiano.lisp.pyx)
 
 (defclass render-pass-spec ()
   ((%name :reader name
@@ -18,7 +18,7 @@
           (clear-color spec) (or clear-color (v4:vec 0 0 0 1))
           (clear-buffers spec) (mapcar
                                 (lambda (x)
-                                  (a:format-symbol :keyword "~a-BUFFER" x))
+                                  (u:format-symbol :keyword "~a-BUFFER" x))
                                 (or clear-buffers '(:color :depth))))))
 
 (defun make-render-pass-spec (name framebuffer-name clear-color clear-buffers)

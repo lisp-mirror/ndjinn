@@ -1,4 +1,4 @@
-(in-package #:pyx-examples.shader)
+(in-package #:net.mfiano.lisp.pyx.examples.shader)
 
 (defun effect/truchet/hash ((p :vec2))
   (let* ((p (fract (* p (vec2 385.18692 958.5519))))
@@ -32,5 +32,5 @@
     (vec4 (* noise mask) 1)))
 
 (define-shader effect/truchet ()
-  (:vertex (pyx.shader:full-quad-no-uv/vert :vec3))
+  (:vertex (full-quad-no-uv/vert :vec3))
   (:fragment (effect/truchet/frag)))

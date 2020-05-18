@@ -1,4 +1,4 @@
-(in-package #:pyx)
+(in-package #:net.mfiano.lisp.pyx)
 
 (glob:define-global-var =component-order= (u:dict #'eq))
 (glob:define-global-var =component-initargs= (u:dict #'eq))
@@ -32,7 +32,7 @@
 (defun compute-component-accessors (type)
   (labels ((get-all-direct-slots (class)
              (append (c2mop:class-direct-slots class)
-                     (a:mappend #'get-all-direct-slots
+                     (u:mappend #'get-all-direct-slots
                                 (c2mop:class-direct-superclasses class)))))
     (let* ((class (c2mop:ensure-finalized (find-class type)))
            (slots (get-all-direct-slots class)))
@@ -44,7 +44,7 @@
                    (not (eq (nth-value 1 (find-symbol (symbol-name x)
                                                       (symbol-package x)))
                             :external)))))
-        (a:mappend (lambda (x)
+        (u:mappend (lambda (x)
                      (append (c2mop:slot-definition-readers x)
                              (mapcar #'second
                                      (c2mop:slot-definition-writers x))))
@@ -72,11 +72,11 @@
     (push (find-method #'shared-initialize '(:around) (list class t) nil)
           methods)
     (remove-duplicates
-     (union (a:mappend #'c2mop:slot-definition-initargs
+     (union (u:mappend #'c2mop:slot-definition-initargs
                        (c2mop:class-slots class))
             (mapcan
              (lambda (x)
-               (mapcar #'a:make-keyword
+               (mapcar #'u:make-keyword
                        (rest (member '&key (c2mop:method-lambda-list x)))))
              (remove nil methods))))))
 
@@ -89,7 +89,7 @@
     (dolist (slot slots)
       (loop :for (k v) :on (cdr slot) :by #'cddr
             :when (eq k :initarg)
-              :do (a:if-let ((cached-type (u:href =component-initargs= v)))
+              :do (u:if-let ((cached-type (u:href =component-initargs= v)))
                     (unwind-protect
                          (error "Component initarg ~s of component ~s is ~
                                  already in use by component ~s."
@@ -111,8 +111,8 @@
            (track-component-initargs ',name ',slots)
            (defclass ,name ,super-classes ,slots ,@class-options)
            (setf (u:href =component-order= ',name)
-                 '(:before ,(a:ensure-list before)
-                   :after ,(a:ensure-list after)))
+                 '(:before ,(u:ensure-list before)
+                   :after ,(u:ensure-list after)))
            (unless (typep ',static 'boolean)
              (error ":STATIC must be either T or NIL."))
            ,@(when (eq static t)

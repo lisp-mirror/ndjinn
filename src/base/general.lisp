@@ -1,4 +1,4 @@
-(in-package #:pyx)
+(in-package #:net.mfiano.lisp.pyx)
 
 (defmacro make-nested-dict (test-func &rest keys)
   `(u:dict ,test-func ,@(mapcan (lambda (x) `(,x (u:dict ,test-func))) keys)))

@@ -1,4 +1,4 @@
-(in-package #:pyx)
+(in-package #:net.mfiano.lisp.pyx)
 
 (glob:define-global-var =mixin-classes= (u:dict #'equal))
 

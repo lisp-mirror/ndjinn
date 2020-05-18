@@ -1,4 +1,4 @@
-(in-package #:pyx)
+(in-package #:net.mfiano.lisp.pyx)
 
 (defclass input-data ()
   ((%gamepad-instances :reader gamepad-instances

@@ -1,4 +1,4 @@
-(in-package #:pyx-examples.shader)
+(in-package #:net.mfiano.lisp.pyx.examples.shader)
 
 (defun effect/toroidal-trip/check-ray ((distance :float))
   (< distance 1e-3))
@@ -58,5 +58,5 @@
       (vec4 color 1))))
 
 (define-shader effect/toroidal-trip ()
-  (:vertex (pyx.shader:full-quad-no-uv/vert :vec3))
+  (:vertex (full-quad-no-uv/vert :vec3))
   (:fragment (effect/toroidal-trip/frag)))

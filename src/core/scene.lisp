@@ -1,4 +1,4 @@
-(in-package #:pyx)
+(in-package #:net.mfiano.lisp.pyx)
 
 ;;; spec
 
@@ -33,7 +33,7 @@
                      sub-trees))
          (viewports (or viewports `((default ,(mapcar #'car sub-trees))))))
     (dolist (pass passes)
-      (a:if-let ((pass-spec (u:href =render-passes= pass)))
+      (u:if-let ((pass-spec (u:href =render-passes= pass)))
         (setf (u:href pass-table pass) pass-spec)
         (error "Render pass ~s not defined." pass)))
     (setf (sub-trees spec) sub-trees
@@ -56,8 +56,8 @@
     (with-slots (%spec %prefabs %loaded-p) scene
       (when (eq data (name %spec))
         (u:do-hash-values (entities %prefabs)
-          (map nil #'comp::delete-node entities))
-        (comp::delete-node (node-tree scene))
+          (map nil #'delete-node entities))
+        (delete-node (node-tree scene))
         (setf %loaded-p nil)
         (load-scene data)))))
 

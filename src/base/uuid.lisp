@@ -1,4 +1,4 @@
-(in-package #:pyx)
+(in-package #:net.mfiano.lisp.pyx)
 
 (defstruct (uuid (:constructor %make-uuid)
                  (:predicate nil)

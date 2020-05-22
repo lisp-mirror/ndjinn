@@ -27,7 +27,7 @@
                   :initform 45f0)
    (%camera/zoom :reader camera/zoom
                  :initarg :camera/zoom
-                 :initform 1)
+                 :initform 1f0)
    (%camera/target :reader camera/target
                    :initarg :camera/target
                    :initform nil)

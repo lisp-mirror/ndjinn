@@ -24,6 +24,7 @@
    (#:ss #:split-sequence)
    (#:sv #:static-vectors)
    (#:u #:net.mfiano.lisp.golden-utils)
+   (#:uuid #:net.mfiano.lisp.algae.uuid)
    (#:v2 #:net.mfiano.lisp.origin.vec2)
    (#:v3 #:net.mfiano.lisp.origin.vec3)
    (#:v4 #:net.mfiano.lisp.origin.vec4))

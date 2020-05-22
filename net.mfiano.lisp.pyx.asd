@@ -41,7 +41,6 @@
      (:file "thread-pool")
      (:file "live-support")
      (:file "parser")
-     (:file "uuid")
      (:file "asset")))
    (:module "input"
     :components

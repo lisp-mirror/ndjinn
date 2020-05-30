@@ -10,6 +10,7 @@
 
 (defpackage #:net.mfiano.lisp.pyx.examples
   (:local-nicknames
+   (#:dun #:net.mfiano.lisp.dungen)
    (#:math #:net.mfiano.lisp.origin)
    (#:q #:net.mfiano.lisp.origin.quat)
    (#:res #:net.mfiano.lisp.pyx.resources)

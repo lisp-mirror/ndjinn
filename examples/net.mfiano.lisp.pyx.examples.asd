@@ -6,7 +6,7 @@
   :source-control (:git "https://github.com/mfiano/pyx")
   :bug-tracker "https://github.com/mfiano/pyx/issues"
   :encoding :utf-8
-  :depends-on (#:dungen
+  :depends-on (#:net.mfiano.lisp.dungen
                #:net.mfiano.lisp.pyx
                #:net.mfiano.lisp.pyx.resources)
   :pathname "src"

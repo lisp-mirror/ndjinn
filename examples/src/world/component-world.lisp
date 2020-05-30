@@ -9,7 +9,7 @@
             :initform 149)
    (%seed :reader seed
           :initarg :world/seed
-          :initform (dungen:make-seed))
+          :initform (dun:make-seed))
    (%density :reader density
              :initarg :world/density
              :initform 0.5)
@@ -38,9 +38,9 @@
 
 (defun analyze-world (world data)
   (with-slots (%cell-counts) world
-    (with-accessors ((width dungen:stage-width)
-                     (height dungen:stage-height)
-                     (grid dungen:stage-grid))
+    (with-accessors ((width dun:stage-width)
+                     (height dun:stage-height)
+                     (grid dun:stage-grid))
         data
       (let (walls floors doors/v doors/h)
         (dotimes (x width)
@@ -49,11 +49,11 @@
                    (coords (vector x y)))
               (push coords floors)
               (cond
-                ((dungen:has-feature-p cell :wall)
+                ((dun:has-feature-p cell :wall)
                  (push coords walls))
-                ((dungen:has-feature-p cell :door/vertical)
+                ((dun:has-feature-p cell :door/vertical)
                  (push coords doors/v))
-                ((dungen:has-feature-p cell :door/horizontal)
+                ((dun:has-feature-p cell :door/horizontal)
                  (push coords doors/h))))))
         (setf (u:href %cell-counts :tiles/wall) (length walls)
               (u:href %cell-counts :tiles/floor) (length floors)
@@ -65,7 +65,7 @@
   (with-slots (%width %height %buffer-name) object
     (destructuring-bind (type name) %buffer-name
       (declare (ignore type))
-      (u:mvlet* ((data (apply #'dungen:make-stage name))
+      (u:mvlet* ((data (apply #'dun:make-stage name))
                  (walls floors doors/v doors/h (analyze-world object data)))
         (pyx:write-shader-buffer %buffer-name :width (list %width))
         (pyx:write-shader-buffer %buffer-name :height (list %height))

@@ -107,7 +107,7 @@
     (deregister-render-order viewport entity)))
 
 (define-entity-hook :pre-render (entity render)
-  (u:when-let ((camera (camera (active (get-viewport-manager)))))
+  (u:when-let ((camera (get-current-camera)))
     (when (has-component-p camera 'camera)
       (set-uniforms entity
                     :view (camera/view camera)

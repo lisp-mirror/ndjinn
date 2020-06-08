@@ -126,7 +126,7 @@
       (setf (camera entity-viewport) entity))
     (when camera/free-look
       (setf camera/free-look-state (make-free-look-state entity)))
-    (setf camera/fov-y (float (* camera/fov-y (/ pi 180)) 1f0)
+    (setf camera/fov-y (* camera/fov-y math:+deg+)
           camera/clip-near (float camera/clip-near 1f0)
           camera/clip-far (float camera/clip-far 1f0)
           camera/viewport entity-viewport)

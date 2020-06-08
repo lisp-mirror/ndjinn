@@ -17,7 +17,7 @@
    (%shaders :accessor %shaders)
    (%running :accessor %running
              :initform t)
-   (%user-data :accessor user-data
+   (%user-data :accessor %user-data
                :initform nil)))
 
 (defun make-context (context-name)
@@ -94,3 +94,9 @@
 
 (defun (setf running-p) (value)
   (setf (%running *context*) value))
+
+(defun user-data ()
+  (%user-data *context*))
+
+(defun (setf user-data) (value)
+  (setf (%user-data *context*) value))

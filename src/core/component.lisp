@@ -4,16 +4,15 @@
 (glob:define-global-var =component-initargs= (u:dict #'eq))
 (glob:define-global-var =static-components= nil)
 
-(defun compute-component-type-order (types)
+(defun sort-component-types (order-table types)
   (flet ((dag-p (graph)
            (unless (or (gph:find-edge-if graph #'gph:undirected-edge-p)
                        (gph:find-vertex-if
                         graph
                         (lambda (x) (gph:in-cycle-p graph x)))))))
     (let ((graph (gph:make-graph 'gph:graph-container
-                                 :default-edge-type :directed))
-          (types (append =static-components= types)))
-      (u:do-hash (type order =component-type-order=)
+                                 :default-edge-type :directed)))
+      (u:do-hash (type order order-table)
         (gph:add-vertex graph type)
         (destructuring-bind (&key before after) order
           (dolist (x before)
@@ -25,6 +24,10 @@
       (remove-if-not
        (lambda (x) (find x types))
        (mapcar #'gph:element (gph:topological-sort graph))))))
+
+(defun compute-component-type-order (types)
+  (sort-component-types =component-type-order=
+                        (append =static-components= types)))
 
 (defun compute-total-component-type-order ()
   (compute-component-type-order (u:hash-keys =component-type-order=)))

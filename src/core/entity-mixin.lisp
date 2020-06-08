@@ -31,7 +31,7 @@
 (defun make-mixin-class-list (classes)
   (mapcar
    #'find-mixin-class
-   (compute-component-order (mapcar #'find-mixin-class-names classes))))
+   (compute-component-type-order (mapcar #'find-mixin-class-names classes))))
 
 (defun make-mixin-class (classes)
   (let* ((superclasses (cons (find-class 'mixin) classes))

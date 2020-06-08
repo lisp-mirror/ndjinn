@@ -16,7 +16,7 @@
                             :initform 0)
    (%collider/hit-p :accessor collider/hit-p
                     :initform nil))
-  (:sorting :after render))
+  (:type-order :after render))
 
 (define-material collider ()
   (:shader shader:collider

@@ -9,7 +9,7 @@
                         :initform 1)
    (%geometry/geometry :accessor geometry/geometry
                        :initform nil))
-  (:sorting :after render))
+  (:type-order :after render))
 
 ;;; entity hooks
 

@@ -11,7 +11,7 @@
                 :initform nil)
    (%id/uuid :reader id/uuid
              :initform (uuid:make-uuid)))
-  (:sorting :after node)
+  (:type-order :after node)
   (:static t))
 
 (u:define-printer (mixin stream :type nil)

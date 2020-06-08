@@ -48,7 +48,7 @@
                             :initform nil)
    (%camera/zoom-p :accessor camera/zoom-p
                    :initform nil))
-  (:sorting :before render :after transform))
+  (:type-order :before render :after transform))
 
 (defun set-camera-projection (entity)
   (%set-camera-projection entity (camera/mode entity)))

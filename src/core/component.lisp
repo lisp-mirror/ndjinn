@@ -1,10 +1,10 @@
 (in-package #:net.mfiano.lisp.pyx)
 
-(glob:define-global-var =component-order= (u:dict #'eq))
+(glob:define-global-var =component-type-order= (u:dict #'eq))
 (glob:define-global-var =component-initargs= (u:dict #'eq))
 (glob:define-global-var =static-components= nil)
 
-(defun compute-component-order (types)
+(defun compute-component-type-order (types)
   (flet ((dag-p (graph)
            (unless (or (gph:find-edge-if graph #'gph:undirected-edge-p)
                        (gph:find-vertex-if
@@ -13,7 +13,7 @@
     (let ((graph (gph:make-graph 'gph:graph-container
                                  :default-edge-type :directed))
           (types (append =static-components= types)))
-      (u:do-hash (type order =component-order=)
+      (u:do-hash (type order =component-type-order=)
         (gph:add-vertex graph type)
         (destructuring-bind (&key before after) order
           (dolist (x before)
@@ -26,8 +26,8 @@
        (lambda (x) (find x types))
        (mapcar #'gph:element (gph:topological-sort graph))))))
 
-(defun compute-all-components-order ()
-  (compute-component-order (u:hash-keys =component-order=)))
+(defun compute-total-component-type-order ()
+  (compute-component-type-order (u:hash-keys =component-type-order=)))
 
 (defun compute-component-accessors (type)
   (labels ((get-all-direct-slots (class)
@@ -99,18 +99,18 @@
 
 (defmacro define-component (name super-classes &body slots/options)
   (destructuring-bind (&optional slots . options) slots/options
-    (let ((sorting (cdr (find :sorting options :key #'car)))
+    (let ((type-order (cdr (find :type-order options :key #'car)))
           (static (cadr (find :static options :key #'car)))
           (class-options (remove-if
-                          (lambda (x) (find x '(:sorting :static)))
+                          (lambda (x) (find x '(:type-order :static)))
                           options
                           :key #'car)))
-      (destructuring-bind (&key before after) sorting
+      (destructuring-bind (&key before after) type-order
         (declare (ignorable before after))
         `(u:eval-always
            (track-component-initargs ',name ',slots)
            (defclass ,name ,super-classes ,slots ,@class-options)
-           (setf (u:href =component-order= ',name)
+           (setf (u:href =component-type-order= ',name)
                  '(:before ,(u:ensure-list before)
                    :after ,(u:ensure-list after)))
            (unless (typep ',static 'boolean)

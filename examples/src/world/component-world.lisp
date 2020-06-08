@@ -28,7 +28,7 @@
    (%cell-counts :reader cell-counts
                  :initform (u:dict #'eq))
    (%buffer-name :accessor buffer-name))
-  (:sorting :before pyx:mesh :after pyx:render))
+  (:type-order :before pyx:mesh :after pyx:render))
 
 (pyx:define-entity-query-types world
   (:cell-count (:tiles/wall :tiles/floor :tiles/door-v :tiles/door-h)))

@@ -70,7 +70,7 @@
   (:method progn (entity type)))
 
 (defmacro make-entity ((&rest components) &body body)
-  (let ((components (compute-component-order components)))
+  (let ((components (compute-component-type-order components)))
     `(%make-entity ',components (u:plist->hash (list ,@body) :test #'eq))))
 
 (defmacro do-nodes ((entity &key parent) &body body)

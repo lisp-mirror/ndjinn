@@ -13,7 +13,7 @@
                      :initform (m4:mat 1))
    (%transform/normal-matrix :reader transform/normal-matrix
                              :initform (m4:mat 1)))
-  (:sorting :after node)
+  (:type-order :after node)
   (:static t))
 
 (defmethod shared-initialize :after ((instance transform) slot-names

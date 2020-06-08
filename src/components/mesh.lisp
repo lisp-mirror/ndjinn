@@ -12,7 +12,7 @@
                     :initarg :mesh/instances
                     :initform 1)
    (%mesh/primitive :accessor mesh/primitive))
-  (:sorting :after render))
+  (:type-order :after render))
 
 ;;; entity hooks
 

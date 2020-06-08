@@ -19,7 +19,7 @@
                       :initform nil)
    (%font/dimensions :accessor font/dimensions
                      :initform (v2:vec)))
-  (:sorting :before geometry :after render))
+  (:type-order :before geometry :after render))
 
 (define-geometry-layout text ()
   (:data (:format interleaved)

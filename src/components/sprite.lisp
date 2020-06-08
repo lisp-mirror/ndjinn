@@ -27,7 +27,7 @@
                     :initform 0)
    (%sprite/pause :accessor sprite/pause
                   :initform nil))
-  (:sorting :after render))
+  (:type-order :after render))
 
 ;;; entity hooks
 

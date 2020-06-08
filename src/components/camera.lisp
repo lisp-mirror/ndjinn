@@ -105,7 +105,8 @@
         (set-initial-free-look-orientation free-look-state model)))))
 
 (defun get-current-camera ()
-  (camera (active (get-viewport-manager))))
+  (u:when-let ((viewport (active (get-viewport-manager))))
+    (camera viewport)))
 
 (defun zoom-camera (entity direction min max)
   (with-slots (%camera/zoom) entity

@@ -58,6 +58,7 @@
    #:translate-entity/velocity
    ;; camera
    #:get-camera-zoom
+   #:get-current-camera
    #:zoom-camera)
   ;; asset
   (:export

@@ -24,8 +24,9 @@
 (defun update ()
   (let ((alpha (get-alpha)))
     (do-nodes (node)
-      (resolve-model node alpha)
-      (on-update node))))
+      (on-update node))
+    (do-nodes (node)
+      (resolve-model node alpha))))
 
 (defun physics-update ()
   (map-nodes #'on-physics-update)

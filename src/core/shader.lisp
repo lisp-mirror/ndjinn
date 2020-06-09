@@ -59,3 +59,12 @@
 
 (defun clear-shader-buffer (key)
   (shadow:clear-buffer key))
+
+(defmacro with-shader-buffer (key &body body)
+  (u:with-gensyms (binding)
+    `(let ((,binding (u:href (buffer-bindings (shaders)) ,key)))
+       (shadow:bind-block ,key ,binding)
+       (shadow:bind-buffer ,key ,binding)
+       ,@body
+       (shadow:unbind-buffer ,key)
+       (shadow::unbind-block ,key))))

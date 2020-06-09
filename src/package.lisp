@@ -154,6 +154,7 @@
    #:make-shader-buffer
    #:read-shader-buffer
    #:update-shader-buffer
+   #:with-shader-buffer
    #:write-shader-buffer)
   ;; texture
   (:export

@@ -47,7 +47,8 @@
     (shadow:create-block-alias :buffer block-id shader key)
     (shadow:bind-block key binding)
     (shadow:create-buffer key key)
-    (shadow:bind-buffer key binding)))
+    (shadow:bind-buffer key binding)
+    binding))
 
 (defgeneric update-shader-buffer (object))
 

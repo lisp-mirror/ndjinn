@@ -153,10 +153,12 @@
    #:switch-scene)
   ;; shader
   (:export
+   #:bind-shader-buffer
    #:clear-shader-buffer
    #:delete-shader-buffer
    #:make-shader-buffer
    #:read-shader-buffer
+   #:unbind-shader-buffer
    #:update-shader-buffer
    #:with-shader-buffers
    #:write-shader-buffer)

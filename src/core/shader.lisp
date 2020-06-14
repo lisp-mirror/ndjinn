@@ -61,6 +61,15 @@
 (defun clear-shader-buffer (key)
   (shadow:clear-buffer key))
 
+(defun bind-shader-buffer (key)
+  (let ((binding (u:href (buffer-bindings (shaders)) key)))
+    (shadow:bind-block key binding)
+    (shadow:bind-buffer key binding)))
+
+(defun unbind-shader-buffer (key)
+  (shadow:unbind-buffer key)
+  (shadow:unbind-block key))
+
 (defmacro with-shader-buffers ((&rest keys) &body body)
   (u:with-gensyms (table)
     (let ((key-syms (mapcar (lambda (x) (list (u:make-gensym x) x)) keys)))
@@ -73,5 +82,5 @@
          ,@body
          ,@(mapcar
             (lambda (x)
-              `(shadow:unbind-block ,(car x)))
+              `(unbind-shader-buffer ,(car x)))
             key-syms)))))

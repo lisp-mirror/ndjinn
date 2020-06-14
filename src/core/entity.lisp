@@ -32,7 +32,7 @@
 
 (defun get-flow-hook-parameters (hook entity type)
   (ecase hook
-    ((:create :delete :physics-update :update :pre-render :render)
+    ((:create :delete :physics-update :update :pre-render :render :post-render)
      `((,entity ,type)))
     ((:attach :detach)
      `(,entity (type (eql ',type))))))
@@ -58,6 +58,10 @@
   (:method progn (entity)))
 
 (defgeneric on-render (entity)
+  (:method-combination progn :most-specific-last)
+  (:method progn (entity)))
+
+(defgeneric on-post-render (entity)
   (:method-combination progn :most-specific-last)
   (:method progn (entity)))
 

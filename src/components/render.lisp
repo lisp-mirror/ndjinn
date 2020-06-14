@@ -81,6 +81,7 @@
                  (u:do-hash-values (v (uniforms ,material))
                    (resolve-uniform-func ,entity v))
                  (on-render ,entity)
+                 (on-post-render ,entity)
                  (setf (texture-unit-state ,material) 0)
                  ,@(when disable
                      `((gl:enable ,@disable)))

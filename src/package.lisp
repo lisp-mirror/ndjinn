@@ -60,6 +60,10 @@
    #:get-camera-zoom
    #:get-current-camera
    #:zoom-camera)
+  ;; id
+  (:export
+   #:get-display-id
+   #:get-uuid)
   ;; asset
   (:export
    #:define-asset-pool

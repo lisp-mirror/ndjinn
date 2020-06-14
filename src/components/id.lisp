@@ -59,13 +59,18 @@
   (:method ((uuid string))
     (u:href (uuids (current-scene)) (uuid:string->uuid uuid))))
 
+(defun get-display-id (entity)
+  (id/display entity))
+
+(defun get-uuid (entity)
+  (uuid:uuid->string (id/uuid entity)))
+
 ;;; entity hooks
 
 (define-entity-hook :create (entity id)
   (register-uuid entity)
   (register-views entity)
   (register-contact entity))
-
 
 (define-entity-hook :delete (entity id)
   (deregister-uuid entity)

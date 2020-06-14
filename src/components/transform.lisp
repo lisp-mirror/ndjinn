@@ -68,21 +68,31 @@
 (define-entity-hook :pre-render (entity transform)
   (set-uniforms entity :model transform/model))
 
-(defun get-rotation (entity)
-  (current (transform/rotation entity)))
+(defun get-translation (entity &key (space :local))
+  (m4:get-translation
+   (ecase space
+     (:local (transform/local entity))
+     (:model (transform/model entity)))))
 
-(defun get-scale (entity)
-  (current (transform/scale entity)))
+(defun get-rotation (entity &key (space :local))
+  (q:from-mat4
+   (ecase space
+     (:local (transform/local entity))
+     (:model (transform/model entity)))))
 
-(defun get-translation (entity)
-  (current (transform/translation entity)))
+(defun get-scale (entity &key (space :local))
+  (m4:get-scale
+   (ecase space
+     (:local (transform/local entity))
+     (:model (transform/model entity)))))
 
 (defun translate-entity (entity vec &key replace instant)
   (let ((state (transform/translation entity)))
     (symbol-macrolet ((current (current state)))
       (v3:+! current (if replace v3:+zero+ current) vec)
       (when instant
-        (v3:copy! (previous state) current)))))
+        (push (lambda () (v3:copy! (previous state) current))
+              (end-frame-work))))))
 
 (defun translate-entity/velocity (entity axis rate)
   (let ((state (transform/translation entity)))
@@ -93,7 +103,8 @@
     (symbol-macrolet ((current (current state)))
       (q:rotate! current (if replace q:+id+ current) quat)
       (when instant
-        (q:copy! (previous state) current)))))
+        (push (lambda () (v3:copy! (previous state) current))
+              (end-frame-work))))))
 
 (defun rotate-entity/velocity (entity axis rate)
   (let ((state (transform/rotation entity)))
@@ -104,7 +115,8 @@
     (symbol-macrolet ((current (current state)))
       (v3:+! current (if replace v3:+zero+ current) vec)
       (when instant
-        (v3:copy! (previous state) current)))))
+        (push (lambda () (v3:copy! (previous state) current))
+              (end-frame-work))))))
 
 (defun scale-entity/velocity (entity axis rate)
   (let ((state (transform/scale entity)))

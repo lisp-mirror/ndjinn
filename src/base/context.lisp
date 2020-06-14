@@ -17,6 +17,8 @@
    (%shaders :accessor %shaders)
    (%running :accessor %running
              :initform t)
+   (%end-frame-work :accessor %end-frame-work
+                    :initform nil)
    (%user-data :accessor %user-data
                :initform nil)))
 
@@ -94,6 +96,12 @@
 
 (defun (setf running-p) (value)
   (setf (%running *context*) value))
+
+(defun end-frame-work ()
+  (%end-frame-work *context*))
+
+(defun (setf end-frame-work) (value)
+  (setf (%end-frame-work *context*) value))
 
 (defun user-data ()
   (%user-data *context*))

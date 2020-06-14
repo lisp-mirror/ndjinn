@@ -21,10 +21,15 @@
   (shutdown-gamepads)
   (sdl2:quit))
 
+(defun process-end-frame-work ()
+  (map nil #'funcall (end-frame-work))
+  (setf (end-frame-work) nil))
+
 (defun update ()
   (let ((alpha (get-alpha)))
     (do-nodes (node)
       (on-update node))
+    (process-end-frame-work)
     (do-nodes (node)
       (resolve-model node alpha))))
 

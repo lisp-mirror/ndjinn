@@ -66,26 +66,11 @@
                                         1f0)
                                  (float (/ y 2) 1f0)))))
 
-(defun calculate-font-position (spec position dimensions offset)
-  (let* ((line-height (float (font:line-height spec) 1f0))
-         (viewport-size (get-viewport-dimensions))
-         (dims (v2:/ (v2:scale dimensions 2f0) viewport-size))
-         (offset (v2:scale (v2:/ offset viewport-size) line-height)))
-    (case position
-      (:top-left
-       (v2:+ (v2:vec -1 1) offset))
-      (:top-right
-       (v2:+ (v2:vec (- 1 (v2:x dims)) 1) offset))
-      (:bottom-left
-       (v2:+ (v2:vec -1 (1- (v2:y dims))) offset))
-      (:bottom-right
-       (v2:+ (v2:vec (- 1 (v2:x dims)) (1- (v2:y dims))) offset))
-      (:center-left
-       (v2:+ (v2:vec -1 (/ (v2:y dims) 2)) offset))
-      (:center-right
-       (v2:+ (v2:vec (- 1 (v2:x dims)) (/ (v2:y dims) 2)) offset))
-      (:center-top
-       (v2:+ (v2:vec (/ (v2:x dims) -2) 1) offset))
-      (:center-bottom
-       (v2:+ (v2:vec (/ (v2:x dims) -2) (1- (v2:y dims))) offset))
-      (t (v2:+ (v2:/ dims (v2:vec -2 2)) offset)))))
+(defun get-font-dimensions (font)
+  (font/dimensions font))
+
+(defun get-font-position (font)
+  (font/position font))
+
+(defun get-font-offset (font)
+  (font/offset font))

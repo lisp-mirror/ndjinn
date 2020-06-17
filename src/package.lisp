@@ -70,6 +70,11 @@
   (:export
    #:get-display-id
    #:get-uuid)
+  ;; font
+  (:export
+   #:get-font-dimensions
+   #:get-font-position
+   #:get-font-offset)
   ;; asset
   (:export
    #:define-asset-pool

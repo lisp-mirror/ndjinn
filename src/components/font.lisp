@@ -66,15 +66,6 @@
   (load-font-spec entity)
   (attach-component entity 'geometry :geometry/name 'text))
 
-(define-entity-hook :physics-update (entity font)
-  (translate-entity entity
-                    (v3:vec (calculate-font-position
-                             font/spec
-                             font/position
-                             font/dimensions
-                             font/offset))
-                    :replace t))
-
 (define-entity-hook :render (entity font)
   (when (debug-time-p)
     (u:mvlet* ((text (resolve-font-text entity))

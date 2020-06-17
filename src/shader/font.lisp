@@ -12,9 +12,8 @@
                   (model :mat4)
                   (view :mat4)
                   (proj :mat4)
-                  (res :vec2)
                   (sampler :sampler-2d))
-  (values (vec4 (.xy (* model (vec4 (/ pos res) 1 1))) -1 1)
+  (values (* proj model (vec4 pos 0 1))
           uv))
 
 (defun font/frag ((uv :vec2)

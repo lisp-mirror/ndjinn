@@ -41,8 +41,13 @@
    #:node
    #:render
    #:sprite
-   #:transform
-   ;; transform
+   #:transform)
+  ;; node
+  (:export
+   #:node/parent
+   #:node/children)
+  ;; transform
+  (:export
    #:get-rotation
    #:get-scale
    #:get-translation
@@ -55,8 +60,9 @@
    #:transform-point
    #:transform-vector
    #:translate-entity
-   #:translate-entity/velocity
-   ;; camera
+   #:translate-entity/velocity)
+  ;; camera
+  (:export
    #:get-camera-zoom
    #:get-current-camera
    #:zoom-camera)

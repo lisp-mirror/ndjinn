@@ -22,7 +22,7 @@
   (sdl2:quit))
 
 (defun process-end-frame-work ()
-  (map nil #'funcall (end-frame-work))
+  (map nil #'funcall (nreverse (end-frame-work)))
   (setf (end-frame-work) nil))
 
 (defun update ()

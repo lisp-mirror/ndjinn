@@ -79,12 +79,14 @@
                                node ~{~a~^/~} because of a conflict with the ~
                                existing child ~{~a~^/~}."
                               template-path (path parent) target-path)
-                       (setf (u:href (nodes prefab) target-path)
-                             (make-instance 'prefab-node
-                                            :prefab prefab
-                                            :path target-path
-                                            :parent parent
-                                            :template node)))))))))
+                       (let ((parent (u:href (nodes prefab)
+                                             (butlast target-path))))
+                         (setf (u:href (nodes prefab) target-path)
+                               (make-instance 'prefab-node
+                                              :prefab prefab
+                                              :path target-path
+                                              :parent parent
+                                              :template node))))))))))
     (u:do-hash-values (node (nodes prefab))
       (u:when-let ((template (template node)))
         (populate (u:href (nodes prefab) (path node)) template)))))

@@ -87,7 +87,7 @@
                                               :path target-path
                                               :parent parent
                                               :template node))))))))))
-    (u:do-hash-values (node (nodes prefab))
+    (u:do-hash-values (node (u:copy-hash-table (nodes prefab)))
       (u:when-let ((template (template node)))
         (populate (u:href (nodes prefab) (path node)) template)))))
 

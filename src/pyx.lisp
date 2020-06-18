@@ -57,9 +57,10 @@
         (render display)))))
 
 (defun start-engine (context-name)
-  (let ((*context* (make-context context-name)))
-    (unwind-protect (initialize)
-      (deinitialize))))
+  (unless (and *context* (running-p))
+    (let ((*context* (make-context context-name)))
+      (unwind-protect (initialize)
+        (deinitialize)))))
 
 (defun stop-engine ()
   (setf (running-p) nil))

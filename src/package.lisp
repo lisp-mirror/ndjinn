@@ -42,10 +42,6 @@
    #:render
    #:sprite
    #:transform)
-  ;; node
-  (:export
-   #:node/parent
-   #:node/children)
   ;; transform
   (:export
    #:get-rotation

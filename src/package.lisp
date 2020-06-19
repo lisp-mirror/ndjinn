@@ -126,6 +126,8 @@
   (:export
    #:define-geometry
    #:define-geometry-layout
+   #:geometry/dirty
+   #:geometry/instances
    #:update-geometry)
   ;; hardware
   (:export

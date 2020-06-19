@@ -113,6 +113,7 @@
    #:detach-components
    #:entity-children
    #:entity-parent
+   #:get-entity-count
    #:has-component-p
    #:make-entity)
   ;; framebuffer

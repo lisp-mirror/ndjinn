@@ -131,3 +131,6 @@
     `(defmethod ,method progn ,parameters
        (with-accessors ,accessors ,entity
          ,@body))))
+
+(defun get-entity-count ()
+  (hash-table-count (uuids (current-scene))))

@@ -13,8 +13,13 @@
    (%font/offset :reader font/offset
                  :initarg :font/offset
                  :initform (v2:vec))
+   (%font/rate :reader font/rate
+               :initarg :font/rate
+               :initform 0.5)
    (%font/spec :reader font/spec
                :initform nil)
+   (%font/update-time :accessor font/update-time
+                      :initform 0)
    (%font/buffer-data :accessor font/buffer-data
                       :initform nil)
    (%font/dimensions :accessor font/dimensions
@@ -66,12 +71,14 @@
   (load-font-spec entity)
   (attach-component entity 'geometry :geometry/name 'text))
 
-(define-entity-hook :render (entity font)
-  (when (debug-time-p)
-    (u:mvlet* ((text (resolve-font-text entity))
-               (func (funcall #'generate-font-data entity))
-               (width height (map-font-glyphs font/spec func text)))
-      (v2:with-components ((fd font/dimensions))
-        (setf fdx width fdy height))
-      (update-geometry (geometry/geometry entity) :data font/buffer-data)))
-  (setf font/buffer-data nil))
+(define-entity-hook :update (entity font)
+  (let ((time (get-running-time)))
+    (when (>= time (+ font/update-time font/rate))
+      (u:mvlet* ((text (resolve-font-text entity))
+                 (func (funcall #'generate-font-data entity))
+                 (width height (map-font-glyphs font/spec func text)))
+        (v2:with-components ((fd font/dimensions))
+          (setf fdx width fdy height))
+        (update-geometry (geometry/geometry entity) :data font/buffer-data))
+      (setf font/buffer-data nil
+            font/update-time time))))

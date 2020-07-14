@@ -7,7 +7,7 @@
 
 (defpackage #:net.mfiano.lisp.pyx
   (:local-nicknames
-   (#:avl #:net.mfiano.lisp.algae.avl-tree)
+   (#:avl #:net.mfiano.lisp.algae.data-structures.avl-tree)
    (#:ff #:filtered-functions)
    (#:font #:3b-bmfont)
    (#:glob #:global-vars)

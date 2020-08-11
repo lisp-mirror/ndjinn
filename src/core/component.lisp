@@ -6,10 +6,10 @@
 
 (defun sort-component-types (order-table types)
   (flet ((dag-p (graph)
-           (unless (or (gph:find-edge-if graph #'gph:undirected-edge-p)
-                       (gph:find-vertex-if
-                        graph
-                        (lambda (x) (gph:in-cycle-p graph x)))))))
+           (not (or (gph:find-edge-if graph #'gph:undirected-edge-p)
+                    (gph:find-vertex-if
+                     graph
+                     (lambda (x) (gph:in-cycle-p graph x)))))))
     (let ((graph (gph:make-graph 'gph:graph-container
                                  :default-edge-type :directed)))
       (u:do-hash (type order order-table)
@@ -20,7 +20,8 @@
           (dolist (x after)
             (gph:add-edge-between-vertexes graph x type))))
       (unless (dag-p graph)
-        "Component order cannot be computed because the graph is not a DAG.")
+        (error "Component order cannot be computed because the graph is not a ~
+                DAG."))
       (remove-if-not
        (lambda (x) (find x types))
        (mapcar #'gph:element (gph:topological-sort graph))))))

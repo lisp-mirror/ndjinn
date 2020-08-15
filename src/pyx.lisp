@@ -34,8 +34,8 @@
       (resolve-model node alpha))))
 
 (defun physics-update ()
-  (map-nodes #'on-physics-update)
   (do-nodes (node)
+    (on-physics-update node)
     (transform-node node))
   (compute-collisions))
 

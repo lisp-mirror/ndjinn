@@ -20,8 +20,6 @@
                :initform nil)
    (%font/update-time :accessor font/update-time
                       :initform 0)
-   (%font/buffer-data :accessor font/buffer-data
-                      :initform nil)
    (%font/dimensions :accessor font/dimensions
                      :initform (v2:vec)))
   (:type-order :before geometry :after render))
@@ -63,7 +61,7 @@
             (,x+ ,y+ ,u+ ,v+)
             (,x- ,y- ,u- ,v-)
             (,x+ ,y- ,u+ ,v-))
-          (font/buffer-data entity))))
+          (geometry/data entity))))
 
 ;;; entity hooks
 
@@ -78,7 +76,5 @@
                  (func (funcall #'generate-font-data entity))
                  (width height (map-font-glyphs font/spec func text)))
         (v2:with-components ((fd font/dimensions))
-          (setf fdx width fdy height))
-        (update-geometry (geometry/geometry entity) :data font/buffer-data))
-      (setf font/buffer-data nil
-            font/update-time time))))
+          (setf fdx width fdy height)))
+      (setf font/update-time time))))

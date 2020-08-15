@@ -9,6 +9,8 @@
                         :initform 1)
    (%geometry/geometry :accessor geometry/geometry
                        :initform nil)
+   (%geometry/data :accessor geometry/data
+                   :initform nil)
    (%geometry/dirty :accessor geometry/dirty
                     :initform t))
   (:type-order :after render))
@@ -19,6 +21,11 @@
   (unless geometry/name
     (error "Geometry component ~s does not have a name specified." entity))
   (setf geometry/geometry (make-geometry geometry/name)))
+
+(define-entity-hook :pre-render (entity geometry)
+  (when geometry/data
+    (update-geometry geometry/geometry :data geometry/data)
+    (setf geometry/data nil)))
 
 (define-entity-hook :render (entity geometry)
   (when geometry/dirty

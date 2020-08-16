@@ -16,9 +16,9 @@
 
 (defun deinitialize ()
   (on-context-destroy *context*)
+  (shutdown-gamepads)
   (kill-display)
   (destroy-thread-pool)
-  (shutdown-gamepads)
   (sdl2:quit))
 
 (defun process-end-frame-work ()

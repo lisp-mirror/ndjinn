@@ -47,8 +47,7 @@
 (defun kill-display ()
   (u:when-let ((display (display)))
     (sdl2:gl-delete-context (context display))
-    (sdl2:destroy-window (window display)))
-  (sdl2:sdl-quit))
+    (sdl2:destroy-window (window display))))
 
 (defun render (display)
   (render-frame)

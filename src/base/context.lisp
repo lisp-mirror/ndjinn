@@ -10,8 +10,10 @@
             :initform (u:dict #'eq))
    (%framebuffers :reader %framebuffers
                   :initform (u:dict #'eq))
-   (%display :accessor %display)
-   (%input-data :accessor %input-data)
+   (%display :accessor %display
+             :initform nil)
+   (%input-data :accessor %input-data
+                :initform nil)
    (%assets :reader %assets
             :initform (u:dict #'eq))
    (%shaders :accessor %shaders)

@@ -24,7 +24,7 @@
          (passes scene))))
 
 (defun render-pass (pass)
-  (with-debug-group (format nil "Render Pass: ~s" pass)
+  (with-debug-group (format nil "Render Pass: ~s" (name pass))
     (let ((viewport-manager (get-viewport-manager)))
       (clear-render-pass pass)
       (u:do-hash-values (viewport (table viewport-manager))

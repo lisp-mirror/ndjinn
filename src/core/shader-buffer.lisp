@@ -1,21 +1,5 @@
 (in-package #:net.mfiano.lisp.pyx)
 
-(defclass shaders ()
-  ((%table :reader table
-           :initarg :table)
-   (%buffer-bindings :reader buffer-bindings
-                     :initform (u:dict #'equalp))
-   (%released-buffer-bindings :accessor released-buffer-bindings
-                              :initform nil)))
-
-(defun initialize-shaders ()
-  (unless (display)
-    (error "Cannot initialize shaders without an active display."))
-  (let* ((table (shadow:load-shaders
-                 (lambda (x) (enqueue :recompile (list :shaders x)))))
-         (shaders (make-instance 'shaders :table table)))
-    (setf (shaders) shaders)))
-
 (defun select-shader-buffer-binding ()
   (let ((id-count (hash-table-count (buffer-bindings (shaders)))))
     (when (= id-count =max-ssbo-bindings=)
@@ -31,9 +15,6 @@
     (pushnew id (released-buffer-bindings shaders))
     (setf (released-buffer-bindings shaders)
           (sort (copy-seq (released-buffer-bindings shaders)) #'<))))
-
-(on-recompile :shaders data ()
-  (shadow:recompile-shaders data))
 
 (defun write-shader-buffer (key path value)
   (shadow:write-buffer-path key path value))

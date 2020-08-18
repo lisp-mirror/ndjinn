@@ -105,7 +105,8 @@
    (:module "core"
     :components
     ((:file "opengl")
-     (:file "shader")
+     (:file "shader-program")
+     (:file "shader-buffer")
      (:file "image")
      (:file "image-png")
      (:file "image-hdr")

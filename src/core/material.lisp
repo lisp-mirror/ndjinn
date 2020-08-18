@@ -174,8 +174,8 @@
     material))
 
 (on-recompile :material data ()
-  (let ((shader (shader (find-material-spec data))))
-    (recompile :shaders (list shader))
-    (dolist (material (u:href (materials (current-scene)) data))
-      (make-material-uniforms material)
-      (ensure-material-framebuffer material))))
+  (u:when-let ((shader (shader (find-material-spec data))))
+    (recompile :shaders (list shader)))
+  (dolist (material (u:href (materials (current-scene)) data))
+    (make-material-uniforms material)
+    (ensure-material-framebuffer material)))

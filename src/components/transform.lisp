@@ -32,7 +32,8 @@
                        transform/rotate/velocity)
   (initialize-scale (transform/scale instance)
                     transform/scale
-                    transform/scale/velocity))
+                    transform/scale/velocity)
+  (resolve-model instance (get-alpha)))
 
 (defun transform-node (entity)
   (let ((delta (float =delta-time= 1f0)))

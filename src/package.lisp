@@ -3,7 +3,17 @@
 (uiop:define-package #:net.mfiano.lisp.pyx.shader
   (:use-reexport
    #:net.mfiano.lisp.shadow.glsl
-   #:net.mfiano.lisp.umbra.common))
+   #:net.mfiano.lisp.umbra.common)
+  ;; functions
+  (:export
+   #:full-quad/vert
+   #:full-quad-no-uv/vert)
+  ;; shaders
+  (:export
+   #:collider
+   #:font
+   #:full-quad
+   #:quad))
 
 (defpackage #:net.mfiano.lisp.pyx
   (:local-nicknames

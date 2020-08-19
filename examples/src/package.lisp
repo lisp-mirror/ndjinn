@@ -6,7 +6,36 @@
    (#:umbra.graphing #:net.mfiano.lisp.umbra.graphing)
    (#:umbra.noise #:net.mfiano.lisp.umbra.noise)
    (#:umbra.sprite #:net.mfiano.lisp.umbra.sprite))
-  (:use #:net.mfiano.lisp.pyx.shader))
+  (:use #:net.mfiano.lisp.pyx.shader)
+  ;; shaders
+  (:export
+   #:effect/kaleidoscope
+   #:effect/ocean-waves
+   #:effect/toroidal-trip
+   #:effect/truchet
+   #:graph
+   #:multi-pass
+   #:noise/cellular-3d
+   #:noise/cellular-fast-3d
+   #:noise/cubist-3d
+   #:noise/hermite-3d
+   #:noise/perlin-3d
+   #:noise/perlin-4d
+   #:noise/perlin-improved-3d
+   #:noise/perlin-surflet-3d
+   #:noise/polkadot-3d
+   #:noise/polkadot-box-3d
+   #:noise/simplex-cellular-3d
+   #:noise/simplex-perlin-3d
+   #:noise/simplex-polkadot-3d
+   #:noise/value-3d
+   #:noise/value-4d
+   #:noise/value-hermite-3d
+   #:noise/value-perlin-3d
+   #:pbr-mesh
+   #:skybox
+   #:window-rain
+   #:world))
 
 (defpackage #:net.mfiano.lisp.pyx.examples
   (:local-nicknames

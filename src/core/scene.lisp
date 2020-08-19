@@ -141,7 +141,9 @@
             (current-scene) scene
             (passes scene) (copy-seq (pass-order (spec scene))))
       (unless (loaded-p scene)
-        (setf (node-tree scene) (make-entity () :node/root-p t)
+        (setf (node-tree scene) (make-entity ()
+                                  :node/root-p t
+                                  :id/display "scene root")
               (collision-system scene) (make-collision-system
                                         (collider-plan spec)))
         (make-scene-viewports scene)

@@ -2,6 +2,7 @@
 
 (define-component id ()
   ((%id/display :accessor id/display
+                :initarg :id/display
                 :initform "[Anonymous]")
    (%id/views :accessor id/views
               :initarg :id/views

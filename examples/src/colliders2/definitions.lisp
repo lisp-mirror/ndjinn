@@ -1,7 +1,7 @@
 (in-package #:net.mfiano.lisp.pyx.examples)
 
 (pyx:define-prefab colliders2/object (:add (pyx:collider))
-  :collider/shape 'obb
+  :collider/shape 'pyx:obb
   :collider/layer 'object)
 
 (pyx:define-prefab colliders2/left (:template colliders2/object)

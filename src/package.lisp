@@ -100,6 +100,10 @@
    #:define-collision-hook
    #:entity-picked-p
    #:pick-entity)
+  ;; collider shapes
+  (:export
+   #:obb
+   #:sphere)
   ;; config
   (:export
    #:get-config-option)

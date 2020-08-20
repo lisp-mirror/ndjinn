@@ -59,11 +59,14 @@
     (register-animation entity animation :where where :target target)
     animation))
 
-(defgeneric on-animate-start (entity name data))
+(defgeneric on-animate-start (entity name data)
+  (:method (entity name data)))
 
-(defgeneric on-animate-update (entity name data))
+(defgeneric on-animate-update (entity name data)
+  (:method (entity name data)))
 
-(defgeneric on-animate-finish (entity name data))
+(defgeneric on-animate-finish (entity name data)
+  (:method (entity name data)))
 
 (defmacro define-animate-hook (hook (entity name data) &body body)
   (let ((method (u:format-symbol :net.mfiano.lisp.pyx "ON-ANIMATE-~a" hook)))

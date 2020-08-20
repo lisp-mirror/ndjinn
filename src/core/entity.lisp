@@ -88,7 +88,8 @@
   (node/children entity))
 
 (defun has-component-p (entity type)
-  (typep entity type))
+  (and (find-class type nil)
+       (typep entity type)))
 
 (defun attach-component (entity type &rest args)
   (apply #'add-mixin-class entity type args)

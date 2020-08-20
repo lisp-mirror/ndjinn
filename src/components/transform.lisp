@@ -104,7 +104,7 @@
     (symbol-macrolet ((current (current state)))
       (q:rotate! current (if replace q:+id+ current) quat)
       (when instant
-        (push (lambda () (v3:copy! (previous state) current))
+        (push (lambda () (q:copy! (previous state) current))
               (end-frame-work))))))
 
 (defun rotate-entity/velocity (entity axis rate)

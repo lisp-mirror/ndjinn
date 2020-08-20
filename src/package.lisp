@@ -18,6 +18,7 @@
 (defpackage #:net.mfiano.lisp.pyx
   (:local-nicknames
    (#:avl #:net.mfiano.lisp.algae.data-structures.avl-tree)
+   (#:dll #:net.mfiano.lisp.algae.data-structures.doubly-linked-list)
    (#:ff #:filtered-functions)
    (#:font #:3b-bmfont)
    (#:glob #:global-vars)
@@ -52,6 +53,10 @@
    #:render
    #:sprite
    #:transform)
+  ;; animate
+  (:export
+   #:define-animate-hook
+   #:make-animation)
   ;; transform
   (:export
    #:get-rotation

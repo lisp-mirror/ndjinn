@@ -94,7 +94,8 @@
      (:file "sprite")
      (:file "collider")
      (:file "font")
-     (:file "mouse-control")))
+     (:file "mouse-control")
+     (:file "animate")))
    (:module "prefab"
     :components
     ((:file "common")
@@ -126,5 +127,6 @@
      (:file "scene")
      (:file "render-pass")
      (:file "render-order")
-     (:file "font")))
+     (:file "font")
+     (:file "animation")))
    (:file "pyx")))

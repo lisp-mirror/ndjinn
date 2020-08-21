@@ -2,7 +2,8 @@
 
 (defun make-prefab-entity-skeleton (node)
   (with-slots (%component-types %component-args) node
-    (let* ((types (u:href %component-types :resolved))
+    (let* ((types (compute-component-type-order
+                   (u:href %component-types :resolved)))
            (args (u:href %component-args :resolved))
            (entity (make-instance 'prefab-entity-skeleton
                                   :mixin-class (make-entity-class types)

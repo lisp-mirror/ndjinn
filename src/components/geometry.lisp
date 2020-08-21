@@ -32,4 +32,5 @@
     (draw-geometry geometry/geometry geometry/instances)))
 
 (define-entity-hook :delete (entity geometry)
-  (delete-geometry geometry/geometry))
+  (when geometry/geometry
+    (delete-geometry geometry/geometry)))

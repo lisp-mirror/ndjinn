@@ -14,7 +14,8 @@
 (defun register-entity (entity types)
   (on-create entity)
   (dolist (type types)
-    (on-attach entity type)))
+    (when (has-component-p entity type)
+      (on-attach entity type))))
 
 (defun %make-entity (types &optional args)
   (let* ((class (make-entity-class types))

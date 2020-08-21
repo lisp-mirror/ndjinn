@@ -210,8 +210,8 @@
       (framebuffer-attach framebuffer (name attachment)))))
 
 (on-recompile :framebuffer data ()
-              (u:when-let ((spec (find-framebuffer-spec data))
-                           (data (find-framebuffer data)))
-                (framebuffer-attach-all data)
-                (dolist (material (materials spec))
-                  (enqueue :recompile (list :material material)))))
+  (u:when-let ((spec (find-framebuffer-spec data))
+               (data (find-framebuffer data)))
+    (framebuffer-attach-all data)
+    (dolist (material (materials spec))
+      (enqueue :recompile (list :material material)))))

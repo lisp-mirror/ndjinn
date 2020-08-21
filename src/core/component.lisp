@@ -102,23 +102,35 @@
                     (setf (u:href =component-initargs= v) type))))))
 
 (defmacro define-component (name super-classes &body slots/options)
-  (destructuring-bind (&optional slots . options) slots/options
-    (let ((type-order (cdr (find :type-order options :key #'car)))
-          (static (cadr (find :static options :key #'car)))
-          (class-options (remove-if
-                          (lambda (x) (find x '(:type-order :static)))
-                          options
-                          :key #'car)))
-      (destructuring-bind (&key before after) type-order
-        (declare (ignorable before after))
-        `(u:eval-always
-           (track-component-initargs ',name ',slots)
-           (defclass ,name ,super-classes ,slots ,@class-options)
-           (setf (u:href =component-type-order= ',name)
-                 '(:before ,(u:ensure-list before)
-                   :after ,(u:ensure-list after)))
-           ,@(if (eq static t)
-                 `((pushnew ',name =static-components=))
-                 `((u:deletef =static-components= ',name)))
-           ,@(unless (typep static 'boolean)
-               `((error ":STATIC must be either T or NIL."))))))))
+  (u:with-gensyms (func)
+    (destructuring-bind (&optional slots . options) slots/options
+      (let ((type-order (cdr (find :type-order options :key #'car)))
+            (static (cadr (find :static options :key #'car)))
+            (class-options (remove-if
+                            (lambda (x) (find x '(:type-order :static)))
+                            options
+                            :key #'car)))
+        (destructuring-bind (&key before after) type-order
+          (declare (ignorable before after))
+          `(progn
+             (u:eval-always
+               (unless =context=
+                 (defclass ,name ,super-classes ,slots ,@class-options)))
+             (when =context=
+               (let ((,func (lambda ()
+                              (defclass ,name ,super-classes
+                                ,slots
+                                ,@class-options))))
+                 (enqueue :recompile (list :component ,func))))
+             (track-component-initargs ',name ',slots)
+             (setf (u:href =component-type-order= ',name)
+                   '(:before ,(u:ensure-list before)
+                     :after ,(u:ensure-list after)))
+             ,@(if (eq static t)
+                   `((pushnew ',name =static-components=))
+                   `((u:deletef =static-components= ',name)))
+             ,@(unless (typep static 'boolean)
+                 `((error ":STATIC must be either T or NIL.")))))))))
+
+(on-recompile :component data ()
+  (funcall data))

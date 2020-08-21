@@ -1,6 +1,6 @@
 (in-package #:net.mfiano.lisp.pyx)
 
-(defvar *context* nil)
+(glob:define-global-var =context= nil)
 
 (defclass context ()
   ((%clock :accessor %clock)
@@ -55,58 +55,58 @@
   (:method (context)))
 
 (defun clock ()
-  (%clock *context*))
+  (%clock =context=))
 
 (defun (setf clock) (value)
-  (setf (%clock *context*) value))
+  (setf (%clock =context=) value))
 
 (defun current-scene ()
-  (%current-scene *context*))
+  (%current-scene =context=))
 
 (defun (setf current-scene) (value)
-  (setf (%current-scene *context*) value))
+  (setf (%current-scene =context=) value))
 
 (defun scenes ()
-  (%scenes *context*))
+  (%scenes =context=))
 
 (defun framebuffers ()
-  (%framebuffers *context*))
+  (%framebuffers =context=))
 
 (defun display ()
-  (%display *context*))
+  (%display =context=))
 
 (defun (setf display) (value)
-  (setf (%display *context*) value))
+  (setf (%display =context=) value))
 
 (defun input-data ()
-  (%input-data *context*))
+  (%input-data =context=))
 
 (defun (setf input-data) (value)
-  (setf (%input-data *context*) value))
+  (setf (%input-data =context=) value))
 
 (defun assets ()
-  (%assets *context*))
+  (%assets =context=))
 
 (defun shaders ()
-  (%shaders *context*))
+  (%shaders =context=))
 
 (defun (setf shaders) (value)
-  (setf (%shaders *context*) value))
+  (setf (%shaders =context=) value))
 
 (defun running-p ()
-  (%running *context*))
+  (%running =context=))
 
 (defun (setf running-p) (value)
-  (setf (%running *context*) value))
+  (setf (%running =context=) value))
 
 (defun end-frame-work ()
-  (%end-frame-work *context*))
+  (%end-frame-work =context=))
 
 (defun (setf end-frame-work) (value)
-  (setf (%end-frame-work *context*) value))
+  (setf (%end-frame-work =context=) value))
 
 (defun user-data ()
-  (%user-data *context*))
+  (%user-data =context=))
 
 (defun (setf user-data) (value)
-  (setf (%user-data *context*) value))
+  (setf (%user-data =context=) value))

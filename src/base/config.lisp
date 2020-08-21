@@ -39,7 +39,7 @@
 
 (defun load-config ()
   (reset-config)
-  (u:do-plist (k v (get-context-config *context*))
+  (u:do-plist (k v (get-context-config =context=))
     (set (u:format-symbol :net.mfiano.lisp.pyx "=~a=" k) v)))
 
 (defun get-config-option (key)

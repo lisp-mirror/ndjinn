@@ -53,6 +53,9 @@
    #:render
    #:sprite
    #:transform)
+  ;; live support
+  (:export
+   #:send-to-repl)
   ;; animate
   (:export
    #:define-animate-hook

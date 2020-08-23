@@ -35,7 +35,7 @@
     (attach-component entity 'mesh
                       :mesh/asset "meshes/colliders.glb"
                       :mesh/name (format nil "~(~a~)"
-                                         (collider/shape entity))))
+                                         (shape-type (collider/shape entity)))))
   (attach-component entity 'render :render/materials '(collider)))
 
 (defmethod %on-collision-enter ((contact1 collider) (contact2 collider))
@@ -75,8 +75,8 @@
 ;;; component protocol
 
 (define-entity-hook :attach (entity collider)
-  (initialize-collider-visualization entity)
   (setf collider/shape (make-collider-shape entity collider/shape))
+  (initialize-collider-visualization entity)
   (register-collider entity collider/layer))
 
 (define-entity-hook :detach (entity collider)

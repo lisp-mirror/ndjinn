@@ -35,8 +35,8 @@
     (attach-component entity 'mesh
                       :mesh/asset "meshes/colliders.glb"
                       :mesh/name (format nil "~(~a~)"
-                                         (shape-type (collider/shape entity)))))
-  (attach-component entity 'render :render/materials '(collider)))
+                                         (shape-type (collider/shape entity))))
+    (attach-component entity 'render :render/materials '(collider))))
 
 (defmethod %on-collision-enter ((contact1 collider) (contact2 collider))
   (let ((targets (callback-entities
@@ -87,4 +87,5 @@
   (update-collider-shape collider/shape))
 
 (define-entity-hook :pre-render (entity collider)
-  (set-uniforms entity :contact collider/hit-p))
+  (when collider/visualize
+    (set-uniforms entity :contact collider/hit-p)))

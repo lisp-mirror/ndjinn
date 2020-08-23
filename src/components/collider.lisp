@@ -4,14 +4,14 @@
   ((%collider/shape :accessor collider/shape
                     :initarg :collider/shape
                     :initform 'sphere)
+   (%collider/owner :accessor collider/owner
+                    :initarg :collider/owner
+                    :initform nil)
    (%collider/layer :reader collider/layer
                     :initarg :collider/layer)
    (%collider/visualize :reader collider/visualize
                         :initarg :collider/visualize
                         :initform t)
-   (%collider/target :accessor collider/target
-                     :initarg :collider/target
-                     :initform nil)
    (%collider/contact-count :accessor collider/contact-count
                             :initform 0)
    (%collider/hit-p :accessor collider/hit-p
@@ -39,46 +39,44 @@
     (attach-component entity 'render :render/materials '(collider))))
 
 (defmethod %on-collision-enter ((contact1 collider) (contact2 collider))
-  (let ((targets (callback-entities (collision-system (current-scene)))))
-    (incf (collider/contact-count contact1))
-    (when (plusp (collider/contact-count contact1))
-      (setf (collider/hit-p contact1) t))
-    (when (plusp (collider/contact-count contact2))
-      (setf (collider/hit-p contact2) t))
-    (dolist (entity (get-collision-targets targets contact1))
-      (on-collision-enter (collider/target contact1)
-                          (collider/layer contact2)
-                          entity))))
+  (incf (collider/contact-count contact1))
+  (when (plusp (collider/contact-count contact1))
+    (setf (collider/hit-p contact1) t))
+  (when (plusp (collider/contact-count contact2))
+    (setf (collider/hit-p contact2) t))
+  (on-collision-enter (collider/layer contact1)
+                      (collider/owner contact1)
+                      (collider/layer contact2)
+                      (collider/owner contact2)))
 
 (defmethod %on-collision-continue ((contact1 collider) (contact2 collider))
-  (let ((targets (callback-entities (collision-system (current-scene)))))
-    (dolist (entity (get-collision-targets targets contact1))
-      (on-collision-continue (collider/target contact1)
-                             (collider/layer contact2)
-                             entity))))
+  (on-collision-continue (collider/layer contact1)
+                         (collider/owner contact1)
+                         (collider/layer contact2)
+                         (collider/owner contact2)))
 
 (defmethod %on-collision-exit ((contact1 collider) (contact2 collider))
-  (let ((targets (callback-entities (collision-system (current-scene)))))
-    (decf (collider/contact-count contact1))
-    (when (zerop (collider/contact-count contact1))
-      (setf (collider/hit-p contact1) nil))
-    (when (zerop (collider/contact-count contact2))
-      (setf (collider/hit-p contact2) nil))
-    (dolist (entity (get-collision-targets targets contact1))
-      (on-collision-exit (collider/target contact1)
-                         (collider/layer contact2)
-                         entity))))
+  (decf (collider/contact-count contact1))
+  (when (zerop (collider/contact-count contact1))
+    (setf (collider/hit-p contact1) nil))
+  (when (zerop (collider/contact-count contact2))
+    (setf (collider/hit-p contact2) nil))
+  (on-collision-exit (collider/layer contact1)
+                     (collider/owner contact1)
+                     (collider/layer contact2)
+                     (collider/owner contact2)))
 
 ;;; component protocol
 
 (define-entity-hook :attach (entity collider)
-  (setf collider/shape (make-collider-shape entity collider/shape))
+  (setf collider/owner (or collider/owner entity)
+        collider/shape (make-collider-shape entity collider/shape))
   (initialize-collider-visualization entity)
   (register-collider entity collider/layer))
 
 (define-entity-hook :detach (entity collider)
-  (deregister-collider entity collider/layer)
-  (setf collider/target nil))
+  (setf collider/owner nil)
+  (deregister-collider entity collider/layer))
 
 (define-entity-hook :physics-update (entity collider)
   (update-collider-shape collider/shape))

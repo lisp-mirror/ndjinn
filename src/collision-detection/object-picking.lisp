@@ -44,19 +44,16 @@
 (defun pick-entity ()
   (let* ((viewport (active (get-viewport-manager)))
          (ray (picking-ray viewport))
-         (object-tree (draw-order viewport))
          (picked nil))
     (update-picking-ray)
-    (avl:walk
-     object-tree
-     (lambda (x)
-       (when (has-component-p x 'collider)
-         (u:when-let ((n (pick-collider-shape ray (collider/shape x))))
-           (push (cons n x) picked)))))
+    (u:do-hash-values (v (active (collision-system (current-scene))))
+      (u:do-hash-keys (k v)
+        (u:when-let ((n (pick-collider-shape ray (collider/shape k))))
+          (push (cons n k) picked))))
     (when picked
       (let ((entity (cdar (stable-sort picked #'< :key #'car))))
         (setf (picked-entity (current-scene)) entity)
-        (on-collision-picked (collider/target entity) nil entity)))))
+        (on-collision-picked (collider/layer entity) entity)))))
 
 (defun entity-picked-p (entity)
   (eq entity (picked-entity (current-scene))))

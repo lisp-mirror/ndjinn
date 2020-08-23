@@ -7,9 +7,6 @@
    (%id/views :accessor id/views
               :initarg :id/views
               :initform nil)
-   (%id/contact :reader id/contact
-                :initarg :id/contact
-                :initform nil)
    (%id/uuid :reader id/uuid
              :initform (uuid:make-uuid)))
   (:type-order :after node)
@@ -34,24 +31,6 @@
     (dolist (id (id/views parent))
       (pushnew id (id/views entity)))))
 
-(defun register-contact (entity)
-  (u:when-let* ((scene (current-scene))
-                (id (id/contact entity))
-                (callback-entities (callback-entities
-                                    (collision-system scene))))
-    (unless (u:href callback-entities id)
-      (setf (u:href callback-entities id) (u:dict #'eq)))
-    (setf (u:href callback-entities id entity) entity)))
-
-(defun deregister-contact (entity)
-  (u:when-let* ((scene (current-scene))
-                (id (id/contact entity))
-                (callback-entities (callback-entities
-                                    (collision-system scene))))
-    (remhash entity (u:href callback-entities id))
-    (when (zerop (hash-table-count (u:href callback-entities id)))
-      (remhash id callback-entities))))
-
 ;;; protocol
 
 (defgeneric find-by-uuid (uuid)
@@ -70,9 +49,7 @@
 
 (define-entity-hook :create (entity id)
   (register-uuid entity)
-  (register-views entity)
-  (register-contact entity))
+  (register-views entity))
 
 (define-entity-hook :delete (entity id)
-  (deregister-uuid entity)
-  (deregister-contact entity))
+  (deregister-uuid entity))

@@ -15,11 +15,9 @@
    :transform/rotate/velocity (math:make-velocity v3:+down+ 5f0)
    :collider/layer 'destroyer)
   ((player :add (pyx:collider))
-   :id/contact 'player
    :transform/scale 4
    :transform/translate (v3:vec -30 0 0)
    :transform/translate/velocity (math:make-velocity v3:+right+ 15f0)
-   :collider/target 'player
    :collider/layer 'player
    :collider/visualize nil
    ((mesh :template mesh/helmet)
@@ -29,13 +27,13 @@
   (:layers (player gate destroyer)
    :plan ((player (gate destroyer)))))
 
-(pyx:define-collision-hook :enter (player :layer gate)
+(pyx:define-collision-hook :enter (player gate)
   (pyx:translate-entity/velocity player v3:+right+ 4f0))
 
-(pyx:define-collision-hook :enter (player :layer destroyer)
+(pyx:define-collision-hook :enter (player destroyer)
   (pyx:translate-entity player (v3:vec -30 0 0) :replace t :instant t))
 
-(pyx:define-collision-hook :exit (player :layer gate)
+(pyx:define-collision-hook :exit (player gate)
   (pyx:translate-entity/velocity player v3:+right+ 15f0))
 
 (pyx:define-collision-hook :picked (player)

@@ -11,8 +11,6 @@
             :initform (u:dict #'eq))
    (%contacts :reader contacts
               :initform (u:dict #'eq))
-   (%callback-entities :reader callback-entities
-                       :initform (u:dict #'eq))
    (%buffer :reader buffer
             :initform (make-array 8 :adjustable t :fill-pointer t))))
 
@@ -25,10 +23,6 @@
               (u:href (active system) layer) (u:dict #'eq)))
       system)
     (error "Collider plan ~s not found." plan-name)))
-
-(defun get-collision-targets (targets collider)
-  (u:when-let ((target (u:href targets (collider/target collider))))
-    (u:hash-keys target)))
 
 (defun register-collider (collider layer)
   (let* ((system (collision-system (current-scene)))

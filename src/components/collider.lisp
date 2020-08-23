@@ -39,8 +39,7 @@
     (attach-component entity 'render :render/materials '(collider))))
 
 (defmethod %on-collision-enter ((contact1 collider) (contact2 collider))
-  (let ((targets (callback-entities
-                  (collision-system (current-scene)))))
+  (let ((targets (callback-entities (collision-system (current-scene)))))
     (incf (collider/contact-count contact1))
     (when (plusp (collider/contact-count contact1))
       (setf (collider/hit-p contact1) t))
@@ -52,16 +51,14 @@
                           entity))))
 
 (defmethod %on-collision-continue ((contact1 collider) (contact2 collider))
-  (let ((targets (callback-entities
-                  (collision-system (current-scene)))))
+  (let ((targets (callback-entities (collision-system (current-scene)))))
     (dolist (entity (get-collision-targets targets contact1))
       (on-collision-continue (collider/target contact1)
                              (collider/layer contact2)
                              entity))))
 
 (defmethod %on-collision-exit ((contact1 collider) (contact2 collider))
-  (let ((targets (callback-entities
-                  (collision-system (current-scene)))))
+  (let ((targets (callback-entities (collision-system (current-scene)))))
     (decf (collider/contact-count contact1))
     (when (zerop (collider/contact-count contact1))
       (setf (collider/hit-p contact1) nil))
@@ -69,8 +66,8 @@
       (setf (collider/hit-p contact2) nil))
     (dolist (entity (get-collision-targets targets contact1))
       (on-collision-exit (collider/target contact1)
-                              (collider/layer contact2)
-                              entity))))
+                         (collider/layer contact2)
+                         entity))))
 
 ;;; component protocol
 

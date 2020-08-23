@@ -21,7 +21,7 @@
 (defgeneric on-collision-picked (target layer entity)
   (:method (target layer entity)))
 
-(defmacro define-collision-hook (name (target &optional layer) &body body)
+(defmacro define-collision-hook (name (target &key layer) &body body)
   (u:with-gensyms (target-symbol)
     (let ((hook-types '(:enter :continue :exit :picked)))
       `(progn

@@ -29,13 +29,13 @@
   (:layers (player gate destroyer)
    :plan ((player (gate destroyer)))))
 
-(pyx:define-collision-hook :enter (player gate)
+(pyx:define-collision-hook :enter (player :layer gate)
   (pyx:translate-entity/velocity player v3:+right+ 4f0))
 
-(pyx:define-collision-hook :enter (player destroyer)
+(pyx:define-collision-hook :enter (player :layer destroyer)
   (pyx:translate-entity player (v3:vec -30 0 0) :replace t :instant t))
 
-(pyx:define-collision-hook :exit (player gate)
+(pyx:define-collision-hook :exit (player :layer gate)
   (pyx:translate-entity/velocity player v3:+right+ 15f0))
 
 (pyx:define-collision-hook :picked (player)

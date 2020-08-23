@@ -6,7 +6,13 @@
    (%axes :reader axes
           :initform (m3:mat))
    (%half-widths :reader half-widths
-                 :initform (v3:vec))))
+                 :initform (v3:vec))
+   (%min-extent :reader min-extent
+                :initarg :min-extent
+                :initform (v3:vec -0.5))
+   (%max-extent :reader max-extent
+                :initarg :max-extent
+                :initform (v3:vec 0.5))))
 
 (defun get-closest-point/obb-point (obb point)
   (with-slots (%entity %world-center %axes %half-widths) obb
@@ -51,18 +57,15 @@
             (v3:dot translation (m3:get-column axes1 2)))))
 
 (defmethod update-collider-shape ((shape collider-shape/obb))
-  (with-slots (%entity %center %world-center %axes %half-widths) shape
-    (let* ((scale (get-scale %entity))
-           (min (transform-point
-                 %entity
-                 (v3:+ %center (v3:scale scale -0.5f0))))
-           (max (transform-point
-                 %entity
-                 (v3:+ %center (v3:scale scale 0.5f0))))
+  (with-slots (%entity %center %world-center %axes %half-widths
+               %min-extent %max-extent)
+      shape
+    (let* ((min (transform-point %entity (v3:+ %center %min-extent)))
+           (max (transform-point %entity (v3:+ %center %max-extent)))
+           (center (v3:lerp min max 0.5))
            (axes (m4:rotation-to-mat3
                   (m4:normalize-rotation
                    (transform/model %entity))))
-           (center (v3:lerp min max 0.5))
            (diagonal (v3:- max center))
            (half-widths (v3:vec (v3:dot diagonal (m3:get-column axes 0))
                                 (v3:dot diagonal (m3:get-column axes 1))

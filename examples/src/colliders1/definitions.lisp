@@ -39,7 +39,7 @@
   (pyx:translate-entity/velocity player v3:+right+ 15f0))
 
 (pyx:define-collision-hook :picked (player)
-  (format t "Player selected: ~s~%" player))
+  (pyx:send-to-repl (list player) :comment "Picked"))
 
 (pyx:define-scene colliders1 ()
   (:collider-plan colliders1

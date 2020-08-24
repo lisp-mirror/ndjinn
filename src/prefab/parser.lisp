@@ -207,6 +207,6 @@
                                    :collect `(lambda () ,v))))
                       ,(when children
                          `(list ,@(mapcar #'process children)))))))
-    `(macrolet ((,(u:symbolicate "@") (&rest path/query)
-                  `(make-prefab-reference ',path/query)))
+    `(macrolet ((,(u:symbolicate "@") (&rest reference-spec)
+                  `(make-prefab-reference ',reference-spec)))
        (list ,@(mapcar #'process (list (list* (list* name options) data)))))))

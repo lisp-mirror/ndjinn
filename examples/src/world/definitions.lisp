@@ -38,9 +38,9 @@
   :world/height 49
   :world/seed 1
   ((floor :template tile/floor)
-   :mesh/instances (@ world :tiles/floor))
+   :mesh/instances (@ :query :tiles/floor world))
   ((wall :template tile/wall)
-   :mesh/instances (@ world :tiles/wall)))
+   :mesh/instances (@ :query :tiles/wall world)))
 
 ;;; scene
 

@@ -131,11 +131,11 @@
     (button-transition-in data (list id :any))
     (button-transition-in data '(:button :any))))
 
-(defgeneric get-gamepad-analog (deadzone-type input))
+(defgeneric get-gamepad-analog (deadzone-type &rest args))
 
-(defmethod get-gamepad-analog ((deadzone-type (eql :axial)) input)
+(defmethod get-gamepad-analog ((deadzone-type (eql :axial)) &rest args)
   (let ((data (input-data)))
-    (u:if-found (state (u:href (states data) input))
+    (u:if-found (state (u:href (states data) args))
                 (let ((x (gamepad-analog-state-x state))
                       (y (gamepad-analog-state-y state))
                       (deadzone (gamepad-analog-state-deadzone state)))
@@ -143,9 +143,9 @@
                           (if (< (abs y) deadzone) 0f0 y)))
                 (values 0f0 0f0))))
 
-(defmethod get-gamepad-analog ((deadzone-type (eql :radial)) input)
+(defmethod get-gamepad-analog ((deadzone-type (eql :radial)) &rest args)
   (let ((data (input-data)))
-    (u:if-found (state (u:href (states data) input))
+    (u:if-found (state (u:href (states data) args))
                 (let ((x (gamepad-analog-state-x state))
                       (y (gamepad-analog-state-y state))
                       (deadzone (gamepad-analog-state-deadzone state)))
@@ -155,9 +155,9 @@
                         (values vx vy))))
                 (values 0f0 0f0))))
 
-(defmethod get-gamepad-analog ((deadzone-type (eql :radial-scaled)) input)
+(defmethod get-gamepad-analog ((deadzone-type (eql :radial-scaled)) &rest args)
   (let ((data (input-data)))
-    (u:if-found (state (u:href (states data) input))
+    (u:if-found (state (u:href (states data) args))
                 (let ((x (gamepad-analog-state-x state))
                       (y (gamepad-analog-state-y state))
                       (deadzone (gamepad-analog-state-deadzone state)))

@@ -36,9 +36,9 @@
     :components
     ((:file "general")
      (:file "context")
+     (:file "metadata")
      (:file "config")
      (:file "logging")
-     (:file "metadata")
      (:file "hardware")
      (:file "thread-pool")
      (:file "live-support")

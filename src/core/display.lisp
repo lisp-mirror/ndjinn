@@ -24,7 +24,7 @@
     (gl:depth-func +depth-mode+)))
 
 (defun make-window ()
-  (sdl2:create-window :title "Pyx"
+  (sdl2:create-window :title =title=
                       :w (truncate =window-width=)
                       :h (truncate =window-height=)
                       :flags '(:opengl)))

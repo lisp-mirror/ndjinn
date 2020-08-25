@@ -1,7 +1,5 @@
 (in-package #:net.mfiano.lisp.pyx)
 
-(glob:define-global-var =release= nil)
-
 (defun deploy/check-features ()
   (unless (and (find :pyx.release *features*)
                (find :cl-opengl-no-check-error *features*))

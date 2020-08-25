@@ -1,9 +1,10 @@
 (in-package #:net.mfiano.lisp.pyx)
 
 (defun initialize (user-args)
+  (load-developer-config)
+  (start-logging)
+  (load-user-config)
   (setup-repl)
-  (load-config)
-  (enable-logging)
   (initialize-rng)
   (prepare-gamepads)
   (make-display)
@@ -22,8 +23,9 @@
          (shutdown-gamepads)
          (kill-display)
          (destroy-thread-pool)
-         (reset-config)
          (sdl2:quit))
+    (stop-logging)
+    (reset-config)
     (setf =context= nil)))
 
 (defun process-end-frame-work ()

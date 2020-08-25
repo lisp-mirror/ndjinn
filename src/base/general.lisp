@@ -1,5 +1,7 @@
 (in-package #:net.mfiano.lisp.pyx)
 
+(glob:define-global-var =release= nil)
+
 (defmacro make-nested-dict (test-func &rest keys)
   `(u:dict ,test-func ,@(mapcan (lambda (x) `(,x (u:dict ,test-func))) keys)))
 

@@ -115,7 +115,7 @@
    #:sphere)
   ;; config
   (:export
-   #:get-config-option)
+   #:define-config)
   ;; context
   (:export
    #:define-context

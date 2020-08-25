@@ -12,9 +12,11 @@
               (register-render-order viewport node)))))))
 
 (defun load-prefab (name &key viewports parent)
-  (let* ((factory (factory (u:href =prefabs= name)))
-         (entity (funcall (func factory) :parent parent)))
-    (register-prefab-viewports entity :viewports viewports)))
+  (u:if-let ((prefab (u:href =prefabs= name)))
+    (let* ((factory (factory (u:href =prefabs= name)))
+           (entity (funcall (func factory) :parent parent)))
+      (register-prefab-viewports entity :viewports viewports))
+    (error "Prefab ~s not defined." name)))
 
 (defun deregister-prefab-entity (entity)
   (u:when-let* ((prefab (node/prefab entity))

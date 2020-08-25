@@ -173,7 +173,8 @@
    #:set-uniforms)
   ;; prefab
   (:export
-   #:define-prefab)
+   #:define-prefab
+   #:load-prefab)
   ;; render pass
   (:export
    #:define-render-pass)

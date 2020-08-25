@@ -27,7 +27,8 @@
                #:pngload
                #:sdl2
                #:split-sequence
-               #:uiop)
+               #:uiop
+               #:verbose)
   :pathname "src"
   :components
   ((:file "package")
@@ -36,6 +37,7 @@
     ((:file "general")
      (:file "context")
      (:file "config")
+     (:file "logging")
      (:file "metadata")
      (:file "hardware")
      (:file "thread-pool")

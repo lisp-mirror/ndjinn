@@ -23,6 +23,7 @@
    (#:font #:3b-bmfont)
    (#:glob #:global-vars)
    (#:gph #:cl-graph)
+   (#:log #:verbose)
    (#:lp #:lparallel)
    (#:lpq #:lparallel.queue)
    (#:m3 #:net.mfiano.lisp.origin.mat3)
@@ -125,6 +126,9 @@
   (:export
    #:start
    #:stop)
+  ;; deploy
+  (:export
+   #:deploy)
   ;; entity
   (:export
    #:attach-component

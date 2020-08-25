@@ -3,6 +3,7 @@
 (defun initialize (user-args)
   (setup-repl)
   (load-config)
+  (enable-logging)
   (initialize-rng)
   (prepare-gamepads)
   (make-display)

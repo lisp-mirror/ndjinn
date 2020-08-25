@@ -19,7 +19,7 @@
        (incf index)
        (pyx:switch-scene (elt scenes (mod index (length scenes)))))
       ((pyx:on-button-enter :key :escape)
-       (pyx:stop-engine))
+       (pyx:stop))
       ((pyx:on-button-enter :mouse :left)
        (pyx:pick-entity)))))
 

@@ -33,6 +33,7 @@
             'send-to-repl
             (if (eq repl-package :slynk)
                 `(lambda (values &key (comment "Sent from Pyx"))
+                   #-pyx.release
                    (,(find-symbol "COPY-TO-REPL-IN-EMACS" :slynk-mrepl)
                     values :blurb comment :pop-to-buffer nil))
                 (constantly nil))))))

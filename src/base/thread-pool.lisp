@@ -13,11 +13,11 @@
 (defun make-thread-pool ()
   (let* ((worker-count (or =threads= =cpu-count=))
          (thread-pool (make-instance 'thread-pool :worker-count worker-count)))
-    (setf lparallel:*kernel* (lp:make-kernel worker-count)
+    (setf lp:*kernel* (lp:make-kernel worker-count)
           =thread-pool= thread-pool)))
 
 (defun destroy-thread-pool ()
-  (lparallel:end-kernel :wait t)
+  (lp:end-kernel :wait t)
   (when =thread-pool=
     (setf lp:*kernel* nil
           =thread-pool= nil)))

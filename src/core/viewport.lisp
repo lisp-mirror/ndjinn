@@ -19,7 +19,7 @@
           (y spec) (u:clamp (float y 1f0) 0f0 1f0)
           (width spec) (u:clamp (float width 1f0) 0f0 1f0)
           (height spec) (u:clamp (float height 1f0) 0f0 1f0))
-    (enqueue :recompile (list :viewport))))
+    (enqueue :recompile (list :viewport name))))
 
 (defun make-viewport-spec (name x y width height)
   (let ((spec (make-instance 'viewport-spec :name name)))
@@ -107,7 +107,8 @@
     (or viewports (list (default scene-viewports)))))
 
 (on-recompile :viewport data ()
-  (recompile :scene (get-scene-name)))
+  (recompile :scene (get-scene-name))
+  (log:debug :pyx.live "Recompiled viewport: ~s" data))
 
 (defun get-viewport-dimensions ()
   (let* ((manager (get-viewport-manager))

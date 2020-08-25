@@ -178,4 +178,5 @@
     (recompile :shaders (list shader)))
   (dolist (material (u:href (materials (current-scene)) data))
     (make-material-uniforms material)
-    (ensure-material-framebuffer material)))
+    (ensure-material-framebuffer material))
+  (log:debug :pyx.live "Recompiled material: ~s" data))

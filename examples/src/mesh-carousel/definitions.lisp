@@ -42,7 +42,6 @@
   ((mesh :add (pyx:collider pyx:mouse-control))
    :transform/scale 17
    :collider/layer 'picked
-   :collider/visualize nil
    ((mesh :template mesh/helmet))))
 
 (pyx:define-collider-plan mesh ()

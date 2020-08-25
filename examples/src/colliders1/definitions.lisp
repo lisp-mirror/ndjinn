@@ -4,22 +4,24 @@
   ((gate/top :add (pyx:collider))
    :transform/translate (v3:vec 0 8 0)
    :transform/scale 5
-   :collider/layer 'gate)
+   :collider/layer 'gate
+   :collider/visualize t)
   ((gate/bottom :add (pyx:collider))
    :transform/translate (v3:vec 0 -8 0)
    :transform/scale 5
-   :collider/layer 'gate)
+   :collider/layer 'gate
+   :collider/visualize t)
   ((destroyer :add (pyx:collider))
    :transform/scale 3
    :transform/translate (v3:vec 30 0 0)
    :transform/rotate/velocity (math:make-velocity v3:+down+ 5f0)
-   :collider/layer 'destroyer)
+   :collider/layer 'destroyer
+   :collider/visualize t)
   ((player :add (pyx:collider))
    :transform/scale 4
    :transform/translate (v3:vec -30 0 0)
    :transform/translate/velocity (math:make-velocity v3:+right+ 15f0)
    :collider/layer 'player
-   :collider/visualize nil
    ((mesh :template mesh/helmet)
     :transform/rotate (q:orient :local :x math:pi/2 :y math:pi/2))))
 

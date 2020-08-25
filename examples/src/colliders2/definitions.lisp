@@ -2,7 +2,8 @@
 
 (pyx:define-prefab colliders2/object (:add (pyx:collider))
   :collider/shape 'pyx:obb
-  :collider/layer 'object)
+  :collider/layer 'object
+  :collider/visualize t)
 
 (pyx:define-prefab colliders2/left (:template colliders2/object)
   :transform/translate (v3:vec -0.55 0 0)

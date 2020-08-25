@@ -121,7 +121,7 @@
                               (defclass ,name ,super-classes
                                 ,slots
                                 ,@class-options))))
-                 (enqueue :recompile (list :component ,func))))
+                 (enqueue :recompile (list :component (list ',name ,func)))))
              (track-component-initargs ',name ',slots)
              (setf (u:href =component-type-order= ',name)
                    '(:before ,(u:ensure-list before)
@@ -133,4 +133,6 @@
                  `((error ":STATIC must be either T or NIL.")))))))))
 
 (on-recompile :component data ()
-  (funcall data))
+  (destructuring-bind (name func) data
+    (funcall func)
+    (log:debug :pyx.live "Recompiled component: ~s" name)))

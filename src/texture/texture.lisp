@@ -67,6 +67,7 @@
     texture))
 
 (defun load-texture (name &key width height)
+  (v:debug :pyx.tex "Loading texture: ~s..." name)
   (with-asset-cache :texture name
     (let* ((spec (find-texture-spec name))
            (type (texture-type spec))
@@ -77,6 +78,7 @@
                                         :height height))
            (texture (make-texture spec type source)))
       (configure-texture texture)
+      (v:debug :pyx.tex "Texture loaded: ~s" name)
       texture)))
 
 (on-recompile :texture data ()
@@ -85,4 +87,5 @@
     (delete-asset :texture data)
     (load-texture data :width (width texture) :height (height texture))
     (dolist (material-name (materials texture))
-      (recompile :material material-name))))
+      (recompile :material material-name))
+    (log:debug :pyx.live "Recompiled texture: ~s" data)))

@@ -17,4 +17,6 @@
     (setf (shaders) shaders)))
 
 (on-recompile :shaders data ()
-  (shadow:recompile-shaders data))
+  (shadow:recompile-shaders data)
+  (dolist (program data)
+    (log:debug :pyx.live "Recompiled shader: ~s" program)))

@@ -1,7 +1,9 @@
 (in-package #:net.mfiano.lisp.pyx)
 
 (defclass geometry-spec ()
-  ((%id :reader id
+  ((%name :reader name
+          :initarg :name)
+   (%id :reader id
         :initarg :id)
    (%layout :reader layout
             :initarg :layout)
@@ -16,10 +18,11 @@
                      :initform 0)))
 
 (defun make-geometry-spec (layout-name
-                           &key (primitive :triangles) (vertex-count 0)
+                           &key name (primitive :triangles) (vertex-count 0)
                              buffer-data)
   (lambda ()
     (let ((spec (make-instance 'geometry-spec
+                               :name name
                                :id (gl:gen-vertex-array)
                                :layout (find-geometry-layout layout-name)
                                :vertex-count vertex-count
@@ -38,6 +41,7 @@
       (car body)
     `(setf (u:href =geometry= ',name)
            (make-geometry-spec ',layout
+                               :name ',name
                                :primitive ',primitive
                                :vertex-count ,vertex-count
                                :buffer-data ',buffers))))

@@ -40,4 +40,6 @@
 (defmethod load-image (asset &key)
   (let* ((path (resolve-path asset))
          (type (get-image-type path)))
-    (%load-image type path)))
+    (log:debug :pyx.core "Loading image: ~s..." path)
+    (prog1 (%load-image type path)
+      (log:debug :pyx.core "Loaded image: ~s" path))))

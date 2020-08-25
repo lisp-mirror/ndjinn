@@ -4,6 +4,7 @@
   (load-developer-config)
   (start-logging)
   (load-user-config)
+  (log:info :pyx.core "Starting ~a..." =title=)
   (setup-repl)
   (initialize-rng)
   (prepare-gamepads)
@@ -14,17 +15,20 @@
   (initialize-shaders)
   (make-clock)
   (apply #'on-context-create =context= user-args)
+  (log:info :pyx.core "Started ~a" =title=)
   (start-loop))
 
 (defun deinitialize ()
   (unwind-protect
        (progn
+         (log:info :pyx.core "Shutting down ~a..." =title=)
          (on-context-destroy =context=)
          (shutdown-gamepads)
          (kill-display)
          (destroy-thread-pool)
          (sdl2:quit))
     (stop-logging)
+    (log:info :pyx.core "Exited ~a" =title=)
     (reset-config)
     (setf =context= nil)))
 
@@ -56,6 +60,7 @@
          (input-data (input-data))
          (refresh-rate (refresh-rate display)))
     (update)
+    (log:debug :pyx.core "Entered main game loop")
     (u:while (running-p)
       (with-continuable "Pyx"
         (handle-events input-data)

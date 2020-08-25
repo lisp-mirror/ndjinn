@@ -32,7 +32,8 @@
 
 (defun make-context (context-name)
   (if (find-class context-name nil)
-      (make-instance context-name)
+      (prog1 (make-instance context-name)
+        (log:debug :pyx.core "Created context: ~s" context-name))
       (error "Context ~s not defined." context-name)))
 
 (defmacro define-context (name () &body body)
@@ -49,7 +50,10 @@
     (declare (ignore user-args)))
   (:method :before (context &rest user-args)
     (declare (ignore user-args))
-    (switch-scene (%initial-scene context))))
+    (let ((scene (%initial-scene context)))
+      (log:debug :pyx.core "Starting initial scene...")
+      (switch-scene scene)
+      (log:debug :pyx.core "Scene loaded: ~s" scene))))
 
 (defgeneric on-context-destroy (context)
   (:method (context)))

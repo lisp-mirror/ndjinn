@@ -47,6 +47,7 @@
   (get-gpu-parameter :max-shader-storage-buffer-bindings))
 
 (defun load-hardware-info ()
+  (log:debug :pyx.core "Reading hardware information...")
   (setf =cpu= (machine-version)
         =cpu-count= (cl-cpus:get-number-of-processors)
         =gpu-vendor= (get-gpu-vendor)
@@ -54,7 +55,15 @@
         =gpu-make/model= (get-gpu-make/model)
         =gpu-version= (get-gpu-version)
         =max-texture-size= (get-gpu/max-texture-size)
-        =max-ssbo-bindings= (get-gpu/max-ssbo-bindings)))
+        =max-ssbo-bindings= (get-gpu/max-ssbo-bindings))
+  (log:debug :pyx.core "CPU: ~a (threads: ~d)" =cpu= =cpu-count=)
+  (log:debug :pyx.core "GPU: ~a (version: ~a)" =gpu-make/model= =gpu-version=)
+  (log:debug :pyx.core "GPU limit - Maximum texture size: ~dx~d"
+             =max-texture-size=
+             =max-texture-size=)
+  (log:debug :pyx.core "GPU limit - Maximum SSBO bindings: ~d"
+             =max-ssbo-bindings=)
+  (log:debug :pyx.core "Finished reading hardware information"))
 
 (defun get-hardware-info (key)
   (let ((global (u:format-symbol :net.mfiano.lisp.pyx "=~a=" key)))

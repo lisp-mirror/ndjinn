@@ -37,7 +37,8 @@
   (dolist (entity (u:href (prefabs (current-scene)) data))
     (let ((parent (node/parent entity)))
       (delete-node entity)
-      (load-prefab data :parent parent))))
+      (load-prefab data :parent parent)))
+  (log:debug :pyx.live "Recompiled prefab: ~s" data))
 
 (defmacro define-prefab (name options &body body)
   (u:with-gensyms (data)

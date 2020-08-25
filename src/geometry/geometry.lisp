@@ -1,7 +1,8 @@
 (in-package #:net.mfiano.lisp.pyx)
 
 (defun make-geometry (name)
-  (funcall (u:href =geometry= name)))
+  (funcall (u:href =geometry= name))
+  (log:debug :pyx.core "Created geometry: ~s" name))
 
 (defun update-geometry (geometry buffer-name data)
   (let ((data (or data (make-array (vertex-count geometry)
@@ -20,4 +21,5 @@
 
 (defun delete-geometry (geometry)
   (gl:delete-buffers (buffers geometry))
-  (gl:delete-vertex-arrays (list (id geometry))))
+  (gl:delete-vertex-arrays (list (id geometry)))
+  (log:debug :pyx.core "Deleted geometry: ~s" (id geometry)))

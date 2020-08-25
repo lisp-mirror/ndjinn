@@ -19,7 +19,8 @@
 (define-entity-hook :attach (entity mesh)
   (let* ((path (resolve-path mesh/asset))
          (gltf (with-asset-cache :mesh path
-                 (load-gltf path)))
+                 (prog1 (load-gltf path)
+                   (log:debug :pyx.comp "Cached mesh asset: ~s" path))))
          (mesh (u:href (meshes gltf) mesh/name)))
     (unless mesh
       (error "Mesh name ~s not found in mesh file ~s." mesh/name path))

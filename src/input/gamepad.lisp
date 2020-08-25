@@ -107,7 +107,8 @@
                                     :handle handle)))
         (setf (u:href %gamepad-instances instance) gamepad
               (u:href %gamepad-ids id) gamepad)
-        (gamepad-attach-transition-in data (list :attach id))))))
+        (gamepad-attach-transition-in data (list :attach id))
+        (log:debug :pyx.input "Gamepad attached: ~s" id)))))
 
 (defun %on-gamepad-detach (data instance)
   (with-slots (%gamepad-instances %gamepad-ids %detached-gamepads) data
@@ -117,7 +118,8 @@
       (u:appendf %detached-gamepads (list id))
       (remhash id %gamepad-ids)
       (remhash instance %gamepad-instances)
-      (gamepad-attach-transition-out data (list :attach id)))))
+      (gamepad-attach-transition-out data (list :attach id))
+      (log:debug :pyx.input "Gamepad detached: ~s" id))))
 
 (defun on-gamepad-button-up (data instance button)
   (let ((id (gamepad-id (get-gamepad-by-instance data instance))))

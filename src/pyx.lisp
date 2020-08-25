@@ -1,6 +1,6 @@
 (in-package #:net.mfiano.lisp.pyx)
 
-(defun initialize ()
+(defun initialize (user-args)
   (setup-repl)
   (load-config)
   (initialize-rng)
@@ -11,15 +11,19 @@
   (make-thread-pool)
   (initialize-shaders)
   (make-clock)
-  (on-context-create =context=)
+  (apply #'on-context-create =context= user-args)
   (start-loop))
 
 (defun deinitialize ()
-  (on-context-destroy =context=)
-  (shutdown-gamepads)
-  (kill-display)
-  (destroy-thread-pool)
-  (sdl2:quit))
+  (unwind-protect
+       (progn
+         (on-context-destroy =context=)
+         (shutdown-gamepads)
+         (kill-display)
+         (destroy-thread-pool)
+         (reset-config)
+         (sdl2:quit))
+    (setf =context= nil)))
 
 (defun process-end-frame-work ()
   (map nil #'funcall (nreverse (end-frame-work)))
@@ -56,12 +60,11 @@
         (update)
         (render display)))))
 
-(defun start-engine (context-name)
+(defun start-engine (context-name &rest user-args)
   (unless (and =context= (running-p))
     (setf =context= (make-context context-name))
-    (unwind-protect (initialize)
-      (deinitialize)
-      (setf =context= nil))))
+    (unwind-protect (initialize user-args)
+      (deinitialize))))
 
 (defun stop-engine ()
   (setf (running-p) nil))

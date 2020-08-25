@@ -3,7 +3,11 @@
 (glob:define-global-var =context= nil)
 
 (defclass context ()
-  ((%clock :accessor %clock)
+  ((%project :reader %project
+             :initarg :project)
+   (%clock :accessor %clock)
+   (%initial-scene :reader %initial-scene
+                   :initarg :initial-scene)
    (%current-scene :accessor %current-scene
                    :initform nil)
    (%scenes :reader %scenes
@@ -29,30 +33,26 @@
       (make-instance context-name)
       (error "Context ~s not defined." context-name)))
 
-(defmacro define-context (name options &body body)
-  (declare (ignore options))
-  (u:with-gensyms (context-binding)
-    (destructuring-bind (&key on-create on-destroy scene options) (car body)
-      `(progn
-         (defclass ,name (context) ())
-         (defmethod get-context-config ((,context-binding ,name))
-           (list ,@options))
-         (defmethod on-context-create ((,context-binding ,name))
-           ,@(when (fboundp on-create)
-               `((funcall ',on-create ,context-binding)))
-           (switch-scene ',scene))
-         (defmethod on-context-destroy ((,context-binding ,name))
-           ,@(when (fboundp on-destroy)
-               `((funcall ',on-destroy ,context-binding))))))))
+(defmacro define-context (name () &body body)
+  (destructuring-bind (&key project scene) (car body)
+    `(u:eval-always
+       (defclass ,name (context) ()
+         (:default-initargs
+          :project ,project
+          :initial-scene ',scene)))))
 
-(defgeneric on-context-create (context)
-  (:method (context)))
+(defgeneric on-context-create (context &rest user-args)
+  (:method (context &rest user-args)
+    (declare (ignore user-args)))
+  (:method :before (context &rest user-args)
+    (declare (ignore user-args))
+    (switch-scene (%initial-scene context))))
 
 (defgeneric on-context-destroy (context)
   (:method (context)))
 
-(defgeneric get-context-config (context)
-  (:method (context)))
+(defun project ()
+  (%project =context=))
 
 (defun clock ()
   (%clock =context=))

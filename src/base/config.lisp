@@ -33,8 +33,25 @@
 
 (defun load-config ()
   (reset-config)
-  (u:do-plist (k v (get-context-config =context=))
-    (set (u:format-symbol :net.mfiano.lisp.pyx "=~a=" k) v)))
+  (u:when-let ((project (project)))
+    (load-user-config project)))
+
+(defun load-user-config (project)
+  (let ((path (uiop:merge-pathnames*
+               (make-pathname :directory `(:relative ,project)
+                              :name project
+                              :type "conf")
+               (uiop:xdg-config-home))))
+    (ensure-directories-exist path)
+    (when (uiop:file-exists-p path)
+      (u:do-plist (k v (u:safe-read-file-forms path))
+        (u:if-let ((option (find-symbol (format nil "=~:@(~a~)=" k)
+                                        :net.mfiano.lisp.pyx)))
+          (set option v)
+          (unwind-protect
+               (error "Invalid configuration option: ~(~a~) in ~s."
+                      k path)
+            (reset-config)))))))
 
 (defun get-config-option (key)
   (symbol-value (u:format-symbol :net.mfiano.lisp.pyx "=~a=" key)))

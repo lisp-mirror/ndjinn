@@ -123,8 +123,8 @@
    #:user-data)
   ;; core
   (:export
-   #:start-engine
-   #:stop-engine)
+   #:start
+   #:stop)
   ;; entity
   (:export
    #:attach-component

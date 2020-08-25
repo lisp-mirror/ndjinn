@@ -2,8 +2,6 @@
 
 (u:define-constant +allow-screensaver+ nil)
 (u:define-constant +anti-alias+ t)
-(u:define-constant +debug+ t)
-(u:define-constant +debug-interval+ nil)
 (u:define-constant +delta-time+ 1/60)
 (u:define-constant +title+ "Pyx Engine" :test #'string=)
 (u:define-constant +release+ nil)
@@ -14,8 +12,6 @@
 
 (glob:define-global-var =allow-screensaver= +allow-screensaver+)
 (glob:define-global-var =anti-alias= +anti-alias+)
-(glob:define-global-var =debug= +debug+)
-(glob:define-global-var =debug-interval= +debug-interval+)
 (glob:define-global-var =delta-time= +delta-time+)
 (glob:define-global-var =title= +title+)
 (glob:define-global-var =release= +release+)
@@ -27,8 +23,6 @@
 (defun reset-config ()
   (setf =allow-screensaver= +allow-screensaver+
         =anti-alias= +anti-alias+
-        =debug= +debug+
-        =debug-interval= +debug-interval+
         =delta-time= +delta-time+
         =title= +title+
         =release= +release+

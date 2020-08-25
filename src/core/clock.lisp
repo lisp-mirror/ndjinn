@@ -4,8 +4,6 @@
                   (:predicate nil)
                   (:copier nil))
   (accumulator 0d0)
-  (debug-interval 0.25f0)
-  (debug-time 0d0)
   (delta-buffer 0d0)
   (fps/current 0d0)
   (fps/average 0d0)
@@ -25,8 +23,6 @@
   (let ((clock (%make-clock)))
     (setf (clock-init-time clock) (sb-ext:get-time-of-day)
           (clock-running-time clock) (get-time clock))
-    (u:when-let ((debug-interval =debug-interval=))
-      (setf (clock-debug-interval clock) debug-interval))
     (setf (clock) clock)))
 
 (defun get-time (clock)
@@ -88,9 +84,6 @@
     (setf (clock-previous-time clock) previous
           (clock-running-time clock) current
           (clock-frame-time clock) (- current previous))
-    (if (>= (clock-debug-time clock) (clock-debug-interval clock))
-        (setf (clock-debug-time clock) 0d0)
-        (incf (clock-debug-time clock) (clock-frame-time clock)))
     (when =vsync=
       (smooth-delta-time clock refresh-rate))
     (clock-update clock update-func)
@@ -100,9 +93,6 @@
 
 (defun get-alpha ()
   (clock-alpha (clock)))
-
-(defun debug-time-p ()
-  (zerop (clock-debug-time (clock))))
 
 (defun get-fps ()
   (let ((clock (clock)))

@@ -3,7 +3,9 @@
 (glob:define-global-var =context= nil)
 
 (defclass context ()
-  ((%project :reader %project
+  ((%name :reader name
+          :initarg :name)
+   (%project :reader %project
              :initarg :project)
    (%clock :accessor %clock)
    (%initial-scene :reader %initial-scene
@@ -38,6 +40,7 @@
     `(u:eval-always
        (defclass ,name (context) ()
          (:default-initargs
+          :name ',name
           :project ,project
           :initial-scene ',scene)))))
 

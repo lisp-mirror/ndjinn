@@ -118,6 +118,8 @@
   ;; context
   (:export
    #:define-context
+   #:on-context-create
+   #:on-context-destroy
    #:user-data)
   ;; core
   (:export

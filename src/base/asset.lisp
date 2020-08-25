@@ -2,6 +2,14 @@
 
 ;;; spec
 
+(defclass asset-pool-spec ()
+  ((%name :reader name
+          :initarg :name)
+   (%path :reader path
+          :initarg :path)
+   (%asset-specs :reader asset-specs
+                 :initform (u:dict #'eq))))
+
 (defclass asset-spec ()
   ((%pool :reader pool
           :initarg :pool)
@@ -9,6 +17,9 @@
           :initarg :name)
    (%path :reader path
           :initarg :path)))
+
+(u:define-printer (asset-pool-spec stream)
+  (format stream "~s" (name asset-pool-spec)))
 
 (u:define-printer (asset-spec stream :type nil)
   (format stream "~s (pool: ~s)" (name asset-spec) (pool asset-spec)))
@@ -25,12 +36,12 @@
                                  :pool pool-name
                                  :name name
                                  :path path)))
-      (setf (u:href pool name) asset)
+      (setf (u:href (asset-specs pool) name) asset)
       asset)))
 
 (defun find-asset-spec (pool-name spec-name)
   (u:if-let ((pool (find-asset-pool pool-name)))
-    (or (u:href pool spec-name)
+    (or (u:href (asset-specs pool) spec-name)
         (error "Asset ~s not found in pool ~s." spec-name pool-name))
     (error "Asset pool ~s does not exist." pool-name)))
 
@@ -61,14 +72,14 @@
     (let* ((path (uiop:ensure-directory-pathname path))
            (system (get-asset-pool-system pool-name))
            (resolved-path (%resolve-path system path)))
-      (clrhash pool)
+      (clrhash (asset-specs pool))
       (u:map-files
        resolved-path
        (lambda (x)
          (let* ((asset-name (make-asset-symbol x))
                 (file-name (file-namestring x))
                 (spec (list asset-name file-name)))
-           (u:if-found (existing (u:href pool asset-name))
+           (u:if-found (existing (u:href (asset-specs pool) asset-name))
                        (error "Asset pool ~s has ambiguously named assets:~%~
                                File 1: ~a~%File 2: ~a~%Normalized name: ~a"
                               pool-name
@@ -80,7 +91,8 @@
        :recursive-p nil))))
 
 (defun make-asset-pool (name path filter)
-  (let ((pool (u:dict #'eq)))
+  (let* ((path (uiop:ensure-directory-pathname path))
+         (pool (make-instance 'asset-pool-spec :name name :path path)))
     (setf (u:href =asset-pools= name) pool)
     (update-asset-pool name path filter)
     pool))
@@ -118,7 +130,17 @@
          (resolved-path (%resolve-path system path)))
     resolved-path))
 
-(defgeneric resolve-path (asset))
+(defgeneric resolve-path (pool/asset))
+
+(defmethod resolve-path ((pool-name symbol))
+  (let* ((pool (find-asset-pool pool-name))
+         (system (get-asset-pool-system pool-name))
+         (path (%resolve-path system (path pool))))
+    (ensure-directories-exist path)
+    path))
+
+(defmethod resolve-path ((pool asset-pool-spec))
+  (resolve-path (name pool)))
 
 (defmethod resolve-path ((asset list))
   (destructuring-bind (pool-name spec-name) asset

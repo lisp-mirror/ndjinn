@@ -1,4 +1,5 @@
 (push :pyx.release *features*)
+(push :cl-opengl-no-masked-traps *features*)
 (push :cl-opengl-no-check-error *features*)
 
 (asdf:defsystem #:net.mfiano.lisp.pyx.deploy

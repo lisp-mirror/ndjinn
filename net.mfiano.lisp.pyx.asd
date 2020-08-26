@@ -1,3 +1,5 @@
+(push :cl-opengl-no-masked-traps *features*)
+
 (asdf:defsystem #:net.mfiano.lisp.pyx
   :description "A professional-quality game engine with an emphasis on productivity."
   :author ("Michael Fiano <mail@mfiano.net>")

@@ -40,7 +40,7 @@
 
 (defun calculate-frame-rate (clock)
   (let* ((time (clock-frame-time clock))
-         (fps (/ time))
+         (fps (/ 1d0 time))
          (alpha10 (- 1 (exp (- (/ time 10)))))
          (alpha30 (- 1 (exp (- (/ time 30)))))
          (alpha60 (- 1 (exp (- (/ time 60)))))
@@ -55,7 +55,8 @@
                 average/30s (+ (* alpha30 fps) (* (- 1 alpha30) average/30s))
                 average/60s (+ (* alpha60 fps) (* (- 1 alpha60) average/60s))
                 average (/ (+ fps (* (1- frame-count) average))
-                           frame-count))
+                           frame-count
+                           1f0))
           (setf average/10s fps
                 average/30s fps
                 average/60s fps

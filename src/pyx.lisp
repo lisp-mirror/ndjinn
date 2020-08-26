@@ -68,11 +68,11 @@
         (update)
         (render display)))))
 
-(defun start (context-name &rest user-args)
+(defun start-engine (context-name &rest user-args)
   (unless (and =context= (running-p))
     (setf =context= (make-context context-name))
     (unwind-protect (initialize user-args)
       (deinitialize))))
 
-(defun stop ()
+(defun stop-engine ()
   (setf (running-p) nil))

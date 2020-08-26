@@ -124,8 +124,8 @@
    #:user-data)
   ;; core
   (:export
-   #:start
-   #:stop)
+   #:start-engine
+   #:stop-engine)
   ;; deploy
   (:export
    #:deploy)

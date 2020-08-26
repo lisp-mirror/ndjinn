@@ -15,14 +15,14 @@
 (defmethod pick-collider-shape (ray (shape collider-shape/sphere))
   (with-slots (%entity %center %radius) shape
     (let* ((line (v3:- (end ray) (start ray)))
-           (direction (v3:normalize line))
+           (d (v3:normalize line))
            (m (v3:- (start ray) (transform-point %entity %center)))
-           (b (v3:dot m direction))
+           (b (v3:dot m d))
            (c (- (v3:dot m m) (expt %radius 2))))
       (unless (and (plusp c) (plusp b))
         (let ((discriminant (- (expt b 2) c)))
           (unless (minusp discriminant)
-            (let ((x (max 0 (- (- b) (sqrt discriminant)))))
+            (let ((x (max 0.0 (- (- b) (sqrt discriminant)))))
               (when (<= x (v3:length line))
                 x))))))))
 

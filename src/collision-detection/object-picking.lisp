@@ -51,9 +51,10 @@
         (u:when-let ((n (pick-collider-shape ray (collider/shape k))))
           (push (cons n k) picked))))
     (when picked
-      (let ((entity (cdar (stable-sort picked #'< :key #'car))))
+      (let* ((collider (cdar (stable-sort picked #'< :key #'car)))
+             (entity (collider/owner collider)))
         (setf (picked-entity (current-scene)) entity)
-        (on-collision-picked (collider/layer entity) entity)))))
+        (on-collision-picked (collider/layer collider) entity)))))
 
 (defun entity-picked-p (entity)
   (eq entity (picked-entity (current-scene))))

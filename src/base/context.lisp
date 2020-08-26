@@ -32,8 +32,7 @@
 
 (defun make-context (context-name)
   (if (find-class context-name nil)
-      (prog1 (make-instance context-name)
-        (log:debug :pyx.core "Created context: ~s" context-name))
+      (make-instance context-name)
       (error "Context ~s not defined." context-name)))
 
 (defmacro define-context (name () &body body)

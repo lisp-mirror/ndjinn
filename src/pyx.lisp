@@ -51,7 +51,7 @@
   (compute-collisions))
 
 (defun periodic-update ()
-  #-pyx.release (update-repl)
+  (update-repl)
   (process-queue :recompile))
 
 (defun start-loop ()

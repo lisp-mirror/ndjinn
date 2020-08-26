@@ -139,7 +139,7 @@
         :for primitives = (map
                            'vector
                            (lambda (x)
-                             (make-gltf-primitive gltf x))
+                             (make-gltf-primitive gltf name x))
                            (get-gltf-property gltf "primitives" mesh))
         :do (setf (u:href (meshes gltf) name)
                   (make-instance 'gltf-mesh
@@ -267,14 +267,17 @@
             (lambda (x) (draw-gltf-primitive/indexed primitive x))
             (lambda (x) (draw-gltf-primitive/vertices primitive x)))))
 
-(defun make-gltf-primitive (gltf data)
-  (let ((primitive (make-instance 'gltf-primitive
-                                  :vao (gl:gen-vertex-array)
-                                  :mode (get-gltf-primitive-mode gltf data))))
-    (gl:bind-vertex-array (vao primitive))
+(defun make-gltf-primitive (gltf mesh-name data)
+  (let* ((vao (gl:gen-vertex-array))
+         (primitive (make-instance 'gltf-primitive
+                                   :vao vao
+                                   :mode (get-gltf-primitive-mode gltf data))))
+    (gl:bind-vertex-array vao)
     (make-gltf-vertex-buffers gltf primitive data)
     (make-gltf-index-buffer gltf primitive data)
     (make-gltf-draw-func primitive)
+    (log:debug :pyx.core "Loaded mesh: ~a, primitive: ~a (VAO: ~d)"
+               (file-name gltf) mesh-name vao)
     primitive))
 
 (defun load-gltf (path)

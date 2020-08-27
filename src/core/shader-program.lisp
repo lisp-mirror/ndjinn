@@ -1,19 +1,18 @@
 (in-package #:net.mfiano.lisp.pyx)
 
-(defclass shaders ()
-  ((%table :reader table
-           :initarg :table)
-   (%buffer-bindings :reader buffer-bindings
-                     :initform (u:dict #'equalp))
-   (%released-buffer-bindings :accessor released-buffer-bindings
-                              :initform nil)))
+(defstruct (shader-manager
+            (:predicate nil)
+            (:copier nil))
+  (table (u:dict #'eq) :type hash-table)
+  (buffer-bindings (u:dict #'equalp) :type hash-table)
+  (released-buffer-bindings nil :type list))
 
 (defun initialize-shaders ()
   (unless (display)
     (error "Cannot initialize shaders without an active display."))
   (let* ((table (shadow:load-shaders
                  (lambda (x) (enqueue :recompile (list :shaders x)))))
-         (shaders (make-instance 'shaders :table table)))
+         (shaders (make-shader-manager :table table)))
     (setf (shaders) shaders)))
 
 (on-recompile :shaders data ()

@@ -58,7 +58,7 @@
   (let* ((clock (clock))
          (display (display))
          (input-data (input-data))
-         (refresh-rate (refresh-rate display)))
+         (refresh-rate (display-refresh-rate display)))
     (update)
     (log:debug :pyx.core "Entered main game loop")
     (u:while (running-p)

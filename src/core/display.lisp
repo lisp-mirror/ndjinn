@@ -1,14 +1,13 @@
 (in-package #:net.mfiano.lisp.pyx)
 
-(defclass display ()
-  ((%window :reader window
-            :initarg :window)
-   (%context :accessor context
-             :initform nil)
-   (%resolution :reader resolution
-                :initarg :resolution)
-   (%refresh-rate :reader refresh-rate
-                  :initarg :refresh-rate)))
+(defstruct (display
+            (:constructor %make-display)
+            (:predicate nil)
+            (:copier nil))
+  window
+  context
+  (resolution (v2:vec =window-width= =window-height=) :type v2:vec)
+  (refresh-rate 60 :type fixnum))
 
 (defun make-opengl-context (display)
   (sdl2:gl-set-attrs :context-major-version 4
@@ -16,8 +15,8 @@
                      :context-profile-mask 1
                      :multisamplebuffers (if =anti-alias= 1 0)
                      :multisamplesamples (if =anti-alias= 4 0))
-  (let ((context (sdl2:gl-create-context (window display))))
-    (setf (context display) context)
+  (let ((context (sdl2:gl-create-context (display-window display))))
+    (setf (display-context display) context)
     (apply #'gl:enable +enabled-capabilities+)
     (apply #'gl:disable +disabled-capabilities+)
     (apply #'gl:blend-func +blend-mode+)
@@ -33,8 +32,7 @@
   (sdl2:init :everything)
   (let* ((refresh-rate (nth-value 3 (sdl2:get-current-display-mode 0)))
          (resolution (v2:vec =window-width= =window-height=))
-         (display (make-instance 'display
-                                 :window (make-window)
+         (display (%make-display :window (make-window)
                                  :refresh-rate refresh-rate
                                  :resolution resolution)))
     (make-opengl-context display)
@@ -46,13 +44,13 @@
 
 (defun kill-display ()
   (u:when-let ((display (display)))
-    (sdl2:gl-delete-context (context display))
-    (sdl2:destroy-window (window display))))
+    (sdl2:gl-delete-context (display-context display))
+    (sdl2:destroy-window (display-window display))))
 
 (defun render (display)
   (render-frame)
-  (sdl2:gl-swap-window (window display))
+  (sdl2:gl-swap-window (display-window display))
   (incf (clock-frame-count (clock))))
 
 (defun get-resolution ()
-  (resolution (display)))
+  (display-resolution (display)))

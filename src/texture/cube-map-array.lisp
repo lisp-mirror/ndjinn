@@ -37,7 +37,7 @@
 
 (defmethod load-texture-source (spec (type (eql :cube-map-array)) source
                                 &key width height)
-  (mapcar
+  (lp:pmapcar
    (lambda (x)
      (load-texture-source spec :cube-map x :width width :height height))
    source))

@@ -2,10 +2,12 @@
 
 (defun select-shader-buffer-binding ()
   (let* ((shaders (shaders =context=))
-         (id-count (hash-table-count (shader-manager-buffer-bindings shaders))))
-    (when (= id-count =max-ssbo-bindings=)
+         (id-count (hash-table-count (shader-manager-buffer-bindings shaders)))
+         (max-bindings (hardware-info-max-ssbo-bindings
+                        (hardware-info =context=))))
+    (when (= id-count max-bindings)
       (error "Cannot create shader buffer. Maximum bindings reached: ~d."
-             =max-ssbo-bindings=))
+             max-bindings))
     (or (pop (shader-manager-released-buffer-bindings shaders))
         (1+ id-count))))
 

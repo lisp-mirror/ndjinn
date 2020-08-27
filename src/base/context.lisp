@@ -28,7 +28,9 @@
    (%end-frame-work :accessor end-frame-work
                     :initform nil)
    (%user-data :accessor user-data
-               :initform nil)))
+               :initform nil)
+   (%hardware-info :accessor hardware-info
+                   :initform nil)))
 
 (defun make-context (context-name)
   (if (find-class context-name nil)

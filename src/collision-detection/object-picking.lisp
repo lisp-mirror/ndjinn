@@ -1,22 +1,22 @@
 (in-package #:net.mfiano.lisp.pyx)
 
-(defclass picking-ray ()
+(defclass picker ()
   ((%start :reader start
            :initform (v3:vec))
    (%end :reader end
          :initform (v3:vec))))
 
-(defun make-picking-ray ()
-  (make-instance 'picking-ray))
+(defun make-picker ()
+  (make-instance 'picker))
 
-(defgeneric pick-collider-shape (ray shape)
-  (:method (ray shape)))
+(defgeneric pick-collider-shape (picker shape)
+  (:method (picker shape)))
 
-(defmethod pick-collider-shape (ray (shape collider-shape/sphere))
+(defmethod pick-collider-shape (picker (shape collider-shape/sphere))
   (with-slots (%entity %center %radius) shape
-    (let* ((line (v3:- (end ray) (start ray)))
+    (let* ((line (v3:- (end picker) (start picker)))
            (d (v3:normalize line))
-           (m (v3:- (start ray) (transform-point %entity %center)))
+           (m (v3:- (start picker) (transform-point %entity %center)))
            (b (v3:dot m d))
            (c (- (v3:dot m m) (expt %radius 2))))
       (unless (and (plusp c) (plusp b))
@@ -26,10 +26,10 @@
               (when (<= x (v3:length line))
                 x))))))))
 
-(defun update-picking-ray ()
+(defun update-picker ()
   (u:mvlet ((x y dx dy (get-mouse-position)))
     (u:when-let* ((viewport (get-viewport-by-coordinates x y))
-                  (ray (picking-ray viewport))
+                  (picker (picker viewport))
                   (camera (camera viewport))
                   (view (camera/view camera))
                   (proj (camera/projection camera))
@@ -37,18 +37,18 @@
                                     (y viewport)
                                     (width viewport)
                                     (height viewport))))
-      (math:unproject! (start ray) (v3:vec x y) view proj viewport)
-      (math:unproject! (end ray) (v3:vec x y 1) view proj viewport)
-      (values (start ray) (end ray)))))
+      (math:unproject! (start picker) (v3:vec x y) view proj viewport)
+      (math:unproject! (end picker) (v3:vec x y 1) view proj viewport)
+      (values (start picker) (end picker)))))
 
 (defun pick-entity ()
   (let* ((viewport (active (get-viewport-manager)))
-         (ray (picking-ray viewport))
+         (picker (picker viewport))
          (picked nil))
-    (update-picking-ray)
+    (update-picker)
     (u:do-hash-values (v (active (collision-system (current-scene))))
       (u:do-hash-keys (k v)
-        (u:when-let ((n (pick-collider-shape ray (collider/shape k))))
+        (u:when-let ((n (pick-collider-shape picker (collider/shape k))))
           (push (cons n k) picked))))
     (when picked
       (let* ((collider (cdar (stable-sort picked #'< :key #'car)))

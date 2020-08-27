@@ -111,8 +111,8 @@
   (loop :with manager = (make-instance 'viewport-manager)
         :for (view-spec nil) :in (viewports (spec scene))
         :for order = (make-render-order-tree)
-        :for ray = (make-picking-ray)
-        :for viewport = (make-viewport view-spec order ray)
+        :for picker = (make-picker)
+        :for viewport = (make-viewport view-spec order picker)
         :for i :from 0
         :do (when (zerop i)
               (setf (default manager) viewport))

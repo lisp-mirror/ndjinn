@@ -53,8 +53,8 @@
             :initform nil)
    (%draw-order :reader draw-order
                 :initarg :draw-order)
-   (%picking-ray :reader picking-ray
-                 :initarg :picking-ray)
+   (%picker :reader picker
+            :initarg :picker)
    (%x :accessor x
        :initform 0)
    (%y :accessor y
@@ -67,12 +67,12 @@
 (u:define-printer (viewport stream :identity t)
   (format stream "~s" (name (spec viewport))))
 
-(defun make-viewport (name order ray)
+(defun make-viewport (name order picker)
   (let* ((spec (u:href =viewports= name))
          (viewport (make-instance 'viewport
                                   :spec spec
                                   :draw-order order
-                                  :picking-ray ray)))
+                                  :picker picker)))
     (configure-viewport viewport)
     viewport))
 

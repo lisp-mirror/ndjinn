@@ -99,7 +99,7 @@
       (v3:+! current (if replace v3:+zero+ current) vec)
       (when instant
         (push (lambda () (v3:copy! (transform-state-previous state) current))
-              (end-frame-work))))))
+              (end-frame-work =context=))))))
 
 (defun translate-entity/velocity (entity axis rate)
   (let ((state (transform/translation entity)))
@@ -111,7 +111,7 @@
       (q:rotate! current (if replace q:+id+ current) quat)
       (when instant
         (push (lambda () (q:copy! (transform-state-previous state) current))
-              (end-frame-work))))))
+              (end-frame-work =context=))))))
 
 (defun rotate-entity/velocity (entity axis rate)
   (let ((state (transform/rotation entity)))
@@ -123,7 +123,7 @@
       (v3:+! current (if replace v3:+zero+ current) vec)
       (when instant
         (push (lambda () (v3:copy! (transform-state-previous state) current))
-              (end-frame-work))))))
+              (end-frame-work =context=))))))
 
 (defun scale-entity/velocity (entity axis rate)
   (let ((state (transform/scale entity)))

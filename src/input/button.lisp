@@ -41,16 +41,16 @@
     (setf exiting nil)))
 
 (defun on-button-enter (&rest args)
-  (u:when-let* ((data (input-data))
+  (u:when-let* ((data (input-data =context=))
                 (state (u:href (states data) args)))
     (button-state-enter state)))
 
 (defun on-button-enabled (&rest args)
-  (u:when-let* ((data (input-data))
+  (u:when-let* ((data (input-data =context=))
                 (state (u:href (states data) args)))
     (button-state-enabled state)))
 
 (defun on-button-exit (&rest args)
-  (u:when-let* ((data (input-data))
+  (u:when-let* ((data (input-data =context=))
                 (state (u:href (states data) args)))
     (button-state-exit state)))

@@ -18,10 +18,9 @@
     materials))
 
 (defun render-frame ()
-  (let ((scene (current-scene)))
-    (map nil
-         (lambda (x) (render-pass (find-render-pass-spec x)))
-         (passes scene))))
+  (map nil
+       (lambda (x) (render-pass (find-render-pass-spec x)))
+       (passes (current-scene =context=))))
 
 (defun render-pass (pass)
   (with-debug-group (format nil "Render Pass: ~s" (name pass))

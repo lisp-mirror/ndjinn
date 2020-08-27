@@ -107,10 +107,10 @@
 ;;; implementation
 
 (defun find-asset (type key)
-  (u:href (assets) type key))
+  (u:href (assets =context=) type key))
 
 (defun delete-asset (type key)
-  (remhash key (u:href (assets) type)))
+  (remhash key (u:href (assets =context=) type)))
 
 (defun %resolve-path (system path)
   (if =release=
@@ -157,7 +157,7 @@
 
 (defmacro with-asset-cache (type key &body body)
   (u:with-gensyms (table value found-p)
-    `(symbol-macrolet ((,table (u:href (assets) ,type)))
+    `(symbol-macrolet ((,table (u:href (assets =context=) ,type)))
        (u:mvlet ((,value ,found-p ,table))
          (unless ,found-p
            (setf ,table (u:dict #'equalp))))

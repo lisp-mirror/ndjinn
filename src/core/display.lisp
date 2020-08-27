@@ -40,17 +40,17 @@
     (if =allow-screensaver=
         (sdl2:enable-screensaver)
         (sdl2:disable-screensaver))
-    (setf (display) display)))
+    (setf (display =context=) display)))
 
 (defun kill-display ()
-  (u:when-let ((display (display)))
+  (u:when-let ((display (display =context=)))
     (sdl2:gl-delete-context (display-context display))
     (sdl2:destroy-window (display-window display))))
 
 (defun render (display)
   (render-frame)
   (sdl2:gl-swap-window (display-window display))
-  (incf (clock-frame-count (clock))))
+  (incf (clock-frame-count (clock =context=))))
 
 (defun get-resolution ()
-  (display-resolution (display)))
+  (display-resolution (display =context=)))

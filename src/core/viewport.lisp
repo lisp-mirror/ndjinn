@@ -77,7 +77,7 @@
     viewport))
 
 (defun get-viewport-manager ()
-  (viewports (current-scene)))
+  (viewports (current-scene =context=)))
 
 (defun get-viewport-by-coordinates (x y)
   (let ((manager (get-viewport-manager)))

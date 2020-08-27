@@ -1,7 +1,7 @@
 (in-package #:net.mfiano.lisp.pyx)
 
 (defun register-prefab-viewports (entity &key viewports)
-  (let ((viewports-table (table (viewports (current-scene)))))
+  (let ((viewports-table (table (viewports (current-scene =context=)))))
     (do-nodes (node :parent entity)
       (when (has-component-p node 'render)
         (if viewports
@@ -20,7 +20,7 @@
 
 (defun deregister-prefab-entity (entity)
   (u:when-let* ((prefab (node/prefab entity))
-                (table (prefabs (current-scene))))
+                (table (prefabs (current-scene =context=))))
     (u:deletef (u:href table prefab) entity)
     (unless (u:href table prefab)
       (remhash prefab table))))
@@ -34,7 +34,7 @@
       (update-prefab-subtree slave))))
 
 (on-recompile :prefab data ()
-  (dolist (entity (u:href (prefabs (current-scene)) data))
+  (dolist (entity (u:href (prefabs (current-scene =context=)) data))
     (let ((parent (node/parent entity)))
       (delete-node entity)
       (load-prefab data :parent parent)))

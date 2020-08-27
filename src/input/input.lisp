@@ -68,7 +68,7 @@
       data gamepad-id (aref +gamepad-button-names+ button)))))
 
 (defun perform-input-tasks ()
-  (let ((data (input-data)))
+  (let ((data (input-data =context=)))
     (button-enable-entering data)
     (button-disable-exiting data)
     (gamepad-enable-entering data)

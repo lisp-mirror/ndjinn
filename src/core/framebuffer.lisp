@@ -89,15 +89,16 @@
     (:read/write :framebuffer)))
 
 (defun find-framebuffer (name)
-  (u:href (framebuffers) name))
+  (u:href (framebuffers =context=) name))
 
 (defun make-framebuffer (spec)
-  (let* ((target (framebuffer-mode->target (framebuffer-spec-mode spec)))
+  (let* ((name (framebuffer-spec-name spec))
+         (target (framebuffer-mode->target (framebuffer-spec-mode spec)))
          (framebuffer (%make-framebuffer :spec spec
                                          :id (gl:gen-framebuffer)
                                          :target target)))
     (framebuffer-attach-all framebuffer)
-    (setf (u:href (framebuffers) (framebuffer-spec-name spec)) framebuffer)
+    (setf (u:href (framebuffers =context=) name) framebuffer)
     framebuffer))
 
 (defun load-framebuffer (name)

@@ -8,12 +8,12 @@
   (released-buffer-bindings nil :type list))
 
 (defun initialize-shaders ()
-  (unless (display)
+  (unless (display =context=)
     (error "Cannot initialize shaders without an active display."))
   (let* ((table (shadow:load-shaders
                  (lambda (x) (enqueue :recompile (list :shaders x)))))
          (shaders (make-shader-manager :table table)))
-    (setf (shaders) shaders)))
+    (setf (shaders =context=) shaders)))
 
 (on-recompile :shaders data ()
   (shadow:recompile-shaders data)

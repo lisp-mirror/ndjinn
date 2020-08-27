@@ -1,16 +1,16 @@
 (in-package #:net.mfiano.lisp.pyx)
 
 (defun select-shader-buffer-binding ()
-  (let ((id-count (hash-table-count
-                   (shader-manager-buffer-bindings(shaders)))))
+  (let* ((shaders (shaders =context=))
+         (id-count (hash-table-count (shader-manager-buffer-bindings shaders))))
     (when (= id-count =max-ssbo-bindings=)
       (error "Cannot create shader buffer. Maximum bindings reached: ~d."
              =max-ssbo-bindings=))
-    (or (pop (shader-manager-released-buffer-bindings (shaders)))
+    (or (pop (shader-manager-released-buffer-bindings shaders))
         (1+ id-count))))
 
 (defun release-shader-buffer-binding (key)
-  (u:when-let* ((shaders (shaders))
+  (u:when-let* ((shaders (shaders =context=))
                 (bindings (shader-manager-buffer-bindings shaders))
                 (id (u:href bindings key)))
     (remhash key bindings)
@@ -26,8 +26,9 @@
   (shadow:read-buffer-path key path))
 
 (defun make-shader-buffer (key block-id shader)
-  (let ((binding (select-shader-buffer-binding)))
-    (setf (u:href (shader-manager-buffer-bindings (shaders)) key) binding)
+  (let ((bindings (shader-manager-buffer-bindings (shaders =context=)))
+        (binding (select-shader-buffer-binding)))
+    (setf (u:href bindings key) binding)
     (shadow:create-block-alias :buffer block-id shader key)
     (shadow:bind-block key binding)
     (shadow:create-buffer key key)
@@ -46,7 +47,8 @@
   (shadow:clear-buffer key))
 
 (defun bind-shader-buffer (key)
-  (let ((binding (u:href (shader-manager-buffer-bindings (shaders)) key)))
+  (let* ((bindings (shader-manager-buffer-bindings (shaders =context=)))
+         (binding (u:href bindings key)))
     (shadow:bind-block key binding)
     (shadow:bind-buffer key binding)))
 
@@ -57,7 +59,7 @@
 (defmacro with-shader-buffers ((&rest keys) &body body)
   (u:with-gensyms (table)
     (let ((key-syms (mapcar (lambda (x) (list (u:make-gensym x) x)) keys)))
-      `(let ((,table (shader-manager-buffer-bindings (shaders)))
+      `(let ((,table (shader-manager-buffer-bindings (shaders =context=)))
              ,@key-syms)
          ,@(mapcar
             (lambda (x)

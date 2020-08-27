@@ -64,7 +64,7 @@
         (error "Invalid configuration option: ~(~a~)" k))))
 
 (defun load-user-config ()
-  (u:when-let* ((project (project))
+  (u:when-let* ((project (project =context=))
                 (path (uiop:merge-pathnames*
                        (make-pathname :directory `(:relative "Pyx Games"
                                                              ,project)
@@ -73,7 +73,7 @@
                        (uiop:xdg-config-home)))
                 (package (package-name
                           (symbol-package
-                           (%initial-scene =context=)))))
+                           (initial-scene =context=)))))
     (ensure-directories-exist path)
     (cond
       ((uiop:file-exists-p path)

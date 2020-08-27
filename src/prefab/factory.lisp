@@ -34,13 +34,13 @@
       (setf (u:href args :node/parent)
             (if %parent
                 (u:href (entities (factory %prefab)) (path %parent))
-                (or parent (node-tree (current-scene)))))
+                (or parent (node-tree (current-scene =context=)))))
       (u:hash->plist args))))
 
 (defun register-prefab-root (prefab)
   (with-slots (%name %root %factory) prefab
     (let ((root (u:href (entities %factory) (path %root))))
-      (push root (u:href (prefabs (current-scene)) %name))
+      (push root (u:href (prefabs (current-scene =context=)) %name))
       (setf (node/prefab root) %name)
       root)))
 

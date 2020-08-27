@@ -52,7 +52,7 @@
     spec))
 
 (on-recompile :scene data ()
-  (let ((scene (current-scene)))
+  (let ((scene (current-scene =context=)))
     (with-slots (%spec %prefabs %loaded-p) scene
       (let ((name (name %spec)))
         (when (eq data name)
@@ -136,11 +136,11 @@
   (let ((spec (u:href =scenes= scene-name)))
     (unless spec
       (error "Scene ~s is not defined." scene-name))
-    (let ((current (current-scene))
-          (scene (or (u:href (scenes) scene-name)
+    (let ((current (current-scene =context=))
+          (scene (or (u:href (scenes =context=) scene-name)
                      (make-instance 'scene :spec spec))))
-      (setf (u:href (scenes) scene-name) scene
-            (current-scene) scene
+      (setf (u:href (scenes =context=) scene-name) scene
+            (current-scene =context=) scene
             (passes scene) (copy-seq (pass-order (spec scene))))
       (unless (loaded-p scene)
         (setf (node-tree scene) (make-entity ()
@@ -151,12 +151,12 @@
         (make-scene-viewports scene)
         (load-scene-sub-trees scene)
         (setf (loaded-p scene) t))
-      (setf (current-scene) current)
+      (setf (current-scene =context=) current)
       scene)))
 
 (defun get-scene-name ()
-  (name (spec (current-scene))))
+  (name (spec (current-scene =context=))))
 
 (defun switch-scene (scene-name)
   (let ((scene (load-scene scene-name)))
-    (setf (current-scene) scene)))
+    (setf (current-scene =context=) scene)))

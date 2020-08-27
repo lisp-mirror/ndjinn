@@ -5,29 +5,29 @@
 (defclass context ()
   ((%name :reader name
           :initarg :name)
-   (%project :reader %project
+   (%project :reader project
              :initarg :project)
-   (%clock :accessor %clock)
-   (%initial-scene :reader %initial-scene
+   (%clock :accessor clock)
+   (%initial-scene :reader initial-scene
                    :initarg :initial-scene)
-   (%current-scene :accessor %current-scene
+   (%current-scene :accessor current-scene
                    :initform nil)
-   (%scenes :reader %scenes
+   (%scenes :reader scenes
             :initform (u:dict #'eq))
-   (%framebuffers :reader %framebuffers
+   (%framebuffers :reader framebuffers
                   :initform (u:dict #'eq))
-   (%display :accessor %display
+   (%display :accessor display
              :initform nil)
-   (%input-data :accessor %input-data
+   (%input-data :accessor input-data
                 :initform nil)
-   (%assets :reader %assets
+   (%assets :reader assets
             :initform (u:dict #'eq))
-   (%shaders :accessor %shaders)
-   (%running :accessor %running
+   (%shaders :accessor shaders)
+   (%running :accessor running
              :initform t)
-   (%end-frame-work :accessor %end-frame-work
+   (%end-frame-work :accessor end-frame-work
                     :initform nil)
-   (%user-data :accessor %user-data
+   (%user-data :accessor user-data
                :initform nil)))
 
 (defun make-context (context-name)
@@ -49,70 +49,10 @@
     (declare (ignore user-args)))
   (:method :before (context &rest user-args)
     (declare (ignore user-args))
-    (let ((scene (%initial-scene context)))
+    (let ((scene (initial-scene context)))
       (log:debug :pyx.core "Starting initial scene...")
       (switch-scene scene)
       (log:debug :pyx.core "Scene loaded: ~s" scene))))
 
 (defgeneric on-context-destroy (context)
   (:method (context)))
-
-(defun project ()
-  (%project =context=))
-
-(defun clock ()
-  (%clock =context=))
-
-(defun (setf clock) (value)
-  (setf (%clock =context=) value))
-
-(defun current-scene ()
-  (%current-scene =context=))
-
-(defun (setf current-scene) (value)
-  (setf (%current-scene =context=) value))
-
-(defun scenes ()
-  (%scenes =context=))
-
-(defun framebuffers ()
-  (%framebuffers =context=))
-
-(defun display ()
-  (%display =context=))
-
-(defun (setf display) (value)
-  (setf (%display =context=) value))
-
-(defun input-data ()
-  (%input-data =context=))
-
-(defun (setf input-data) (value)
-  (setf (%input-data =context=) value))
-
-(defun assets ()
-  (%assets =context=))
-
-(defun shaders ()
-  (%shaders =context=))
-
-(defun (setf shaders) (value)
-  (setf (%shaders =context=) value))
-
-(defun running-p ()
-  (%running =context=))
-
-(defun (setf running-p) (value)
-  (setf (%running =context=) value))
-
-(defun end-frame-work ()
-  (%end-frame-work =context=))
-
-(defun (setf end-frame-work) (value)
-  (setf (%end-frame-work =context=) value))
-
-(defun user-data ()
-  (%user-data =context=))
-
-(defun (setf user-data) (value)
-  (setf (%user-data =context=) value))

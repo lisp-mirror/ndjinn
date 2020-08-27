@@ -25,7 +25,7 @@
     (error "Collider plan ~s not found." plan-name)))
 
 (defun register-collider (collider layer)
-  (let* ((system (collision-system (current-scene)))
+  (let* ((system (collision-system (current-scene =context=)))
          (registered (registered system)))
     (unless (u:href registered layer)
       (error "Collider ~s has a layer that is not in the scene's collider ~
@@ -34,7 +34,7 @@
     (setf (u:href registered layer collider) collider)))
 
 (defun deregister-collider (collider layer)
-  (let* ((system (collision-system (current-scene)))
+  (let* ((system (collision-system (current-scene =context=)))
          (deregistered (deregistered system)))
     (setf (u:href deregistered layer collider) collider)))
 
@@ -148,7 +148,7 @@
             (remhash k layer-deregistered)))))))
 
 (defun compute-collisions ()
-  (let ((system (collision-system (current-scene))))
+  (let ((system (collision-system (current-scene =context=))))
     (compute-collisions/active system)
     (compute-collisions/registered system)
     (compute-collisions/deregistered system)))

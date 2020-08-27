@@ -23,7 +23,7 @@
   (let ((clock (%make-clock)))
     (setf (clock-init-time clock) (sb-ext:get-time-of-day)
           (clock-running-time clock) (get-time clock))
-    (setf (clock) clock)))
+    (setf (clock =context=) clock)))
 
 (defun get-time (clock)
   (u:mvlet ((s us (sb-ext:get-time-of-day)))
@@ -93,10 +93,10 @@
       (calculate-frame-rate clock))))
 
 (defun get-alpha ()
-  (clock-alpha (clock)))
+  (clock-alpha (clock =context=)))
 
 (defun get-fps ()
-  (let ((clock (clock)))
+  (let ((clock (clock =context=)))
     (values (clock-fps/current clock)
             (clock-fps/average clock)
             (clock-fps/average/10s clock)
@@ -104,10 +104,10 @@
             (clock-fps/average/60s clock))))
 
 (defun get-frame-count ()
-  (clock-frame-count (clock)))
+  (clock-frame-count (clock =context=)))
 
 (defun get-frame-time ()
-  (float (clock-frame-time (clock)) 1f0))
+  (float (clock-frame-time (clock =context=)) 1f0))
 
 (defun get-running-time ()
-  (clock-running-time (clock)))
+  (clock-running-time (clock =context=)))

@@ -131,4 +131,4 @@
          ,@body))))
 
 (defun get-entity-count ()
-  (hash-table-count (uuids (current-scene))))
+  (hash-table-count (uuids (current-scene =context=))))

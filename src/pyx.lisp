@@ -33,8 +33,8 @@
     (setf =context= nil)))
 
 (defun process-end-frame-work ()
-  (map nil #'funcall (nreverse (end-frame-work)))
-  (setf (end-frame-work) nil))
+  (map nil #'funcall (nreverse (end-frame-work =context=)))
+  (setf (end-frame-work =context=) nil))
 
 (defun update ()
   (let ((alpha (get-alpha)))
@@ -55,13 +55,13 @@
   (process-queue :recompile))
 
 (defun start-loop ()
-  (let* ((clock (clock))
-         (display (display))
-         (input-data (input-data))
+  (let* ((clock (clock =context=))
+         (display (display =context=))
+         (input-data (input-data =context=))
          (refresh-rate (display-refresh-rate display)))
     (update)
     (log:debug :pyx.core "Entered main game loop")
-    (u:while (running-p)
+    (u:while (running =context=)
       (with-continuable "Pyx"
         (handle-events input-data)
         (tick-clock clock refresh-rate #'physics-update #'periodic-update)
@@ -69,10 +69,10 @@
         (render display)))))
 
 (defun start-engine (context-name &rest user-args)
-  (unless (and =context= (running-p))
+  (unless (and =context= (running =context=))
     (setf =context= (make-context context-name))
     (unwind-protect (initialize user-args)
       (deinitialize))))
 
 (defun stop-engine ()
-  (setf (running-p) nil))
+  (setf (running =context=) nil))

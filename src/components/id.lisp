@@ -16,7 +16,7 @@
   (format stream "~a" (id/display mixin)))
 
 (defun register-uuid (entity)
-  (let ((uuids (uuids (current-scene)))
+  (let ((uuids (uuids (current-scene =context=)))
         (uuid (id/uuid entity)))
     (u:if-found (found (u:href uuids uuid))
                 (error "Entity ~s has a UUID collision with object ~s."
@@ -24,7 +24,7 @@
                 (setf (u:href uuids uuid) entity))))
 
 (defun deregister-uuid (entity)
-  (remhash (id/uuid entity) (uuids (current-scene))))
+  (remhash (id/uuid entity) (uuids (current-scene =context=))))
 
 (defun register-views (entity)
   (u:when-let ((parent (node/parent entity)))
@@ -35,9 +35,9 @@
 
 (defgeneric find-by-uuid (uuid)
   (:method ((uuid uuid:uuid))
-    (u:href (uuids (current-scene)) uuid))
+    (u:href (uuids (current-scene =context=)) uuid))
   (:method ((uuid string))
-    (u:href (uuids (current-scene)) (uuid:string->uuid uuid))))
+    (u:href (uuids (current-scene =context=)) (uuid:string->uuid uuid))))
 
 (defun get-display-id (entity)
   (id/display entity))

@@ -81,7 +81,7 @@
      sdl2-ffi:+sdl-hint-joystick-allow-background-events+ "1")))
 
 (defun shutdown-gamepads ()
-  (u:when-let* ((data (input-data))
+  (u:when-let* ((data (input-data =context=))
                 (instances (gamepad-instances data)))
     (u:do-hash-values (v instances)
       (sdl2:game-controller-close (gamepad-handle v)))
@@ -136,7 +136,7 @@
 (defgeneric get-gamepad-analog (deadzone-type &rest args))
 
 (defmethod get-gamepad-analog ((deadzone-type (eql :axial)) &rest args)
-  (let ((data (input-data)))
+  (let ((data (input-data =context=)))
     (u:if-found (state (u:href (states data) args))
                 (let ((x (gamepad-analog-state-x state))
                       (y (gamepad-analog-state-y state))
@@ -146,7 +146,7 @@
                 (values 0f0 0f0))))
 
 (defmethod get-gamepad-analog ((deadzone-type (eql :radial)) &rest args)
-  (let ((data (input-data)))
+  (let ((data (input-data =context=)))
     (u:if-found (state (u:href (states data) args))
                 (let ((x (gamepad-analog-state-x state))
                       (y (gamepad-analog-state-y state))
@@ -158,7 +158,7 @@
                 (values 0f0 0f0))))
 
 (defmethod get-gamepad-analog ((deadzone-type (eql :radial-scaled)) &rest args)
-  (let ((data (input-data)))
+  (let ((data (input-data =context=)))
     (u:if-found (state (u:href (states data) args))
                 (let ((x (gamepad-analog-state-x state))
                       (y (gamepad-analog-state-y state))
@@ -190,16 +190,16 @@
                 (:y (setf (gamepad-analog-state-y state) value)))))))))
 
 (defun on-gamepad-attach (gamepad-id)
-  (u:when-let* ((data (input-data))
+  (u:when-let* ((data (input-data =context=))
                 (state (u:href (states data) (list :attach gamepad-id))))
     (gamepad-attach-state-enter state)))
 
 (defun on-gamepad-enabled (gamepad-id)
-  (u:when-let* ((data (input-data))
+  (u:when-let* ((data (input-data =context=))
                 (state (u:href (states data) (list :attach gamepad-id))))
     (gamepad-attach-state-enabled state)))
 
 (defun on-gamepad-detach (gamepad-id)
-  (u:when-let* ((data (input-data))
+  (u:when-let* ((data (input-data =context=))
                 (state (u:href (states data) (list :attach gamepad-id))))
     (gamepad-attach-state-exit state)))

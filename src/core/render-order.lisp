@@ -1,7 +1,7 @@
 (in-package #:net.mfiano.lisp.pyx)
 
 (defun render-order-comparator (x y)
-  (let ((order (draw-order (spec (current-scene)))))
+  (let ((order (draw-order (spec (current-scene =context=)))))
     (< (u:href order x)
        (u:href order y))))
 

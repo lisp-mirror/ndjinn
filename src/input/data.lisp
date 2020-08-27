@@ -18,4 +18,4 @@
   (let ((input-data (make-instance 'input-data))
         (motion-state (make-mouse-motion-state)))
     (setf (u:href (states input-data) '(:mouse :motion)) motion-state
-          (input-data) input-data)))
+          (input-data =context=) input-data)))

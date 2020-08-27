@@ -30,7 +30,9 @@
    (%user-data :accessor user-data
                :initform nil)
    (%hardware-info :accessor hardware-info
-                   :initform nil)))
+                   :initform nil)
+   (%thread-pool :accessor thread-pool
+                 :initform nil)))
 
 (defun make-context (context-name)
   (if (find-class context-name nil)

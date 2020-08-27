@@ -1,7 +1,5 @@
 (in-package #:net.mfiano.lisp.pyx)
 
-(glob:define-global-var =thread-pool= nil)
-
 (defstruct (thread-pool
             (:constructor %make-thread-pool)
             (:predicate nil)
@@ -15,31 +13,33 @@
                                       (hardware-info =context=))))
          (thread-pool (%make-thread-pool :worker-count worker-count)))
     (setf lp:*kernel* (lp:make-kernel worker-count)
-          =thread-pool= thread-pool)))
+          (thread-pool =context=) thread-pool)))
 
 (defun destroy-thread-pool ()
   (lp:end-kernel :wait t)
-  (when =thread-pool=
+  (when (thread-pool =context=)
     (setf lp:*kernel* nil
-          =thread-pool= nil)))
+          (thread-pool =context=) nil)))
 
 (defun ensure-channel (purpose)
-  (let ((channels (thread-pool-channels =thread-pool=)))
-    (u:ensure-gethash purpose channels (lp:make-channel))))
+  (when (and =context= (thread-pool =context=))
+    (let ((channels (thread-pool-channels (thread-pool =context=))))
+      (u:ensure-gethash purpose channels (lp:make-channel)))))
 
 (defun ensure-queue (purpose)
-  (let ((queues (thread-pool-queues =thread-pool=)))
-    (u:ensure-gethash purpose queues (lpq:make-queue))))
+  (when (and =context= (thread-pool =context=))
+    (let ((queues (thread-pool-queues (thread-pool =context=))))
+      (u:ensure-gethash purpose queues (lpq:make-queue)))))
 
 (defun submit-job (purpose job &optional (priority :default))
-  (when =thread-pool=
+  (when (and =context= (thread-pool =context=))
     (let ((channel (ensure-channel purpose))
           (lp:*task-priority* priority)
           (lp:*task-category* purpose))
       (lp:submit-task channel job))))
 
 (defun get-job-results (purpose)
-  (when =thread-pool=
+  (when (and =context= (thread-pool =context=))
     (let ((channel (ensure-channel purpose)))
       (lp:receive-result channel))))
 
@@ -47,12 +47,12 @@
   (lp:kill-tasks purpose))
 
 (defun enqueue (purpose data)
-  (when =thread-pool=
+  (when (and =context= (thread-pool =context=))
     (let ((queue (ensure-queue purpose)))
       (lpq:push-queue data queue))))
 
 (defun dequeue (purpose)
-  (when =thread-pool=
+  (when (and =context= (thread-pool =context=))
     (let ((queue (ensure-queue purpose)))
       (lpq:pop-queue queue))))
 
@@ -61,7 +61,7 @@
     (lpq:queue-empty-p queue)))
 
 (defun process-queue (purpose)
-  (u:while (and =thread-pool= (not (queue-empty-p purpose)))
+  (u:while (and =context= (thread-pool =context=) (not (queue-empty-p purpose)))
     (destructuring-bind (&optional event-type data) (dequeue purpose)
       (when event-type
         (handle-queued-event purpose event-type data)))))

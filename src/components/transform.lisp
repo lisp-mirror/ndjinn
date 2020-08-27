@@ -66,8 +66,10 @@
 
 (defun resolve-normal-matrix (entity)
   (u:if-let ((camera (get-current-camera)))
-    (m4:transpose (m4:invert (m4:* (camera/view camera)
-                                   (transform/model entity))))
+    (m4:transpose
+     (m4:invert
+      (m4:* (camera/view camera)
+            (transform/model entity))))
     m4:+id+))
 
 (define-entity-hook :pre-render (entity transform)

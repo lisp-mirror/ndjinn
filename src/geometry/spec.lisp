@@ -1,33 +1,29 @@
 (in-package #:net.mfiano.lisp.pyx)
 
-(defclass geometry-spec ()
-  ((%name :reader name
-          :initarg :name)
-   (%id :reader id
-        :initarg :id)
-   (%layout :reader layout
-            :initarg :layout)
-   (%buffers :accessor buffers)
-   (%buffer-names :reader buffer-names
-                  :initform (u:dict #'eq))
-   (%primitive :reader primitive
-               :initarg :primitive)
-   (%vertex-count :reader vertex-count
-                  :initarg :vertex-count)
-   (%primitive-count :accessor primitive-count
-                     :initform 0)))
+(defstruct (geometry-spec
+            (:constructor %make-geometry-spec)
+            (:predicate nil)
+            (:copier nil))
+  (name nil :type symbol)
+  (id 0 :type fixnum)
+  (layout (%make-geometry-layout) :type geometry-layout)
+  (buffers (vector) :type vector)
+  (buffer-names (u:dict #'eq) :type hash-table)
+  (primitive :triangles :type keyword)
+  (vertex-count 0 :type u:ub32)
+  (primitive-count 0 :type u:ub32))
 
 (defun make-geometry-spec (layout-name
                            &key name (primitive :triangles) (vertex-count 0)
                              buffer-data)
   (lambda ()
-    (let ((spec (make-instance 'geometry-spec
-                               :name name
-                               :id (gl:gen-vertex-array)
-                               :layout (find-geometry-layout layout-name)
-                               :vertex-count vertex-count
-                               :primitive primitive)))
-      (gl:bind-vertex-array (id spec))
+    (let ((spec (%make-geometry-spec
+                 :name name
+                 :id (gl:gen-vertex-array)
+                 :layout (find-geometry-layout layout-name)
+                 :vertex-count vertex-count
+                 :primitive primitive)))
+      (gl:bind-vertex-array (geometry-spec-id spec))
       (make-geometry-buffers spec)
       (configure-geometry-buffers spec)
       (u:do-plist (k v buffer-data)

@@ -25,7 +25,7 @@
   (:type-order :before geometry :after render))
 
 (define-geometry-layout text ()
-  (:data (:format interleaved)
+  (:data (:format :interleaved)
          (position :type float :count 2)
          (uv :type float :count 2)))
 

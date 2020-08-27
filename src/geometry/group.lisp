@@ -1,68 +1,65 @@
 (in-package #:net.mfiano.lisp.pyx)
 
-(defclass geometry-group ()
-  ((%name :reader name
-          :initarg :name)
-   (%format :reader buffer-format
-            :initarg :format)
-   (%divisor :reader divisor
-             :initarg :divisor)
-   (%attributes :reader attributes
-                :initarg :attributes)
-   (%attribute-order :reader attribute-order
-                     :initarg :attribute-order)))
+(defstruct (geometry-group
+            (:predicate nil)
+            (:copier nil))
+  (name nil :type symbol)
+  (format :interleaved :type keyword)
+  (divisor 0 :type fixnum)
+  (attributes (u:dict #'eq) :type hash-table)
+  (attribute-order nil :type list))
 
-(defclass geometry-group/separate (geometry-group) ())
-
-(defclass geometry-group/interleaved (geometry-group) ())
-
-(defun make-geometry-groups (spec)
+(defun make-geometry-groups (layout-spec)
   (let ((groups (u:dict #'eq))
         (order))
-    (dolist (group spec)
-      (destructuring-bind (name (&key (format 'interleaved) (divisor 0))
+    (dolist (group-spec layout-spec)
+      (destructuring-bind (name (&key (format :interleaved) (divisor 0))
                            . attrs)
-          group
-        (u:mvlet ((group-type (u:format-symbol :net.mfiano.lisp.pyx
-                                               "GEOMETRY-GROUP/~a"
-                                               format))
-                  (attributes attribute-order (make-geometry-attributes attrs)))
+          group-spec
+        (u:mvlet* ((attributes attribute-order (make-geometry-attributes attrs))
+                   (group (make-geometry-group
+                           :name name
+                           :format format
+                           :divisor divisor
+                           :attributes attributes
+                           :attribute-order attribute-order)))
           (push name order)
-          (setf (u:href groups name)
-                (make-instance group-type
-                               :name name
-                               :format format
-                               :divisor divisor
-                               :attributes attributes
-                               :attribute-order attribute-order)))))
+          (setf (u:href groups name) group))))
     (values groups
             (nreverse order))))
 
-(defgeneric get-geometry-group-buffer-count (group)
-  (:method (group)
-    1)
-  (:method ((group geometry-group/separate))
-    (hash-table-count (attributes group))))
+(defun get-geometry-group-buffer-count (group)
+  (ecase (geometry-group-format group)
+    (:separate (hash-table-count (geometry-group-attributes group)))
+    (:interleaved 1)))
 
 (defun get-geometry-group-attribute-size (group)
-  (reduce #'+ (u:hash-values (attributes group))
+  (reduce #'+ (u:hash-values (geometry-group-attributes group))
           :key #'get-geometry-attribute-size))
 
-(defmethod configure-geometry-group ((group geometry-group) index buffers)
-  (loop :for attribute-name :in (attribute-order group)
-        :for attribute = (u:href (attributes group) attribute-name)
+(defun configure-geometry-group/separate (group index buffers)
+  (loop :for attribute-name :in (geometry-group-attribute-order group)
+        :for attribute = (u:href (geometry-group-attributes group)
+                                 attribute-name)
         :for i :from index
         :for buffer :across buffers
+        :for divisort = (geometry-group-divisor group)
         :do (gl:bind-buffer :array-buffer buffer)
-            (configure-geometry-attribute attribute i 0 0 (divisor group))))
+            (configure-geometry-attribute attribute i 0 0 divisor)))
 
-(defmethod configure-geometry-group ((group geometry-group/interleaved) index
-                                     buffers)
+(defun configure-geometry-group/interleaved (group index buffers)
   (gl:bind-buffer :array-buffer (aref buffers 0))
   (loop :with stride = (get-geometry-group-attribute-size group)
         :with offset = 0
-        :for attribute-name :in (attribute-order group)
-        :for attr = (u:href (attributes group) attribute-name)
+        :for attribute-name :in (geometry-group-attribute-order group)
+        :for attribute = (u:href (geometry-group-attributes group)
+                                 attribute-name)
         :for i :from index
-        :do (configure-geometry-attribute attr i stride offset (divisor group))
-            (incf offset (get-geometry-attribute-size attr))))
+        :for divisor = (geometry-group-divisor group)
+        :do (configure-geometry-attribute attribute i stride offset divisor)
+            (incf offset (get-geometry-attribute-size attribute))))
+
+(defun configure-geometry-group (group index buffers)
+  (ecase (geometry-group-format group)
+    (:separate (configure-geometry-group/separate group index buffers))
+    (:interleaved (configure-geometry-group/interleaved group index buffers))))

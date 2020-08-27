@@ -1,9 +1,5 @@
 (in-package #:net.mfiano.lisp.pyx)
 
-(glob:define-global-var =component-type-order= (u:dict #'eq))
-(glob:define-global-var =component-initargs= (u:dict #'eq))
-(glob:define-global-var =static-components= nil)
-
 (defun sort-component-types (order-table types)
   (flet ((dag-p (graph)
            (not (or (gph:find-edge-if graph #'gph:undirected-edge-p)
@@ -27,11 +23,12 @@
        (mapcar #'gph:element (gph:topological-sort graph))))))
 
 (defun compute-component-type-order (types)
-  (sort-component-types =component-type-order=
-                        (append =static-components= types)))
+  (sort-component-types (metadata-components-type-order =metadata=)
+                        (append (metadata-components-static =metadata=) types)))
 
 (defun compute-total-component-type-order ()
-  (compute-component-type-order (u:hash-keys =component-type-order=)))
+  (compute-component-type-order
+   (u:hash-keys (metadata-components-type-order =metadata=))))
 
 (defun compute-component-accessors (type)
   (labels ((get-all-direct-slots (class)
@@ -85,21 +82,22 @@
              (remove nil methods))))))
 
 (defun track-component-initargs (type slots)
-  (flet ((clear-type ()
-           (u:do-hash (k v =component-initargs=)
-             (when (eq type v)
-               (remhash k =component-initargs=)))))
-    (clear-type)
-    (dolist (slot slots)
-      (loop :for (k v) :on (cdr slot) :by #'cddr
-            :when (eq k :initarg)
-              :do (u:if-let ((cached-type (u:href =component-initargs= v)))
-                    (unwind-protect
-                         (error "Component initarg ~s of component ~s is ~
+  (let ((initargs (metadata-components-initargs =metadata=)))
+    (flet ((clear-type ()
+             (u:do-hash (k v initargs)
+               (when (eq type v)
+                 (remhash k initargs)))))
+      (clear-type)
+      (dolist (slot slots)
+        (loop :for (k v) :on (cdr slot) :by #'cddr
+              :when (eq k :initarg)
+                :do (u:if-let ((cached-type (u:href initargs v)))
+                      (unwind-protect
+                           (error "Component initarg ~s of component ~s is ~
                                  already in use by component ~s."
-                                v type cached-type)
-                      (clear-type))
-                    (setf (u:href =component-initargs= v) type))))))
+                                  v type cached-type)
+                        (clear-type))
+                      (setf (u:href initargs v) type)))))))
 
 (defmacro define-component (name super-classes &body slots/options)
   (u:with-gensyms (func)
@@ -123,12 +121,13 @@
                                 ,@class-options))))
                  (enqueue :recompile (list :component (list ',name ,func)))))
              (track-component-initargs ',name ',slots)
-             (setf (u:href =component-type-order= ',name)
+             (setf (u:href (metadata-components-type-order =metadata=) ',name)
                    '(:before ,(u:ensure-list before)
                      :after ,(u:ensure-list after)))
              ,@(if (eq static t)
-                   `((pushnew ',name =static-components=))
-                   `((u:deletef =static-components= ',name)))
+                   `((pushnew ',name (metadata-components-static =metadata=)))
+                   `((u:deletef (metadata-components-static =metadata=)
+                                ',name)))
              ,@(unless (typep static 'boolean)
                  `((error ":STATIC must be either T or NIL.")))))))))
 

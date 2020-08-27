@@ -1,82 +1,95 @@
 (in-package #:net.mfiano.lisp.pyx)
 
-(defclass transform-state ()
-  ((%previous :accessor previous
-              :initarg :previous)
-   (%current :accessor current
-             :initarg :current)
-   (%incremental :accessor incremental
-                 :initarg :incremental)
-   (%incremental-delta :reader incremental-delta
-                       :initarg :incremental-delta)
-   (%interpolated :reader interpolated
-                  :initarg :interpolated)))
+(defstruct (transform-state
+            (:predicate nil)
+            (:copier nil))
+  (previous (v3:vec) :type (or v3:vec q:quat))
+  (current (v3:vec) :type (or v3:vec q:quat))
+  (incremental (v3:vec) :type v3:vec)
+  (incremental-delta (v3:vec) :type (or v3:vec q:quat))
+  (interpolated (v3:vec) :type (or v3:vec q:quat)))
 
 (defun make-translate-state ()
-  (make-instance 'transform-state
-                 :previous (v3:vec)
-                 :current (v3:vec)
-                 :incremental (v3:vec)
-                 :incremental-delta (v3:vec)
-                 :interpolated (v3:vec)))
+  (make-transform-state :previous (v3:vec)
+                        :current (v3:vec)
+                        :incremental (v3:vec)
+                        :incremental-delta (v3:vec)
+                        :interpolated (v3:vec)))
 
 (defun make-rotate-state ()
-  (make-instance 'transform-state
-                 :previous (q:quat 1)
-                 :current (q:quat 1)
-                 :incremental (v3:vec)
-                 :incremental-delta (q:quat 1)
-                 :interpolated (q:quat 1)))
+  (make-transform-state :previous (q:quat 1)
+                        :current (q:quat 1)
+                        :incremental (v3:vec)
+                        :incremental-delta (q:quat 1)
+                        :interpolated (q:quat 1)))
 
 (defun make-scale-state ()
-  (make-instance 'transform-state
-                 :previous (v3:vec 1)
-                 :current (v3:vec 1)
-                 :incremental (v3:vec)
-                 :incremental-delta (v3:vec)
-                 :interpolated (v3:vec)))
+  (make-transform-state :previous (v3:vec 1)
+                        :current (v3:vec 1)
+                        :incremental (v3:vec)
+                        :incremental-delta (v3:vec)
+                        :interpolated (v3:vec)))
 
 (defun initialize-translation (state &optional initial velocity)
   (when initial
-    (setf (current state) initial
-          (previous state) (v3:copy (current state))))
+    (setf (transform-state-current state) initial
+          (transform-state-previous state) (v3:copy initial)))
   (when velocity
-    (setf (incremental state) velocity)))
+    (setf (transform-state-incremental state) velocity)))
 
 (defun initialize-rotation (state &optional initial velocity)
   (when initial
-    (setf (current state) initial
-          (previous state) (q:copy (current state))))
+    (setf (transform-state-current state) initial
+          (transform-state-previous state) (q:copy initial)))
   (when velocity
-    (setf (incremental state) velocity)))
+    (setf (transform-state-incremental state) velocity)))
 
 (defun initialize-scale (state &optional initial velocity)
   (when initial
-    (setf (current state) (etypecase initial
-                            (v3:vec initial)
-                            (real (v3:vec initial)))
-          (previous state) (v3:copy (current state))))
+    (let ((initial (etypecase initial
+                     (v3:vec initial)
+                     (real (v3:vec initial)))))
+      (setf (transform-state-current state) initial
+            (transform-state-previous state) (v3:copy initial))))
   (when velocity
-    (setf (incremental state) velocity)))
+    (setf (transform-state-incremental state) velocity)))
 
+(u:fn-> interpolate-vector (transform-state single-float) v3:vec)
 (defun interpolate-vector (state factor)
-  (v3:lerp! (interpolated state)
-            (previous state)
-            (current state)
+  (declare (optimize speed))
+  (v3:lerp! (transform-state-interpolated state)
+            (transform-state-previous state)
+            (transform-state-current state)
             factor))
 
+(u:fn-> interpolate-quaternion (transform-state single-float) q:quat)
 (defun interpolate-quaternion (state factor)
-  (q:slerp! (interpolated state)
-            (previous state)
-            (current state)
+  (declare (optimize speed))
+  (q:slerp! (transform-state-interpolated state)
+            (transform-state-previous state)
+            (transform-state-current state)
             factor))
 
+(u:fn-> transform-node/vector (transform-state single-float) (values))
 (defun transform-node/vector (state delta)
-  (v3:copy! (previous state) (current state))
-  (v3:scale! (incremental-delta state) (incremental state) delta)
-  (v3:+! (current state) (current state) (incremental-delta state)))
+  (declare (optimize speed))
+  (v3:copy! (transform-state-previous state) (transform-state-current state))
+  (v3:scale! (transform-state-incremental-delta state)
+             (transform-state-incremental state)
+             delta)
+  (v3:+! (transform-state-current state)
+         (transform-state-current state)
+         (transform-state-incremental-delta state))
+  (values))
 
+(u:fn-> transform-node/quaternion (transform-state single-float) (values))
 (defun transform-node/quaternion (state delta)
-  (q:copy! (previous state) (current state))
-  (math:velocity->rotation! (incremental-delta state) (incremental state) delta)
-  (q:rotate! (current state) (current state) (incremental-delta state)))
+  (declare (optimize speed))
+  (q:copy! (transform-state-previous state) (transform-state-current state))
+  (math:velocity->rotation! (transform-state-incremental-delta state)
+                            (transform-state-incremental state)
+                            delta)
+  (q:rotate! (transform-state-current state)
+             (transform-state-current state)
+             (transform-state-incremental-delta state))
+  (values))

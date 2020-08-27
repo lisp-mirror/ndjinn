@@ -49,9 +49,13 @@
       (interpolate-vector scale factor)
       (interpolate-quaternion rotation factor)
       (interpolate-vector translation factor)
-      (m4:copy! local (q:to-mat4 (interpolated rotation)))
-      (m4:*! local local (m4:set-scale m4:+id+ (interpolated scale)))
-      (m4:set-translation! local local (interpolated translation)))))
+      (m4:copy! local (q:to-mat4 (transform-state-interpolated rotation)))
+      (m4:*! local
+             local
+             (m4:set-scale m4:+id+ (transform-state-interpolated scale)))
+      (m4:set-translation! local
+                           local
+                           (transform-state-interpolated translation)))))
 
 (defun resolve-model (entity alpha)
   (u:when-let ((parent (node/parent entity)))
@@ -89,39 +93,39 @@
 
 (defun translate-entity (entity vec &key replace instant)
   (let ((state (transform/translation entity)))
-    (symbol-macrolet ((current (current state)))
+    (symbol-macrolet ((current (transform-state-current state)))
       (v3:+! current (if replace v3:+zero+ current) vec)
       (when instant
-        (push (lambda () (v3:copy! (previous state) current))
+        (push (lambda () (v3:copy! (transform-state-previous state) current))
               (end-frame-work))))))
 
 (defun translate-entity/velocity (entity axis rate)
   (let ((state (transform/translation entity)))
-    (setf (incremental state) (math:make-velocity axis rate))))
+    (setf (transform-state-incremental state) (math:make-velocity axis rate))))
 
 (defun rotate-entity (entity quat &key replace instant)
   (let ((state (transform/rotation entity)))
-    (symbol-macrolet ((current (current state)))
+    (symbol-macrolet ((current (transform-state-current state)))
       (q:rotate! current (if replace q:+id+ current) quat)
       (when instant
-        (push (lambda () (q:copy! (previous state) current))
+        (push (lambda () (q:copy! (transform-state-previous state) current))
               (end-frame-work))))))
 
 (defun rotate-entity/velocity (entity axis rate)
   (let ((state (transform/rotation entity)))
-    (setf (incremental state) (math:make-velocity axis rate))))
+    (setf (transform-state-incremental state) (math:make-velocity axis rate))))
 
 (defun scale-entity (entity vec &key replace instant)
   (let ((state (transform/scale entity)))
-    (symbol-macrolet ((current (current state)))
+    (symbol-macrolet ((current (transform-state-current state)))
       (v3:+! current (if replace v3:+zero+ current) vec)
       (when instant
-        (push (lambda () (v3:copy! (previous state) current))
+        (push (lambda () (v3:copy! (transform-state-previous state) current))
               (end-frame-work))))))
 
 (defun scale-entity/velocity (entity axis rate)
   (let ((state (transform/scale entity)))
-    (setf (incremental state) (math:make-velocity axis rate))))
+    (setf (transform-state-incremental state) (math:make-velocity axis rate))))
 
 (defun transform-point (entity point &key (space :model))
   (let ((model (transform/model entity)))

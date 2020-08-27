@@ -2,17 +2,17 @@
 
 (glob:define-global-var =thread-pool= nil)
 
-(defclass thread-pool ()
-  ((%worker-count :reader worker-count
-                  :initarg :worker-count)
-   (%channels :reader channels
-              :initform (u:dict #'eq))
-   (%queues :reader queues
-            :initform (u:dict #'eq))))
+(defstruct (thread-pool
+            (:constructor %make-thread-pool)
+            (:predicate nil)
+            (:copier nil))
+  (worker-count 1 :type fixnum)
+  (channels (u:dict #'eq) :type hash-table)
+  (queues (u:dict #'eq) :type hash-table))
 
 (defun make-thread-pool ()
   (let* ((worker-count (or =threads= =cpu-count=))
-         (thread-pool (make-instance 'thread-pool :worker-count worker-count)))
+         (thread-pool (%make-thread-pool :worker-count worker-count)))
     (setf lp:*kernel* (lp:make-kernel worker-count)
           =thread-pool= thread-pool)))
 
@@ -23,11 +23,11 @@
           =thread-pool= nil)))
 
 (defun ensure-channel (purpose)
-  (let ((channels (channels =thread-pool=)))
+  (let ((channels (thread-pool-channels =thread-pool=)))
     (u:ensure-gethash purpose channels (lp:make-channel))))
 
 (defun ensure-queue (purpose)
-  (let ((queues (queues =thread-pool=)))
+  (let ((queues (thread-pool-queues =thread-pool=)))
     (u:ensure-gethash purpose queues (lpq:make-queue))))
 
 (defun submit-job (purpose job &optional (priority :default))

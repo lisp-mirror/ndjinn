@@ -12,11 +12,12 @@
               (register-render-order viewport node)))))))
 
 (defun load-prefab (name &key viewports parent)
-  (u:if-let ((prefab (u:href =prefabs= name)))
-    (let* ((factory (factory (u:href =prefabs= name)))
-           (entity (funcall (func factory) :parent parent)))
-      (register-prefab-viewports entity :viewports viewports))
-    (error "Prefab ~s not defined." name)))
+  (let ((prefabs (metadata-prefabs =metadata=)))
+    (u:if-let ((prefab (u:href prefabs name)))
+      (let* ((factory (factory (u:href prefabs name)))
+             (entity (funcall (func factory) :parent parent)))
+        (register-prefab-viewports entity :viewports viewports))
+      (error "Prefab ~s not defined." name))))
 
 (defun deregister-prefab-entity (entity)
   (u:when-let* ((prefab (node/prefab entity))
@@ -29,7 +30,7 @@
   (parse-prefab prefab)
   (enqueue :recompile (list :prefab (name prefab)))
   (dolist (spec (slaves prefab))
-    (u:when-let ((slave (u:href =prefabs= spec)))
+    (u:when-let ((slave (u:href (metadata-prefabs =metadata=) spec)))
       (clrhash (nodes slave))
       (update-prefab-subtree slave))))
 
@@ -44,7 +45,8 @@
   (u:with-gensyms (data)
     (u:mvlet ((body decls doc (u:parse-body body :documentation t)))
       `(let ((,data (preprocess-prefab-data ,name ,options ,body)))
-         (if (u:href =prefabs= ',name)
+         (if (u:href (metadata-prefabs =metadata=) ',name)
              (reset-prefab ',name ,data)
              (make-prefab ',name ,data))
-         (update-prefab-subtree (u:href =prefabs= ',name))))))
+         (update-prefab-subtree
+          (u:href (metadata-prefabs =metadata=)',name))))))

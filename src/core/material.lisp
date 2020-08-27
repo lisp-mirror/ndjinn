@@ -26,12 +26,12 @@
   (format stream "~s" (name material-spec)))
 
 (defun find-material-spec (name)
-  (or (u:href =materials= name)
+  (or (u:href (metadata-materials =metadata=) name)
       (error "Material ~s is not defined." name)))
 
 (defun find-material-spec-master (spec)
   (let* ((master-name (master spec))
-         (master-spec (u:href =materials= master-name)))
+         (master-spec (u:href (metadata-materials =metadata=) master-name)))
     (when (and master-name (not master-spec))
       (error "Material ~s inherits from the unknown master ~s."
              (name spec)
@@ -63,11 +63,11 @@
       (setf (u:href uniforms :resolved k) v))))
 
 (defun update-material-spec-relationships (spec)
-  (u:when-let ((master (u:href =materials= (master spec))))
+  (u:when-let ((master (u:href (metadata-materials =metadata=) (master spec))))
     (pushnew (name spec) (slaves master))))
 
 (defun update-material-spec-framebuffer-link (material-name framebuffer-name)
-  (u:do-hash-values (v =framebuffers=)
+  (u:do-hash-values (v (metadata-framebuffers =metadata=))
     (dolist (framebuffer-material-name (framebuffer-spec-materials v))
       (when (eq material-name framebuffer-material-name)
         (u:deletef (framebuffer-spec-materials v) framebuffer-material-name))))
@@ -78,7 +78,7 @@
 
 (defun update-material-spec (name master shader uniforms pass output func)
   (let ((spec (find-material-spec name))
-        (master-spec (u:href =materials= master)))
+        (master-spec (u:href (metadata-materials =metadata=) master)))
     (destructuring-bind (&optional framebuffer attachments) output
       (setf (master spec) master
             (shader spec) (or shader (and master-spec (shader master-spec)))
@@ -94,7 +94,7 @@
 
 (defun make-material-spec (name master shader uniforms pass output func)
   (let ((spec (make-instance 'material-spec :name name)))
-    (setf (u:href =materials= name) spec)
+    (setf (u:href (metadata-materials =metadata=) name) spec)
     (update-material-spec name master shader uniforms pass output func)
     spec))
 
@@ -115,7 +115,7 @@
   (destructuring-bind (&key shader uniforms features pass output) (car body)
     (u:with-gensyms (func)
       `(let ((,func ,(generate-render-func features)))
-         (if (u:href =materials= ',name)
+         (if (u:href (metadata-materials =metadata=) ',name)
              (update-material-spec ',name ',master ',shader (list ,@uniforms)
                                    ',pass ',output ,func)
              (make-material-spec ',name ',master ',shader (list ,@uniforms)

@@ -57,7 +57,7 @@
 
 (defun load-developer-config ()
   (reset-config)
-  (u:do-plist (k v (u:href =config= (name =context=)))
+  (u:do-plist (k v (u:href (metadata-config =metadata=) (name =context=)))
     (if (find k +developer-options+)
         (let ((option (u:format-symbol :net.mfiano.lisp.pyx "=~a=" k)))
           (set option v))
@@ -92,7 +92,7 @@
   (u:with-gensyms (key)
     (let ((keys (u:plist-keys (car body))))
       `(if (every (lambda (,key) (find ,key +developer-options+)) ',keys)
-           (setf (u:href =config= ',context) ',@body)
+           (setf (u:href (metadata-config =metadata=) ',context) ',@body)
            (error "Invalid configuration options: ~{~s~^, ~}."
                   (sort (set-difference ',keys +developer-options+)
                         #'string<))))))

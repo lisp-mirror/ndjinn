@@ -26,7 +26,7 @@
 
 (defun update-scene-spec (name sub-trees viewports passes draw-order
                           collider-plan)
-  (let* ((spec (u:href =scenes= name))
+  (let* ((spec (u:href (metadata-scenes =metadata=) name))
          (draw-order-table (make-scene-draw-order-table draw-order))
          (pass-table (u:dict #'eq))
          (sub-trees (mapcar
@@ -35,7 +35,7 @@
                      sub-trees))
          (viewports (or viewports `((default ,(mapcar #'car sub-trees))))))
     (dolist (pass passes)
-      (u:if-let ((pass-spec (u:href =render-passes= pass)))
+      (u:if-let ((pass-spec (u:href (metadata-render-passes =metadata=) pass)))
         (setf (u:href pass-table pass) pass-spec)
         (error "Render pass ~s not defined." pass)))
     (setf (scene-spec-sub-trees spec) sub-trees
@@ -49,7 +49,7 @@
 (defun make-scene-spec (name sub-trees viewports passes draw-order
                         collider-plan)
   (let ((spec (%make-scene-spec :name name)))
-    (setf (u:href =scenes= name) spec)
+    (setf (u:href (metadata-scenes =metadata=) name) spec)
     (update-scene-spec name sub-trees viewports passes draw-order collider-plan)
     spec))
 
@@ -70,14 +70,14 @@
     (remove-if-not
      (lambda (x)
        (eq (symbol-package x) (find-package package-name)))
-     (sort (u:hash-keys =scenes=) #'string<))))
+     (sort (u:hash-keys (metadata-scenes =metadata=)) #'string<))))
 
 (defmacro define-scene (name options &body body)
   (declare (ignore options))
   (destructuring-bind (&key sub-trees viewports (passes '(default))
                          (draw-order '(default)) (collider-plan 'default))
       (car body)
-    `(if (u:href =scenes= ',name)
+    `(if (u:href (metadata-scenes =metadata=) ',name)
          (update-scene-spec ',name ',sub-trees ',viewports ',passes ',draw-order
                             ',collider-plan)
          (make-scene-spec ',name ',sub-trees ',viewports ',passes ',draw-order
@@ -135,7 +135,7 @@
         :for entity = (load-prefab prefab :viewports viewports)))
 
 (defun load-scene (scene-name)
-  (let ((spec (u:href =scenes= scene-name)))
+  (let ((spec (u:href (metadata-scenes =metadata=) scene-name)))
     (unless spec
       (error "Scene ~s is not defined." scene-name))
     (let ((current (current-scene =context=))

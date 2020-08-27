@@ -15,7 +15,7 @@
             :initform (make-array 8 :adjustable t :fill-pointer t))))
 
 (defun make-collision-system (plan-name)
-  (u:if-let ((spec (u:href =collider-plans= plan-name)))
+  (u:if-let ((spec (u:href (metadata-collider-plans =metadata=) plan-name)))
     (let ((system (make-instance 'collision-system :spec spec)))
       (dolist (layer (layers spec))
         (setf (u:href (registered system) layer) (u:dict #'eq)

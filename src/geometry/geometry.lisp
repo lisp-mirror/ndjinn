@@ -1,7 +1,7 @@
 (in-package #:net.mfiano.lisp.pyx)
 
 (defun make-geometry (name)
-  (let* ((geometry (funcall (u:href =geometry= name)))
+  (let* ((geometry (funcall (u:href (metadata-geometry =metadata=) name)))
          (id (geometry-spec-id geometry)))
     (log:debug :pyx.core "Created geometry: ~s (VAO: ~d)" name id)
     geometry))

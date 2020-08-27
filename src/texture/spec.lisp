@@ -17,7 +17,7 @@
   (format stream "~s" (name texture-spec)))
 
 (defun find-texture-spec (name)
-  (or (u:href =textures= name)
+  (or (u:href (metadata-textures =metadata=) name)
       (error "Texture ~s is not defined." name)))
 
 (defun update-texture-spec (name type source width height pixel-format
@@ -37,7 +37,7 @@
 
 (defun make-texture-spec (name &rest args)
   (let ((spec (make-instance 'texture-spec :name name)))
-    (setf (u:href =textures= name) spec)
+    (setf (u:href (metadata-textures =metadata=) name) spec)
     (apply #'update-texture-spec name args)
     spec))
 
@@ -78,7 +78,7 @@
                        &allow-other-keys)
       (car body)
     (let ((parameters (make-texture-parameters args)))
-      `(if (u:href =textures= ',name)
+      `(if (u:href (metadata-textures =metadata=) ',name)
            (update-texture-spec ',name ,type ',source ,width ,height
                                 ,pixel-format ,pixel-type ,internal-format
                                 ,generate-mipmaps ',parameters)

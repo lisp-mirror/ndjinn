@@ -35,7 +35,7 @@
   (destructuring-bind (&key layout (primitive :triangles) (vertex-count 0)
                          buffers)
       (car body)
-    `(setf (u:href =geometry= ',name)
+    `(setf (u:href (metadata-geometry =metadata=) ',name)
            (make-geometry-spec ',layout
                                :name ',name
                                :primitive ',primitive

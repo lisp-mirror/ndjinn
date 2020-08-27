@@ -16,7 +16,7 @@
            (build-prefab-factory prefab)
            (setf success-p t))
       (unless success-p
-        (remhash (name prefab) =prefabs=)))))
+        (remhash (name prefab) (metadata-prefabs =metadata=))))))
 
 ;;; Populate the prefab object with all of its explicitly defined nodes by
 ;;; recursively parsing the raw data. The resulting nodes are not fully realized
@@ -64,7 +64,7 @@
 (defun populate-implicit-prefab-nodes (prefab)
   (flet ((populate (parent template)
            (let ((template-path (path template)))
-             (u:do-hash (path node (nodes (u:href =prefabs=
+             (u:do-hash (path node (nodes (u:href (metadata-prefabs =metadata=)
                                                   (car template-path))))
                (let ((target-path (append
                                    (path parent)
@@ -112,7 +112,7 @@
     (u:do-hash-values (node (nodes prefab))
       (record-prefab-template-dependency prefab (template node)))
     (dolist (master-spec old-masters)
-      (let ((master (u:href =prefabs= master-spec)))
+      (let ((master (u:href (metadata-prefabs =metadata=) master-spec)))
         (unless (find master-spec (masters prefab))
           (u:deletef (slaves master) (name prefab)))))))
 

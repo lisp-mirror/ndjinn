@@ -14,7 +14,7 @@
   (format stream "~s" (name viewport-spec)))
 
 (defun update-viewport-spec (name x y width height)
-  (let ((spec (u:href =viewports= name)))
+  (let ((spec (u:href (metadata-viewports =metadata=) name)))
     (setf (x spec) (u:clamp (float x 1f0) 0f0 1f0)
           (y spec) (u:clamp (float y 1f0) 0f0 1f0)
           (width spec) (u:clamp (float width 1f0) 0f0 1f0)
@@ -23,14 +23,14 @@
 
 (defun make-viewport-spec (name x y width height)
   (let ((spec (make-instance 'viewport-spec :name name)))
-    (setf (u:href =viewports= name) spec)
+    (setf (u:href (metadata-viewports =metadata=) name) spec)
     (update-viewport-spec name x y width height)
     spec))
 
 (defmacro define-viewport (name options &body body)
   (declare (ignore options))
   (destructuring-bind (&key (x 0) (y 0) (width 1) (height 1)) (car body)
-    `(if (u:href =viewports= ',name)
+    `(if (u:href (metadata-viewports =metadata=) ',name)
          (update-viewport-spec ',name ,x ,y ,width ,height)
          (make-viewport-spec ',name ,x ,y ,width ,height))))
 
@@ -68,7 +68,7 @@
   (format stream "~s" (name (spec viewport))))
 
 (defun make-viewport (name order picker)
-  (let* ((spec (u:href =viewports= name))
+  (let* ((spec (u:href (metadata-viewports =metadata=) name))
          (viewport (make-instance 'viewport
                                   :spec spec
                                   :draw-order order

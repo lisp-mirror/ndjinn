@@ -43,7 +43,7 @@
                                  attribute-name)
         :for i :from index
         :for buffer :across buffers
-        :for divisort = (geometry-group-divisor group)
+        :for divisor = (geometry-group-divisor group)
         :do (gl:bind-buffer :array-buffer buffer)
             (configure-geometry-attribute attribute i 0 0 divisor)))
 

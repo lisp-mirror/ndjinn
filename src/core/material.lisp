@@ -68,11 +68,12 @@
 
 (defun update-material-spec-framebuffer-link (material-name framebuffer-name)
   (u:do-hash-values (v =framebuffers=)
-    (dolist (framebuffer-material-name (materials v))
+    (dolist (framebuffer-material-name (framebuffer-spec-materials v))
       (when (eq material-name framebuffer-material-name)
-        (u:deletef (materials v) framebuffer-material-name))))
+        (u:deletef (framebuffer-spec-materials v) framebuffer-material-name))))
   (when framebuffer-name
-    (push material-name (materials (find-framebuffer-spec framebuffer-name)))
+    (push material-name
+          (framebuffer-spec-materials (find-framebuffer-spec framebuffer-name)))
     (enqueue :recompile (list :framebuffer framebuffer-name))))
 
 (defun update-material-spec (name master shader uniforms pass output func)

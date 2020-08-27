@@ -1,22 +1,21 @@
 (in-package #:net.mfiano.lisp.pyx)
 
-(defclass picker ()
-  ((%start :reader start
-           :initform (v3:vec))
-   (%end :reader end
-         :initform (v3:vec))))
-
-(defun make-picker ()
-  (make-instance 'picker))
+(defstruct (picker
+            (:predicate nil)
+            (:copier nil))
+  (start (v3:vec) :type v3:vec)
+  (end (v3:vec) :type v3:vec))
 
 (defgeneric pick-collider-shape (picker shape)
   (:method (picker shape)))
 
 (defmethod pick-collider-shape (picker (shape collider-shape/sphere))
   (with-slots (%entity %center %radius) shape
-    (let* ((line (v3:- (end picker) (start picker)))
+    (let* ((start (picker-start picker))
+           (end (picker-end picker))
+           (line (v3:- end start))
            (d (v3:normalize line))
-           (m (v3:- (start picker) (transform-point %entity %center)))
+           (m (v3:- start (transform-point %entity %center)))
            (b (v3:dot m d))
            (c (- (v3:dot m m) (expt %radius 2))))
       (unless (and (plusp c) (plusp b))
@@ -29,7 +28,8 @@
 (defun update-picker ()
   (u:mvlet ((x y dx dy (get-mouse-position)))
     (u:when-let* ((viewport (get-viewport-by-coordinates x y))
-                  (picker (picker viewport))
+                  (start (picker-start (picker viewport)))
+                  (end (picker-start (picker viewport)))
                   (camera (camera viewport))
                   (view (camera/view camera))
                   (proj (camera/projection camera))
@@ -37,9 +37,8 @@
                                     (y viewport)
                                     (width viewport)
                                     (height viewport))))
-      (math:unproject! (start picker) (v3:vec x y) view proj viewport)
-      (math:unproject! (end picker) (v3:vec x y 1) view proj viewport)
-      (values (start picker) (end picker)))))
+      (math:unproject! start (v3:vec x y) view proj viewport)
+      (math:unproject! end (v3:vec x y 1) view proj viewport))))
 
 (defun pick-entity ()
   (let* ((viewport (active (get-viewport-manager)))

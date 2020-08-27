@@ -10,6 +10,7 @@
     (components-initargs (u:dict #'eq) :type hash-table)
     (components-static nil :type list)
     (config (u:dict #'eq) :type hash-table)
+    (entity-mixins (u:dict #'equal) :type hash-table)
     (framebuffers (u:dict #'eq) :type hash-table)
     (geometry (u:dict #'eq) :type hash-table)
     (geometry-layouts (u:dict #'eq) :type hash-table)

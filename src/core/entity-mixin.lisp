@@ -1,7 +1,5 @@
 (in-package #:net.mfiano.lisp.pyx)
 
-(glob:define-global-var =mixin-classes= (u:dict #'equal))
-
 (defclass mixin-class (standard-class)
   ((%classes :reader classes
              :initarg :classes
@@ -38,12 +36,12 @@
          (class (make-instance 'mixin-class
                                :classes classes
                                :direct-superclasses superclasses)))
-    (setf (u:href =mixin-classes= classes) class)
+    (setf (u:href (metadata-entity-mixins =metadata=) classes) class)
     class))
 
 (defun ensure-mixin-class (classes)
   (if (cdr classes)
-      (or (u:href =mixin-classes= classes)
+      (or (u:href (metadata-entity-mixins =metadata=) classes)
           (make-mixin-class classes))
       (car classes)))
 

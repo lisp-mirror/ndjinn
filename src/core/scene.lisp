@@ -2,18 +2,20 @@
 
 ;;; spec
 
-(defclass scene-spec ()
-  ((%name :reader name
-          :initarg :name)
-   (%pass-order :accessor pass-order)
-   (%pass-table :accessor pass-table)
-   (%draw-order :accessor draw-order)
-   (%collider-plan :accessor collider-plan)
-   (%sub-trees :accessor sub-trees)
-   (%viewports :accessor viewports)))
+(defstruct (scene-spec
+            (:constructor %make-scene-spec)
+            (:predicate nil)
+            (:copier nil))
+  (name nil :type symbol)
+  (pass-order nil :type list)
+  (pass-table (u:dict #'eq) :type hash-table)
+  (draw-order (u:dict #'eq) :type hash-table)
+  (collider-plan nil :type symbol)
+  (sub-trees nil :type list)
+  (viewports nil :type list))
 
 (u:define-printer (scene-spec stream)
-  (format stream "~s" (name scene-spec)))
+  (format stream "~s" (scene-spec-name scene-spec)))
 
 (defun make-scene-draw-order-table (order)
   (loop :with table = (u:dict #'eq 'default 0)
@@ -36,17 +38,17 @@
       (u:if-let ((pass-spec (u:href =render-passes= pass)))
         (setf (u:href pass-table pass) pass-spec)
         (error "Render pass ~s not defined." pass)))
-    (setf (sub-trees spec) sub-trees
-          (viewports spec) viewports
-          (pass-order spec) passes
-          (pass-table spec) pass-table
-          (draw-order spec) draw-order-table
-          (collider-plan spec) collider-plan)
+    (setf (scene-spec-sub-trees spec) sub-trees
+          (scene-spec-viewports spec) viewports
+          (scene-spec-pass-order spec) passes
+          (scene-spec-pass-table spec) pass-table
+          (scene-spec-draw-order spec) draw-order-table
+          (scene-spec-collider-plan spec) collider-plan)
     (enqueue :recompile (list :scene name))))
 
 (defun make-scene-spec (name sub-trees viewports passes draw-order
                         collider-plan)
-  (let ((spec (make-instance 'scene-spec :name name)))
+  (let ((spec (%make-scene-spec :name name)))
     (setf (u:href =scenes= name) spec)
     (update-scene-spec name sub-trees viewports passes draw-order collider-plan)
     spec))
@@ -54,7 +56,7 @@
 (on-recompile :scene data ()
   (let ((scene (current-scene =context=)))
     (with-slots (%spec %prefabs %loaded-p) scene
-      (let ((name (name %spec)))
+      (let ((name (scene-spec-name %spec)))
         (when (eq data name)
           (u:do-hash-values (entities %prefabs)
             (map nil #'delete-node entities))
@@ -105,11 +107,11 @@
            :initform (u:dict #'eq))))
 
 (u:define-printer (scene stream :identity t)
-  (format stream "~s" (name (spec scene))))
+  (format stream "~s" (scene-spec-name (spec scene))))
 
 (defun make-scene-viewports (scene)
   (loop :with manager = (make-instance 'viewport-manager)
-        :for (view-spec nil) :in (viewports (spec scene))
+        :for (view-spec nil) :in (scene-spec-viewports (spec scene))
         :for order = (make-render-order-tree)
         :for picker = (make-picker)
         :for viewport = (make-viewport view-spec order picker)
@@ -121,14 +123,14 @@
 
 (defun get-scene-sub-tree-viewports (scene sub-tree)
   (let (viewports)
-    (dolist (viewport-spec (viewports (spec scene)))
+    (dolist (viewport-spec (scene-spec-viewports (spec scene)))
       (destructuring-bind (viewport &optional sub-trees) viewport-spec
         (when (find sub-tree sub-trees)
           (push viewport viewports))))
     viewports))
 
 (defun load-scene-sub-trees (scene)
-  (loop :for (sub-tree prefab) :in (sub-trees (spec scene))
+  (loop :for (sub-tree prefab) :in (scene-spec-sub-trees (spec scene))
         :for viewports = (get-scene-sub-tree-viewports scene sub-tree)
         :for entity = (load-prefab prefab :viewports viewports)))
 
@@ -141,13 +143,13 @@
                      (make-instance 'scene :spec spec))))
       (setf (u:href (scenes =context=) scene-name) scene
             (current-scene =context=) scene
-            (passes scene) (copy-seq (pass-order (spec scene))))
+            (passes scene) (copy-seq (scene-spec-pass-order (spec scene))))
       (unless (loaded-p scene)
         (setf (node-tree scene) (make-entity ()
                                   :node/root-p t
                                   :id/display "scene root")
               (collision-system scene) (make-collision-system
-                                        (collider-plan spec)))
+                                        (scene-spec-collider-plan spec)))
         (make-scene-viewports scene)
         (load-scene-sub-trees scene)
         (setf (loaded-p scene) t))
@@ -155,7 +157,7 @@
       scene)))
 
 (defun get-scene-name ()
-  (name (spec (current-scene =context=))))
+  (scene-spec-name (spec (current-scene =context=))))
 
 (defun switch-scene (scene-name)
   (let ((scene (load-scene scene-name)))

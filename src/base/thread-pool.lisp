@@ -9,8 +9,8 @@
   (queues (u:dict #'eq) :type hash-table))
 
 (defun make-thread-pool ()
-  (let* ((worker-count (or =threads= (hardware-info-cpu-count
-                                      (hardware-info =context=))))
+  (let* ((worker-count (or (cfg/player :threads)
+                           (hardware-info-cpu-count (hardware-info =context=))))
          (thread-pool (%make-thread-pool :worker-count worker-count)))
     (setf lp:*kernel* (lp:make-kernel worker-count)
           (thread-pool =context=) thread-pool)))

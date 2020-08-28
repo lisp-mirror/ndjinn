@@ -32,7 +32,9 @@
    (%hardware-info :accessor hardware-info
                    :initform nil)
    (%thread-pool :accessor thread-pool
-                 :initform nil)))
+                 :initform nil)
+   (%config :accessor config
+            :initform nil)))
 
 (defun make-context (context-name)
   (if (find-class context-name nil)

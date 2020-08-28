@@ -18,8 +18,8 @@
   (name nil :type symbol)
   (buffer nil :type list)
   (point nil :type list)
-  (width (constantly =window-width=) :type function)
-  (height (constantly =window-height=) :type function))
+  (width (constantly (cfg/player :window-width)) :type function)
+  (height (constantly (cfg/player :window-height)) :type function))
 
 (u:define-printer (framebuffer-spec stream)
   (format stream "~s" (framebuffer-spec-name framebuffer-spec)))
@@ -33,8 +33,8 @@
            (lambda ()
              (or value
                  (ecase dimension
-                   (:width =window-width=)
-                   (:height =window-height=))))))
+                   (:width (cfg/player :window-width))
+                   (:height (cfg/player :window-height)))))))
     (destructuring-bind (name &key point (buffer :render-buffer) width height)
         spec
       (%make-framebuffer-attachment-spec

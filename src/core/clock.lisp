@@ -4,6 +4,7 @@
                   (:predicate nil)
                   (:copier nil))
   (accumulator 0d0)
+  (delta-time (/ 60f0))
   (delta-buffer 0d0)
   (fps/current 0d0)
   (fps/average 0d0)
@@ -22,7 +23,8 @@
 (defun make-clock ()
   (let ((clock (%make-clock)))
     (setf (clock-init-time clock) (sb-ext:get-time-of-day)
-          (clock-running-time clock) (get-time clock))
+          (clock-running-time clock) (get-time clock)
+          (clock-delta-time clock) (float (cfg :delta-time) 1f0))
     (setf (clock =context=) clock)))
 
 (defun get-time (clock)
@@ -63,14 +65,15 @@
                 average fps)))))
 
 (defun clock-update (clock func)
-  (symbol-macrolet ((accumulator (clock-accumulator clock)))
-    (incf accumulator (clock-frame-time clock))
-    (when (zerop (clock-frame-count clock))
-      (funcall func))
-    (u:while (>= accumulator =delta-time=)
-      (funcall func)
-      (decf accumulator =delta-time=))
-    (setf (clock-alpha clock) (float (/ accumulator =delta-time=) 1f0))))
+  (let ((delta-time (clock-delta-time clock)))
+    (symbol-macrolet ((accumulator (clock-accumulator clock)))
+      (incf accumulator (clock-frame-time clock))
+      (when (zerop (clock-frame-count clock))
+        (funcall func))
+      (u:while (>= accumulator delta-time)
+        (funcall func)
+        (decf accumulator delta-time))
+      (setf (clock-alpha clock) (float (/ accumulator delta-time) 1f0)))))
 
 (defun clock-update/periodic (clock func)
   (let ((current (clock-running-time clock)))
@@ -85,7 +88,7 @@
     (setf (clock-previous-time clock) previous
           (clock-running-time clock) current
           (clock-frame-time clock) (- current previous))
-    (when =vsync=
+    (when (cfg :vsync)
       (smooth-delta-time clock refresh-rate))
     (clock-update clock update-func)
     (clock-update/periodic clock periodic-func)

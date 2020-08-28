@@ -3,9 +3,9 @@
 (defun start-logging ()
   (unless (log:thread log:*global-controller*)
     (log:start log:*global-controller*))
-  (setf (log:repl-level) =log-repl-level=
-        (log:repl-categories) =log-repl-categories=)
-  (u:when-let* ((pool (find-asset-pool =log-assets=))
+  (setf (log:repl-level) (cfg :log-repl-level)
+        (log:repl-categories) (cfg :log-repl-categories))
+  (u:when-let* ((pool (find-asset-pool (cfg :log-asset-pool)))
                 (pool-path (resolve-path pool))
                 (debug-log (uiop:merge-pathnames*
                             (make-pathname :name "debug" :type "log")

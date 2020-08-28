@@ -9,7 +9,8 @@
     (components-type-order (u:dict #'eq) :type hash-table)
     (components-initargs (u:dict #'eq) :type hash-table)
     (components-static nil :type list)
-    (config (u:dict #'eq) :type hash-table)
+    (config-developer (u:dict #'eq) :type hash-table)
+    (config-player (u:dict #'eq) :type hash-table)
     (entity-mixins (u:dict #'equal) :type hash-table)
     (framebuffers (u:dict #'eq) :type hash-table)
     (geometry (u:dict #'eq) :type hash-table)
@@ -21,4 +22,4 @@
     (textures (u:dict #'eq) :type hash-table)
     (viewports (u:dict #'eq) :type hash-table)))
 
-(glob:define-global-var =metadata= (make-metadata))
+(glob:define-global-parameter =metadata= (make-metadata))

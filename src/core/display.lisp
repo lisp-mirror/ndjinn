@@ -11,18 +11,24 @@
    :type v2:vec)
   (refresh-rate 60 :type fixnum))
 
+(defun parse-opengl-version (version)
+  (values-list (mapcar #'parse-integer (ss:split-sequence #\. version))))
+
 (defun make-opengl-context (display)
-  (sdl2:gl-set-attrs :context-major-version 4
-                     :context-minor-version 3
-                     :context-profile-mask 1
-                     :multisamplebuffers (if (cfg :anti-alias) 1 0)
-                     :multisamplesamples (if (cfg :anti-alias) 4 0))
-  (let ((context (sdl2:gl-create-context (display-window display))))
-    (setf (display-context display) context)
-    (apply #'gl:enable +enabled-capabilities+)
-    (apply #'gl:disable +disabled-capabilities+)
-    (apply #'gl:blend-func +blend-mode+)
-    (gl:depth-func +depth-mode+)))
+  (u:mvlet* ((version (cfg :opengl-version))
+             (major minor (parse-opengl-version version)))
+    (sdl2:gl-set-attrs :context-major-version major
+                       :context-minor-version minor
+                       :context-profile-mask 1
+                       :multisamplebuffers (if (cfg :anti-alias) 1 0)
+                       :multisamplesamples (if (cfg :anti-alias) 4 0))
+    (let ((context (sdl2:gl-create-context (display-window display))))
+      (setf (display-context display) context)
+      (apply #'gl:enable +enabled-capabilities+)
+      (apply #'gl:disable +disabled-capabilities+)
+      (apply #'gl:blend-func +blend-mode+)
+      (gl:depth-func +depth-mode+)
+      (log:debug :pyx.core "Created OpenGL ~a context" version))))
 
 (defun make-window ()
   (sdl2:create-window :title (cfg :title)
@@ -31,6 +37,9 @@
                       :flags '(:opengl)))
 
 (defun make-display ()
+  (log:debug :pyx.core "Creating window (~dx~d)..."
+             (cfg/player :window-width)
+             (cfg/player :window-height))
   (sdl2:init :everything)
   (let* ((refresh-rate (nth-value 3 (sdl2:get-current-display-mode 0)))
          (resolution (v2:vec (cfg/player :window-width)

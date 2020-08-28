@@ -13,7 +13,9 @@
                            (hardware-info-cpu-count (hardware-info =context=))))
          (thread-pool (%make-thread-pool :worker-count worker-count)))
     (setf lp:*kernel* (lp:make-kernel worker-count)
-          (thread-pool =context=) thread-pool)))
+          (thread-pool =context=) thread-pool)
+    (log:debug :pyx.core "Initialized thread-pool with ~d workers"
+               worker-count)))
 
 (defun destroy-thread-pool ()
   (lp:end-kernel :wait t)

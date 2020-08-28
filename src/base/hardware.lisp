@@ -75,8 +75,7 @@
                max-texture-size
                max-texture-size)
     (log:debug :pyx.core "GPU limit - Maximum SSBO bindings: ~d"
-               max-ssbo-bindings)
-    (log:debug :pyx.core "Finished reading hardware information")))
+               max-ssbo-bindings)))
 
 (defun get-hardware-info (key)
   (let ((global (u:format-symbol :net.mfiano.lisp.pyx "=~a=" key)))

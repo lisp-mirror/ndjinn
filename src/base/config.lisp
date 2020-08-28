@@ -62,6 +62,7 @@
    :log-asset-pool nil
    :log-repl-level :debug
    :log-repl-categories (:pyx)
+   :opengl-version "4.3"
    :title "Pyx Engine"
    :vsync t))
 

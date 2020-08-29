@@ -62,7 +62,7 @@
   (u:mvlet ((x y dx dy (get-mouse-position)))
     (u:when-let* ((viewport (get-viewport-by-coordinates x y))
                   (start (picker-start (picker viewport)))
-                  (end (picker-start (picker viewport)))
+                  (end (picker-end (picker viewport)))
                   (camera (camera viewport))
                   (view (camera/view camera))
                   (proj (camera/projection camera))

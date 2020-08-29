@@ -77,7 +77,7 @@
      (:file "protocol")
      (:file "shape")
      (:file "shape-sphere")
-     (:file "shape-obb")
+     (:file "shape-box")
      (:file "tests")
      (:file "object-picking")
      (:file "system")))

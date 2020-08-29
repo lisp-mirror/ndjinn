@@ -1,6 +1,6 @@
 (in-package #:net.mfiano.lisp.pyx)
 
-(defclass collider-shape/obb (collider-shape)
+(defclass collider-shape/box (collider-shape)
   ((%world-center :reader world-center
                   :initform (v3:vec))
    (%axes :reader axes
@@ -14,8 +14,8 @@
                 :initarg :max-extent
                 :initform (v3:vec 0.5))))
 
-(defun get-closest-point/obb-point (obb point)
-  (with-slots (%entity %world-center %axes %half-widths) obb
+(defun get-closest-point/box-point (box point)
+  (with-slots (%entity %world-center %axes %half-widths) box
     (let* ((d (v3:- point %world-center))
            (q (v3:copy %world-center)))
       (dotimes (i 3)
@@ -24,9 +24,9 @@
           (v3:+! q q (v3:scale (m3:get-column %axes i) dist))))
       q)))
 
-(defun make-obb-obb-rotation (obb1 obb2)
-  (let ((axes1 (axes obb1))
-        (axes2 (axes obb2)))
+(defun make-box-box-rotation (box1 box2)
+  (let ((axes1 (axes box1))
+        (axes2 (axes box2)))
     (m3:with-components ((a (m3:mat 1))
                          (b (m3:mat 1)))
       (psetf a00 (v3:dot (m3:get-column axes1 0) (m3:get-column axes2 0))
@@ -49,14 +49,14 @@
             b22 (+ (abs a22) 1e-7))
       (values a b))))
 
-(defun make-obb-obb-translation (obb1 obb2)
-  (let ((axes1 (axes obb1))
-        (translation (v3:- (world-center obb2) (world-center obb1))))
+(defun make-box-box-translation (box1 box2)
+  (let ((axes1 (axes box1))
+        (translation (v3:- (world-center box2) (world-center box1))))
     (v3:vec (v3:dot translation (m3:get-column axes1 0))
             (v3:dot translation (m3:get-column axes1 1))
             (v3:dot translation (m3:get-column axes1 2)))))
 
-(defmethod update-collider-shape ((shape collider-shape/obb))
+(defmethod update-collider-shape ((shape collider-shape/box))
   (with-slots (%entity %center %world-center %axes %half-widths
                %min-extent %max-extent)
       shape

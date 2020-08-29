@@ -25,7 +25,7 @@
               (when (<= x (v3:length line))
                 x))))))))
 
-(defmethod pick-collider-shape (picker (shape collider-shape/obb))
+(defmethod pick-collider-shape (picker (shape collider-shape/box))
   (with-slots (%entity %center %min-extent %max-extent) shape
     (let* ((start (v3:- (transform-point %entity
                                          (picker-start picker)

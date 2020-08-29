@@ -1,7 +1,7 @@
 (in-package #:net.mfiano.lisp.pyx.examples)
 
 (pyx:define-prefab colliders2/object (:add (pyx:collider))
-  :collider/shape 'pyx:obb
+  :collider/shape 'pyx:box
   :collider/layer 'object
   :collider/visualize t)
 
@@ -24,7 +24,7 @@
    ((left :template colliders2/left))
    ((right :template colliders2/right)
     :transform/scale 0.5
-    :collider/shape 'sphere)))
+    :collider/shape 'pyx:sphere)))
 
 (pyx:define-collider-plan colliders2 ()
   (:layers (object)

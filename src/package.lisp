@@ -111,7 +111,7 @@
    #:pick-entity)
   ;; collider shapes
   (:export
-   #:obb
+   #:box
    #:sphere)
   ;; config
   (:export

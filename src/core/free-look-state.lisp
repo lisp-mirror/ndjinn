@@ -83,7 +83,7 @@
                        (t 0f0)))))
     (let* ((x (velocity v3:+right+ :strafe-right :strafe-left))
            (y (velocity v3:+up+ :strafe-up :strafe-down))
-           (z (velocity v3:+forward+ :forward :backward))
+           (z (velocity v3:+back+ :forward :backward))
            (vec (v3:+ (v3:+ x y) z))
            (angle (velocity v3:+up+ :turn-left :turn-right)))
       (translate-entity camera vec)

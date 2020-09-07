@@ -14,46 +14,49 @@
 (defun parse-opengl-version (version)
   (values-list (mapcar #'parse-integer (ss:split-sequence #\. version))))
 
-(defun make-opengl-context (display)
-  (u:mvlet* ((version (cfg :opengl-version))
-             (major minor (parse-opengl-version version)))
-    (sdl2:gl-set-attrs :context-major-version major
-                       :context-minor-version minor
-                       :context-profile-mask 1
-                       :multisamplebuffers (if (cfg :anti-alias) 1 0)
-                       :multisamplesamples (if (cfg :anti-alias) 4 0))
-    (let ((context (sdl2:gl-create-context (display-window display))))
-      (setf (display-context display) context)
-      (apply #'gl:enable +enabled-capabilities+)
-      (apply #'gl:disable +disabled-capabilities+)
-      (apply #'gl:blend-func +blend-mode+)
-      (gl:depth-func +depth-mode+)
-      (gl:pixel-store :unpack-alignment 1)
-      (log:debug :pyx.core "Created OpenGL ~a context" version))))
-
 (defun make-window ()
   (sdl2:create-window :title (cfg :title)
                       :w (truncate (cfg/player :window-width))
                       :h (truncate (cfg/player :window-height))
                       :flags '(:opengl)))
 
+(defun configure-opengl-context ()
+  (u:mvlet* ((version (cfg :opengl-version))
+             (major minor (parse-opengl-version version)))
+    (sdl2:gl-set-attrs :context-major-version major
+                       :context-minor-version minor
+                       :context-profile-mask 1
+                       :doublebuffer 1
+                       :multisamplebuffers (if (cfg :anti-alias) 1 0)
+                       :multisamplesamples (if (cfg :anti-alias) 4 0))))
+
+(defun make-opengl-context (display)
+  (let ((context (sdl2:gl-create-context (display-window display))))
+    (setf (display-context display) context)
+    (apply #'gl:enable +enabled-capabilities+)
+    (apply #'gl:disable +disabled-capabilities+)
+    (apply #'gl:blend-func +blend-mode+)
+    (gl:depth-func +depth-mode+)
+    (gl:enable :multisample)
+    (gl:pixel-store :unpack-alignment 1)
+    (log:debug :pyx.core "Created OpenGL ~a context" (cfg :opengl-version))))
+
 (defun make-display ()
-  (log:debug :pyx.core "Creating window (~dx~d)..."
-             (cfg/player :window-width)
-             (cfg/player :window-height))
-  (sdl2:init :everything)
-  (let* ((refresh-rate (nth-value 3 (sdl2:get-current-display-mode 0)))
-         (resolution (v2:vec (cfg/player :window-width)
-                             (cfg/player :window-height)))
-         (display (%make-display :window (make-window)
-                                 :refresh-rate refresh-rate
-                                 :resolution resolution)))
-    (make-opengl-context display)
-    (sdl2:gl-set-swap-interval (if (cfg :vsync) 1 0))
-    (if (cfg/player :allow-screensaver)
-        (sdl2:enable-screensaver)
-        (sdl2:disable-screensaver))
-    (setf (display =context=) display)))
+  (v2:with-components ((r (v2:vec (cfg/player :window-width)
+                                  (cfg/player :window-height))))
+    (log:debug :pyx.core "Creating window (~dx~d)..." rx ry)
+    (sdl2:init :everything)
+    (configure-opengl-context)
+    (let* ((refresh-rate (nth-value 3 (sdl2:get-current-display-mode 0)))
+           (display (%make-display :window (make-window)
+                                   :refresh-rate refresh-rate
+                                   :resolution r)))
+      (make-opengl-context display)
+      (sdl2:gl-set-swap-interval (if (cfg :vsync) 1 0))
+      (if (cfg/player :allow-screensaver)
+          (sdl2:enable-screensaver)
+          (sdl2:disable-screensaver))
+      (setf (display =context=) display))))
 
 (defun kill-display ()
   (u:when-let ((display (display =context=)))

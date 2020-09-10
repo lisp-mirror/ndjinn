@@ -84,7 +84,8 @@
    (:module "shader"
     :components
     ((:file "basic")
-     (:file "font")))
+     (:file "font")
+     (:file "matcap")))
    (:module "components"
     :depends-on ("core")
     :components

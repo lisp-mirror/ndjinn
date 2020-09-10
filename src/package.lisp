@@ -13,6 +13,7 @@
    #:collider
    #:font
    #:full-quad
+   #:matcap
    #:quad))
 
 (defpackage #:net.mfiano.lisp.pyx

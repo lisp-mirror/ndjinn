@@ -5,9 +5,9 @@
                     (model :mat4)
                     (view :mat4)
                     (proj :mat4)
-                    (normal-matrix :mat4))
+                    (normal-matrix :mat3))
   (with-slots (mesh/pos mesh/normal mesh/uv1) mesh-attrs
-    (let ((normal (normalize (vec3 (* normal-matrix (vec4 mesh/normal 0))))))
+    (let ((normal (* normal-matrix mesh/normal)))
       (values (* proj view model (vec4 mesh/pos 1))
               normal))))
 

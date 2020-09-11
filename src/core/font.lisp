@@ -66,6 +66,33 @@
                                         1f0)
                                  (float (/ y 2) 1f0)))))
 
+(defun calculate-font-position (font)
+  (v2:with-components ((c (v2:scale (get-viewport-dimensions) 0.5))
+                       (d (get-font-dimensions font))
+                       (s (get-scale font))
+                       (o (v2:scale (get-font-offset font)
+                                    (float (font:line-height (font/spec font))
+                                           1f0))))
+    (case (get-font-position font)
+      (:top-left
+       (v2:vec (- ox cx) (- cy oy)))
+      (:left
+       (v2:vec (- ox cx) (+ (* dy sy) oy)))
+      (:bottom-left
+       (v2:vec (- ox cx) (- (* dy sy 2) cy (- oy))))
+      (:top
+       (v2:vec (- ox (* dx sx)) (- cy oy)))
+      (:center
+       (v2:vec (+ (* (- dx) sx) ox) (+ (* dy sy) oy)))
+      (:bottom
+       (v2:vec (- ox (* dx sx)) (- (* dy sy 2) cy (- oy))))
+      (:top-right
+       (v2:vec (- cx ox (* dx sx 2)) (- cy oy)))
+      (:right
+       (v2:vec (- cx ox (* dx sx 2)) (+ (* dy sy) oy)))
+      (:bottom-right
+       (v2:vec (- cx ox (* dx sx 2)) (- (* dy sy 2) cy (- oy)))))))
+
 (defun get-font-dimensions (font)
   (font/dimensions font))
 

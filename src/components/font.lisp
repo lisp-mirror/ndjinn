@@ -75,6 +75,9 @@
       (u:mvlet* ((text (resolve-font-text entity))
                  (func (funcall #'generate-font-data entity))
                  (width height (map-font-glyphs font/spec func text)))
+        (translate-entity entity
+                          (v3:vec (calculate-font-position entity))
+                          :replace t)
         (v2:with-components ((fd font/dimensions))
           (setf fdx width fdy height)))
       (setf font/update-time time))))

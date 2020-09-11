@@ -49,8 +49,7 @@
 
 (pyx:define-material font ()
   (:shader pyx.shader:font
-   :uniforms (:res (pyx:as-uniform 'pyx:get-viewport-dimensions)
-              :sampler 'res:font
+   :uniforms (:sampler 'res:font
               :color (v4:vec 0 1 0 0.75))))
 
 (pyx:define-prefab debug-info ()
@@ -58,13 +57,13 @@
    :font/asset '(res:metadata res:font)
    :font/text 'print-fps-labels
    :font/position :top-left
-   :font/offset (v2:vec 0.5 -0.5)
+   :font/offset (v2:vec 0.5 0.5)
    :render/materials '(font))
   ((fps-times :add (pyx:render pyx:font))
    :font/asset '(res:metadata res:font)
    :font/text 'print-fps-times
    :font/position :top-left
-   :font/offset (v2:vec 12 -4.5)
+   :font/offset (v2:vec 12 4.5)
    :render/materials '(font)))
 
 (pyx:define-scene font ()

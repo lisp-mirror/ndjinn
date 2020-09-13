@@ -77,11 +77,6 @@
     (log:debug :pyx.core "GPU limit - Maximum SSBO bindings: ~d"
                max-ssbo-bindings)))
 
-(defun get-hardware-info (key)
-  (let ((global (u:format-symbol :net.mfiano.lisp.pyx "=~a=" key)))
-    (when (boundp global)
-      (symbol-value global))))
-
 (defgeneric get-hardware-info (key)
   (:method ((key (eql :cpu)))
     (hardware-info-cpu (hardware-info =context=)))

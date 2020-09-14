@@ -28,9 +28,7 @@
 
 (defun find-sprite (spritesheet name)
   (or (u:href (sprites spritesheet) name)
-      (error "Sprite ~s not found in spritesheet ~s."
-             name
-             (name spritesheet))))
+      (error "Sprite ~s not found in spritesheet ~s." name (name spritesheet))))
 
 (defun make-spritesheet (asset buffer-spec)
   (let ((path (resolve-path asset)))

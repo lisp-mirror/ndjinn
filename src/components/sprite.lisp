@@ -53,6 +53,7 @@
   (set-uniforms entity :sprite.index sprite/index))
 
 (define-entity-hook :render (entity sprite)
-  (gl:bind-vertex-array (vao sprite/spritesheet))
-  (gl:draw-arrays-instanced :triangle-strip 0 4 sprite/instances)
-  (gl:bind-vertex-array 0))
+  (with-shader-buffers (sprite/asset)
+    (gl:bind-vertex-array (vao sprite/spritesheet))
+    (gl:draw-arrays-instanced :triangle-strip 0 4 sprite/instances)
+    (gl:bind-vertex-array 0)))

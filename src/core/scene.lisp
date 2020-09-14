@@ -161,4 +161,5 @@
 
 (defun switch-scene (scene-name)
   (let ((scene (load-scene scene-name)))
+    (v:debug :pyx.core "Switched to scene: ~s" scene-name)
     (setf (current-scene =context=) scene)))

@@ -116,10 +116,12 @@
         :for picker = (make-picker)
         :for viewport = (make-viewport view-spec order picker)
         :for i :from 0
+        :collect view-spec :into viewport-order
         :do (when (zerop i)
               (setf (default manager) viewport))
             (setf (u:href (table manager) view-spec) viewport)
-        :finally (setf (slot-value scene '%viewports) manager)))
+        :finally (setf (order manager) viewport-order
+                       (slot-value scene '%viewports) manager)))
 
 (defun get-scene-sub-tree-viewports (scene sub-tree)
   (let (viewports)

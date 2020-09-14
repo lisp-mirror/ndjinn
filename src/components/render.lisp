@@ -26,9 +26,10 @@
   (with-debug-group (format nil "Render Pass: ~s" (name pass))
     (let ((viewport-manager (get-viewport-manager)))
       (clear-render-pass pass)
-      (u:do-hash-values (viewport (table viewport-manager))
-        (setf (active viewport-manager) viewport)
-        (render-viewport viewport pass)))))
+      (dolist (viewport-name (order viewport-manager))
+        (let ((viewport (u:href (table viewport-manager) viewport-name)))
+          (setf (active viewport-manager) viewport)
+          (render-viewport viewport pass))))))
 
 (defun render-viewport (viewport pass)
   (configure-viewport viewport)

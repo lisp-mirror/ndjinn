@@ -42,6 +42,8 @@
 (defclass viewport-manager ()
   ((%table :reader table
            :initform (u:dict #'eq))
+   (%order :accessor order
+           :initform nil)
    (%active :accessor active
             :initform nil)
    (%default :accessor default)))

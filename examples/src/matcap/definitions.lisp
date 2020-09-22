@@ -1,14 +1,14 @@
 (in-package #:net.mfiano.lisp.pyx.examples)
 
 (pyx:define-texture matcaps (:2d-array)
-  (:source ((res::matcaps res:matcap-0029)
-            (res::matcaps res:matcap-0064)
-            (res::matcaps res:matcap-0048)
-            (res::matcaps res:matcap-0255)
-            (res::matcaps res:matcap-0115)
-            (res::matcaps res:matcap-0108)
-            (res::matcaps res:matcap-0108)
-            (res::matcaps res:matcap-0108))))
+  (:source ((res:matcaps res:matcap-0029)
+            (res:matcaps res:matcap-0064)
+            (res:matcaps res:matcap-0048)
+            (res:matcaps res:matcap-0255)
+            (res:matcaps res:matcap-0115)
+            (res:matcaps res:matcap-0108)
+            (res:matcaps res:matcap-0108)
+            (res:matcaps res:matcap-0108))))
 
 (pyx:define-texture matcap-id-map (:2d)
   (:min-filter :nearest

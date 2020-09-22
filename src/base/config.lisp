@@ -70,5 +70,5 @@
       (u:dict #'eq
               :allow-screensaver nil
               :threads nil
-              :window-width 1280
-              :window-height 720))
+              :window-width 1920
+              :window-height 1080))

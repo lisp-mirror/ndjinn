@@ -45,4 +45,6 @@
    (:file "viewports/definitions")
    (:file "font/definitions")
    (:file "skybox/shader")
-   (:file "skybox/definitions")))
+   (:file "skybox/definitions")
+   (:file "matcap/shader")
+   (:file "matcap/definitions")))

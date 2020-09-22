@@ -14,6 +14,7 @@
    #:effect/toroidal-trip
    #:effect/truchet
    #:graph
+   #:matcap
    #:multi-pass
    #:noise/cellular-3d
    #:noise/cellular-fast-3d

@@ -57,9 +57,7 @@
 ;;; Populate the prefab with the implicit nodes. Prefab nodes before this step
 ;;; that have a template only have a node representing that template. This will
 ;;; bring in all of the children nodes of that template node into the correct
-;;; paths. NOTE: This will error instead of attempting a merge, if a path for a
-;;; template's child already exists as an explicit node. This may be changed at
-;;; a later date to employ an intelligent merge strategy.
+;;; paths.
 
 (defun populate-implicit-prefab-nodes (prefab)
   (flet ((populate (parent template)
@@ -74,19 +72,17 @@
                                    (subseq path 0 (min
                                                    (length path)
                                                    (length template-path)))))
-                   (if (u:href (nodes prefab) target-path)
-                       (error "Cannot populate node template ~{~a~^/~} of ~
-                               node ~{~a~^/~} because of a conflict with the ~
-                               existing child ~{~a~^/~}."
-                              template-path (path parent) target-path)
-                       (let ((parent (u:href (nodes prefab)
-                                             (butlast target-path))))
-                         (setf (u:href (nodes prefab) target-path)
-                               (make-instance 'prefab-node
-                                              :prefab prefab
-                                              :path target-path
-                                              :parent parent
-                                              :template node))))))))))
+                   (let* ((parent (u:href (nodes prefab) (butlast target-path)))
+                          (target-node (u:href (nodes prefab) target-path))
+                          (target-template (when target-node
+                                             (template target-node))))
+                     (setf (u:href (nodes prefab) target-path)
+                           (make-instance 'prefab-node
+                                          :prefab prefab
+                                          :path target-path
+                                          :parent parent
+                                          :template (or target-template
+                                                        node))))))))))
     (u:do-hash-values (node (u:copy-hash-table (nodes prefab)))
       (u:when-let ((template (template node)))
         (populate (u:href (nodes prefab) (path node)) template)))))

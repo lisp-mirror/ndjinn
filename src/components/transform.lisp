@@ -102,6 +102,15 @@
         (push (lambda () (v3:copy! (transform-state-previous state) current))
               (end-frame-work =context=))))))
 
+(defun clamp-translation (entity min max &key instant)
+  (let ((state (transform/translation entity)))
+    (symbol-macrolet ((current (transform-state-current state)))
+      (v3:max! current current min)
+      (v3:min! current current max)
+      (when instant
+        (push (lambda () (v3:copy! (transform-state-previous state) current))
+              (end-frame-work =context=))))))
+
 (defun translate-entity/velocity (entity axis rate)
   (let ((state (transform/translation entity)))
     (setf (transform-state-incremental state) (math:make-velocity axis rate))))

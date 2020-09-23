@@ -64,6 +64,7 @@
    #:make-animation)
   ;; transform
   (:export
+   #:clamp-translation
    #:get-rotation
    #:get-scale
    #:get-translation

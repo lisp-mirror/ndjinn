@@ -83,7 +83,8 @@
     (u:do-hash-values (v (active (collision-system scene)))
       (u:do-hash-keys (k v)
         (u:when-let ((n (pick-collider-shape picker (collider/shape k))))
-          (push (cons n k) picked))))
+          (when (collider/pickable k)
+            (push (cons n k) picked)))))
     (when picked
       (let* ((collider (cdar (stable-sort picked #'< :key #'car)))
              (entity (collider/owner collider)))

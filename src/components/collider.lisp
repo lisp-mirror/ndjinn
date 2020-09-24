@@ -12,6 +12,9 @@
    (%collider/visualize :reader collider/visualize
                         :initarg :collider/visualize
                         :initform nil)
+   (%collider/pickable :accessor collider/pickable
+                       :initarg :collider/pickable
+                       :initform t)
    (%collider/contact-count :accessor collider/contact-count
                             :initform 0)
    (%collider/hit-p :accessor collider/hit-p

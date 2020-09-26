@@ -26,8 +26,7 @@
                                          (,(find-symbol "DEFAULT-CONNECTION"
                                                         :swank)))))
                     (with-continuable "REPL"
-                      (,(find-symbol "HANDLE-REQUESTS")
-                       repl t)))))
+                      (,(find-symbol "HANDLE-REQUESTS" :swank) repl t)))))
               (t (constantly nil))))
            (compile
             'send-to-repl

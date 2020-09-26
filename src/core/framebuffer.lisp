@@ -18,8 +18,8 @@
   (name nil :type symbol)
   (buffer nil :type list)
   (point nil :type list)
-  (width (constantly (cfg/player :window-width)) :type function)
-  (height (constantly (cfg/player :window-height)) :type function))
+  (width (error "Framebuffer width unset.") :type function)
+  (height (error "Framebuffer height unset.") :type function))
 
 (u:define-printer (framebuffer-spec stream)
   (format stream "~s" (framebuffer-spec-name framebuffer-spec)))
@@ -32,9 +32,10 @@
   (flet ((generate-size-func (dimension value)
            (lambda ()
              (or value
-                 (ecase dimension
-                   (:width (cfg/player :window-width))
-                   (:height (cfg/player :window-height)))))))
+                 (v2:with-components ((r (window-resolution)))
+                   (ecase dimension
+                     (:width rx)
+                     (:height ry)))))))
     (destructuring-bind (name &key point (buffer :render-buffer) width height)
         spec
       (%make-framebuffer-attachment-spec

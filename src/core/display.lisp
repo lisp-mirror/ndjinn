@@ -6,18 +6,17 @@
             (:copier nil))
   window
   context
-  (resolution (v2:vec (cfg/player :window-width)
-                      (cfg/player :window-height))
-   :type v2:vec)
+  (resolution (error "Window resolution unset.") :type v2:vec)
+  (position (error "Window position unset.") :type v2:vec)
   (refresh-rate 60 :type fixnum))
 
 (defun parse-opengl-version (version)
   (values-list (mapcar #'parse-integer (ss:split-sequence #\. version))))
 
-(defun make-window ()
+(defun make-window (width height)
   (sdl2:create-window :title (cfg :title)
-                      :w (truncate (cfg/player :window-width))
-                      :h (truncate (cfg/player :window-height))
+                      :w (truncate width)
+                      :h (truncate height)
                       :flags '(:opengl)))
 
 (defun configure-opengl-context ()
@@ -48,9 +47,12 @@
     (sdl2:init :everything)
     (configure-opengl-context)
     (let* ((refresh-rate (nth-value 3 (sdl2:get-current-display-mode 0)))
-           (display (%make-display :window (make-window)
-                                   :refresh-rate refresh-rate
-                                   :resolution r)))
+           (display (%make-display :window (make-window rx ry)
+                                   :resolution r
+                                   ;; TODO: Handle initial window position using
+                                   ;; sdl2-ffi.functions:sdl-get-display-bounds
+                                   :position (v2:vec)
+                                   :refresh-rate refresh-rate)))
       (make-opengl-context display)
       (sdl2:gl-set-swap-interval (if (cfg :vsync) 1 0))
       (if (cfg/player :allow-screensaver)
@@ -68,5 +70,14 @@
   (sdl2:gl-swap-window (display-window display))
   (incf (clock-frame-count (clock =context=))))
 
-(defun get-resolution ()
+(defun window-resolution ()
   (display-resolution (display =context=)))
+
+(defun (setf window-resolution) (value)
+  (setf (display-resolution (display =context=)) value))
+
+(defun window-position ()
+  (display-position (display =context=)))
+
+(defun (setf window-position) (value)
+  (setf (display-position (display =context=)) value))

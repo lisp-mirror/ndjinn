@@ -131,6 +131,10 @@
   ;; deploy
   (:export
    #:deploy)
+  ;; display
+  (:export
+   #:window-position
+   #:window-resolution)
   ;; entity
   (:export
    #:attach-component
@@ -173,7 +177,19 @@
    #:on-gamepad-analog-move
    #:on-gamepad-attach
    #:on-gamepad-detach
-   #:on-gamepad-enabled)
+   #:on-gamepad-enabled
+   #:on-window-close
+   #:on-window-hide
+   #:on-window-keyboard-focus-enter
+   #:on-window-keyboard-focus-leave
+   #:on-window-maximize
+   #:on-window-minimize
+   #:on-window-mouse-focus-enter
+   #:on-window-mouse-focus-leave
+   #:on-window-move
+   #:on-window-resize
+   #:on-window-restore
+   #:on-window-show)
   ;; material
   (:export
    #:as-uniform

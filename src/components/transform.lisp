@@ -80,19 +80,19 @@
   (m4:get-translation
    (ecase space
      (:local (transform/local entity))
-     (:model (transform/model entity)))))
+     (:world (transform/model entity)))))
 
 (defun get-rotation (entity &key (space :local))
   (q:from-mat4
    (ecase space
      (:local (transform/local entity))
-     (:model (transform/model entity)))))
+     (:world (transform/model entity)))))
 
 (defun get-scale (entity &key (space :local))
   (m4:get-scale
    (ecase space
      (:local (transform/local entity))
-     (:model (transform/model entity)))))
+     (:world (transform/model entity)))))
 
 (defun translate-entity (entity vec &key replace instant)
   (let ((state (transform/translation entity)))
@@ -139,26 +139,26 @@
   (let ((state (transform/scale entity)))
     (setf (transform-state-incremental state) (math:make-velocity axis rate))))
 
-(defun transform-point (entity point &key (space :model))
+(defun transform-point (entity point &key (space :local))
   (let ((model (transform/model entity)))
     (v3:vec
      (ecase space
-       (:model (m4:*v4 model (v4:vec point 1)))
+       (:local (m4:*v4 model (v4:vec point 1)))
        (:world (m4:*v4 (m4:invert model) (v4:vec point 1)))))))
 
-(defun transform-vector (entity vector &key (space :model))
+(defun transform-vector (entity vector &key (space :local))
   (let ((model (m4:copy (transform/model entity))))
     (m4:set-translation! model model v3:+zero+)
     (v3:vec
      (ecase space
-       (:model (m4:*v4 model (v4:vec vector 1)))
+       (:local (m4:*v4 model (v4:vec vector 1)))
        (:world (m4:*v4 (m4:invert model) (v4:vec vector 1)))))))
 
-(defun transform-direction (entity direction &key (space :model))
+(defun transform-direction (entity direction &key (space :local))
   (let ((model (m4:copy (transform/model entity))))
     (m4:set-translation! model model v3:+zero+)
     (m4:normalize-rotation! model model)
     (v3:vec
      (ecase space
-       (:model (m4:*v4 model (v4:vec direction 1)))
+       (:local (m4:*v4 model (v4:vec direction 1)))
        (:world (m4:*v4 (m4:invert model) (v4:vec direction 1)))))))

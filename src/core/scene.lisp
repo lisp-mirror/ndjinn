@@ -55,13 +55,13 @@
 
 (on-recompile :scene data ()
   (let ((scene (current-scene =context=)))
-    (with-slots (%spec %prefabs %loaded-p) scene
+    (with-slots (%spec %prefabs %loaded) scene
       (let ((name (scene-spec-name %spec)))
         (when (eq data name)
           (u:do-hash-values (entities %prefabs)
             (map nil #'delete-node entities))
           (delete-node (node-tree scene))
-          (setf %loaded-p nil)
+          (setf %loaded nil)
           (load-scene data))
         (log:debug :pyx.live "Recompiled scene: ~s" name)))))
 
@@ -88,8 +88,10 @@
 (defclass scene ()
   ((%spec :reader spec
           :initarg :spec)
-   (%loaded-p :accessor loaded-p
-              :initform nil)
+   (%loaded :accessor loaded
+            :initform nil)
+   (%paused :accessor paused
+            :initform nil)
    (%viewports :reader viewports
                :initform nil)
    (%node-tree :accessor node-tree)
@@ -146,15 +148,16 @@
       (setf (u:href (scenes =context=) scene-name) scene
             (current-scene =context=) scene
             (passes scene) (copy-seq (scene-spec-pass-order (spec scene))))
-      (unless (loaded-p scene)
+      (unless (loaded scene)
         (setf (node-tree scene) (make-entity ()
                                   :node/root-p t
+                                  :node/pause-mode :stop
                                   :id/display "scene root")
               (collision-system scene) (make-collision-system
                                         (scene-spec-collider-plan spec)))
         (make-scene-viewports scene)
         (load-scene-sub-trees scene)
-        (setf (loaded-p scene) t))
+        (setf (loaded scene) t))
       (setf (current-scene =context=) current)
       scene)))
 

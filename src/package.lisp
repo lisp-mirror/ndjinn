@@ -126,8 +126,11 @@
    #:user-data)
   ;; core
   (:export
+   #:pause-game
    #:start-engine
-   #:stop-engine)
+   #:stop-engine
+   #:toggle-pause
+   #:unpause-game)
   ;; deploy
   (:export
    #:deploy)

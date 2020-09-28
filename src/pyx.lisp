@@ -74,3 +74,13 @@
 
 (defun stop-engine ()
   (setf (running =context=) nil))
+
+(defun pause-game ()
+  (setf (paused (current-scene =context=)) t))
+
+(defun unpause-game ()
+  (setf (paused (current-scene =context=)) nil))
+
+(defun toggle-pause ()
+  (let ((scene (current-scene =context=)))
+    (setf (paused scene) (not (paused scene)))))

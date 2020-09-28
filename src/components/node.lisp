@@ -12,7 +12,10 @@
    (%node/prefab :accessor node/prefab
                  :initform nil)
    (%node/prefab-path :accessor node/prefab-path
-                      :initform nil))
+                      :initform nil)
+   (%node/pause-mode :accessor node/pause-mode
+                     :initarg :node/pause-mode
+                     :initform :inherit))
   (:static t))
 
 (defun add-child (entity &key parent)
@@ -23,10 +26,13 @@
       (add-child child :parent entity))))
 
 (defun map-nodes (func &optional parent)
-  (let ((parent (or parent (node-tree (current-scene =context=)))))
+  (let* ((scene (current-scene =context=))
+         (parent (or parent (node-tree scene))))
     (funcall func parent)
     (dolist (child (node/children parent))
-      (map-nodes func child))))
+      (unless (and (paused scene)
+                  (eq (node/pause-mode child) :stop))
+        (map-nodes func child)))))
 
 (defun delete-node (entity &key reparent-children)
   (let ((parent (node/parent entity)))
@@ -45,4 +51,6 @@
 
 (define-entity-hook :create (entity node)
   (unless node/root-p
-    (add-child entity :parent node/parent)))
+    (add-child entity :parent node/parent))
+  (when (eq node/pause-mode :inherit)
+    (setf node/pause-mode (node/pause-mode node/parent))))

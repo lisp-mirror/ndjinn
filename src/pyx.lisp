@@ -25,7 +25,7 @@
          (shutdown-gamepads)
          (kill-display)
          (destroy-thread-pool)
-         (sdl2:quit)
+         (sdl2:quit*)
          (stop-logging)
          (log:info :pyx.core "Exited ~a" (cfg :title)))
     (setf =context= nil)))

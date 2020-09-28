@@ -44,7 +44,7 @@
   (v2:with-components ((r (v2:vec (cfg/player :window-width)
                                   (cfg/player :window-height))))
     (log:debug :pyx.core "Creating window (~dx~d)..." (floor rx) (floor ry))
-    (sdl2:init :everything)
+    (sdl2:init-everything)
     (configure-opengl-context)
     (let* ((refresh-rate (nth-value 3 (sdl2:get-current-display-mode 0)))
            (display (%make-display :window (make-window rx ry)

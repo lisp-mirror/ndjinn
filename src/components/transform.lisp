@@ -113,7 +113,7 @@
 
 (defun translate-entity/velocity (entity axis rate)
   (let ((state (transform/translation entity)))
-    (setf (transform-state-incremental state) (math:make-velocity axis rate))))
+    (setf (transform-state-incremental state) (v3:make-velocity axis rate))))
 
 (defun rotate-entity (entity quat &key replace instant)
   (let ((state (transform/rotation entity)))
@@ -125,7 +125,7 @@
 
 (defun rotate-entity/velocity (entity axis rate)
   (let ((state (transform/rotation entity)))
-    (setf (transform-state-incremental state) (math:make-velocity axis rate))))
+    (setf (transform-state-incremental state) (v3:make-velocity axis rate))))
 
 (defun scale-entity (entity vec &key replace instant)
   (let ((state (transform/scale entity)))
@@ -137,7 +137,7 @@
 
 (defun scale-entity/velocity (entity axis rate)
   (let ((state (transform/scale entity)))
-    (setf (transform-state-incremental state) (math:make-velocity axis rate))))
+    (setf (transform-state-incremental state) (v3:make-velocity axis rate))))
 
 (defun transform-point (entity point &key (space :local))
   (let ((model (transform/model entity)))

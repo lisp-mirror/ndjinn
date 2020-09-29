@@ -7,7 +7,7 @@
 
 (pyx:define-prefab colliders2/left (:template colliders2/object)
   :transform/translate (v3:vec -0.55 0 0)
-  :transform/rotate/velocity (math:make-velocity v3:+forward+ math:pi/6))
+  :transform/rotate/velocity (v3:make-velocity v3:+forward+ math:pi/6))
 
 (pyx:define-prefab colliders2/right (:template colliders2/object)
   :transform/translate (v3:vec 0.5 0 0))

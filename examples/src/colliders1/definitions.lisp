@@ -14,13 +14,13 @@
   ((destroyer :add (pyx:collider))
    :transform/scale 3
    :transform/translate (v3:vec 30 0 0)
-   :transform/rotate/velocity (math:make-velocity v3:+down+ 5f0)
+   :transform/rotate/velocity (v3:make-velocity v3:+down+ 5f0)
    :collider/layer 'destroyer
    :collider/visualize t)
   ((player :add (pyx:collider))
    :transform/scale 4
    :transform/translate (v3:vec -30 0 0)
-   :transform/translate/velocity (math:make-velocity v3:+right+ 15f0)
+   :transform/translate/velocity (v3:make-velocity v3:+right+ 15f0)
    :collider/layer 'player
    ((mesh :template mesh/helmet)
     :transform/rotate (q:orient :local :x math:pi/2 :y math:pi/2))))

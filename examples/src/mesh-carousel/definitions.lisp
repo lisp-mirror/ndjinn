@@ -36,7 +36,7 @@
 
 (pyx:define-prefab mesh-carousel (:template mesh/helmet)
   :transform/scale 17
-  :transform/rotate/velocity (math:make-velocity v3:+forward+ (- math:pi/6)))
+  :transform/rotate/velocity (v3:make-velocity v3:+forward+ (- math:pi/6)))
 
 (pyx:define-prefab mesh/pickable-helmet ()
   ((mesh :add (pyx:collider pyx:mouse-control))

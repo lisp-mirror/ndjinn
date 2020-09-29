@@ -22,7 +22,7 @@
               :normal-matrix 'pyx:resolve-normal-matrix)))
 
 (pyx:define-prefab matcap-mesh (:add (pyx:mesh pyx:render))
-  :transform/rotate/velocity (math:make-velocity v3:+back+ 1.2f0)
+  :transform/rotate/velocity (v3:make-velocity v3:+back+ 1.2f0)
   :transform/rotate (q:orient :local :x 2.4f0 :y 0.4f0 :z 2.4f0)
   :transform/scale 5
   :mesh/asset '(meshes ships)

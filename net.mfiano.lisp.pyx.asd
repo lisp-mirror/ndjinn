@@ -27,6 +27,7 @@
                #:net.mfiano.lisp.shadow
                #:net.mfiano.lisp.umbra
                #:pngload
+               #:printv
                #:sdl2
                #:split-sequence
                #:uiop

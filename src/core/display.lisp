@@ -4,10 +4,12 @@
             (:constructor %make-display)
             (:predicate nil)
             (:copier nil))
+  (monitor 0 :type fixnum)
+  (position (v2:vec) :type v2:vec)
   window
   context
   (resolution (v2:vec) :type v2:vec)
-  (refresh-rate 30 :type fixnum))
+  (refresh-rate 0 :type fixnum))
 
 (defstruct (window
             (:constructor %make-window)
@@ -60,21 +62,25 @@
   (u:mvlet* ((window (window-handle (display-window display)))
              (index (sdl2-ffi.functions:sdl-get-window-display-index window))
              (format width height rate (sdl2:get-current-display-mode index)))
-    (setf (display-resolution display) (v2:vec width height)
-          (display-refresh-rate display) rate)))
+    (setf
+     (display-monitor display) (get-current-monitor)
+     (display-position display) (get-display-position)
+     (display-resolution display) (v2:vec width height)
+     (display-refresh-rate display) rate)))
 
 (defun make-display ()
   (sdl2:init-everything)
   (configure-opengl-context)
   (let* ((window (make-window))
          (display (%make-display :window window)))
+    (setf (display =context=) display)
     (set-display-properties display)
     (make-opengl-context display)
     (sdl2:gl-set-swap-interval (if (cfg :vsync) 1 0))
     (if (cfg/player :allow-screensaver)
         (sdl2:enable-screensaver)
         (sdl2:disable-screensaver))
-    (setf (display =context=) display)))
+    display))
 
 (defun kill-display ()
   (u:when-let ((display (display =context=)))
@@ -105,3 +111,14 @@
   (let ((window (display-window (display =context=))))
     (sdl2:set-window-title window value)
     (setf (window-%title window) value)))
+
+(defun get-current-monitor ()
+  (let ((window-handle (window-handle (display-window (display =context=)))))
+    (sdl2-ffi.functions:sdl-get-window-display-index window-handle)))
+
+(defun get-display-position ()
+  (let* ((monitor (get-current-monitor))
+         (rect (sdl2:get-display-bounds monitor))
+         (position (v2:vec (sdl2:rect-x rect) (sdl2:rect-y rect))))
+    (sdl2:free-rect rect)
+    position))

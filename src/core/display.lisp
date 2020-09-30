@@ -8,7 +8,7 @@
   context
   (resolution (error "Window resolution unset.") :type v2:vec)
   (position (error "Window position unset.") :type v2:vec)
-  (refresh-rate 60 :type fixnum))
+  (refresh-rate 30 :type fixnum))
 
 (defun parse-opengl-version (version)
   (values-list (mapcar #'parse-integer (ss:split-sequence #\. version))))
@@ -40,19 +40,24 @@
     (gl:pixel-store :unpack-alignment 1)
     (log:debug :pyx.core "Created OpenGL ~a context" (cfg :opengl-version))))
 
+(defun set-display-refresh-rate (display)
+  (let* ((window (display-window display))
+         (index (sdl2-ffi.functions:sdl-get-window-display-index window))
+         (refresh-rate (nth-value 3 (sdl2:get-current-display-mode index))))
+    (setf (display-refresh-rate display) refresh-rate)))
+
 (defun make-display ()
   (v2:with-components ((r (v2:vec (cfg/player :window-width)
                                   (cfg/player :window-height))))
     (log:debug :pyx.core "Creating window (~dx~d)..." (floor rx) (floor ry))
     (sdl2:init-everything)
     (configure-opengl-context)
-    (let* ((refresh-rate (nth-value 3 (sdl2:get-current-display-mode 0)))
-           (display (%make-display :window (make-window rx ry)
-                                   :resolution r
-                                   ;; TODO: Handle initial window position using
-                                   ;; sdl2-ffi.functions:sdl-get-display-bounds
-                                   :position (v2:vec)
-                                   :refresh-rate refresh-rate)))
+    (let ((display (%make-display :window (make-window rx ry)
+                                  :resolution r
+                                  ;; TODO: Handle initial window position using
+                                  ;; sdl2-ffi.functions:sdl-get-display-bounds
+                                  :position (v2:vec))))
+      (set-display-refresh-rate display)
       (make-opengl-context display)
       (sdl2:gl-set-swap-interval (if (cfg :vsync) 1 0))
       (if (cfg/player :allow-screensaver)

@@ -53,7 +53,6 @@
     (apply #'gl:disable +disabled-capabilities+)
     (apply #'gl:blend-func +blend-mode+)
     (gl:depth-func +depth-mode+)
-    (gl:enable :multisample)
     (gl:pixel-store :unpack-alignment 1)
     (log:debug :pyx.core "Created OpenGL ~a context" (cfg :opengl-version))))
 

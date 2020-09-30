@@ -67,7 +67,7 @@
                                  (float (/ y 2) 1f0)))))
 
 (defun calculate-font-position (font)
-  (v2:with-components ((c (v2:scale (get-viewport-dimensions) 0.5))
+  (v2:with-components ((c (v2:scale (get-viewport-size) 0.5))
                        (d (get-font-dimensions font))
                        (s (get-scale font))
                        (o (v2:scale (get-font-offset font)

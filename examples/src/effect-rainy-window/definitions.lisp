@@ -10,7 +10,7 @@
               :speed 0.24
               :zoom 0.8
               :time (pyx:as-uniform 'pyx:get-running-time)
-              :res (pyx:as-uniform 'pyx:get-viewport-dimensions)
+              :res (pyx:as-uniform 'pyx:get-viewport-size)
               :sampler 'effect/rainy-window)))
 
 (pyx:define-prefab effect/rainy-window (:template quad)

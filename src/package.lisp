@@ -229,7 +229,7 @@
   ;; viewport
   (:export
    #:define-viewport
-   #:get-viewport-dimensions)
+   #:get-viewport-size)
   ;; sprite
   (:export
    #:find-sprite

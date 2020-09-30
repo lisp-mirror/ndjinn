@@ -113,7 +113,7 @@
   (recompile :scene (get-scene-name))
   (log:debug :pyx.live "Recompiled viewport: ~s" data))
 
-(defun get-viewport-dimensions (&optional viewport-name)
+(defun get-viewport-size (&optional viewport-name)
   (let* ((manager (get-viewport-manager))
          (viewport (or (u:href (table manager) viewport-name)
                        (active manager)

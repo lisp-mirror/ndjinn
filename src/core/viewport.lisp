@@ -91,7 +91,7 @@
 
 (defun configure-viewport (viewport)
   (let ((spec (spec viewport)))
-    (v2:with-components ((r (window-resolution)))
+    (v2:with-components ((r (window-size)))
       (setf (x viewport) (u:lerp (x spec) 0 rx)
             (y viewport) (u:lerp (y spec) 0 ry)
             (width viewport) (u:lerp (width spec) 0 rx)

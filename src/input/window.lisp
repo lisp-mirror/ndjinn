@@ -18,14 +18,14 @@
   (:method (context &key x y)
     (declare (ignore x y)))
   (:method :before (context &key x y)
-    (set-display-refresh-rate (display context))
+    (set-display-properties (display context))
     (setf (window-position) (v2:vec x y))))
 
 (defgeneric on-window-resize (context &key width height)
   (:method (context &key width height)
     (declare (ignore width height)))
   (:method :before (context &key width height)
-    (setf (window-resolution) (v2:vec width height))))
+    (setf (window-size) (v2:vec width height))))
 
 (defgeneric on-window-minimize (context)
   (:method (context))

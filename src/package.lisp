@@ -137,7 +137,8 @@
   ;; display
   (:export
    #:window-position
-   #:window-resolution)
+   #:window-size
+   #:window-title)
   ;; entity
   (:export
    #:attach-component

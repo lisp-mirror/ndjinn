@@ -32,7 +32,7 @@
   (flet ((generate-size-func (dimension value)
            (lambda ()
              (or value
-                 (v2:with-components ((r (window-resolution)))
+                 (v2:with-components ((r (window-size)))
                    (ecase dimension
                      (:width rx)
                      (:height ry)))))))

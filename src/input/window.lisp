@@ -18,6 +18,7 @@
   (:method (context &key x y)
     (declare (ignore x y)))
   (:method :before (context &key x y)
+    (set-display-refresh-rate (display context))
     (setf (window-position) (v2:vec x y))))
 
 (defgeneric on-window-resize (context &key width height)

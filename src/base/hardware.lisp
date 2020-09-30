@@ -5,6 +5,7 @@
             (:copier nil))
   (cpu "Unknown" :type string)
   (cpu-count 1 :type fixnum)
+  (monitors nil :type list)
   (gpu-vendor :unavailable :type keyword)
   (gpu-device "Unknown" :type string)
   (gpu-make/model "Unknown" :type string)
@@ -49,10 +50,15 @@
 (defun get-gpu/max-ssbo-bindings ()
   (get-gpu-parameter :max-shader-storage-buffer-bindings))
 
+(defun get-monitor-names ()
+  (loop :for i :below (sdl2:get-num-video-displays)
+        :collect (cons i (sdl2:get-display-name i))))
+
 (defun load-hardware-info ()
   (log:debug :pyx.core "Reading hardware information...")
   (let* ((cpu (machine-version))
          (cpu-count (cl-cpus:get-number-of-processors))
+         (monitors (get-monitor-names))
          (gpu-vendor (get-gpu-vendor))
          (gpu-device (get-gpu-device))
          (gpu-make/model (get-gpu-make/model))
@@ -62,6 +68,7 @@
          (hardware-info (make-hardware-info
                          :cpu cpu
                          :cpu-count cpu-count
+                         :monitors monitors
                          :gpu-vendor gpu-vendor
                          :gpu-device gpu-device
                          :gpu-make/model gpu-make/model
@@ -70,6 +77,9 @@
                          :max-ssbo-bindings max-ssbo-bindings)))
     (setf (hardware-info =context=) hardware-info)
     (log:debug :pyx.core "CPU: ~a (threads: ~d)" cpu cpu-count)
+    (dolist (x monitors)
+      (log:debug :pyx.core "Monitor ~d: ~a"
+                 (car x) (cdr x)))
     (log:debug :pyx.core "GPU: ~a (version: ~a)" gpu-make/model gpu-version)
     (log:debug :pyx.core "GPU limit - Maximum texture size: ~dx~d"
                max-texture-size
@@ -82,6 +92,8 @@
     (hardware-info-cpu (hardware-info =context=)))
   (:method ((key (eql :cpu-count)))
     (hardware-info-cpu-count (hardware-info =context=)))
+  (:method ((key (eql :monitors)))
+    (hardware-info-monitors (hardware-info =context=)))
   (:method ((key (eql :gpu-vendor)))
     (hardware-info-gpu-vendor (hardware-info =context=)))
   (:method ((key (eql :gpu-device)))

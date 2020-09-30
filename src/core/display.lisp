@@ -32,7 +32,7 @@
                                        :h y
                                        :flags '(:opengl)))
            (window (%make-window :handle handle :%title title :%size s)))
-      (log:debug :pyx.core "Created window (~dx~d)..." sx sy)
+      (log:debug :pyx.core "Created window (~dx~d)..." x y)
       window)))
 
 (defun configure-opengl-context ()

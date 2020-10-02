@@ -24,9 +24,7 @@
 
 (defun deregister-animation (entity animation)
   (let ((sequence (animate/sequence entity)))
-    (dll:delete sequence animation)
-    (when (zerop (dll:length sequence))
-      (detach-component entity 'animate))))
+    (dll:delete sequence animation)))
 
 (defun process-animations (entity)
   (loop :with sequence = (animate/sequence entity)

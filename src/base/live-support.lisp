@@ -1,8 +1,26 @@
 (in-package #:net.mfiano.lisp.pyx)
 
 (defmacro with-continuable (report &body body)
-  `(restart-case (progn ,@body)
-     (continue () :report ,report)))
+  (u:with-gensyms (debugger-entry-time previous-hook pause-time)
+    (let ((hook #+sbcl 'sb-ext:*invoke-debugger-hook*
+                #-sbcl '*debugger-hook*))
+      `(let* ((,debugger-entry-time nil)
+              (,previous-hook ,hook)
+              (,hook
+                (lambda (condition hook)
+                  (declare (ignore hook))
+                  (log:debug :pyx.core "Entered debugger")
+                  (setf ,debugger-entry-time (get-time))
+                  (when ,previous-hook
+                    (funcall ,previous-hook condition ,previous-hook)))))
+         (restart-case (progn ,@body)
+           (continue ()
+             :report ,report
+             (when ,debugger-entry-time
+               (let ((,pause-time (- (get-time) ,debugger-entry-time)))
+                 (setf (pause-time) ,pause-time)
+                 (log:debug :pyx.core "Spent ~d seconds in the debugger"
+                            ,pause-time)))))))))
 
 (flet ((generate-live-support-functions ()
          (let ((repl-package (find-if #'find-package '(:slynk :swank))))

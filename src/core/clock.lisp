@@ -18,22 +18,23 @@
   (period-elapsed 0d0)
   (period-interval 0.25d0)
   (previous-time 0d0)
-  (running-time 0d0))
+  (running-time 0d0)
+  (pause-time 0d0))
+
+(defun %get-time (clock)
+  (u:mvlet ((s us (sb-ext:get-time-of-day)))
+    (+ (- s (clock-init-time clock))
+       (/ us 1d6))))
 
 (defun make-clock ()
   (let ((clock (%make-clock)))
     (setf (clock-init-time clock) (sb-ext:get-time-of-day)
-          (clock-running-time clock) (get-time clock)
+          (clock-running-time clock) (%get-time clock)
           (clock-delta-time clock) (float (cfg :delta-time) 1f0))
     (setf (clock =context=) clock)
     (log:debug :pyx.core "Initialized game clock: vsync: ~a, delta: ~d"
                (cfg :vsync)
                (cfg :delta-time))))
-
-(defun get-time (clock)
-  (u:mvlet ((s us (sb-ext:get-time-of-day)))
-    (+ (- s (clock-init-time clock))
-       (/ us 1d6))))
 
 (defun smooth-delta-time (clock refresh-rate)
   (symbol-macrolet ((frame-time (clock-frame-time clock)))
@@ -86,17 +87,22 @@
         (setf elapsed current)))))
 
 (defun tick-clock (clock refresh-rate update-func periodic-func)
-  (let ((previous (clock-running-time clock))
-        (current (get-time clock)))
+  (let* ((pause (clock-pause-time clock))
+         (previous (+ (clock-running-time clock) pause))
+         (current (- (%get-time clock) pause)))
     (setf (clock-previous-time clock) previous
           (clock-running-time clock) current
-          (clock-frame-time clock) (- current previous))
+          (clock-frame-time clock) (- current previous)
+          (clock-pause-time clock) 0d0)
     (when (cfg :vsync)
       (smooth-delta-time clock refresh-rate))
     (clock-update clock update-func)
     (clock-update/periodic clock periodic-func)
     (when (plusp (get-frame-count))
       (calculate-frame-rate clock))))
+
+(defun get-time ()
+  (%get-time (clock =context=)))
 
 (defun get-alpha ()
   (clock-alpha (clock =context=)))
@@ -117,3 +123,9 @@
 
 (defun get-running-time ()
   (clock-running-time (clock =context=)))
+
+(defun pause-time ()
+  (clock-pause-time (clock =context=)))
+
+(defun (setf pause-time) (value)
+  (setf (clock-pause-time (clock =context=)) value))

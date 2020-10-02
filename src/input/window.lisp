@@ -19,8 +19,7 @@
     (declare (ignore x y)))
   (:method :before (context &key x y)
     (set-display-properties (display context))
-    (setf (window-position) (v2:- (v2:vec x y)
-                                  (display-position (display context))))))
+    (setf (window-position) (v2:- (v2:vec x y) (get-display-position)))))
 
 (defgeneric on-window-resize (context &key width height)
   (:method (context &key width height)

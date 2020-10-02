@@ -23,7 +23,6 @@
    (#:ff #:filtered-functions)
    (#:font #:3b-bmfont)
    (#:glob #:global-vars)
-   (#:gph #:cl-graph)
    (#:log #:verbose)
    (#:lp #:lparallel)
    (#:lpq #:lparallel.queue)

@@ -1,26 +1,21 @@
 (in-package #:net.mfiano.lisp.pyx)
 
 (defun sort-component-types (order-table types)
-  (flet ((dag-p (graph)
-           (not (or (gph:find-edge-if graph #'gph:undirected-edge-p)
-                    (gph:find-vertex-if
-                     graph
-                     (lambda (x) (gph:in-cycle-p graph x)))))))
-    (let ((graph (gph:make-graph 'gph:graph-container
-                                 :default-edge-type :directed)))
-      (u:do-hash (type order order-table)
-        (gph:add-vertex graph type)
-        (destructuring-bind (&key before after) order
-          (dolist (x before)
-            (gph:add-edge-between-vertexes graph type x))
-          (dolist (x after)
-            (gph:add-edge-between-vertexes graph x type))))
-      (unless (dag-p graph)
-        (error "Component order cannot be computed because the graph is not a ~
-                DAG."))
-      (remove-if-not
-       (lambda (x) (find x types))
-       (mapcar #'gph:element (gph:topological-sort graph))))))
+  (let ((graph (digraph:make-digraph)))
+    (u:do-hash (type order order-table)
+      (digraph:insert-vertex graph type)
+      (destructuring-bind (&key before after) order
+        (dolist (x before)
+          (unless (digraph:contains-vertex-p graph x)
+            (digraph:insert-vertex graph x))
+          (digraph:insert-edge graph x type))
+        (dolist (x after)
+          (unless (digraph:contains-vertex-p graph x)
+            (digraph:insert-vertex graph x))
+          (digraph:insert-edge graph type x))))
+    (remove-if-not
+     (lambda (x) (find x types))
+     (digraph:topological-sort graph))))
 
 (defun compute-component-type-order (types)
   (sort-component-types (metadata-components-type-order =metadata=)
@@ -124,6 +119,7 @@
              (setf (u:href (metadata-components-type-order =metadata=) ',name)
                    '(:before ,(u:ensure-list before)
                      :after ,(u:ensure-list after)))
+             (compute-total-component-type-order)
              ,@(if (eq static t)
                    `((pushnew ',name (metadata-components-static =metadata=)))
                    `((u:deletef (metadata-components-static =metadata=)

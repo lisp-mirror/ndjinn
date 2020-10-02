@@ -94,10 +94,19 @@
      (:local (transform/local entity))
      (:world (transform/model entity)))))
 
-(defun translate-entity (entity vec &key replace instant)
+(defun translate-entity (entity vec &key replace instant apply)
   (let ((state (transform/translation entity)))
     (symbol-macrolet ((current (transform-state-current state)))
-      (v3:+! current (if replace v3:+zero+ current) vec)
+      (v3:+! current
+             (if replace v3:+zero+ current)
+             ;; TODO: This is a special form of applying a matrix to a
+             ;; transform, useful in some situations. Needs a better name and
+             ;; proper API.
+             (if apply
+                 (let ((local (m4:copy (transform/local entity))))
+                   (m4:set-translation! local local v3:+zero+)
+                   (v3:vec (m4:*v4 local (v4:vec vec 1))))
+                 vec))
       (when instant
         (push (lambda () (v3:copy! (transform-state-previous state) current))
               (end-frame-work =context=))))))

@@ -60,9 +60,7 @@
           (setf average/10s (+ (* alpha10 fps) (* (- 1 alpha10) average/10s))
                 average/30s (+ (* alpha30 fps) (* (- 1 alpha30) average/30s))
                 average/60s (+ (* alpha60 fps) (* (- 1 alpha60) average/60s))
-                average (/ (+ fps (* (1- frame-count) average))
-                           frame-count
-                           1f0))
+                average (/ (+ fps (* (1- frame-count) average)) frame-count))
           (setf average/10s fps
                 average/30s fps
                 average/60s fps

@@ -1,6 +1,6 @@
 (in-package #:net.mfiano.lisp.pyx)
 
-(defmacro with-continuable (report &body body)
+(defmacro with-continuable (&body body)
   (u:with-gensyms (debugger-entry-time previous-hook pause-time)
     (let ((hook #+sbcl 'sb-ext:*invoke-debugger-hook*
                 #-sbcl '*debugger-hook*))
@@ -14,12 +14,12 @@
                   (when ,previous-hook
                     (funcall ,previous-hook condition ,previous-hook)))))
          (restart-case (progn ,@body)
-           (continue ()
-             :report ,report
+           (abort ()
+             :report "Pyx: Skip processing the currently executing frame"
              (when ,debugger-entry-time
                (let ((,pause-time (- (get-time) ,debugger-entry-time)))
-                 (setf (pause-time) ,pause-time)
-                 (log:debug :pyx.core "Spent ~d seconds in the debugger"
+                 (incf (pause-time) ,pause-time)
+                 (log:debug :pyx.core "Spent ~3$ seconds in the debugger"
                             ,pause-time)))))))))
 
 (flet ((generate-live-support-functions ()
@@ -35,16 +35,14 @@
             (case repl-package
               (:slynk
                `(lambda ()
-                  (with-continuable "REPL"
-                    (,(find-symbol "PROCESS-REQUESTS" :slynk) t))))
+                  (,(find-symbol "PROCESS-REQUESTS" :slynk) t)))
               (:swank
                `(lambda ()
                   (u:when-let ((repl (or ,(find-symbol "*EMACS-CONNECTION*"
                                                        :swank)
                                          (,(find-symbol "DEFAULT-CONNECTION"
                                                         :swank)))))
-                    (with-continuable "REPL"
-                      (,(find-symbol "HANDLE-REQUESTS" :swank) repl t)))))
+                    (,(find-symbol "HANDLE-REQUESTS" :swank) repl t))))
               (t (constantly nil))))
            (compile
             'send-to-repl

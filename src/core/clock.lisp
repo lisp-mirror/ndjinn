@@ -92,13 +92,12 @@
          (current (- (%get-time clock) pause)))
     (setf (clock-previous-time clock) previous
           (clock-running-time clock) current
-          (clock-frame-time clock) (- current previous)
-          (clock-pause-time clock) 0d0)
+          (clock-frame-time clock) (- current previous))
     (when (cfg :vsync)
       (smooth-delta-time clock refresh-rate))
     (clock-update clock update-func)
     (clock-update/periodic clock periodic-func)
-    (when (plusp (get-frame-count))
+    (when (plusp (clock-frame-count clock))
       (calculate-frame-rate clock))))
 
 (defun get-time ()

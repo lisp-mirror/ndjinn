@@ -60,7 +60,7 @@
     (update)
     (log:debug :pyx.core "Entered main game loop")
     (u:while (running =context=)
-      (with-continuable "Pyx"
+      (with-continuable
         (handle-events input-data)
         (tick-clock clock refresh-rate #'physics-update #'periodic-update)
         (update)

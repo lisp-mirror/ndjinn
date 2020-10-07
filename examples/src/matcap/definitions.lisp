@@ -31,8 +31,3 @@
 
 (pyx:define-scene matcap ()
   (:sub-trees (examples camera/perspective matcap-mesh)))
-
-;; testing
-
-(pyx:define-context matcap ()
-  (:scene matcap))

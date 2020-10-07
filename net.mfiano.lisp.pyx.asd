@@ -84,7 +84,10 @@
      (:file "system")))
    (:module "shader"
     :components
-    ((:file "basic")
+    ((:file "quad")
+     (:file "full-quad")
+     (:file "mesh")
+     (:file "collider")
      (:file "font")
      (:file "matcap")))
    (:module "components"

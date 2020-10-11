@@ -90,28 +90,6 @@
      (:file "collider")
      (:file "font")
      (:file "matcap")))
-   (:module "components"
-    :depends-on ("core")
-    :components
-    ((:file "node")
-     (:file "transform")
-     (:file "id")
-     (:file "camera")
-     (:file "render")
-     (:file "mesh")
-     (:file "geometry")
-     (:file "sprite")
-     (:file "collider")
-     (:file "font")
-     (:file "mouse-control")
-     (:file "animate")))
-   (:module "prefab"
-    :components
-    ((:file "common")
-     (:file "factory")
-     (:file "parser")
-     (:file "reference")
-     (:file "prefab")))
    (:module "core"
     :components
     ((:file "opengl")
@@ -138,4 +116,25 @@
      (:file "render-order")
      (:file "font")
      (:file "animation")))
+   (:module "components"
+    :components
+    ((:file "node")
+     (:file "transform")
+     (:file "id")
+     (:file "camera")
+     (:file "render")
+     (:file "mesh")
+     (:file "geometry")
+     (:file "sprite")
+     (:file "collider")
+     (:file "font")
+     (:file "mouse-control")
+     (:file "animate")))
+   (:module "prefab"
+    :components
+    ((:file "common")
+     (:file "factory")
+     (:file "parser")
+     (:file "reference")
+     (:file "prefab")))
    (:file "pyx")))

@@ -67,7 +67,8 @@
   (let* ((motion-state (u:href (states (input-data =context=))
                                '(:mouse :motion)))
          (x (mouse-motion-state-x motion-state))
-         (y (- (v2:y (window-size)) (mouse-motion-state-y motion-state))))
+         (y (floor (- (v2:y (window-size))
+                      (mouse-motion-state-y motion-state)))))
     (sdl2:set-relative-mouse-mode 1)
     (setf (mouse-motion-state-relative motion-state) t
           (mouse-motion-state-warp-x motion-state) x

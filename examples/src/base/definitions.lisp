@@ -11,15 +11,12 @@
   (:shader pyx.shader:quad
    :uniforms (:sampler 'res:debug)))
 
-(pyx:define-prefab camera (:add (pyx:camera))
-  :camera/debug t)
+(pyx:define-prefab camera (:add (pyx:camera)))
 
 (pyx:define-prefab camera/perspective (:template camera)
-  :camera/debug-speed 0.1
   :transform/translate (v3:vec 0 0 50))
 
 (pyx:define-prefab camera/orthographic (:template camera)
-  :camera/debug-speed 4
   :transform/translate (v3:vec 0 0 1)
   :camera/mode :orthographic
   :camera/clip-near 0
@@ -27,7 +24,6 @@
 
 (pyx:define-prefab camera/isometric (:template camera)
   :transform/translate (v3:vec 0 0 1)
-  :camera/debug-speed 4
   :camera/mode :isometric
   :camera/clip-near -1000
   :camera/clip-far 1000)

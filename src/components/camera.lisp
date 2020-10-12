@@ -4,12 +4,6 @@
   ((%camera/active-p :reader camera/active-p
                      :initarg :camera/active-p
                      :initform t)
-   (%camera/debug-p :reader camera/debug-p
-                    :initarg :camera/debug
-                    :initform nil)
-   (%camera/debug-speed :reader camera/debug-speed
-                        :initarg :camera/debug-speed
-                        :initform 1f0)
    (%camera/mode :reader camera/mode
                  :initarg :camera/mode
                  :initform :perspective)

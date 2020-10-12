@@ -17,14 +17,16 @@
 ;;; entity hooks
 
 (define-entity-hook :attach (entity mesh)
-  (let* ((path (resolve-path mesh/asset))
+  (let* ((name (mesh/name entity))
+         (path (resolve-path (mesh/asset entity)))
          (gltf (with-asset-cache :mesh path
                  (prog1 (load-gltf path)
                    (log:debug :pyx.comp "Cached mesh asset: ~a" path))))
-         (mesh (u:href (meshes gltf) mesh/name)))
+         (mesh (u:href (meshes gltf) name)))
     (unless mesh
-      (error "Mesh name ~s not found in mesh file ~s." mesh/name path))
-    (setf mesh/primitive (aref (primitives mesh) mesh/index))))
+      (error "Mesh name ~s not found in mesh file ~s." name path))
+    (setf (mesh/primitive entity) (aref (primitives mesh)
+                                        (mesh/index entity)))))
 
 (define-entity-hook :render (entity mesh)
-  (funcall (draw-func mesh/primitive) mesh/instances))
+  (funcall (draw-func (mesh/primitive entity)) (mesh/instances entity)))

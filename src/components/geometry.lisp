@@ -18,19 +18,20 @@
 ;;; entity hooks
 
 (define-entity-hook :attach (entity geometry)
-  (unless geometry/name
-    (error "Geometry component ~s does not have a name specified." entity))
-  (setf geometry/geometry (make-geometry geometry/name)))
+  (let ((name (geometry/name entity)))
+    (unless name
+      (error "Geometry component ~s does not have a name specified." entity))
+    (setf (geometry/geometry entity) (make-geometry name))))
 
 (define-entity-hook :pre-render (entity geometry)
-  (when geometry/data
-    (update-geometry geometry/geometry :data geometry/data)
-    (setf geometry/data nil)))
+  (u:when-let ((data (geometry/data entity)))
+    (update-geometry (geometry/geometry entity) :data data)
+    (setf (geometry/data entity) nil)))
 
 (define-entity-hook :render (entity geometry)
-  (when geometry/dirty
-    (draw-geometry geometry/geometry geometry/instances)))
+  (when (geometry/dirty entity)
+    (draw-geometry (geometry/geometry entity) (geometry/instances entity))))
 
 (define-entity-hook :delete (entity geometry)
-  (when geometry/geometry
-    (delete-geometry geometry/geometry)))
+  (u:when-let ((geometry (geometry/geometry entity)))
+    (delete-geometry geometry)))

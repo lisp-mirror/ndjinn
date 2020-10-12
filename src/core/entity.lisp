@@ -121,14 +121,9 @@
 
 (defmacro define-entity-hook (hook (entity type) &body body)
   (let ((method (u:format-symbol :net.mfiano.lisp.pyx "ON-~a" hook))
-        (parameters (get-flow-hook-parameters hook entity type))
-        (accessors (mapcar
-                    (lambda (x)
-                      (list (u:symbolicate x) x))
-                    (compute-component-accessors type))))
+        (parameters (get-flow-hook-parameters hook entity type)))
     `(defmethod ,method progn ,parameters
-       (with-accessors ,accessors ,entity
-         ,@body))))
+       ,@body)))
 
 (defun get-entity-count ()
   (hash-table-count (uuids (current-scene =context=))))

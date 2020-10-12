@@ -100,7 +100,7 @@
 ;;; entity hooks
 
 (define-entity-hook :attach (entity render)
-  (setf render/materials (register-material entity)))
+  (setf (render/materials entity) (register-material entity)))
 
 (define-entity-hook :detach (entity render)
   (u:do-hash-values (viewport (table (get-viewport-manager)))

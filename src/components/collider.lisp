@@ -72,18 +72,19 @@
 ;;; component protocol
 
 (define-entity-hook :attach (entity collider)
-  (setf collider/owner (or collider/owner entity)
-        collider/shape (make-collider-shape entity collider/shape))
+  (setf (collider/owner entity) (or (collider/owner entity) entity)
+        (collider/shape entity) (make-collider-shape entity
+                                                     (collider/shape entity)))
   (initialize-collider-visualization entity)
-  (register-collider entity collider/layer))
+  (register-collider entity (collider/layer entity)))
 
 (define-entity-hook :detach (entity collider)
-  (setf collider/owner nil)
-  (deregister-collider entity collider/layer))
+  (setf (collider/owner entity) nil)
+  (deregister-collider entity (collider/layer entity)))
 
 (define-entity-hook :physics-update (entity collider)
-  (update-collider-shape collider/shape))
+  (update-collider-shape (collider/shape entity)))
 
 (define-entity-hook :pre-render (entity collider)
-  (when collider/visualize
-    (set-uniforms entity :contact collider/hit-p)))
+  (when (collider/visualize entity)
+    (set-uniforms entity :contact (collider/hit-p entity))))

@@ -32,28 +32,31 @@
 ;;; entity hooks
 
 (define-entity-hook :attach (entity sprite)
-  (setf sprite/spritesheet (make-spritesheet sprite/asset
-                                             sprite/buffer-spec)
-        sprite/index (find-sprite sprite/spritesheet sprite/name)
-        sprite/initial-index sprite/index))
+  (let ((spritesheet (make-spritesheet (sprite/asset entity)
+                                       (sprite/buffer-spec entity))))
+    (setf (sprite/spritesheet entity) spritesheet
+          (sprite/index entity) (find-sprite spritesheet (sprite/name entity))
+          (sprite/initial-index entity) (sprite/index entity))))
 
 (define-entity-hook :update (entity sprite)
-  (unless sprite/pause
-    (incf sprite/elapsed (get-frame-time))
-    (if (>= sprite/elapsed sprite/duration)
-        (setf sprite/elapsed 0
-              sprite/pause (unless sprite/repeat t))
-        (let* ((step (/ sprite/elapsed sprite/duration))
-               (min sprite/initial-index)
-               (max (1- (+ min sprite/frames)))
-               (index (floor (u:clamp (u:lerp step min (1+ max)) min max))))
-          (setf sprite/index index)))))
+  (unless (sprite/pause entity)
+    (let ((duration (sprite/duration entity)))
+      (incf (sprite/elapsed entity) (get-frame-time))
+      (if (>= (sprite/elapsed entity) duration)
+          (setf (sprite/elapsed entity) 0
+                (sprite/pause entity) (unless (sprite/repeat entity) t))
+          (let* ((step (/ (sprite/elapsed entity) duration))
+                 (min (sprite/initial-index entity))
+                 (max (1- (+ min (sprite/frames entity))))
+                 (index (floor (u:clamp (u:lerp step min (1+ max)) min max))))
+            (setf (sprite/index entity) index))))))
 
 (define-entity-hook :pre-render (entity sprite)
-  (set-uniforms entity :sprite.index sprite/index))
+  (set-uniforms entity :sprite.index (sprite/index entity)))
 
 (define-entity-hook :render (entity sprite)
-  (with-shader-buffers (sprite/asset)
-    (gl:bind-vertex-array (vao sprite/spritesheet))
-    (gl:draw-arrays-instanced :triangle-strip 0 4 sprite/instances)
-    (gl:bind-vertex-array 0)))
+  (let ((asset (sprite/asset entity)))
+    (with-shader-buffers (asset)
+      (gl:bind-vertex-array (vao (sprite/spritesheet entity)))
+      (gl:draw-arrays-instanced :triangle-strip 0 4 (sprite/instances entity))
+      (gl:bind-vertex-array 0))))

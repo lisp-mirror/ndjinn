@@ -28,17 +28,18 @@
 (define-entity-hook :attach (entity mouse-control)
   (let* ((buttons (remove nil (map 'list #'identity +mouse-button-names+)))
          (initial-rotation (q:copy (get-rotation entity)))
+         (rotation-speed (mouse-control/rotation-speed entity))
          (rotation-state (make-instance 'mouse-control/rotation-state
                                         :initial initial-rotation
-                                        :speed mouse-control/rotation-speed)))
-    (unless (member mouse-control/rotate-button buttons)
+                                        :speed rotation-speed)))
+    (unless (member (mouse-control/rotate-button entity) buttons)
       (error "Mouse rotation button must be one of: ~{~s~^, ~}" buttons))
-    (setf mouse-control/rotation rotation-state)))
+    (setf (mouse-control/rotation entity) rotation-state)))
 
 (define-entity-hook :update (entity mouse-control)
   (when (entity-picked-p entity)
-    (with-slots (%rotation-vector %dragging) mouse-control/rotation
-      (u:mvlet* ((button mouse-control/rotate-button)
+    (with-slots (%rotation-vector %dragging) (mouse-control/rotation entity)
+      (u:mvlet* ((button (mouse-control/rotate-button entity))
                  (drag-started (on-button-enter :mouse button))
                  (drag-stopped (on-button-exit :mouse button)))
         (when drag-started

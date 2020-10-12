@@ -119,22 +119,22 @@
 
 (define-entity-hook :attach (entity camera)
   (let ((entity-viewport (first (get-entity-viewports entity))))
-    (unless camera/viewport
+    (unless (camera/viewport entity)
       (error "Camera ~s does not have a viewport tag known to this scene."
              entity))
-    (when camera/active-p
+    (when (camera/active-p entity)
       (setf (camera entity-viewport) entity))
-    (when camera/free-look
-      (setf camera/free-look-state (make-free-look-state entity)))
-    (setf camera/fov-y (* camera/fov-y math:+deg+)
-          camera/clip-near (float camera/clip-near 1f0)
-          camera/clip-far (float camera/clip-far 1f0)
-          camera/viewport entity-viewport)
+    (when (camera/free-look entity)
+      (setf (camera/free-look-state entity) (make-free-look-state entity)))
+    (setf (camera/fov-y entity) (* (camera/fov-y entity) math:+deg+)
+          (camera/clip-near entity) (float (camera/clip-near entity) 1f0)
+          (camera/clip-far entity) (float (camera/clip-far entity) 1f0)
+          (camera/viewport entity) entity-viewport)
     (set-camera-projection entity)))
 
 (define-entity-hook :update (entity camera)
-  (when camera/free-look
-    (update-free-look-state camera/free-look-state))
+  (when (camera/free-look entity)
+    (update-free-look-state (camera/free-look-state entity)))
   ;; TODO: Have a flag so not updating these every frame
   (set-camera-view entity)
   (set-camera-projection entity))

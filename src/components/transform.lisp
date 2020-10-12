@@ -74,7 +74,7 @@
     (m4:rotation-to-mat3 result)))
 
 (define-entity-hook :pre-render (entity transform)
-  (set-uniforms entity :model transform/model))
+  (set-uniforms entity :model (transform/model entity)))
 
 (defun get-translation (entity &key (space :local))
   (m4:get-translation

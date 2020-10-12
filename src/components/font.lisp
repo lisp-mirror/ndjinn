@@ -71,13 +71,14 @@
 
 (define-entity-hook :update (entity font)
   (let ((time (get-running-time)))
-    (when (>= time (+ font/update-time font/rate))
+    (when (>= time (+ (font/update-time entity)
+                      (font/rate entity)))
       (u:mvlet* ((text (resolve-font-text entity))
                  (func (funcall #'generate-font-data entity))
-                 (width height (map-font-glyphs font/spec func text)))
+                 (width height (map-font-glyphs (font/spec entity) func text)))
         (translate-entity entity
                           (v3:vec (calculate-font-position entity))
                           :replace t)
-        (v2:with-components ((fd font/dimensions))
+        (v2:with-components ((fd (font/dimensions entity)))
           (setf fdx width fdy height)))
-      (setf font/update-time time))))
+      (setf (font/update-time entity) time))))

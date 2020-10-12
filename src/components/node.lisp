@@ -50,7 +50,8 @@
 ;;; entity hooks
 
 (define-entity-hook :create (entity node)
-  (unless node/root-p
-    (add-child entity :parent node/parent))
-  (when (eq node/pause-mode :inherit)
-    (setf node/pause-mode (node/pause-mode node/parent))))
+  (let ((parent (node/parent entity)))
+    (unless (node/root-p entity)
+      (add-child entity :parent parent))
+    (when (eq (node/pause-mode entity) :inherit)
+      (setf (node/pause-mode entity) (node/pause-mode parent)))))

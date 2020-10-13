@@ -33,9 +33,9 @@
        (let ((table (metadata-config-player =metadata=)))
          (u:do-plist (k v (u:safe-read-file-forms path :package package))
            (let ((key (u:make-keyword k)))
-             (u:if-found (#:nil (u:href table key))
+             (u:if-found (#:nil (u:href table 'default key))
                (progn
-                 (setf (u:href table key) v)
+                 (setf (cfg/player key) v)
                  (log:info :pyx.cfg "Player configuration override: ~(~a~) = ~s"
                            k v))
                (log:warn :pyx.cfg "Invalid configuration option: ~(~a~)" k))))))
@@ -50,11 +50,15 @@
 
 (defun cfg/player (key)
   (let ((config (metadata-config-player =metadata=)))
-    (u:href config key)))
+    (u:if-let ((table (u:href config (name =context=))))
+      (u:href table key)
+      (u:href config 'default key))))
 
 (defun (setf cfg/player) (value key)
   (let ((config (metadata-config-player =metadata=)))
-    (setf (u:href config key) value)))
+    (u:if-let ((table (u:href config (name =context=))))
+      (setf (u:href table key) value)
+      (setf (u:href config (name =context=)) (u:dict #'eq key value)))))
 
 (define-config default ()
   (:anti-alias t
@@ -68,7 +72,9 @@
 
 (setf (metadata-config-player =metadata=)
       (u:dict #'eq
-              :allow-screensaver nil
-              :threads nil
-              :window-width 1920
-              :window-height 1080))
+              'default
+              (u:dict #'eq
+                      :allow-screensaver nil
+                      :threads nil
+                      :window-width 1920
+                      :window-height 1080)))

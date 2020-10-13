@@ -16,7 +16,7 @@
                    (u:hash-merge ,default ,table)))))))
 
 (defun load-player-config ()
-  (u:when-let* ((project (cfg :title))
+  (u:when-let* ((project (project =context=))
                 (path (uiop:merge-pathnames*
                        (make-pathname :directory `(:relative "Pyx Games"
                                                              ,project)

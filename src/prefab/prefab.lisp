@@ -16,7 +16,8 @@
     (u:if-let ((prefab (u:href prefabs name)))
       (let* ((factory (factory (u:href prefabs name)))
              (entity (funcall (func factory) :parent parent)))
-        (register-prefab-viewports entity :viewports viewports))
+        (register-prefab-viewports entity :viewports viewports)
+        entity)
       (error "Prefab ~s not defined." name))))
 
 (defun deregister-prefab-entity (entity)

@@ -39,7 +39,7 @@
     (let ((parent (node/parent entity)))
       (delete-node entity)
       (load-prefab data :parent parent)))
-  (log:debug :pyx.live "Recompiled prefab: ~s" data))
+  (log:debug :pyx "Recompiled prefab: ~s" data))
 
 (defmacro define-prefab (name options &body body)
   (u:with-gensyms (data)

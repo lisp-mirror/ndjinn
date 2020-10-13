@@ -32,7 +32,7 @@
           (clock-running-time clock) (%get-time clock)
           (clock-delta-time clock) (float (cfg :delta-time) 1f0))
     (setf (clock =context=) clock)
-    (log:debug :pyx.core "Initialized game clock: vsync: ~a, delta: ~d"
+    (log:debug :pyx "Initialized game clock: vsync: ~a, delta: ~d"
                (cfg :vsync)
                (cfg :delta-time))))
 

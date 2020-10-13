@@ -130,4 +130,4 @@
 (on-recompile :component data ()
   (destructuring-bind (name func) data
     (funcall func)
-    (log:debug :pyx.live "Recompiled component: ~s" name)))
+    (log:debug :pyx "Recompiled component: ~s" name)))

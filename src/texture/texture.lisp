@@ -88,4 +88,4 @@
     (load-texture data :width (width texture) :height (height texture))
     (dolist (material-name (materials texture))
       (recompile :material material-name))
-    (log:debug :pyx.live "Recompiled texture: ~s" data)))
+    (log:debug :pyx "Recompiled texture: ~s" data)))

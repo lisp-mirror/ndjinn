@@ -21,7 +21,7 @@
          (path (resolve-path (mesh/asset entity)))
          (gltf (with-asset-cache :mesh path
                  (prog1 (load-gltf path)
-                   (log:debug :pyx.comp "Cached mesh asset: ~a" path))))
+                   (log:debug :pyx "Cached mesh asset: ~a" path))))
          (mesh (u:href (meshes gltf) name)))
     (unless mesh
       (error "Mesh name ~s not found in mesh file ~s." name path))

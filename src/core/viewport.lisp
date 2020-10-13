@@ -111,7 +111,7 @@
 
 (on-recompile :viewport data ()
   (recompile :scene (get-scene-name))
-  (log:debug :pyx.live "Recompiled viewport: ~s" data))
+  (log:debug :pyx "Recompiled viewport: ~s" data))
 
 (defun get-viewport-size (&optional viewport-name)
   (let* ((manager (get-viewport-manager))

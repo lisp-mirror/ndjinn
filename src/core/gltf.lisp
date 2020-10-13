@@ -276,8 +276,9 @@
     (make-gltf-vertex-buffers gltf primitive data)
     (make-gltf-index-buffer gltf primitive data)
     (make-gltf-draw-func primitive)
-    (log:debug :pyx.core "Loaded mesh: ~a, primitive: ~a (VAO: ~d)"
-               (file-name gltf) mesh-name vao)
+    (log:debug :pyx "Loaded mesh: ~a, primitive: ~a (VAO: ~d)"
+               (file-name gltf)
+               mesh-name vao)
     primitive))
 
 (defun load-gltf (path)

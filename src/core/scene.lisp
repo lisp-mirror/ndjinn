@@ -63,7 +63,7 @@
           (delete-node (node-tree scene))
           (setf %loaded nil)
           (load-scene data))
-        (log:debug :pyx.live "Recompiled scene: ~s" name)))))
+        (log:debug :pyx "Recompiled scene: ~s" name)))))
 
 (defun get-registered-scene-names (&optional package-name)
   (let ((package-name (or package-name *package*)))

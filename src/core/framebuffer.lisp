@@ -224,4 +224,4 @@
     (framebuffer-attach-all data)
     (dolist (material (framebuffer-spec-materials spec))
       (enqueue :recompile (list :material material)))
-    (log:debug :pyx.live "Recompiled framebuffer: ~s" name)))
+    (log:debug :pyx "Recompiled framebuffer: ~s" name)))

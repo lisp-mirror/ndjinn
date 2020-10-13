@@ -29,18 +29,18 @@
     (ensure-directories-exist path)
     (cond
       ((uiop:file-exists-p path)
-       (log:info :pyx.cfg "Loading player configuration from ~a" path)
+       (log:info :pyx "Loading player configuration from ~a" path)
        (let ((table (metadata-config-player =metadata=)))
          (u:do-plist (k v (u:safe-read-file-forms path :package package))
            (let ((key (u:make-keyword k)))
              (u:if-found (#:nil (u:href table 'default key))
                (progn
                  (setf (cfg/player key) v)
-                 (log:info :pyx.cfg "Player configuration override: ~(~a~) = ~s"
+                 (log:info :pyx "Player configuration override: ~(~a~) = ~s"
                            k v))
-               (log:warn :pyx.cfg "Invalid configuration option: ~(~a~)" k))))))
+               (log:warn :pyx "Invalid configuration option: ~(~a~)" k))))))
       (t
-       (log:info :pyx.cfg "No user configuration file found at ~a" path)))))
+       (log:info :pyx "No user configuration file found at ~a" path)))))
 
 (defun cfg (key)
   (let ((config (metadata-config-developer =metadata=)))

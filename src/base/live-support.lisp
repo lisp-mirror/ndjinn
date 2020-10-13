@@ -9,7 +9,7 @@
               (,hook
                 (lambda (condition hook)
                   (declare (ignore hook))
-                  (log:debug :pyx.core "Entered debugger")
+                  (log:debug :pyx "Entered debugger")
                   (setf ,debugger-entry-time (get-time))
                   (when ,previous-hook
                     (funcall ,previous-hook condition ,previous-hook)))))
@@ -19,7 +19,7 @@
              (when ,debugger-entry-time
                (let ((,pause-time (- (get-time) ,debugger-entry-time)))
                  (incf (pause-time) ,pause-time)
-                 (log:debug :pyx.core "Spent ~3$ seconds in the debugger"
+                 (log:debug :pyx "Spent ~3$ seconds in the debugger"
                             ,pause-time)))))))))
 
 (flet ((generate-live-support-functions ()

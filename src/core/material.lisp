@@ -180,4 +180,4 @@
   (dolist (material (u:href (materials (current-scene =context=)) data))
     (make-material-uniforms material)
     (ensure-material-framebuffer material))
-  (log:debug :pyx.live "Recompiled material: ~s" data))
+  (log:debug :pyx "Recompiled material: ~s" data))

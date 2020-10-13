@@ -56,9 +56,9 @@
   (:method :before (context &rest user-args)
     (declare (ignore user-args))
     (let ((scene (initial-scene context)))
-      (log:debug :pyx.core "Starting initial scene...")
+      (log:debug :pyx "Starting initial scene...")
       (switch-scene scene)
-      (log:debug :pyx.core "Scene loaded: ~s" scene))))
+      (log:debug :pyx "Scene loaded: ~s" scene))))
 
 (defgeneric on-context-destroy (context)
   (:method (context)))

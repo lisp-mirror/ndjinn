@@ -34,7 +34,7 @@
                                        :h y
                                        :flags '(:opengl)))
            (window (%make-window :handle handle :%title title :%size s)))
-      (log:debug :pyx.core "Created window (~dx~d)..." x y)
+      (log:debug :pyx "Created window (~dx~d)..." x y)
       window)))
 
 (defun configure-opengl-context ()
@@ -56,7 +56,7 @@
     (apply #'gl:blend-func +blend-mode+)
     (gl:depth-func +depth-mode+)
     (gl:pixel-store :unpack-alignment 1)
-    (log:debug :pyx.core "Created OpenGL ~a context" (cfg :opengl-version))))
+    (log:debug :pyx "Created OpenGL ~a context" (cfg :opengl-version))))
 
 (defun set-display-properties (display)
   (u:mvlet* ((window (window-handle (display-window display)))

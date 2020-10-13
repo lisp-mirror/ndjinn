@@ -14,10 +14,10 @@
                  (lambda (x) (enqueue :recompile (list :shaders x)))))
          (shaders (make-shader-manager :table table)))
     (setf (shaders =context=) shaders)
-    (log:debug :pyx.core "Loaded ~d shader programs"
+    (log:debug :pyx "Loaded ~d shader programs"
                (hash-table-count table))))
 
 (on-recompile :shaders data ()
   (shadow:recompile-shaders data)
   (dolist (program data)
-    (log:debug :pyx.live "Recompiled shader: ~s" program)))
+    (log:debug :pyx "Recompiled shader: ~s" program)))

@@ -3,7 +3,7 @@
 (defun make-geometry (name)
   (let* ((geometry (funcall (u:href (metadata-geometry =metadata=) name)))
          (id (geometry-spec-id geometry)))
-    (log:debug :pyx.core "Created geometry: ~s (VAO: ~d)" name id)
+    (log:debug :pyx "Created geometry: ~s (VAO: ~d)" name id)
     geometry))
 
 (u:fn-> update-geometry (geometry-spec symbol sequence) (values))
@@ -30,4 +30,4 @@
         (id (geometry-spec-id geometry)))
     (gl:delete-buffers (geometry-spec-buffers geometry))
     (gl:delete-vertex-arrays (list id))
-    (log:debug :pyx.core "Deleted geometry: ~s (VAO: ~d)" name id)))
+    (log:debug :pyx "Deleted geometry: ~s (VAO: ~d)" name id)))

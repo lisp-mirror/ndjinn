@@ -55,7 +55,7 @@
         :collect (cons i (sdl2:get-display-name i))))
 
 (defun load-hardware-info ()
-  (log:debug :pyx.core "Reading hardware information...")
+  (log:debug :pyx "Reading hardware information...")
   (let* ((cpu (machine-version))
          (cpu-count (cl-cpus:get-number-of-processors))
          (monitors (get-monitor-names))
@@ -76,16 +76,14 @@
                          :max-texture-size max-texture-size
                          :max-ssbo-bindings max-ssbo-bindings)))
     (setf (hardware-info =context=) hardware-info)
-    (log:debug :pyx.core "CPU: ~a (threads: ~d)" cpu cpu-count)
+    (log:debug :pyx "CPU: ~a (threads: ~d)" cpu cpu-count)
     (dolist (x monitors)
-      (log:debug :pyx.core "Monitor ~d: ~a"
-                 (car x) (cdr x)))
-    (log:debug :pyx.core "GPU: ~a (version: ~a)" gpu-make/model gpu-version)
-    (log:debug :pyx.core "GPU limit - Maximum texture size: ~dx~d"
+      (log:debug :pyx "Monitor ~d: ~a" (car x) (cdr x)))
+    (log:debug :pyx "GPU: ~a (version: ~a)" gpu-make/model gpu-version)
+    (log:debug :pyx "GPU limit - Maximum texture size: ~dx~d"
                max-texture-size
                max-texture-size)
-    (log:debug :pyx.core "GPU limit - Maximum SSBO bindings: ~d"
-               max-ssbo-bindings)))
+    (log:debug :pyx "GPU limit - Maximum SSBO bindings: ~d" max-ssbo-bindings)))
 
 (defgeneric get-hardware-info (key)
   (:method ((key (eql :cpu)))

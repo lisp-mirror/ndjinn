@@ -68,7 +68,7 @@
 
 (defun load-texture (name &key width height)
   (with-asset-cache :texture name
-    (v:debug :pyx.tex "Loading texture: ~s..." name)
+    (log:debug :pyx "Loading texture: ~s..." name)
     (let* ((spec (find-texture-spec name))
            (type (texture-type spec))
            (source (load-texture-source spec
@@ -78,7 +78,7 @@
                                         :height height))
            (texture (make-texture spec type source)))
       (configure-texture texture)
-      (v:debug :pyx.tex "Texture loaded: ~s" name)
+      (log:debug :pyx "Texture loaded: ~s" name)
       texture)))
 
 (on-recompile :texture data ()

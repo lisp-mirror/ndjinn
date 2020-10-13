@@ -41,10 +41,12 @@
    (#:v3 #:net.mfiano.lisp.origin.vec3)
    (#:v4 #:net.mfiano.lisp.origin.vec4))
   (:use #:cl)
+  (:shadow #:debug)
   (:export
    ;; types
    #:camera
    #:collider
+   #:debug
    #:font
    #:geometry
    #:id

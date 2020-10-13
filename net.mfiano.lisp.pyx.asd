@@ -121,6 +121,7 @@
     ((:file "node")
      (:file "transform")
      (:file "id")
+     (:file "debug")
      (:file "camera")
      (:file "render")
      (:file "mesh")

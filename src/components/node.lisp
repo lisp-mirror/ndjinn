@@ -25,13 +25,13 @@
     (dolist (child %node/children)
       (add-child child :parent entity))))
 
-(defun map-nodes (func &optional parent)
+(defun map-nodes (func &optional root)
   (let* ((scene (current-scene =context=))
-         (parent (or parent (node-tree scene))))
-    (funcall func parent)
-    (dolist (child (node/children parent))
+         (root (or root (node-tree scene))))
+    (funcall func root)
+    (dolist (child (node/children root))
       (unless (and (paused scene)
-                  (eq (node/pause-mode child) :stop))
+                   (eq (node/pause-mode child) :stop))
         (map-nodes func child)))))
 
 (defun delete-node (entity &key reparent-children)

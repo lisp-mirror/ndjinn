@@ -37,9 +37,11 @@
 
 (on-recompile :prefab data ()
   (dolist (entity (u:href (prefabs (current-scene =context=)) data))
-    (let ((parent (node/parent entity)))
-      (delete-node entity)
-      (load-prefab data :parent parent)))
+    (let* ((parent (node/parent entity))
+           (translation (get-translation entity))
+           (new-entity (load-prefab data :parent parent)))
+      (translate-entity new-entity translation :replace t)
+      (delete-node entity)))
   (log:debug :pyx "Recompiled prefab: ~s" data))
 
 (defmacro define-prefab (name options &body body)

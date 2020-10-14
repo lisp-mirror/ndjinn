@@ -64,8 +64,6 @@
              (,ptr (sv:static-vector-pointer ,sv)))
          ,@body))))
 
-(u:fn-> fill-geometry-buffer (geometry-spec symbol list &key (:usage keyword))
-        (values))
 (defun fill-geometry-buffer (geometry buffer-name data
                              &key (usage :dynamic-draw))
   (let ((data (u:flatten-numbers data)))

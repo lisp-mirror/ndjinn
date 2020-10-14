@@ -6,9 +6,7 @@
     (log:debug :pyx "Created geometry: ~s (VAO: ~d)" name id)
     geometry))
 
-(u:fn-> update-geometry (geometry-spec symbol sequence) (values))
 (defun update-geometry (geometry buffer-name data)
-  (declare (optimize speed))
   (let ((data (or data (make-array (geometry-spec-vertex-count geometry)
                                    :initial-element 0))))
     (fill-geometry-buffer geometry buffer-name data)

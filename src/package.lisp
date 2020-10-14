@@ -150,6 +150,7 @@
    #:delete-entity
    #:detach-component
    #:detach-components
+   #:do-nodes
    #:entity-children
    #:entity-parent
    #:get-entity-count

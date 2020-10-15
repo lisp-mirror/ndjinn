@@ -69,7 +69,7 @@
   (load-font-spec entity)
   (attach-component entity 'geometry :geometry/name 'text))
 
-(define-entity-hook :update (entity font)
+(define-entity-hook :pre-render (entity font)
   (let ((time (get-running-time)))
     (when (>= time (+ (font/update-time entity)
                       (font/rate entity)))

@@ -15,10 +15,12 @@
                     :initform nil))
   (:type-order :after render))
 
-(defun update-geometry (entity buffer-name data)
+(defun update-geometry (entity buffer-name data &key replace)
   (cond
     ((has-component-p entity 'geometry)
-     (push data (u:href (geometry/data entity) buffer-name))
+     (if replace
+         (setf (u:href (geometry/data entity) buffer-name) data)
+         (push data (u:href (geometry/data entity) buffer-name)))
      (setf (geometry/dirty entity) t))
     (t
      (error "Entity does not have a geometry component attached to update: ~s."

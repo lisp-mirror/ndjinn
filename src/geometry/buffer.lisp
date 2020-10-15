@@ -57,7 +57,7 @@
 (defmacro with-geometry-buffer ((ptr size vector) &body body)
   (u:with-gensyms (sv)
     `(sv:with-static-vector
-         (,sv (the fixnum (length ,vector))
+         (,sv (length ,vector)
               :element-type (array-element-type ,vector)
               :initial-contents ,vector)
        (let ((,size (get-geometry-buffer-size ,vector))

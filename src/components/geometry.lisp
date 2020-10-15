@@ -10,10 +10,19 @@
    (%geometry/geometry :accessor geometry/geometry
                        :initform nil)
    (%geometry/data :accessor geometry/data
-                   :initform nil)
+                   :initform (u:dict #'eq))
    (%geometry/dirty :accessor geometry/dirty
-                    :initform t))
+                    :initform nil))
   (:type-order :after render))
+
+(defun update-geometry (entity buffer-name data)
+  (cond
+    ((has-component-p entity 'geometry)
+     (push data (u:href (geometry/data entity) buffer-name))
+     (setf (geometry/dirty entity) t))
+    (t
+     (error "Entity does not have a geometry component attached to update: ~s."
+            entity))))
 
 ;;; entity hooks
 
@@ -24,13 +33,14 @@
     (setf (geometry/geometry entity) (make-geometry name))))
 
 (define-entity-hook :pre-render (entity geometry)
-  (u:when-let ((data (geometry/data entity)))
-    (update-geometry (geometry/geometry entity) :data data)
-    (setf (geometry/data entity) nil)))
+  (when (geometry/dirty entity)
+    (u:do-hash (k v (geometry/data entity))
+      (%update-geometry (geometry/geometry entity) k v))
+    (clrhash (geometry/data entity))
+    (setf (geometry/dirty entity) nil)))
 
 (define-entity-hook :render (entity geometry)
-  (when (geometry/dirty entity)
-    (draw-geometry (geometry/geometry entity) (geometry/instances entity))))
+  (draw-geometry (geometry/geometry entity) (geometry/instances entity)))
 
 (define-entity-hook :delete (entity geometry)
   (u:when-let ((geometry (geometry/geometry entity)))

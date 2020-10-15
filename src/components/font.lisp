@@ -55,13 +55,13 @@
 
 (defun generate-font-data (entity)
   (lambda (x- y- x+ y+ u- v- u+ v+)
-    (push `((,x- ,y+ ,u- ,v+)
-            (,x- ,y- ,u- ,v-)
-            (,x+ ,y+ ,u+ ,v+)
-            (,x+ ,y+ ,u+ ,v+)
-            (,x- ,y- ,u- ,v-)
-            (,x+ ,y- ,u+ ,v-))
-          (geometry/data entity))))
+    (let ((data `((,x- ,y+ ,u- ,v+)
+                  (,x- ,y- ,u- ,v-)
+                  (,x+ ,y+ ,u+ ,v+)
+                  (,x+ ,y+ ,u+ ,v+)
+                  (,x- ,y- ,u- ,v-)
+                  (,x+ ,y- ,u+ ,v-))))
+      (update-geometry entity :data data))))
 
 ;;; entity hooks
 

@@ -27,7 +27,7 @@
       (make-geometry-buffers spec)
       (configure-geometry-buffers spec)
       (u:do-plist (k v buffer-data)
-        (update-geometry spec k v))
+        (%update-geometry spec k v))
       spec)))
 
 (defmacro define-geometry (name options &body body)

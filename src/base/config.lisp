@@ -70,11 +70,9 @@
    :title "Pyx Engine"
    :vsync t))
 
-(setf (metadata-config-player =metadata=)
+(setf (u:href (metadata-config-player =metadata=) 'default)
       (u:dict #'eq
-              'default
-              (u:dict #'eq
-                      :allow-screensaver nil
-                      :threads nil
-                      :window-width 1920
-                      :window-height 1080)))
+              :allow-screensaver nil
+              :threads nil
+              :window-width 1920
+              :window-height 1080))

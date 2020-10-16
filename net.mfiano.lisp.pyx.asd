@@ -116,6 +116,13 @@
      (:file "render-order")
      (:file "font")
      (:file "animation")))
+   (:module "prefab"
+    :components
+    ((:file "common")
+     (:file "factory")
+     (:file "parser")
+     (:file "reference")
+     (:file "prefab")))
    (:module "components"
     :components
     ((:file "node")
@@ -131,11 +138,4 @@
      (:file "font")
      (:file "mouse-control")
      (:file "animate")))
-   (:module "prefab"
-    :components
-    ((:file "common")
-     (:file "factory")
-     (:file "parser")
-     (:file "reference")
-     (:file "prefab")))
    (:file "pyx")))

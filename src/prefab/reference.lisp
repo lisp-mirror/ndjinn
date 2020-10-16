@@ -8,27 +8,35 @@
         (error "Failed to find reference ~{~a~^/~} for node ~{~a~^/~}."
                path current-path)))))
 
-(defun find-prefab-reference-parent (factory level)
-  (with-slots (%current-node %entities) factory
-    (let* ((current-path (path %current-node))
-           (parent-path (butlast current-path level)))
-      (or (u:href %entities parent-path)
-          (error "Failed to find parent reference ~{~a~^/~}" parent-path)))))
+(defun find-prefab-reference-down (factory path &optional current)
+  (let ((current-path (or current (path (current-node factory)))))
+    (or (u:href (entities factory) (append current-path path))
+        (error "Failed to find reference ~{~a~^/~} for node ~{~a~^/~}."
+               path current-path))))
+
+(defun find-prefab-reference-up (factory level path)
+  (let* ((current-path (path (current-node factory)))
+         (parent-path (butlast current-path level)))
+    (if path
+        (find-prefab-reference-down factory path parent-path)
+        (or (u:href (entities factory) parent-path)
+            (error "Failed to find parent reference ~{~a~^/~}." parent-path)))))
 
 (defun generate-prefab-reference-func (reference-spec)
   (lambda (factory)
     (destructuring-bind (type . args) reference-spec
       (case type
-        (:parent
-         (when (> (length args) 1)
-           (error "Parent reference takes 1 argument; the number of nodes ~
-                   upward from this node."))
-         (find-prefab-reference-parent factory (or (first args) 1)))
+        (:up
+         (destructuring-bind (level &rest path) args
+           (find-prefab-reference-up factory level path)))
+        (:down
+         (find-prefab-reference-down factory args))
         (:path
          (find-prefab-reference-path factory args))
         (:query
          (query (find-prefab-reference-path factory (rest args)) (first args)))
-        (t (error "Reference spec type must be :PARENT, :PATH, or :QUERY."))))))
+        (t (error "Reference spec type must be :UP, :DOWN, :PATH, or ~
+                   :QUERY."))))))
 
 (defun make-prefab-reference (path/query)
   (make-instance 'prefab-reference

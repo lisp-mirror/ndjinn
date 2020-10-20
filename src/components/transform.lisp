@@ -36,7 +36,7 @@
   (resolve-model instance (get-alpha)))
 
 (defun transform-node (entity)
-  (let ((delta (clock-delta-time (clock =context=))))
+  (let ((delta (float (cfg :delta-time) 1f0)))
     (transform-node/vector (transform/scale entity) delta)
     (transform-node/quaternion (transform/rotation entity) delta)
     (transform-node/vector (transform/translation entity) delta)))

@@ -4,7 +4,6 @@
                   (:predicate nil)
                   (:copier nil))
   (accumulator 0d0 :type double-float)
-  (delta-time (/ 60f0) :type single-float)
   (delta-buffer 0d0 :type double-float)
   (fps/current 0d0 :type double-float)
   (fps/average 0d0 :type double-float)
@@ -29,12 +28,11 @@
 (defun make-clock ()
   (let ((clock (%make-clock)))
     (setf (clock-init-time clock) (sb-ext:get-time-of-day)
-          (clock-running-time clock) (%get-time clock)
-          (clock-delta-time clock) (float (cfg :delta-time) 1f0))
+          (clock-running-time clock) (%get-time clock))
     (setf (clock =context=) clock)
-    (log:debug :pyx "Initialized game clock: vsync: ~a, delta: ~d"
+    (log:debug :pyx "Initialized game clock: vsync: ~a, delta: ~,3f ms/frame"
                (cfg :vsync)
-               (cfg :delta-time))))
+               (* (cfg :delta-time) 1000f0))))
 
 (defun smooth-delta-time (clock refresh-rate)
   (symbol-macrolet ((frame-time (clock-frame-time clock)))
@@ -67,7 +65,7 @@
                 average fps)))))
 
 (defun clock-update (clock func)
-  (let ((delta-time (clock-delta-time clock)))
+  (let ((delta-time (float (cfg :delta-time) 1f0)))
     (symbol-macrolet ((accumulator (clock-accumulator clock)))
       (incf accumulator (clock-frame-time clock))
       (when (zerop (clock-frame-count clock))

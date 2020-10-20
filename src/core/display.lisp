@@ -34,7 +34,7 @@
                                        :h y
                                        :flags '(:opengl)))
            (window (%make-window :handle handle :%title title :%size s)))
-      (log:debug :pyx "Created window (~dx~d)..." x y)
+      (log:debug :pyx "Created window (~dx~d)" x y)
       window)))
 
 (defun configure-opengl-context ()

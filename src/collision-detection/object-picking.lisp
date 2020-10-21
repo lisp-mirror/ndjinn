@@ -89,7 +89,8 @@
       (let* ((collider (cdar (stable-sort picked #'< :key #'car)))
              (entity (collider/owner collider)))
         (setf (picked-entity scene) entity)
-        (on-collision-picked (collider/layer collider) entity)))))
+        (on-collision-picked (collider/layer collider) entity)
+        entity))))
 
 (defun entity-picked-p (entity)
   (eq entity (picked-entity (current-scene =context=))))

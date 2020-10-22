@@ -38,7 +38,7 @@
     ((:attach :detach)
      `(,entity (type (eql ',type))))
     ((:window-resize)
-     `((,entity ,type) ,@(if data `(&key ,data) '(&key))))))
+     `((,entity ,type) ,@`(&key ,@data)))))
 
 (defgeneric on-entity-create (entity)
   (:method-combination progn :most-specific-last)
@@ -74,8 +74,8 @@
 
 (defgeneric on-entity-window-resize (entity &key)
   (:method-combination progn :most-specific-last)
-  (:method progn (entity &key size)
-    (declare (ignore size))))
+  (:method progn (entity &key old-size new-size)
+    (declare (ignore old-size new-size))))
 
 (defmacro make-entity ((&rest components) &body body)
   (let ((components (compute-component-type-order components)))
@@ -132,15 +132,17 @@
        ((,entity ,component) (,query (eql ',parameter)))
      ,@body))
 
-(defmacro define-entity-hook (hook (entity type &key data) &body body)
+(defmacro define-entity-hook (hook (entity type &rest data) &body body)
   (let ((method (u:format-symbol :net.mfiano.lisp.pyx "ON-ENTITY-~a" hook))
         (parameters (get-flow-hook-parameters hook entity type data)))
     `(defmethod ,method progn ,parameters
+       ,@(when data
+           `((declare (ignorable ,@data))))
        ,@body)))
 
 (defun get-entity-count ()
   (hash-table-count (uuids (current-scene =context=))))
 
-(defun invoke-entity-window-resize-hook (size)
+(defun invoke-entity-window-resize-hook (old-size new-size)
   (do-nodes (entity)
-    (on-entity-window-resize entity :size size)))
+    (on-entity-window-resize entity :old-size old-size :new-size new-size)))

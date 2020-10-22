@@ -88,6 +88,12 @@
 (defun entity-children (entity)
   (node/children entity))
 
+(defun find-parent (node type)
+  (u:when-let ((parent (entity-parent node)))
+    (if (has-component-p parent type)
+        parent
+        (find-parent parent type))))
+
 (defun has-component-p (entity type)
   (and (find-class type nil)
        (typep entity type)))

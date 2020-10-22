@@ -153,6 +153,7 @@
    #:do-nodes
    #:entity-children
    #:entity-parent
+   #:find-parent
    #:get-entity-count
    #:has-component-p
    #:make-entity)

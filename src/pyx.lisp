@@ -37,14 +37,14 @@
 (defun update ()
   (let ((alpha (get-alpha)))
     (do-nodes (node)
-      (on-update node))
+      (on-entity-update node))
     (process-end-frame-work)
     (do-nodes (node)
       (resolve-model node alpha))))
 
 (defun physics-update ()
   (do-nodes (node)
-    (on-physics-update node)
+    (on-entity-physics-update node)
     (transform-node node))
   (compute-collisions))
 

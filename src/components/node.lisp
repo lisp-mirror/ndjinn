@@ -40,7 +40,7 @@
       (if reparent-children
           (add-child child :parent parent)
           (delete-node child)))
-    (on-delete entity)
+    (on-entity-delete entity)
     (detach-components entity)
     (deregister-prefab-entity entity)
     (when parent

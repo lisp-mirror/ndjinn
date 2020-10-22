@@ -12,10 +12,10 @@
   (make-mixin-class (make-mixin-class-list components)))
 
 (defun register-entity (entity types)
-  (on-create entity)
+  (on-entity-create entity)
   (dolist (type types)
     (when (has-component-p entity type)
-      (on-attach entity type))))
+      (on-entity-attach entity type))))
 
 (defun %make-entity (types &optional args)
   (let* ((class (make-entity-class types))
@@ -31,44 +31,51 @@
     (error "Entity ~s has no defined query parameter: ~s." entity query))
   (:filters (:query (list #'identity (%query-filter entity)))))
 
-(defun get-flow-hook-parameters (hook entity type)
+(defun get-flow-hook-parameters (hook entity type data)
   (ecase hook
     ((:create :delete :physics-update :update :pre-render :render)
      `((,entity ,type)))
     ((:attach :detach)
-     `(,entity (type (eql ',type))))))
+     `(,entity (type (eql ',type))))
+    ((:window-resize)
+     `((,entity ,type) ,@(if data `(&key ,data) '(&key))))))
 
-(defgeneric on-create (entity)
+(defgeneric on-entity-create (entity)
   (:method-combination progn :most-specific-last)
   (:method progn (entity)))
 
-(defgeneric on-delete (entity)
+(defgeneric on-entity-delete (entity)
   (:method-combination progn :most-specific-last)
   (:method progn (entity)))
 
-(defgeneric on-physics-update (entity)
+(defgeneric on-entity-physics-update (entity)
   (:method-combination progn :most-specific-last)
   (:method progn (entity)))
 
-(defgeneric on-update (entity)
+(defgeneric on-entity-update (entity)
   (:method-combination progn :most-specific-last)
   (:method progn (entity)))
 
-(defgeneric on-pre-render (entity)
+(defgeneric on-entity-pre-render (entity)
   (:method-combination progn :most-specific-last)
   (:method progn (entity)))
 
-(defgeneric on-render (entity)
+(defgeneric on-entity-render (entity)
   (:method-combination progn :most-specific-last)
   (:method progn (entity)))
 
-(defgeneric on-attach (entity type)
+(defgeneric on-entity-attach (entity type)
   (:method-combination progn :most-specific-last)
   (:method progn (entity type)))
 
-(defgeneric on-detach (entity type)
+(defgeneric on-entity-detach (entity type)
   (:method-combination progn :most-specific-last)
   (:method progn (entity type)))
+
+(defgeneric on-entity-window-resize (entity &key)
+  (:method-combination progn :most-specific-last)
+  (:method progn (entity &key size)
+    (declare (ignore size))))
 
 (defmacro make-entity ((&rest components) &body body)
   (let ((components (compute-component-type-order components)))
@@ -100,13 +107,13 @@
 
 (defun attach-component (entity type &rest args)
   (apply #'add-mixin-class entity type args)
-  (on-attach entity type))
+  (on-entity-attach entity type))
 
 (defun detach-component (entity type)
   (if (find type (metadata-components-static =metadata=))
       (error "Cannot remove built-in static component: ~s." type)
       (progn
-        (on-detach entity type)
+        (on-entity-detach entity type)
         (remove-mixin-class entity type))))
 
 (defun detach-components (entity)
@@ -125,11 +132,15 @@
        ((,entity ,component) (,query (eql ',parameter)))
      ,@body))
 
-(defmacro define-entity-hook (hook (entity type) &body body)
-  (let ((method (u:format-symbol :net.mfiano.lisp.pyx "ON-~a" hook))
-        (parameters (get-flow-hook-parameters hook entity type)))
+(defmacro define-entity-hook (hook (entity type &key data) &body body)
+  (let ((method (u:format-symbol :net.mfiano.lisp.pyx "ON-ENTITY-~a" hook))
+        (parameters (get-flow-hook-parameters hook entity type data)))
     `(defmethod ,method progn ,parameters
        ,@body)))
 
 (defun get-entity-count ()
   (hash-table-count (uuids (current-scene =context=))))
+
+(defun invoke-entity-window-resize-hook (size)
+  (do-nodes (entity)
+    (on-entity-window-resize entity :size size)))

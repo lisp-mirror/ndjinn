@@ -25,7 +25,9 @@
   (:method (context &key width height)
     (declare (ignore width height)))
   (:method :before (context &key width height)
-    (setf (window-size) (v2:vec width height))))
+    (setf (window-size) (v2:vec width height)))
+  (:method :after (context &key width height)
+    (invoke-entity-window-resize-hook (v2:vec width height))))
 
 (defgeneric on-window-minimize (context)
   (:method (context))

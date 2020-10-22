@@ -77,10 +77,10 @@
                      `((gl:line-width ,line-width)))
                  ,@(when point-size
                      `((gl:point-size ,point-size)))
-                 (on-pre-render ,entity)
+                 (on-entity-pre-render ,entity)
                  (u:do-hash-values (v (uniforms ,material))
                    (resolve-uniform-func ,entity v))
-                 (on-render ,entity)
+                 (on-entity-render ,entity)
                  (setf (texture-unit-state ,material) 0)
                  ,@(when disable
                      `((gl:enable ,@disable)))

@@ -21,17 +21,17 @@
                     :initform nil))
   (:type-order :after render))
 
-(defun initialize-collider-visualization (entity)
-  (when (collider/visualize entity)
-    (when (or (has-component-p entity 'mesh)
-              (has-component-p entity 'render))
-      (error "Entity ~s has a collider to be visualized, but it must not have ~
-              a mesh or render component attached." entity))
-    (attach-component entity 'mesh
-                      :mesh/asset "meshes/colliders.glb"
-                      :mesh/name (format nil "~(~a~)"
-                                         (shape-type (collider/shape entity))))
-    (attach-component entity 'render :render/materials '(collider))))
+(defun initialize-collider-visualization (collider)
+  (when (or (has-component-p collider 'mesh)
+            (has-component-p collider 'render))
+    (error "Entity ~s has a collider to be visualized, but it must not have ~
+              a mesh or render component attached." collider))
+  (attach-component collider 'mesh
+                    :mesh/asset "meshes/colliders.glb"
+                    :mesh/name (format nil "~(~a~)"
+                                       (shape-type
+                                        (collider/shape collider))))
+  (attach-component collider 'render :render/materials '(collider)))
 
 (defmethod %on-collision-enter ((contact1 collider) (contact2 collider))
   (incf (collider/contact-count contact1))
@@ -67,7 +67,8 @@
   (setf (collider/owner entity) (or (collider/owner entity) entity)
         (collider/shape entity) (make-collider-shape entity
                                                      (collider/shape entity)))
-  (initialize-collider-visualization entity)
+  (when (collider/visualize entity)
+    (initialize-collider-visualization entity))
   (register-collider entity (collider/layer entity)))
 
 (define-entity-hook :detach (entity collider)

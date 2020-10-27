@@ -123,12 +123,10 @@
     (setf (camera/fov-y entity) (* (camera/fov-y entity) math:+deg+)
           (camera/clip-near entity) (float (camera/clip-near entity) 1f0)
           (camera/clip-far entity) (float (camera/clip-far entity) 1f0)
-          (camera/viewport entity) entity-viewport)
-    (set-camera-projection entity)))
+          (camera/viewport entity) entity-viewport)))
 
 (define-entity-hook :update (entity camera)
   (when (camera/free-look entity)
     (update-free-look-state (camera/free-look-state entity)))
-  ;; TODO: Have a flag so not updating these every frame
   (set-camera-view entity)
   (set-camera-projection entity))

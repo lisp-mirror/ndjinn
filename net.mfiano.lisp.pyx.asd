@@ -84,7 +84,8 @@
      (:file "system")))
    (:module "shader"
     :components
-    ((:file "quad")
+    ((:file "default")
+     (:file "quad")
      (:file "full-quad")
      (:file "mesh")
      (:file "collider")

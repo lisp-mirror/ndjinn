@@ -11,6 +11,7 @@
   ;; shaders
   (:export
    #:collider
+   #:default
    #:font
    #:full-quad
    #:matcap

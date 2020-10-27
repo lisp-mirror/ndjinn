@@ -31,6 +31,12 @@
               :polygon-mode :line
               :line-width 4.0)))
 
+(define-material curve ()
+  (:shader shader:default
+   :uniforms (:color (v3:vec 0 0.4 0.7)
+              :opacity 1)
+   :features (:line-width 3)))
+
 ;;; geometry
 
 (define-geometry-layout text ()
@@ -42,3 +48,12 @@
   (:layout text
    :vertex-count 6
    :primitive :triangles))
+
+(define-geometry-layout point ()
+  (:data (:format :interleaved)
+         (position :type float :count 3)))
+
+(define-geometry line-segments ()
+  (:layout point
+   :vertex-count 2
+   :primitive :lines))

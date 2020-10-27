@@ -116,7 +116,8 @@
      (:file "render-pass")
      (:file "render-order")
      (:file "font")
-     (:file "animation")))
+     (:file "animation")
+     (:file "curve")))
    (:module "prefab"
     :components
     ((:file "common")
@@ -138,6 +139,7 @@
      (:file "collider")
      (:file "font")
      (:file "mouse-control")
-     (:file "animate")))
+     (:file "animate")
+     (:file "curve")))
    (:file "definitions")
    (:file "pyx")))

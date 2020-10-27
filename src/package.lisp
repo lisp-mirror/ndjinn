@@ -20,6 +20,7 @@
 (defpackage #:net.mfiano.lisp.pyx
   (:local-nicknames
    (#:avl #:net.mfiano.lisp.algae.data-structures.avl-tree)
+   (#:curve #:net.mfiano.lisp.algae.spline.cubic-bezier)
    (#:dll #:net.mfiano.lisp.algae.data-structures.doubly-linked-list)
    (#:ff #:filtered-functions)
    (#:font #:3b-bmfont)
@@ -47,6 +48,7 @@
    ;; types
    #:camera
    #:collider
+   #:curve
    #:debug
    #:font
    #:geometry
@@ -133,6 +135,9 @@
    #:stop-engine
    #:toggle-pause
    #:unpause-game)
+  ;; curve
+  (:export
+   #:define-curve)
   ;; deploy
   (:export
    #:deploy)

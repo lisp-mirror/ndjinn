@@ -87,8 +87,10 @@
          (previous (+ (clock-running-time clock) pause))
          (current (- (%get-time clock) pause)))
     (setf (clock-previous-time clock) previous
-          (clock-running-time clock) current
-          (clock-frame-time clock) (- current previous))
+          (clock-running-time clock) current)
+    (if (zerop (clock-frame-count clock))
+        (setf (clock-frame-time clock) (float (cfg :delta-time) 1d0))
+        (setf (clock-frame-time clock) (- current previous)))
     (when (cfg :vsync)
       (smooth-delta-time clock refresh-rate))
     (clock-update clock update-func)

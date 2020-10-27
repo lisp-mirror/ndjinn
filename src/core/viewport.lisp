@@ -34,9 +34,6 @@
          (update-viewport-spec ',name ,x ,y ,width ,height)
          (make-viewport-spec ',name ,x ,y ,width ,height))))
 
-(define-viewport default ()
-  (:x 0 :y 0 :width 1 :height 1))
-
 ;;; implementation
 
 (defclass viewport-manager ()

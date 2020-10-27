@@ -41,7 +41,3 @@
                                   ',clear-buffers)
          (make-render-pass-spec ',name ',framebuffer ,clear-color
                                 ',clear-buffers))))
-
-(define-render-pass default ()
-  (:clear-color (v4:vec 0 0 0 1)
-   :clear-buffers (:color :depth)))

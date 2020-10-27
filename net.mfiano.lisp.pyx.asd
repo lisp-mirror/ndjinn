@@ -139,4 +139,5 @@
      (:file "font")
      (:file "mouse-control")
      (:file "animate")))
+   (:file "definitions")
    (:file "pyx")))

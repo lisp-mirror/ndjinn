@@ -38,5 +38,3 @@
     `(if (u:href =meta/collider-plans= ',name)
          (update-collider-plan-spec ',name ',layers ',plan)
          (make-collider-plan-spec ',name ',layers ',plan))))
-
-(define-collider-plan default ())

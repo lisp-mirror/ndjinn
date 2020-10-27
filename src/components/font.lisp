@@ -24,16 +24,6 @@
                      :initform (v2:vec)))
   (:type-order :before geometry :after render))
 
-(define-geometry-layout text ()
-  (:data (:format :interleaved)
-         (position :type float :count 2)
-         (uv :type float :count 2)))
-
-(define-geometry text ()
-  (:layout text
-   :vertex-count 6
-   :primitive :triangles))
-
 (defun load-font-spec (entity)
   (with-slots (%font/asset %font/spec) entity
     (unless %font/asset

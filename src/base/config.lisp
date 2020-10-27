@@ -60,16 +60,6 @@
       (setf (u:href table key) value)
       (setf (u:href config (name =context=)) (u:dict #'eq key value)))))
 
-(define-config default ()
-  (:anti-alias t
-   :delta-time 1/60
-   :log-asset-pool nil
-   :log-repl-level :debug
-   :log-repl-categories (:pyx)
-   :opengl-version "4.3"
-   :title "Pyx Engine"
-   :vsync t))
-
 (setf (u:href =meta/config-player= 'default)
       (u:dict #'eq
               :allow-screensaver nil

@@ -21,14 +21,6 @@
                     :initform nil))
   (:type-order :after render))
 
-(define-material collider ()
-  (:shader shader:collider
-   :uniforms (:hit-color (v4:vec 0 1 0 0.35)
-              :miss-color (v4:vec 1 0 0 0.35))
-   :features (:enable (:line-smooth)
-              :polygon-mode :line
-              :line-width 4.0)))
-
 (defun initialize-collider-visualization (entity)
   (when (collider/visualize entity)
     (when (or (has-component-p entity 'mesh)

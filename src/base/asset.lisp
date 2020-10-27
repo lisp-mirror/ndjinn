@@ -25,7 +25,7 @@
   (format stream "~s (pool: ~s)" (name asset-spec) (pool asset-spec)))
 
 (defun find-asset-pool (name)
-  (u:href (metadata-asset-pools =metadata=) name))
+  (u:href =meta/asset-pools= name))
 
 (defun make-asset-spec (pool-name base-path data)
   (destructuring-bind (name path) data
@@ -93,14 +93,14 @@
 (defun make-asset-pool (name path filter)
   (let* ((path (uiop:ensure-directory-pathname path))
          (pool (make-instance 'asset-pool-spec :name name :path path)))
-    (setf (u:href (metadata-asset-pools =metadata=) name) pool)
+    (setf (u:href =meta/asset-pools= name) pool)
     (update-asset-pool name path filter)
     pool))
 
 (defmacro define-asset-pool (name options &body body)
   (declare (ignore options))
   (destructuring-bind (&key path filter) body
-    `(if (u:href (metadata-asset-pools =metadata=) ',name)
+    `(if (u:href =meta/asset-pools= ',name)
          (update-asset-pool ',name ,path ',filter)
          (make-asset-pool ',name ,path ',filter))))
 

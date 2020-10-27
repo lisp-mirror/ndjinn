@@ -74,13 +74,13 @@
                                :name name
                                :data data
                                :factory (make-prefab-factory name))))
-    (setf (u:href (metadata-prefabs =metadata=) name) prefab)))
+    (setf (u:href =meta/prefabs= name) prefab)))
 
 ;; Reset an existing prefab object. This resets an existing prefab instance with
 ;; new raw data so we don't lose the object identity. NOTE: This is only called
 ;; if a prefab with the given name already exists when defining a prefab.
 (defun reset-prefab (name data)
-  (let ((prefab (u:href (metadata-prefabs =metadata=) name)))
+  (let ((prefab (u:href =meta/prefabs= name)))
     (with-slots (%data %root %nodes %factory) prefab
       (setf %data data
             %root nil
@@ -92,7 +92,7 @@
 
 (defun find-prefab-node-template (spec path)
   (let* ((spec (u:ensure-list spec))
-         (prefab (u:href (metadata-prefabs =metadata=) (first spec))))
+         (prefab (u:href =meta/prefabs= (first spec))))
     (or (and prefab (u:href (nodes prefab) spec))
         (error "Template ~{~a~^/~} not found for prefab node ~{~a~^/~}."
                (u:ensure-list spec) path))))

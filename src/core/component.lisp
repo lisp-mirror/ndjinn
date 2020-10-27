@@ -18,12 +18,12 @@
      (digraph:topological-sort graph))))
 
 (defun compute-component-type-order (types)
-  (sort-component-types (metadata-components-type-order =metadata=)
-                        (append (metadata-components-static =metadata=) types)))
+  (sort-component-types =meta/component-order=
+                        (append =meta/component-static= types)))
 
 (defun compute-total-component-type-order ()
   (compute-component-type-order
-   (u:hash-keys (metadata-components-type-order =metadata=))))
+   (u:hash-keys =meta/component-order=)))
 
 (defun compute-component-accessors (type)
   (labels ((get-all-direct-slots (class)
@@ -77,7 +77,7 @@
              (remove nil methods))))))
 
 (defun track-component-initargs (type slots)
-  (let ((initargs (metadata-components-initargs =metadata=)))
+  (let ((initargs =meta/component-args=))
     (flet ((clear-type ()
              (u:do-hash (k v initargs)
                (when (eq type v)
@@ -116,13 +116,13 @@
                                 ,@class-options))))
                  (enqueue :recompile (list :component (list ',name ,func)))))
              (track-component-initargs ',name ',slots)
-             (setf (u:href (metadata-components-type-order =metadata=) ',name)
+             (setf (u:href =meta/component-order= ',name)
                    '(:before ,(u:ensure-list before)
                      :after ,(u:ensure-list after)))
              (compute-total-component-type-order)
              ,@(if (eq static t)
-                   `((pushnew ',name (metadata-components-static =metadata=)))
-                   `((u:deletef (metadata-components-static =metadata=)
+                   `((pushnew ',name =meta/component-static=))
+                   `((u:deletef =meta/component-static=
                                 ',name)))
              ,@(unless (typep static 'boolean)
                  `((error ":STATIC must be either T or NIL.")))))))))

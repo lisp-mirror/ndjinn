@@ -11,7 +11,7 @@
   (format stream "~s" (name collider-plan-spec)))
 
 (defun update-collider-plan-spec (name layers plan)
-  (let ((spec (u:href (metadata-collider-plans =metadata=) name)))
+  (let ((spec (u:href =meta/collider-plans= name)))
     (setf (layers spec) layers)
     (clrhash (table spec))
     (dolist (x plan)
@@ -28,14 +28,14 @@
 
 (defun make-collider-plan-spec (name layers plan)
   (let ((spec (make-instance 'collider-plan-spec :name name)))
-    (setf (u:href (metadata-collider-plans =metadata=) name) spec)
+    (setf (u:href =meta/collider-plans= name) spec)
     (update-collider-plan-spec name layers plan)
     spec))
 
 (defmacro define-collider-plan (name options &body body)
   (declare (ignore options))
   (destructuring-bind (&key layers plan) (car body)
-    `(if (u:href (metadata-collider-plans =metadata=) ',name)
+    `(if (u:href =meta/collider-plans= ',name)
          (update-collider-plan-spec ',name ',layers ',plan)
          (make-collider-plan-spec ',name ',layers ',plan))))
 

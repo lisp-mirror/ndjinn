@@ -12,7 +12,7 @@
               (register-render-order viewport node)))))))
 
 (defun load-prefab (name &key viewports parent)
-  (let ((prefabs (metadata-prefabs =metadata=)))
+  (let ((prefabs =meta/prefabs=))
     (u:if-let ((prefab (u:href prefabs name)))
       (let* ((factory (factory (u:href prefabs name)))
              (entity (funcall (func factory) :parent parent)))
@@ -31,7 +31,7 @@
   (parse-prefab prefab)
   (enqueue :recompile (list :prefab (name prefab)))
   (dolist (spec (slaves prefab))
-    (u:when-let ((slave (u:href (metadata-prefabs =metadata=) spec)))
+    (u:when-let ((slave (u:href =meta/prefabs= spec)))
       (clrhash (nodes slave))
       (update-prefab-subtree slave))))
 
@@ -48,8 +48,8 @@
   (u:with-gensyms (data)
     (u:mvlet ((body decls doc (u:parse-body body :documentation t)))
       `(let ((,data (preprocess-prefab-data ,name ,options ,body)))
-         (if (u:href (metadata-prefabs =metadata=) ',name)
+         (if (u:href =meta/prefabs= ',name)
              (reset-prefab ',name ,data)
              (make-prefab ',name ,data))
          (update-prefab-subtree
-          (u:href (metadata-prefabs =metadata=)',name))))))
+          (u:href =meta/prefabs=',name))))))

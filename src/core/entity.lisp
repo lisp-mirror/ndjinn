@@ -110,7 +110,7 @@
   (on-entity-attach entity type))
 
 (defun detach-component (entity type)
-  (if (find type (metadata-components-static =metadata=))
+  (if (find type =meta/component-static=)
       (error "Cannot remove built-in static component: ~s." type)
       (progn
         (on-entity-detach entity type)
@@ -118,7 +118,7 @@
 
 (defun detach-components (entity)
   (dolist (component (get-mixin-class-names entity))
-    (unless (find component (metadata-components-static =metadata=))
+    (unless (find component =meta/component-static=)
       (detach-component entity component))))
 
 (defmacro define-entity-query-types (entity &body body)

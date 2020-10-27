@@ -25,7 +25,7 @@
   (format stream "~s" (framebuffer-spec-name framebuffer-spec)))
 
 (defun find-framebuffer-spec (name)
-  (or (u:href (metadata-framebuffers =metadata=) name)
+  (or (u:href =meta/framebuffers= name)
       (error "Framebuffer ~s is not defined." name)))
 
 (defun make-framebuffer-attachment-spec (spec)
@@ -60,12 +60,12 @@
 
 (defun make-framebuffer-spec (name mode attachments)
   (let ((spec (%make-framebuffer-spec :name name)))
-    (setf (u:href (metadata-framebuffers =metadata=) name) spec)
+    (setf (u:href =meta/framebuffers= name) spec)
     (update-framebuffer-spec name mode attachments)
     spec))
 
 (defmacro define-framebuffer (name (&key (mode :read/write)) &body body)
-  `(if (u:href (metadata-framebuffers =metadata=) ',name)
+  `(if (u:href =meta/framebuffers= ',name)
        (update-framebuffer-spec ',name ',mode ',body)
        (make-framebuffer-spec ',name ',mode ',body)))
 

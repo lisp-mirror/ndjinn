@@ -12,10 +12,10 @@
                #:3b-bmfont/json
                #:babel
                #:cl-cpus
+               #:cl-digraph
                #:cl-opengl
                #:cl-slug
                #:closer-mop
-               #:cl-digraph
                #:fast-io
                #:filtered-functions
                #:global-vars

@@ -8,7 +8,7 @@
    (%clear-buffers :accessor clear-buffers)))
 
 (defun find-render-pass-spec (name)
-  (u:href (metadata-render-passes =metadata=) name))
+  (u:href =meta/render-passes= name))
 
 (defun update-render-pass-spec (name framebuffer-name clear-color clear-buffers)
   (let ((spec (find-render-pass-spec name)))
@@ -23,7 +23,7 @@
 
 (defun make-render-pass-spec (name framebuffer-name clear-color clear-buffers)
   (let ((spec (make-instance 'render-pass-spec :name name)))
-    (setf (u:href (metadata-render-passes =metadata=) name) spec)
+    (setf (u:href =meta/render-passes= name) spec)
     (update-render-pass-spec name framebuffer-name clear-color clear-buffers)
     spec))
 
@@ -36,7 +36,7 @@
 (defmacro define-render-pass (name options &body body)
   (declare (ignore options))
   (destructuring-bind (&key framebuffer clear-color clear-buffers) (car body)
-    `(if (u:href (metadata-render-passes =metadata=) ',name)
+    `(if (u:href =meta/render-passes= ',name)
          (update-render-pass-spec ',name ',framebuffer ,clear-color
                                   ',clear-buffers)
          (make-render-pass-spec ',name ',framebuffer ,clear-color

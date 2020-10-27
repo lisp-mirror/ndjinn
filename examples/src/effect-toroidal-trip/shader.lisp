@@ -3,9 +3,9 @@
 (defun effect/toroidal-trip/check-ray ((distance :float))
   (< distance 1e-3))
 
-(defun effect/toroidal-trip/frag (&uniforms
-                                  (res :vec2)
-                                  (time :float))
+(defun effect/toroidal-trip/fragment (&uniforms
+                                      (res :vec2)
+                                      (time :float))
   (let* ((rtime (* time 0.5))
          (uv (* (/ (- (.xy gl-frag-coord) (* res 0.5)) (.y res))
                 (mat2 (cos rtime) (- (sin rtime)) (sin rtime) (cos rtime))))
@@ -58,5 +58,5 @@
       (vec4 color 1))))
 
 (define-shader effect/toroidal-trip ()
-  (:vertex (full-quad-no-uv/vert :vec3))
-  (:fragment (effect/toroidal-trip/frag)))
+  (:vertex (full-quad-no-uv/vertex :vec3))
+  (:fragment (effect/toroidal-trip/fragment)))

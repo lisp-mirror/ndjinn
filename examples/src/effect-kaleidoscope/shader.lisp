@@ -9,15 +9,15 @@
 (defun effect/kaleidoscope/xor ((a :float) (b :float))
   (+ (* a (- 1 b)) (* b (- 1 a))))
 
-(defun effect/kaleidoscope/frag (&uniforms
-                                 (res :vec2)
-                                 (time :float)
-                                 (zoom :float)
-                                 (speed :float)
-                                 (strength :float)
-                                 (colorize :bool)
-                                 (outline :bool)
-                                 (detail :float))
+(defun effect/kaleidoscope/fragment (&uniforms
+                                     (res :vec2)
+                                     (time :float)
+                                     (zoom :float)
+                                     (speed :float)
+                                     (strength :float)
+                                     (colorize :bool)
+                                     (outline :bool)
+                                     (detail :float))
   (let* ((angle (/ (float pi) 4))
          (s (sin angle))
          (c (cos angle))
@@ -47,5 +47,5 @@
       (vec4 color 1))))
 
 (define-shader effect/kaleidoscope ()
-  (:vertex (full-quad-no-uv/vert :vec3))
-  (:fragment (effect/kaleidoscope/frag)))
+  (:vertex (full-quad-no-uv/vertex :vec3))
+  (:fragment (effect/kaleidoscope/fragment)))

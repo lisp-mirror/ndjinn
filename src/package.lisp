@@ -6,8 +6,8 @@
    #:net.mfiano.lisp.umbra.common)
   ;; functions
   (:export
-   #:full-quad/vert
-   #:full-quad-no-uv/vert)
+   #:full-quad/vertex
+   #:full-quad-no-uv/vertex)
   ;; shaders
   (:export
    #:collider

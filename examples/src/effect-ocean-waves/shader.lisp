@@ -144,10 +144,10 @@
   (let ((sd (normalize (vec3 1))))
     (* (pow (max 0 (dot ray sd)) 528) 110)))
 
-(defun effect/ocean-waves/frag (&uniforms
-                                (res :vec2)
-                                (time :float)
-                                (mouse :vec2))
+(defun effect/ocean-waves/fragment (&uniforms
+                                    (res :vec2)
+                                    (time :float)
+                                    (mouse :vec2))
   (let* ((uv (/ (.xy gl-frag-coord) res))
          (water-depth 2.1)
          (w-floor (vec3 0 (- water-depth) 0))
@@ -184,5 +184,5 @@
           (vec4 c 1)))))
 
 (define-shader effect/ocean-waves ()
-  (:vertex (full-quad-no-uv/vert :vec3))
-  (:fragment (effect/ocean-waves/frag)))
+  (:vertex (full-quad-no-uv/vertex :vec3))
+  (:fragment (effect/ocean-waves/fragment)))

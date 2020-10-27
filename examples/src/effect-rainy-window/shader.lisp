@@ -75,14 +75,14 @@
          (c (smoothstep 0.3 1.0 c)))
     (vec2 c (max (* (.y m1) layer1) (* (.y m2) layer2)))))
 
-(defun window-rain/f ((uv2 :vec2)
-                      &uniforms
-                      (time :float)
-                      (res :vec2)
-                      (blur :float)
-                      (speed :float)
-                      (zoom :float)
-                      (sampler :sampler-2d))
+(defun window-rain/fragment ((uv2 :vec2)
+                             &uniforms
+                             (time :float)
+                             (res :vec2)
+                             (blur :float)
+                             (speed :float)
+                             (zoom :float)
+                             (sampler :sampler-2d))
   (let* ((uv (/ (- (.xy gl-frag-coord) (* res 0.5)) (.y res)))
          (time (* time speed))
          (rain-amount (+ (* (sin (* time 0.05)) 0.3) 0.7))
@@ -100,5 +100,5 @@
     (vec4 (.rgb (texture-lod sampler (+ uv2 n) focus)) 1)))
 
 (define-shader window-rain ()
-  (:vertex (full-quad/vert :vec3 :vec2))
-  (:fragment (window-rain/f :vec2)))
+  (:vertex (full-quad/vertex :vec3 :vec2))
+  (:fragment (window-rain/fragment :vec2)))

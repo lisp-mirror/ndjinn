@@ -30,13 +30,13 @@
   (specular :vec4 :accessor specular)
   (shininess :float :accessor shininess))
 
-(defun world/v ((mesh-attrs mesh-attrs)
-                &uniforms
-                (model :mat4)
-                (view :mat4)
-                (proj :mat4)
-                (cell-type :int)
-                (world world-data :ssbo :std-430))
+(defun world/vertex ((mesh-attrs mesh-attrs)
+                     &uniforms
+                     (model :mat4)
+                     (view :mat4)
+                     (proj :mat4)
+                     (cell-type :int)
+                     (world world-data :ssbo :std-430))
   (with-slots (mesh/pos mesh/normal) mesh-attrs
     (with-slots (width height) world
       (let* ((normal-mat (transpose (inverse (mat3 (* view model)))))
@@ -121,18 +121,18 @@
     (1 (generate-texture/wall frag-pos))
     (otherwise (vec3 0))))
 
-(defun world/f ((frag-pos :vec3)
-                (normal :vec3)
-                (to-camera :vec3)
-                &uniforms
-                (cell-type :int)
-                (light light/directional)
-                (material material-data)
-                (opacity :float))
+(defun world/fragment ((frag-pos :vec3)
+                       (normal :vec3)
+                       (to-camera :vec3)
+                       &uniforms
+                       (cell-type :int)
+                       (light light/directional)
+                       (material material-data)
+                       (opacity :float))
   (let ((lighting (calculate-lighting light material to-camera normal))
         (texture (generate-texture cell-type frag-pos)))
     (vec4 (mix texture lighting 0.5) opacity)))
 
 (define-shader world ()
-  (:vertex (world/v mesh-attrs))
-  (:fragment (world/f :vec3 :vec3 :vec3)))
+  (:vertex (world/vertex mesh-attrs))
+  (:fragment (world/fragment :vec3 :vec3 :vec3)))

@@ -35,14 +35,18 @@
             (case repl-package
               (:slynk
                `(lambda ()
-                  (,(find-symbol "PROCESS-REQUESTS" :slynk) t)))
+                  (let ((before-time (get-time)))
+                    (,(find-symbol "PROCESS-REQUESTS" :slynk) t)
+                    (incf (pause-time) (- (get-time) before-time)))))
               (:swank
                `(lambda ()
                   (u:when-let ((repl (or ,(find-symbol "*EMACS-CONNECTION*"
                                                        :swank)
                                          (,(find-symbol "DEFAULT-CONNECTION"
-                                                        :swank)))))
-                    (,(find-symbol "HANDLE-REQUESTS" :swank) repl t))))
+                                                        :swank))))
+                               (before-time (get-time)))
+                    (,(find-symbol "HANDLE-REQUESTS" :swank) repl t)
+                    (incf (pause-time) (- (get-time) before-time)))))
               (t (constantly nil))))
            (compile
             'send-to-repl

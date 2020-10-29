@@ -28,3 +28,11 @@
        (if (u:href =meta/curves= ',name)
            (update-curve-spec ',name ,points)
            (make-curve-spec ',name ,points)))))
+
+;;; implementation
+
+(defun evaluate-curve (entity parameter)
+  (v3:* (curve:evaluate (curve/data entity)
+                        parameter
+                        :even-spacing (curve/even-spacing entity))
+        (get-scale entity)))

@@ -87,6 +87,9 @@
    #:get-camera-zoom
    #:get-current-camera
    #:zoom-camera)
+  ;; curve
+  (:export
+   #:evaluate-curve)
   ;; id
   (:export
    #:get-display-id

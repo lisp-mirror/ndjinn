@@ -21,13 +21,13 @@
   (pause-time 0d0 :type double-float))
 
 (defun %get-time (clock)
-  (u:mvlet ((s us (sb-ext:get-time-of-day)))
-    (+ (- s (clock-init-time clock))
-       (/ us 1d6))))
+  (/ (- (get-internal-real-time)
+        (clock-init-time clock))
+     (float internal-time-units-per-second 1d0)))
 
 (defun make-clock ()
   (let ((clock (%make-clock)))
-    (setf (clock-init-time clock) (sb-ext:get-time-of-day)
+    (setf (clock-init-time clock) (get-internal-real-time)
           (clock-running-time clock) (%get-time clock))
     (setf (clock =context=) clock)
     (log:debug :pyx "Initialized game clock: vsync: ~a, delta: ~,3f ms/frame"

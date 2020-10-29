@@ -35,7 +35,8 @@
   (:shader shader:default
    :uniforms (:color (v3:vec 0 0.4 0.7)
               :opacity 1)
-   :features (:line-width 3)))
+   :features (:line-width 3
+              :depth-mode :lequal)))
 
 ;;; geometry
 

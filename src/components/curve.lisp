@@ -21,8 +21,14 @@
 (defun make-curve-data (curve)
   (u:if-let ((name (curve/name curve)))
     (u:if-let ((spec (u:href =meta/curves= name)))
-      (curve:make-curve (curve-spec-points spec)
-                        :divisions (curve/divisions curve))
+      (let* ((data (curve:make-curve (curve-spec-points spec)
+                                     :divisions (curve/divisions curve)))
+             (even-spacing (curve/even-spacing curve))
+             (segments (curve:collect-segments data
+                                               (curve/divisions curve)
+                                               :even-spacing even-spacing)))
+        (setf (curve/data curve) data
+              (curve/segments curve) segments))
       (error "Curve spec ~s not defined." name))
     (error "Curve name not specified for entity: ~s." curve)))
 
@@ -44,8 +50,7 @@
 ;;; entity hooks
 
 (define-entity-hook :attach (entity curve)
-  (setf (curve/data entity) (make-curve-data entity)
-        (curve/segments entity) (make-curve-segments entity))
+  (make-curve-data entity)
   (initialize-curve-visualization entity))
 
 (define-entity-hook :update (entity curve)

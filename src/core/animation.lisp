@@ -37,6 +37,7 @@
   (with-slots (%name %elapsed %duration %shape %data) animation
     (cond
       ((zerop %elapsed)
+       (setf (u:href %data :previous-delta) 0f0)
        (on-animate-start entity %name %data))
       ((>= %elapsed %duration)
        (on-animate-finish entity %name %data)
@@ -44,7 +45,8 @@
     (incf %elapsed (get-frame-time))
     (let ((delta (funcall %shape (u:clamp (/ %elapsed %duration) 0f0 1f0))))
       (setf (u:href %data :delta) delta)
-      (on-animate-update entity %name %data))))
+      (on-animate-update entity %name %data)
+      (setf (u:href %data :previous-delta) delta))))
 
 (defun make-animation (entity name
                        &key blocking (duration 1) (shape #'math:linear)

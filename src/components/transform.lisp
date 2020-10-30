@@ -94,22 +94,15 @@
      (:local (transform/local entity))
      (:world (transform/model entity)))))
 
-(defun translate-entity (entity vec &key replace instant apply)
+(defun translate-entity (entity vec &key replace instant force)
   (let ((state (transform/translation entity)))
     (symbol-macrolet ((current (transform-state-current state)))
-      (v3:+! current
-             (if replace v3:+zero+ current)
-             ;; TODO: This is a special form of applying a matrix to a
-             ;; transform, useful in some situations. Needs a better name and
-             ;; proper API.
-             (if apply
-                 (let ((local (m4:copy (transform/local entity))))
-                   (m4:set-translation! local local v3:+zero+)
-                   (v3:vec (m4:*v4 local (v4:vec vec 1))))
-                 vec))
+      (v3:+! current (if replace v3:+zero+ current) vec)
       (when instant
         (push (lambda () (v3:copy! (transform-state-previous state) current))
-              (end-frame-work =context=))))))
+              (end-frame-work =context=)))
+      (when force
+        (resolve-model entity (get-alpha))))))
 
 (defun clamp-translation (entity min max &key instant)
   (let ((state (transform/translation entity)))
@@ -124,25 +117,29 @@
   (let ((state (transform/translation entity)))
     (setf (transform-state-incremental state) (v3:make-velocity axis rate))))
 
-(defun rotate-entity (entity quat &key replace instant)
+(defun rotate-entity (entity quat &key replace instant force)
   (let ((state (transform/rotation entity)))
     (symbol-macrolet ((current (transform-state-current state)))
       (q:rotate! current (if replace q:+id+ current) quat)
       (when instant
         (push (lambda () (q:copy! (transform-state-previous state) current))
-              (end-frame-work =context=))))))
+              (end-frame-work =context=)))
+      (when force
+        (resolve-model entity (get-alpha))))))
 
 (defun rotate-entity/velocity (entity axis rate)
   (let ((state (transform/rotation entity)))
     (setf (transform-state-incremental state) (v3:make-velocity axis rate))))
 
-(defun scale-entity (entity vec &key replace instant)
+(defun scale-entity (entity vec &key replace instant force)
   (let ((state (transform/scale entity)))
     (symbol-macrolet ((current (transform-state-current state)))
       (v3:+! current (if replace v3:+zero+ current) vec)
       (when instant
         (push (lambda () (v3:copy! (transform-state-previous state) current))
-              (end-frame-work =context=))))))
+              (end-frame-work =context=)))
+      (when force
+        (resolve-model entity (get-alpha))))))
 
 (defun scale-entity/velocity (entity axis rate)
   (let ((state (transform/scale entity)))

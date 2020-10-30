@@ -28,6 +28,7 @@
     (let ((old (window-size))
           (new (v2:vec width height)))
       (setf (window-size) new)
+      (reconfigure-viewports)
       (call-next-method)
       (invoke-entity-window-resize-hook old new))))
 

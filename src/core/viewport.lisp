@@ -98,6 +98,10 @@
                (width viewport)
                (height viewport)))
 
+(defun reconfigure-viewports ()
+  (u:do-hash-values (v (table (get-viewport-manager)))
+    (configure-viewport v)))
+
 (defun get-entity-viewports (entity)
   (let ((scene-viewports (get-viewport-manager))
         (viewports nil))

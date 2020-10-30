@@ -16,7 +16,17 @@
    (%curve/data :accessor curve/data
                 :initform nil)
    (%curve/segments :accessor curve/segments
-                    :initform nil)))
+                    :initform nil)
+   (%curve/rescale :reader curve/rescale
+                   :initarg :curve/rescale
+                   :initform nil)
+   (%curve/rescale-viewport :reader curve/rescale-viewport
+                            :initarg :curve/rescale-viewport
+                            :initform nil)
+   (%curve/rescale-padding :reader curve/rescale-padding
+                           :initarg :curve/rescale-padding
+                           :initform (v2:vec)))
+  (:type-order :after transform))
 
 (defun make-curve-data (curve)
   (u:if-let ((name (curve/name curve)))
@@ -47,11 +57,22 @@
     (attach-component curve 'geometry :geometry/name 'line-segments)
     (attach-component curve 'render :render/materials '(curve))))
 
+(defun rescale-curve (curve)
+  (let* ((viewport-size (get-viewport-size (curve/rescale-viewport curve)))
+         (scale (v3:vec (v2:+ viewport-size (curve/rescale-padding curve)))))
+    (scale-entity curve scale :replace t :force t)))
+
 ;;; entity hooks
 
 (define-entity-hook :attach (entity curve)
   (make-curve-data entity)
-  (initialize-curve-visualization entity))
+  (initialize-curve-visualization entity)
+  (when (curve/rescale entity)
+    (rescale-curve entity)))
+
+(define-entity-hook :window-resize (entity curve old-size new-size)
+  (when (curve/rescale entity)
+    (rescale-curve entity)))
 
 (define-entity-hook :update (entity curve)
   (when (curve/visualize entity)

@@ -36,6 +36,7 @@
 (defun deregister-collider (collider layer)
   (let* ((system (collision-system (current-scene =context=)))
          (deregistered (deregistered system)))
+    (remove-collider-contacts system collider)
     (setf (u:href deregistered layer collider) collider)))
 
 (defun collider-contact-p (system collider1 collider2)

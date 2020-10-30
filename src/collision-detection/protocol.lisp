@@ -41,4 +41,5 @@
                                               "ON-COLLISION-~a" hook)
                      ((,layer1-symbol (eql ',layer1)) ,layer1
                       (,layer2-symbol (eql ',layer2)) ,layer2)
-                   ,@body)))))))
+                   (when (and ,layer1 ,layer2)
+                     ,@body))))))))

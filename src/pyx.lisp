@@ -31,7 +31,7 @@
     (setf =context= nil)))
 
 (defun process-end-frame-work ()
-  (lp:pmap nil #'funcall (nreverse (end-frame-work =context=)))
+  (map nil #'funcall (nreverse (end-frame-work =context=)))
   (setf (end-frame-work =context=) nil))
 
 (defun update ()

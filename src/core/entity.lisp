@@ -84,10 +84,10 @@
 (defmacro do-nodes ((entity &key parent) &body body)
   `(map-nodes (lambda (,entity) ,@body) ,parent))
 
-(defun delete-entity (entity &key reparent-children)
+(defun delete-entity (entity &key reparent-children defer)
   (when (node/root-p entity)
     (error "Cannot remove the root entity."))
-  (delete-node entity :reparent-children reparent-children))
+  (delete-node entity :reparent-children reparent-children :defer defer))
 
 (defun entity-parent (entity)
   (node/parent entity))

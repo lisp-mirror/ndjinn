@@ -34,18 +34,22 @@
                    (eq (node/pause-mode child) :stop))
         (map-nodes func child)))))
 
-(defun delete-node (entity &key reparent-children)
-  (let ((parent (node/parent entity)))
-    (dolist (child (node/children entity))
-      (if reparent-children
-          (add-child child :parent parent)
-          (delete-node child)))
-    (on-entity-delete entity)
-    (detach-components entity)
-    (deregister-prefab-entity entity)
-    (when parent
-      (u:deletef (node/children parent) entity))
-    (values)))
+(defun delete-node (entity &key reparent-children defer)
+  (flet ((%delete ()
+           (let ((parent (node/parent entity)))
+             (dolist (child (node/children entity))
+               (if reparent-children
+                   (add-child child :parent parent)
+                   (delete-node child)))
+             (on-entity-delete entity)
+             (detach-components entity)
+             (deregister-prefab-entity entity)
+             (when parent
+               (u:deletef (node/children parent) entity))
+             (values))))
+    (if defer
+        (push (lambda () (%delete)) (end-frame-work =context=))
+        (%delete))))
 
 ;;; entity hooks
 

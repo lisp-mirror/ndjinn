@@ -89,7 +89,8 @@
    #:zoom-camera)
   ;; curve
   (:export
-   #:evaluate-curve)
+   #:evaluate-curve
+   #:rescale-curve)
   ;; id
   (:export
    #:get-display-id

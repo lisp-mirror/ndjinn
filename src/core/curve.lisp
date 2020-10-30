@@ -36,3 +36,8 @@
                         parameter
                         :even-spacing (curve/even-spacing entity))
         (get-scale entity)))
+
+(defun rescale-curve (curve &key viewport padding)
+  (let* ((viewport-size (get-viewport-size viewport))
+         (scale (v3:vec (v2:+ viewport-size (or padding (v2:vec))))))
+    (scale-entity curve scale :replace t :force t)))

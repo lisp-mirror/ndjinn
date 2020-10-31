@@ -36,7 +36,7 @@
 
 (defun smooth-delta-time (clock refresh-rate)
   (symbol-macrolet ((frame-time (clock-frame-time clock)))
-    (incf (clock-frame-time clock) (clock-delta-buffer clock))
+    (incf frame-time (clock-delta-buffer clock))
     (let ((frame-count (max 1 (truncate (1+ (* frame-time refresh-rate)))))
           (previous frame-time))
       (setf frame-time (/ frame-count refresh-rate 1d0)

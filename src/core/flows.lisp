@@ -3,15 +3,14 @@
 (defclass flows ()
   ((%queue :accessor queue
            :initform nil)
-   (%buffer :reader buffer
-            :initform (make-array 128 :fill-pointer 0 :adjustable t))
    (%priorities :accessor priorities
                 :initform nil)))
 
 (defun make-flow-priorities ()
   (let ((table (u:dict #'eq)))
     (setf (u:href table 'transform) 0
-          (u:href table 'delete) 1)
+          (u:href table 'detach) 1
+          (u:href table 'delete) 2)
     table))
 
 (defun compare-flow-item (item1 item2)
@@ -32,14 +31,7 @@
     (queues:qpush (queue flows) (cons type func))))
 
 (defun process-flows ()
-  (let* ((flows (flows =context=))
-         (buffer (buffer flows)))
-    (loop :with queue = (queue flows)
-          :for ((priority . func) found) = (multiple-value-list
-                                            (queues:qpop queue))
-          :while found
-          :do (vector-push-extend func buffer))
-    (map nil #'funcall buffer)
-    (fill buffer nil)
-    (setf (fill-pointer buffer) 0)
-    (values)))
+  (loop :with queue = (queue (flows =context=))
+        :for ((nil . func) found) = (multiple-value-list (queues:qpop queue))
+        :while found
+        :do (funcall func)))

@@ -28,6 +28,7 @@
                #:net.mfiano.lisp.umbra
                #:pngload
                #:printv
+               #:queues.priority-cqueue
                #:sdl2
                #:split-sequence
                #:uiop
@@ -117,7 +118,8 @@
      (:file "render-order")
      (:file "font")
      (:file "animation")
-     (:file "curve")))
+     (:file "curve")
+     (:file "flows")))
    (:module "prefab"
     :components
     ((:file "common")

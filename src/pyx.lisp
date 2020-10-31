@@ -13,6 +13,7 @@
   (make-thread-pool)
   (initialize-shaders)
   (make-clock)
+  (make-flows)
   (apply #'on-context-create =context= user-args)
   (log:info :pyx "Started ~a" (cfg :title))
   (start-loop))
@@ -30,15 +31,11 @@
          (log:info :pyx "Exited ~a" (cfg :title)))
     (setf =context= nil)))
 
-(defun process-end-frame-work ()
-  (map nil #'funcall (nreverse (end-frame-work =context=)))
-  (setf (end-frame-work =context=) nil))
-
 (defun update ()
   (let ((alpha (get-alpha)))
     (do-nodes (node)
       (on-entity-update node))
-    (process-end-frame-work)
+    (process-flows)
     (do-nodes (node)
       (resolve-model node alpha))))
 

@@ -62,7 +62,9 @@
     (lpq:queue-empty-p queue)))
 
 (defun process-queue (purpose)
-  (u:while (and =context= (thread-pool =context=) (not (queue-empty-p purpose)))
+  (u:while (and =context=
+                (thread-pool =context=)
+                (not (queue-empty-p purpose)))
     (destructuring-bind (&optional event-type data) (dequeue purpose)
       (when event-type
         (handle-queued-event purpose event-type data)))))

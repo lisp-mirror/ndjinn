@@ -6,5 +6,5 @@
 
 ;;; entity hooks
 
-(define-entity-hook :pre-render (entity animate)
+(define-entity-hook :update (entity animate)
   (process-animations entity))

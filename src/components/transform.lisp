@@ -99,8 +99,10 @@
     (symbol-macrolet ((current (transform-state-current state)))
       (v3:+! current (if replace v3:+zero+ current) vec)
       (when instant
-        (push (lambda () (v3:copy! (transform-state-previous state) current))
-              (end-frame-work =context=)))
+        (queue-flow-work 'transform
+                         (lambda ()
+                           (v3:copy! (transform-state-previous state)
+                                     current))))
       (when force
         (resolve-model entity (get-alpha))))))
 
@@ -110,8 +112,10 @@
       (v3:max! current current min)
       (v3:min! current current max)
       (when instant
-        (push (lambda () (v3:copy! (transform-state-previous state) current))
-              (end-frame-work =context=))))))
+        (queue-flow-work 'transform
+                         (lambda ()
+                           (v3:copy! (transform-state-previous state)
+                                     current)))))))
 
 (defun translate-entity/velocity (entity axis rate)
   (let ((state (transform/translation entity)))
@@ -122,8 +126,8 @@
     (symbol-macrolet ((current (transform-state-current state)))
       (q:rotate! current (if replace q:+id+ current) quat)
       (when instant
-        (push (lambda () (q:copy! (transform-state-previous state) current))
-              (end-frame-work =context=)))
+        (queue-flow-work 'transform
+                         (q:copy! (transform-state-previous state) current)))
       (when force
         (resolve-model entity (get-alpha))))))
 
@@ -136,8 +140,10 @@
     (symbol-macrolet ((current (transform-state-current state)))
       (v3:+! current (if replace v3:+zero+ current) vec)
       (when instant
-        (push (lambda () (v3:copy! (transform-state-previous state) current))
-              (end-frame-work =context=)))
+        (queue-flow-work 'transform
+                         (lambda ()
+                           (v3:copy! (transform-state-previous state)
+                                     current))))
       (when force
         (resolve-model entity (get-alpha))))))
 

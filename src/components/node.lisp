@@ -34,7 +34,7 @@
                    (eq (node/pause-mode child) :stop))
         (map-nodes func child)))))
 
-(defun delete-node (entity &key reparent-children defer)
+(defun delete-node (entity &key reparent-children)
   (flet ((%delete ()
            (let ((parent (node/parent entity)))
              (dolist (child (node/children entity))
@@ -47,9 +47,7 @@
              (when parent
                (u:deletef (node/children parent) entity))
              (values))))
-    (if defer
-        (push (lambda () (%delete)) (end-frame-work =context=))
-        (%delete))))
+    (queue-flow-work 'delete (lambda () (%delete)))))
 
 ;;; entity hooks
 

@@ -25,16 +25,14 @@
    (%shaders :accessor shaders)
    (%running :accessor running
              :initform t)
-   (%end-frame-work :accessor end-frame-work
-                    :initform nil)
    (%user-data :accessor user-data
                :initform nil)
    (%hardware-info :accessor hardware-info
                    :initform nil)
    (%thread-pool :accessor thread-pool
                  :initform nil)
-   (%config :accessor config
-            :initform nil)))
+   (%flows :accessor flows
+           :initform nil)))
 
 (defun make-context (context-name)
   (if (find-class context-name nil)

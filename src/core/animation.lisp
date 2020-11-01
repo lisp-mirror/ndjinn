@@ -11,7 +11,7 @@
                 :initarg :blocking
                 :initform nil)
    (%self-finishing-p :reader self-finishing-p
-                      :initarg :self-finishing-p
+                      :initarg :self-finishing
                       :initform nil)
    (%shape :reader shape
            :initarg :shape)
@@ -41,33 +41,34 @@
         (data (data animation)))
     (cond
       ((zerop elapsed)
-       (setf (u:href data :previous-step) 0f0)
+       (setf (u:href data :previous-step) 0f0
+             (u:href data :time) 0f0)
        (on-animate-start entity name data))
       ((or (and (self-finishing-p animation)
                 (u:href data :finished))
-           (>= elapsed duration))
+           (and (not (self-finishing-p animation))
+                (>= elapsed duration)))
        (on-animate-finish entity name data)
        (deregister-animation entity animation)))
     (incf (elapsed animation) (get-frame-time))
     (let ((step (funcall (shape animation)
                          (u:clamp (/ elapsed duration) 0f0 1f0))))
-      (setf (u:href data :step) step)
+      (setf (u:href data :step) step
+            (u:href data :time) (elapsed animation))
       (on-animate-update entity name data)
       (setf (u:href data :previous-step) step))))
 
 (defun make-animation (entity name
-                       &key blocking (duration 1) (shape #'math:linear)
-                         (where :after) target)
+                       &key blocking self-finishing (duration 1)
+                         (shape #'math:linear) (where :after) target)
   (let ((animation (make-instance 'animation
                                   :name name
                                   :duration duration
                                   :blocking blocking
+                                  :self-finishing self-finishing
                                   :shape shape)))
     (register-animation entity animation :where where :target target)
     animation))
-
-(defun finish-animation (animation)
-  (setf (u:href (data animation) :finished) t))
 
 (defgeneric on-animate-start (entity name data)
   (:method (entity name data)))

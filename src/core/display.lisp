@@ -69,7 +69,7 @@
      (display-refresh-rate display) rate)))
 
 (defun make-display ()
-  (sdl2:init-everything)
+  (sdl2:init* '(:video :gamecontroller))
   (configure-opengl-context)
   (let* ((window (make-window))
          (display (%make-display :window window)))

@@ -65,6 +65,7 @@
   ;; animate
   (:export
    #:define-animate-hook
+   #:finish-animation
    #:make-animation)
   ;; transform
   (:export

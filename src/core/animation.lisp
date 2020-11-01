@@ -4,12 +4,15 @@
   ((%name :reader name
           :initarg :name)
    (%elapsed :accessor elapsed
-             :initform 0)
+             :initform 0.0)
    (%duration :reader duration
               :initarg :duration)
    (%blocking-p :reader blocking-p
                 :initarg :blocking
                 :initform nil)
+   (%self-finishing-p :reader self-finishing-p
+                      :initarg :self-finishing-p
+                      :initform nil)
    (%shape :reader shape
            :initarg :shape)
    (%data :reader data
@@ -23,30 +26,34 @@
     (dll:insert sequence animation :where where :target target)))
 
 (defun deregister-animation (entity animation)
-  (let ((sequence (animate/sequence entity)))
-    (dll:delete sequence animation)))
+  (dll:delete (animate/sequence entity) animation))
 
 (defun process-animations (entity)
-  (loop :with sequence = (animate/sequence entity)
-        :for animation :in (dll:list-values sequence)
+  (loop :for animation :in (dll:list-values (animate/sequence entity))
         :do (step-animation entity animation)
         :when (blocking-p animation)
           :do (return)))
 
 (defun step-animation (entity animation)
-  (with-slots (%name %elapsed %duration %shape %data) animation
+  (let ((name (name animation))
+        (duration (duration animation))
+        (elapsed (elapsed animation))
+        (data (data animation)))
     (cond
-      ((zerop %elapsed)
-       (setf (u:href %data :previous-delta) 0f0)
-       (on-animate-start entity %name %data))
-      ((>= %elapsed %duration)
-       (on-animate-finish entity %name %data)
+      ((zerop elapsed)
+       (setf (u:href data :previous-step) 0f0)
+       (on-animate-start entity name data))
+      ((or (and (self-finishing-p animation)
+                (u:href data :finished))
+           (>= elapsed duration))
+       (on-animate-finish entity name data)
        (deregister-animation entity animation)))
-    (incf %elapsed (get-frame-time))
-    (let ((delta (funcall %shape (u:clamp (/ %elapsed %duration) 0f0 1f0))))
-      (setf (u:href %data :delta) delta)
-      (on-animate-update entity %name %data)
-      (setf (u:href %data :previous-delta) delta))))
+    (incf (elapsed animation) (get-frame-time))
+    (let ((step (funcall (shape animation)
+                         (u:clamp (/ elapsed duration) 0f0 1f0))))
+      (setf (u:href data :step) step)
+      (on-animate-update entity name data)
+      (setf (u:href data :previous-step) step))))
 
 (defun make-animation (entity name
                        &key blocking (duration 1) (shape #'math:linear)
@@ -58,6 +65,9 @@
                                   :shape shape)))
     (register-animation entity animation :where where :target target)
     animation))
+
+(defun finish-animation (animation)
+  (setf (u:href (data animation) :finished) t))
 
 (defgeneric on-animate-start (entity name data)
   (:method (entity name data)))

@@ -13,6 +13,9 @@
    (%curve/visualize :reader curve/visualize
                      :initarg :curve/visualize
                      :initform nil)
+   (%curve/flip :reader curve/flip
+                :initarg :curve/flip
+                :initform nil)
    (%curve/data :accessor curve/data
                 :initform nil)
    (%curve/segments :accessor curve/segments
@@ -22,7 +25,7 @@
 (defun make-curve-data (curve)
   (u:if-let ((name (curve/name curve)))
     (u:if-let ((spec (u:href =meta/curves= name)))
-      (let* ((data (curve:make-curve (curve-spec-points spec)
+      (let* ((data (curve:make-curve (flip-curve-points curve)
                                      :divisions (curve/divisions curve)))
              (even-spacing (curve/even-spacing curve))
              (segments (curve:collect-segments data

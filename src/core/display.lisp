@@ -20,9 +20,6 @@
   (%size (error "Window size unset.") :type v2:vec)
   (%position (v2:vec) :type v2:vec))
 
-(defun parse-opengl-version (version)
-  (values-list (mapcar #'parse-integer (ss:split-sequence #\. version))))
-
 (defun make-window ()
   (v2:with-components ((s (v2:vec (cfg/player :window-width)
                                   (cfg/player :window-height))))
@@ -38,8 +35,7 @@
       window)))
 
 (defun configure-opengl-context ()
-  (u:mvlet* ((version (cfg :opengl-version))
-             (major minor (parse-opengl-version version)))
+  (u:mvlet ((major minor (get-opengl-version)))
     (sdl2:gl-set-attrs :context-major-version major
                        :context-minor-version minor
                        :context-profile-mask 1

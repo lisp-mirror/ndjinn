@@ -23,6 +23,10 @@
 
 (u:define-constant +polygon-mode+ '(:front-and-back :fill) :test #'equal)
 
+(defun get-opengl-version ()
+  (let ((version (cfg :opengl-version)))
+    (values-list (mapcar #'parse-integer (ss:split-sequence #\. version)))))
+
 (defmacro with-debug-group (name &body body)
   (if (find :pyx.release *features*)
       `(progn ,@body)

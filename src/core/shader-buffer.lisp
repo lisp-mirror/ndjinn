@@ -28,6 +28,11 @@
   (shadow:read-buffer-path key path))
 
 (defun make-shader-buffer (key block-id shader)
+  (u:mvlet ((major minor (get-opengl-version)))
+    (unless (and (>= major 4)
+                 (>= minor 3))
+      (error "Shader buffer usage requires OpenGL version 4.3 or greater, but ~
+              game was configured for OpenGL version ~d.~d" major minor)))
   (let ((bindings (shader-manager-buffer-bindings (shaders =context=)))
         (binding (select-shader-buffer-binding)))
     (setf (u:href bindings key) binding)

@@ -11,22 +11,18 @@
 (defun make-entity-class (components)
   (make-mixin-class (make-mixin-class-list components)))
 
-(defun register-entity (entity)
+(defun register-entity (entity types)
   (on-entity-create entity)
-  (dolist (type (get-mixin-class-names entity))
+  (dolist (type types)
     (when (has-component-p entity type)
       (on-entity-attach entity type))))
 
 (defun %make-entity (types &optional args)
-  (let ((class (make-entity-class types)))
-    (apply #'make-instance class
-           (when args (u:hash->plist args)))))
-
-(defmacro make-entity ((&rest types) &body body)
-  (u:with-gensyms (entity)
-    `(let ((,entity (%make-entity ',(compute-component-type-order types)
-                                  (u:plist->hash (list ,@body) :test #'eq))))
-       (register-entity ,entity))))
+  (let* ((class (make-entity-class types))
+         (entity (apply #'make-instance class
+                        (when args (u:hash->plist args)))))
+    (register-entity entity types)
+    entity))
 
 (defgeneric %query-filter (entity))
 
@@ -80,6 +76,10 @@
   (:method-combination progn :most-specific-last)
   (:method progn (entity &key old-size new-size)
     (declare (ignore old-size new-size))))
+
+(defmacro make-entity ((&rest components) &body body)
+  `(%make-entity ',(compute-component-type-order components)
+                 (u:plist->hash (list ,@body) :test #'eq)))
 
 (defmacro do-nodes ((entity &key parent) &body body)
   `(map-nodes (lambda (,entity) ,@body) ,parent))

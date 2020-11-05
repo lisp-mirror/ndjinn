@@ -42,7 +42,7 @@
                    (add-child child :parent parent)
                    (delete-node child)))
              (on-entity-delete entity)
-             (%detach-components entity :remove-mixins nil)
+             (detach-components entity :remove-mixins nil)
              (deregister-prefab-entity entity)
              (when parent
                (u:deletef (node/children parent) entity))

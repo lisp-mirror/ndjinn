@@ -43,7 +43,8 @@
 (defun render-entity (entity)
   (with-debug-group (format nil "Entity: ~a" (id/display entity))
     (let ((material (render/current-material entity)))
-      (funcall (render-func (spec material)) entity))))
+      (unless (node/disabled entity)
+        (funcall (render-func (spec material)) entity)))))
 
 (defun generate-render-func (features)
   (destructuring-bind (&key enable disable blend-mode depth-mode polygon-mode

@@ -13,6 +13,9 @@
                  :initform nil)
    (%node/prefab-path :accessor node/prefab-path
                       :initform nil)
+   (%node/disabled :accessor node/disabled
+                   :initarg :node/disabled
+                   :initform nil)
    (%node/pause-mode :accessor node/pause-mode
                      :initarg :node/pause-mode
                      :initform :inherit))
@@ -28,10 +31,11 @@
 (defun map-nodes (func &optional root)
   (let* ((scene (current-scene =context=))
          (root (or root (node-tree scene))))
-    (funcall func root)
-    (dolist (child (node/children root))
-      (unless (and (paused scene)
-                   (eq (node/pause-mode child) :stop))
+    (unless (or (node/disabled root)
+                (and (paused scene)
+                     (eq (node/pause-mode root) :stop)))
+      (funcall func root)
+      (dolist (child (node/children root))
         (map-nodes func child)))))
 
 (defun delete-node (entity &key reparent-children)
@@ -48,6 +52,12 @@
                (u:deletef (node/children parent) entity))
              (values))))
     (queue-flow-work 'delete (lambda () (%delete)))))
+
+(defun enable-entity (entity)
+  (setf (node/disabled entity) nil))
+
+(defun disable-entity (entity)
+  (setf (node/disabled entity) t))
 
 ;;; entity hooks
 

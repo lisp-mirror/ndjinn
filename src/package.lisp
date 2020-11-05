@@ -212,6 +212,10 @@
    #:as-uniform
    #:define-material
    #:set-uniforms)
+  ;; node
+  (:export
+   #:disable-entity
+   #:enable-entity)
   ;; prefab
   (:export
    #:define-prefab

@@ -13,7 +13,7 @@
 (defun register-material (entity)
   (let ((materials (u:dict #'eq)))
     (dolist (spec-name (render/materials entity))
-      (let ((material (make-material entity spec-name)))
+      (let ((material (make-material spec-name)))
         (setf (u:href materials (pass (spec material))) material)))
     materials))
 

@@ -33,7 +33,7 @@
                                         (collider/shape collider))))
   (attach-component collider 'render :render/materials '(collider)))
 
-(defmethod %on-collision-enter ((contact1 collider) (contact2 collider))
+(defun %on-collision-enter (contact1 contact2)
   (incf (collider/contact-count contact1))
   (when (plusp (collider/contact-count contact1))
     (setf (collider/hit-p contact1) t))
@@ -44,13 +44,13 @@
                       (collider/layer contact2)
                       (collider/owner contact2)))
 
-(defmethod %on-collision-continue ((contact1 collider) (contact2 collider))
+(defun %on-collision-continue (contact1 contact2)
   (on-collision-continue (collider/layer contact1)
                          (collider/owner contact1)
                          (collider/layer contact2)
                          (collider/owner contact2)))
 
-(defmethod %on-collision-exit ((contact1 collider) (contact2 collider))
+(defun %on-collision-exit (contact1 contact2)
   (decf (collider/contact-count contact1))
   (when (zerop (collider/contact-count contact1))
     (setf (collider/hit-p contact1) nil))

@@ -11,6 +11,8 @@
                      :initform (m4:mat 1))
    (%transform/model :reader transform/model
                      :initform (m4:mat 1))
+   (%transform/scaling-matrix :reader transform/scaling-matrix
+                              :initform (m4:mat 1))
    (%transform/normal-matrix :reader transform/normal-matrix
                              :initform (m4:mat 1)))
   (:type-order :after node)
@@ -42,22 +44,25 @@
     (transform-node/vector (transform/translation entity) delta)))
 
 (defun resolve-local (entity factor)
+  (declare (optimize speed))
   (let ((translation (transform/translation entity))
         (rotation (transform/rotation entity))
-        (scale (transform/scale entity)))
-    (symbol-macrolet ((local (transform/local entity)))
-      (interpolate-vector scale factor)
-      (interpolate-quaternion rotation factor)
-      (interpolate-vector translation factor)
-      (m4:copy! local (q:to-mat4 (transform-state-interpolated rotation)))
-      (m4:*! local
-             local
-             (m4:set-scale m4:+id+ (transform-state-interpolated scale)))
-      (m4:set-translation! local
-                           local
-                           (transform-state-interpolated translation)))))
+        (scale (transform/scale entity))
+        (local (transform/local entity)))
+    (interpolate-vector scale factor)
+    (interpolate-quaternion rotation factor)
+    (interpolate-vector translation factor)
+    (q:to-mat4! local (transform-state-interpolated rotation))
+    (m4:set-scale! (transform/scaling-matrix entity)
+                   local
+                   (transform-state-interpolated scale))
+    (m4:*! local local (transform/scaling-matrix entity))
+    (m4:set-translation! local
+                         local
+                         (transform-state-interpolated translation))))
 
 (defun resolve-model (entity alpha)
+  (declare (optimize speed))
   (u:when-let ((parent (node/parent entity)))
     (resolve-local entity alpha)
     (m4:*! (transform/model entity)
@@ -65,6 +70,7 @@
            (transform/local entity))))
 
 (defun resolve-normal-matrix (entity)
+  (declare (optimize speed))
   (let ((result (transform/normal-matrix entity)))
     (u:when-let ((camera (get-current-camera)))
       (m4:set-translation! result (transform/model entity) v3:+zero+)
@@ -77,6 +83,7 @@
   (set-uniforms entity :model (transform/model entity)))
 
 (defun get-translation (entity &key (space :local))
+  (declare (optimize speed))
   (m4:get-translation
    (ecase space
      (:local (transform/local entity))
@@ -89,69 +96,77 @@
      (:world (transform/model entity)))))
 
 (defun get-scale (entity &key (space :local))
+  (declare (optimize speed))
   (m4:get-scale
    (ecase space
      (:local (transform/local entity))
      (:world (transform/model entity)))))
 
 (defun translate-entity (entity vec &key replace instant force)
-  (let ((state (transform/translation entity)))
-    (symbol-macrolet ((current (transform-state-current state)))
-      (v3:+! current (if replace v3:+zero+ current) vec)
-      (when instant
-        (queue-flow-work 'transform
-                         (lambda ()
-                           (v3:copy! (transform-state-previous state)
-                                     current))))
-      (when force
-        (resolve-model entity (get-alpha))))))
+  (declare (optimize speed))
+  (let* ((state (transform/translation entity))
+         (current (transform-state-current state)))
+    (v3:+! current (if replace v3:+zero+ current) vec)
+    (when instant
+      (queue-flow-work 'transform
+                       (lambda ()
+                         (v3:copy! (transform-state-previous state)
+                                   current))))
+    (when force
+      (resolve-model entity (get-alpha)))))
 
 (defun clamp-translation (entity min max &key instant)
-  (let ((state (transform/translation entity)))
-    (symbol-macrolet ((current (transform-state-current state)))
-      (v3:max! current current min)
-      (v3:min! current current max)
-      (when instant
-        (queue-flow-work 'transform
-                         (lambda ()
-                           (v3:copy! (transform-state-previous state)
-                                     current)))))))
+  (declare (optimize speed))
+  (let* ((state (transform/translation entity))
+         (current (transform-state-current state)))
+    (v3:max! current current min)
+    (v3:min! current current max)
+    (when instant
+      (queue-flow-work 'transform
+                       (lambda ()
+                         (v3:copy! (transform-state-previous state)
+                                   current))))))
 
 (defun translate-entity/velocity (entity axis rate)
+  (declare (optimize speed))
   (let ((state (transform/translation entity)))
     (setf (transform-state-incremental state) (v3:make-velocity axis rate))))
 
 (defun rotate-entity (entity quat &key replace instant force)
-  (let ((state (transform/rotation entity)))
-    (symbol-macrolet ((current (transform-state-current state)))
-      (q:rotate! current (if replace q:+id+ current) quat)
-      (when instant
-        (queue-flow-work 'transform
-                         (q:copy! (transform-state-previous state) current)))
-      (when force
-        (resolve-model entity (get-alpha))))))
+  (let* ((state (transform/rotation entity))
+         (current (transform-state-current state)))
+    (q:rotate! current (if replace q:+id+ current) quat)
+    (when instant
+      (queue-flow-work 'transform
+                       (q:copy! (transform-state-previous state) current)))
+    (when force
+      (resolve-model entity (get-alpha)))))
 
 (defun rotate-entity/velocity (entity axis rate)
+  (declare (optimize speed))
   (let ((state (transform/rotation entity)))
     (setf (transform-state-incremental state) (v3:make-velocity axis rate))))
 
 (defun scale-entity (entity vec &key replace instant force)
-  (let ((state (transform/scale entity)))
-    (symbol-macrolet ((current (transform-state-current state)))
-      (v3:+! current (if replace v3:+zero+ current) vec)
-      (when instant
-        (queue-flow-work 'transform
-                         (lambda ()
-                           (v3:copy! (transform-state-previous state)
-                                     current))))
-      (when force
-        (resolve-model entity (get-alpha))))))
+  (declare (optimize speed))
+  (let* ((state (transform/scale entity))
+         (current (transform-state-current state)))
+    (v3:+! current (if replace v3:+zero+ current) vec)
+    (when instant
+      (queue-flow-work 'transform
+                       (lambda ()
+                         (v3:copy! (transform-state-previous state)
+                                   current))))
+    (when force
+      (resolve-model entity (get-alpha)))))
 
 (defun scale-entity/velocity (entity axis rate)
+  (declare (optimize speed))
   (let ((state (transform/scale entity)))
     (setf (transform-state-incremental state) (v3:make-velocity axis rate))))
 
 (defun transform-point (entity point &key (space :local))
+  (declare (optimize speed))
   (let ((model (transform/model entity)))
     (v3:vec
      (ecase space

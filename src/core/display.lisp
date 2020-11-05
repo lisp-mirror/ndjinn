@@ -72,7 +72,7 @@
     (setf (display =context=) display)
     (set-display-properties display)
     (make-opengl-context display)
-    (sdl2:gl-set-swap-interval (if (cfg :vsync) 1 0))
+    (sdl2:gl-set-swap-interval 1)
     (if (cfg/player :allow-screensaver)
         (sdl2:enable-screensaver)
         (sdl2:disable-screensaver))
@@ -86,7 +86,9 @@
 (defun render (display)
   (render-frame)
   (sdl2:gl-swap-window (window-handle (display-window display)))
-  (incf (clock-frame-count (clock =context=))))
+  (incf (clock-frame-count (clock =context=)))
+  (when *profile*
+    (incf =profile-frame-counter=)))
 
 (defun window-size ()
   (window-%size (display-window (display =context=))))

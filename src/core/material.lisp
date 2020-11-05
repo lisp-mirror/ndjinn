@@ -126,8 +126,6 @@
 (defclass material ()
   ((%spec :reader spec
           :initarg :spec)
-   (%entity :reader entity
-            :initarg :entity)
    (%uniforms :reader uniforms
               :initform (u:dict #'eq))
    (%framebuffer :accessor framebuffer
@@ -166,18 +164,20 @@
       (load-uniform-texture material uniform)
       (setf (u:href (uniforms material) k) uniform))))
 
-(defun make-material (entity name)
-  (let* ((spec (find-material-spec name))
-         (material (make-instance 'material :entity entity :spec spec)))
-    (make-material-uniforms material)
-    (ensure-material-framebuffer material)
-    (push material (u:href (materials (current-scene =context=)) name))
-    material))
+(defun make-material (name)
+  (u:if-let ((material (u:href (materials (current-scene =context=)) name)))
+    material
+    (let* ((spec (find-material-spec name))
+           (material (make-instance 'material :spec spec)))
+      (make-material-uniforms material)
+      (ensure-material-framebuffer material)
+      (setf (u:href (materials (current-scene =context=)) name) material)
+      material)))
 
 (on-recompile :material data ()
   (u:when-let ((shader (shader (find-material-spec data))))
     (recompile :shaders (list shader)))
-  (dolist (material (u:href (materials (current-scene =context=)) data))
+  (let ((material (u:href (materials (current-scene =context=)) data)))
     (make-material-uniforms material)
     (ensure-material-framebuffer material))
   (log:debug :pyx "Recompiled material: ~s" data))

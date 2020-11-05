@@ -40,13 +40,11 @@
     (setf (u:href deregistered layer collider) collider)))
 
 (defun collider-contact-p (system collider1 collider2)
-  (assert (not (eq collider1 collider2)))
   (let ((contacts (contacts system)))
     (when (u:href contacts collider1)
       (u:href contacts collider1 collider2))))
 
 (defun collider-contact-enter (system collider1 collider2)
-  (assert (not (eq collider1 collider2)))
   (let ((contacts (contacts system)))
     (unless (u:href contacts collider1)
       (setf (u:href contacts collider1) (u:dict #'eq)))
@@ -58,12 +56,10 @@
     (%on-collision-enter collider2 collider1)))
 
 (defun collider-contact-continue (collider1 collider2)
-  (assert (not (eq collider1 collider2)))
   (%on-collision-continue collider1 collider2)
   (%on-collision-continue collider2 collider1))
 
 (defun collider-contact-exit (system collider1 collider2)
-  (assert (not (eq collider1 collider2)))
   (let ((contacts (contacts system)))
     (u:when-let ((table2 (u:href contacts collider1)))
       (remhash collider2 table2)
@@ -84,19 +80,17 @@
           (collider-contact-exit system collider k))))))
 
 (defun compute-collider-contact (system collider1 collider2)
-  (when (and (has-component-p collider1 'collider)
-             (has-component-p collider2 'collider))
-    (u:when-let ((shape1 (collider/shape collider1))
-                 (shape2 (collider/shape collider2)))
-      (let ((collided-p (collide-p shape1 shape2))
-            (contact-p (collider-contact-p system collider1 collider2)))
-        (cond
-          ((and collided-p contact-p)
-           (collider-contact-continue collider1 collider2))
-          ((and collided-p (not contact-p))
-           (collider-contact-enter system collider1 collider2))
-          ((and (not collided-p) contact-p)
-           (collider-contact-exit system collider1 collider2)))))))
+  (u:when-let ((shape1 (collider/shape collider1))
+               (shape2 (collider/shape collider2)))
+    (let ((collided-p (collide-p shape1 shape2))
+          (contact-p (collider-contact-p system collider1 collider2)))
+      (cond
+        ((and collided-p contact-p)
+         (collider-contact-continue collider1 collider2))
+        ((and collided-p (not contact-p))
+         (collider-contact-enter system collider1 collider2))
+        ((and (not collided-p) contact-p)
+         (collider-contact-exit system collider1 collider2))))))
 
 (defun compute-collisions/active (system)
   (let* ((active (active system))

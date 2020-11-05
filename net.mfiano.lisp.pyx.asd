@@ -40,6 +40,7 @@
     :components
     ((:file "general")
      (:file "context")
+     (:file "profile")
      (:file "metadata")
      (:file "config")
      (:file "logging")

@@ -9,8 +9,7 @@
    :log-repl-level :debug
    :log-repl-categories (:pyx)
    :opengl-version "3.3"
-   :title "Pyx Engine"
-   :vsync t))
+   :title "Pyx Engine"))
 
 (define-collider-plan default ())
 

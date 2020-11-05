@@ -2,6 +2,7 @@
 
 (defstruct (uniform (:predicate nil)
                     (:copier nil))
+  program
   key
   type
   resolved-type
@@ -20,7 +21,8 @@
            (resolved-type (if (search "SAMPLER" (symbol-name type))
                               :sampler
                               type)))
-      (setf (uniform-type uniform) type
+      (setf (uniform-program uniform) program
+            (uniform-type uniform) type
             (uniform-resolved-type uniform) resolved-type
             (uniform-func uniform) (generate-uniform-func material uniform)))))
 
@@ -30,11 +32,11 @@
       (funcall func (shader (spec material)) k v))))
 
 (defun generate-uniform-func/sampler (material)
-  (lambda (k v)
+  (lambda (program k v)
     (let ((unit (texture-unit-state material)))
       (incf (texture-unit-state material))
       (bind-texture v unit)
-      (shadow:uniform-int (shader (spec material)) k unit))))
+      (shadow:uniform-int program k unit))))
 
 (defun generate-uniform-func/array (material type)
   (let ((func (u:format-symbol :net.mfiano.lisp.shadow
@@ -43,7 +45,7 @@
       (funcall func (shader (spec material)) k v))))
 
 (defun generate-uniform-func/sampler-array (material dimensions)
-  (lambda (k v)
+  (lambda (program k v)
     (loop :with unit-state = (texture-unit-state material)
           :with unit-count = (+ unit-state dimensions)
           :for texture-name :in v
@@ -51,7 +53,7 @@
           :do (bind-texture v unit)
           :collect unit :into units
           :finally (incf (texture-unit-state material) dimensions)
-                   (shadow:uniform-int-array (shader (spec material))
+                   (shadow:uniform-int-array program
                                              k
                                              units))))
 
@@ -61,17 +63,30 @@
     (etypecase type
       (symbol
        (ecase resolved-type
-         (:sampler
-          (generate-uniform-func/sampler material))
-         ((:bool :int :float :vec2 :vec3 :vec4 :mat2 :mat3 :mat4)
-          (%generate-uniform-func material type))))
+         (:sampler (generate-uniform-func/sampler material))
+         (:bool #'shadow:uniform-bool)
+         (:int #'shadow:uniform-int)
+         (:float #'shadow:uniform-float)
+         (:vec2 #'shadow:uniform-vec2)
+         (:vec3 #'shadow:uniform-vec3)
+         (:vec4 #'shadow:uniform-vec4)
+         (:mat2 #'shadow:uniform-mat2)
+         (:mat3 #'shadow:uniform-mat3)
+         (:mat4 #'shadow:uniform-mat4)))
       (cons
        (destructuring-bind (type . dimensions) type
+         (declare (ignore type))
          (ecase resolved-type
-           (:sampler
-            (generate-uniform-func/sampler-array material dimensions))
-           ((:bool :int :float :vec2 :vec3 :vec4 :mat2 :mat3 :mat4)
-            (generate-uniform-func/array material type))))))))
+           (:sampler (generate-uniform-func/sampler-array material dimensions))
+           (:bool #'shadow:uniform-bool-array)
+           (:int #'shadow:uniform-int-array)
+           (:float #'shadow:uniform-float-array)
+           (:vec2 #'shadow:uniform-vec2-array)
+           (:vec3 #'shadow:uniform-vec3-array)
+           (:vec4 #'shadow:uniform-vec4-array)
+           (:mat2 #'shadow:uniform-mat2-array)
+           (:mat3 #'shadow:uniform-mat3-array)
+           (:mat4 #'shadow:uniform-mat4-array)))))))
 
 (defun as-uniform (func)
   (lambda (entity)
@@ -87,6 +102,7 @@
 
 (defun resolve-uniform-func (entity uniform)
   (funcall (uniform-func uniform)
+           (uniform-program uniform)
            (uniform-key uniform)
            (resolve-uniform-value entity uniform)))
 

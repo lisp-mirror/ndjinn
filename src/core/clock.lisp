@@ -30,8 +30,7 @@
     (setf (clock-init-time clock) (get-internal-real-time)
           (clock-running-time clock) (%get-time clock))
     (setf (clock =context=) clock)
-    (log:debug :pyx "Initialized game clock: vsync: ~a, delta: ~,3f ms/frame"
-               (cfg :vsync)
+    (log:debug :pyx "Initialized game clock: delta: ~,3f ms/frame"
                (* (cfg :delta-time) 1000f0))))
 
 (defun smooth-delta-time (clock refresh-rate)
@@ -91,12 +90,15 @@
     (if (zerop (clock-frame-count clock))
         (setf (clock-frame-time clock) (float (cfg :delta-time) 1d0))
         (setf (clock-frame-time clock) (- current previous)))
-    (when (cfg :vsync)
-      (smooth-delta-time clock refresh-rate))
+    (smooth-delta-time clock refresh-rate)
     (clock-update clock update-func)
     (clock-update/periodic clock periodic-func)
     (when (plusp (clock-frame-count clock))
-      (calculate-frame-rate clock))))
+      (calculate-frame-rate clock)
+      (when (zerop (mod (clock-frame-count clock) 60))
+        (log:debug :pyx.time "Frame rate: ~d fps / ~d ms/frame"
+                   (clock-fps/average/10s clock)
+                   (/ 1000 (clock-fps/average/10s clock)))))))
 
 (defun get-time ()
   (%get-time (clock =context=)))

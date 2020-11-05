@@ -55,7 +55,7 @@
     (setf (transform-state-incremental state) velocity)))
 
 (u:fn-> interpolate-vector (transform-state single-float) v3:vec)
-(defun interpolate-vector (state factor)
+(u:defun-inline interpolate-vector (state factor)
   (declare (optimize speed))
   (v3:lerp! (transform-state-interpolated state)
             (transform-state-previous state)
@@ -63,7 +63,7 @@
             factor))
 
 (u:fn-> interpolate-quaternion (transform-state single-float) q:quat)
-(defun interpolate-quaternion (state factor)
+(u:defun-inline interpolate-quaternion (state factor)
   (declare (optimize speed))
   (q:slerp! (transform-state-interpolated state)
             (transform-state-previous state)

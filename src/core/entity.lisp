@@ -78,8 +78,8 @@
     (declare (ignore old-size new-size))))
 
 (defmacro make-entity ((&rest components) &body body)
-  (let ((components (compute-component-type-order components)))
-    `(%make-entity ',components (u:plist->hash (list ,@body) :test #'eq))))
+  `(%make-entity ',(compute-component-type-order components)
+                 (u:plist->hash (list ,@body) :test #'eq)))
 
 (defmacro do-nodes ((entity &key parent) &body body)
   `(map-nodes (lambda (,entity) ,@body) ,parent))
@@ -109,18 +109,19 @@
   (apply #'add-mixin-class entity type args)
   (on-entity-attach entity type))
 
-(defun detach-component (entity type)
+(defun detach-component (entity type &key (remove-mixin t))
   (if (find type =meta/component-static=)
       (error "Cannot remove built-in static component: ~s." type)
       (queue-flow-work 'detach
                        (lambda ()
                          (on-entity-detach entity type)
-                         (remove-mixin-class entity type)))))
+                         (when remove-mixin
+                           (remove-mixin-class entity type))))))
 
-(defun detach-components (entity)
+(defun detach-components (entity &key (remove-mixins t))
   (dolist (component (get-mixin-class-names entity))
     (unless (find component =meta/component-static=)
-      (detach-component entity component))))
+      (detach-component entity component :remove-mixin remove-mixins))))
 
 (defmacro define-entity-query-types (entity &body body)
   `(defmethod %query-filter ((entity ,entity))

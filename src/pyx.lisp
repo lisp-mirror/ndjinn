@@ -56,12 +56,13 @@
          (refresh-rate (display-refresh-rate display)))
     (update)
     (log:debug :pyx "Entered main game loop")
-    (u:while (running =context=)
-      (with-continuable
-        (handle-events input-data)
-        (tick-clock clock refresh-rate #'physics-update #'periodic-update)
-        (update)
-        (render display)))))
+    (with-profile
+      (u:while (running =context=)
+        (with-continuable
+          (handle-events input-data)
+          (tick-clock clock refresh-rate #'physics-update #'periodic-update)
+          (update)
+          (render display))))))
 
 (defun start-engine (context-name &rest user-args)
   (unless (and =context= (running =context=))

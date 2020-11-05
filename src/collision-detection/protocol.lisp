@@ -1,14 +1,5 @@
 (in-package #:net.mfiano.lisp.pyx)
 
-(defgeneric %on-collision-enter (contact1 contact2)
-  (:method (contact1 contact2)))
-
-(defgeneric %on-collision-continue (contact1 contact2)
-  (:method (contact1 contact2)))
-
-(defgeneric %on-collision-exit (contact1 contact2)
-  (:method (contact1 contact2)))
-
 (defgeneric on-collision-enter (layer1-symbol layer1 layer2-symbol layer2)
   (:method (layer1-symbol layer1 layer2-symbol layer2)))
 

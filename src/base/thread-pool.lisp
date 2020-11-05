@@ -17,8 +17,10 @@
     (log:debug :pyx "Initialized thread-pool with ~d workers" worker-count)))
 
 (defun destroy-thread-pool ()
-  (lp:end-kernel :wait t)
-  (when (thread-pool =context=)
+  (u:when-let ((thread-pool (thread-pool =context=)))
+    (u:do-hash-keys (purpose (thread-pool-channels thread-pool))
+      (lp:kill-tasks purpose))
+    (lp:end-kernel :wait t)
     (setf lp:*kernel* nil
           (thread-pool =context=) nil)))
 

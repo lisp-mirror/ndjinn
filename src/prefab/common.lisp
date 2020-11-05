@@ -47,16 +47,6 @@
   ((%func :reader func
           :initarg :func)))
 
-(defclass prefab-entity-skeleton ()
-  ((%mixin-class :reader mixin-class
-                 :initarg :mixin-class)
-   (%types :reader types
-           :initarg :types)
-   (%args :reader args
-          :initarg :args)
-   (%slots :reader slots
-           :initform (u:dict #'eq))))
-
 (u:define-printer (prefab stream)
   (format stream "~s" (name prefab)))
 

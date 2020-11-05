@@ -109,7 +109,7 @@
   (apply #'add-mixin-class entity type args)
   (on-entity-attach entity type))
 
-(defun detach-component (entity type &key (remove-mixin t))
+(defun %detach-component (entity type &key (remove-mixin t))
   (if (find type =meta/component-static=)
       (error "Cannot remove built-in static component: ~s." type)
       (queue-flow-work 'detach
@@ -118,10 +118,16 @@
                          (when remove-mixin
                            (remove-mixin-class entity type))))))
 
-(defun detach-components (entity &key (remove-mixins t))
+(defun detach-component (entity type)
+  (%detach-component entity type))
+
+(defun %detach-components (entity &key (remove-mixins t))
   (dolist (component (get-mixin-class-names entity))
     (unless (find component =meta/component-static=)
-      (detach-component entity component :remove-mixin remove-mixins))))
+      (%detach-component entity component :remove-mixin remove-mixins))))
+
+(defun detach-components (entity)
+  (%detach-components entity))
 
 (defmacro define-entity-query-types (entity &body body)
   `(defmethod %query-filter ((entity ,entity))

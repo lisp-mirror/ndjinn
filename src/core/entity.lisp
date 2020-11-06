@@ -12,13 +12,12 @@
 
 (defun %make-entity (types &optional args)
   (let ((class (make-entity-class types)))
-    (apply #'make-instance class
-           (when args (u:hash->plist args)))))
+    (apply #'make-instance class args)))
 
 (defmacro make-entity ((&rest types) &body body)
   (u:with-gensyms (entity)
     `(let ((,entity (%make-entity ',(compute-component-type-order types)
-                                  (u:plist->hash (list ,@body) :test #'eq))))
+                                  (list ,@body))))
        (register-entity ,entity)
        ,entity)))
 

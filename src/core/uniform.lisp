@@ -38,12 +38,6 @@
       (bind-texture v unit)
       (shadow:uniform-int program k unit))))
 
-(defun generate-uniform-func/array (material type)
-  (let ((func (u:format-symbol :net.mfiano.lisp.shadow
-                               "UNIFORM-~a-ARRAY" type)))
-    (lambda (k v)
-      (funcall func (shader (spec material)) k v))))
-
 (defun generate-uniform-func/sampler-array (material dimensions)
   (lambda (program k v)
     (loop :with unit-state = (texture-unit-state material)
@@ -53,9 +47,7 @@
           :do (bind-texture v unit)
           :collect unit :into units
           :finally (incf (texture-unit-state material) dimensions)
-                   (shadow:uniform-int-array program
-                                             k
-                                             units))))
+                   (shadow:uniform-int-array program k units))))
 
 (defun generate-uniform-func (material uniform)
   (let ((type (uniform-type uniform))

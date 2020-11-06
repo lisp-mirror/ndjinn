@@ -40,10 +40,11 @@
       (resolve-model node alpha))))
 
 (defun physics-update ()
-  (do-nodes (node)
-    (on-entity-physics-update node)
-    (transform-node node))
-  (compute-collisions))
+  (let ((delta (float (cfg :delta-time) 1f0)))
+    (do-nodes (node)
+      (on-entity-physics-update node)
+      (transform-node node delta))
+    (compute-collisions)))
 
 (defun periodic-update ()
   (update-repl)
@@ -54,7 +55,6 @@
          (display (display =context=))
          (input-data (input-data =context=))
          (refresh-rate (display-refresh-rate display)))
-    (update)
     (log:debug :pyx "Entered main game loop")
     (with-profile
       (u:while (running =context=)

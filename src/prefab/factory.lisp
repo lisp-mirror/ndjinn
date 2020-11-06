@@ -3,12 +3,17 @@
 (defun make-prefab-entity (node)
   (%make-entity (u:href (component-types node) :resolved)))
 
-(defun realize-prefab-entity (entity path display-id args)
-  (apply #'reinitialize-instance entity args)
-  (setf (node/prefab-path entity) path
-        (id/display entity) display-id)
-  (register-entity entity)
-  entity)
+(defun realize-prefab-entity (entity parent path args)
+  (let* ((display-id (format nil "~{~(~a~)~^ -> ~}" path))
+         (display-id (if parent (format nil "~a -> ~a"
+                                        (id/display parent)
+                                        display-id)
+                         display-id)))
+    (apply #'reinitialize-instance entity args)
+    (setf (node/prefab-path entity) path
+          (id/display entity) display-id)
+    (register-entity entity)
+    entity))
 
 (defun resolve-prefab-entity-args (node root)
   (let ((factory (factory (prefab node)))
@@ -41,8 +46,7 @@
                     (u:do-hash (path node %nodes)
                       (setf %current-node node)
                       (let ((args (resolve-prefab-entity-args node parent))
-                            (entity (u:href %entities path))
-                            (display-id (format nil "~{~(~a~)~^ -> ~}" path)))
-                        (realize-prefab-entity entity path display-id args)))
+                            (entity (u:href %entities path)))
+                        (realize-prefab-entity entity parent path args)))
                     (setf %current-node nil)
                     (register-prefab-root prefab))))))

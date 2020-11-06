@@ -4,8 +4,8 @@
   (%make-entity (u:href (component-types node) :resolved)))
 
 (defun realize-prefab-entity (entity parent path args)
-  (let* ((display-id (format nil "~{~(~a~)~^ -> ~}" path))
-         (display-id (if parent (format nil "~a -> ~a"
+  (let* ((display-id (format nil "~{~(~a~)~^/~}" path))
+         (display-id (if parent (format nil "~a/~a"
                                         (id/display parent)
                                         display-id)
                          display-id)))

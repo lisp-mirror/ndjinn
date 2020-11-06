@@ -142,7 +142,13 @@
        ,@body)))
 
 (defun get-entity-count ()
-  (hash-table-count (uuids (current-scene =context=))))
+  (let ((enabled 0)
+        (all 0))
+    (u:do-hash-values (v (uuids (current-scene =context=)))
+      (unless (node/disabled v)
+        (incf enabled))
+      (incf all))
+    (values enabled all)))
 
 (defun invoke-entity-window-resize-hook (old-size new-size)
   (do-nodes (entity)

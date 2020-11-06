@@ -47,15 +47,14 @@
   (let ((rotation (transform/rotation entity))
         (scale (transform/scale entity))
         (translation (transform/translation entity))
-        (local (transform/local entity)))
+        (local (transform/local entity))
+        (scaling-matrix (transform/scaling-matrix entity)))
     (interpolate-quaternion rotation factor)
     (interpolate-vector scale factor)
     (interpolate-vector translation factor)
     (q:to-mat4! local (transform-state-interpolated rotation))
-    (m4:set-scale! (transform/scaling-matrix entity)
-                   local
-                   (transform-state-interpolated scale))
-    (m4:*! local local (transform/scaling-matrix entity))
+    (m4:set-scale! scaling-matrix m4:+id+ (transform-state-interpolated scale))
+    (m4:*! local local scaling-matrix)
     (m4:set-translation! local
                          local
                          (transform-state-interpolated translation))))

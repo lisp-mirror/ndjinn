@@ -31,6 +31,7 @@
                #:queues.priority-cqueue
                #:sdl2
                #:split-sequence
+               #:trivial-garbage
                #:uiop
                #:verbose)
   :pathname "src"

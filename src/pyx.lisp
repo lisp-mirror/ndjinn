@@ -29,7 +29,8 @@
          (sdl2:quit*)
          (stop-logging)
          (log:info :pyx "Exited ~a" (cfg :title)))
-    (setf =context= nil)))
+    (setf =context= nil)
+    (tg:gc :full t)))
 
 (defun update ()
   (let ((alpha (get-alpha)))

@@ -3,6 +3,10 @@
 (pyx:define-context examples ()
   (:scene examples))
 
+(pyx:define-config examples ()
+  (:title "Pyx Examples"
+   :opengl-version "4.3"))
+
 (pyx:define-material full-quad ()
   (:shader pyx.shader:full-quad
    :uniforms (:sampler 'res:debug)))

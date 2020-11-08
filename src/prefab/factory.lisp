@@ -27,7 +27,7 @@
     (setf (u:href args :node/parent)
           (u:if-let ((parent (parent node)))
             (u:href (entities factory) (path parent))
-            (or root (node-tree (current-scene =context=)))))
+            (or root (get-root-node))))
     (u:hash->plist args)))
 
 (defun register-prefab-root (prefab)

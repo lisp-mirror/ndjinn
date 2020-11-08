@@ -32,20 +32,20 @@
   (with-slots (%node/parent %node/children) entity
     (when %node/parent
       (u:deletef (node/children %node/parent) entity))
-    (setf %node/parent (or parent (node-tree (current-scene =context=))))
+    (setf %node/parent (or parent (get-root-node)))
     (push entity (node/children %node/parent))
     (dolist (child %node/children)
-      (add-child child :parent entity))))
+      (add-child child :parent entity))
+    entity))
 
 (defun collect-nodes (&optional root)
-  (let ((scene (current-scene =context=))
-        (nodes nil))
+  (let ((nodes nil))
     (labels ((recurse (node)
                (when (node-active-p node)
                  (dolist (child (node/children node))
                    (recurse child)))
                (push node nodes)))
-      (recurse (or root (node-tree scene)))
+      (recurse (or root (get-root-node)))
       nodes)))
 
 (defun map-nodes (func &optional root)
@@ -65,6 +65,9 @@
                (u:deletef (node/children parent) entity))
              (values))))
     (queue-flow-work 'delete (lambda () (%delete)))))
+
+(defun get-root-node ()
+  (node-tree (current-scene =context=)))
 
 (defun enable-entity (entity)
   (setf (node/disabled entity) nil))

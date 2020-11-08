@@ -215,7 +215,8 @@
   ;; node
   (:export
    #:disable-entity
-   #:enable-entity)
+   #:enable-entity
+   #:get-root-node)
   ;; prefab
   (:export
    #:define-prefab

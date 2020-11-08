@@ -60,7 +60,7 @@
         (when (eq data name)
           (u:do-hash-values (entities %prefabs)
             (map nil #'delete-node entities))
-          (delete-node (node-tree scene))
+          (delete-node (get-root-node))
           (setf %loaded nil)
           (load-scene data))
         (log:debug :pyx "Recompiled scene: ~s" name)))))

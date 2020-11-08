@@ -21,6 +21,13 @@
                      :initform :inherit))
   (:static t))
 
+(defun node-active-p (entity)
+  (let ((scene (current-scene =context=)))
+    (and (not (node/disabled entity))
+         (or (not (paused scene))
+             (node/root-p entity)
+             (not (eq (node/pause-mode entity) :stop))))))
+
 (defun add-child (entity &key parent)
   (with-slots (%node/parent %node/children) entity
     (setf %node/parent (or parent (node-tree (current-scene =context=))))
@@ -32,12 +39,10 @@
   (let ((scene (current-scene =context=))
         (nodes nil))
     (labels ((recurse (node)
-               (unless (or (node/disabled node)
-                           (and (paused scene)
-                                (eq (node/pause-mode node) :stop)))
+               (when (node-active-p node)
                  (dolist (child (node/children node))
-                   (recurse child))
-                 (push node nodes))))
+                   (recurse child)))
+               (push node nodes)))
       (recurse (or root (node-tree scene)))
       nodes)))
 

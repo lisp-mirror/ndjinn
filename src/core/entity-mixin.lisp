@@ -36,12 +36,13 @@
          (class (make-instance 'mixin-class
                                :classes classes
                                :direct-superclasses superclasses)))
-    (setf (u:href =meta/entity-mixins= classes) class)
+    (setf (u:href =meta/entity-mixins= (mapcar #'class-name classes))
+          class)
     class))
 
 (defun ensure-mixin-class (classes)
   (if (cdr classes)
-      (or (u:href =meta/entity-mixins= classes)
+      (or (u:href =meta/entity-mixins= (mapcar #'class-name classes))
           (make-mixin-class classes))
       (car classes)))
 

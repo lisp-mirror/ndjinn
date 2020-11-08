@@ -63,9 +63,7 @@
   (declare (optimize speed))
   (u:when-let ((parent (node/parent entity))
                (local (resolve-local entity alpha)))
-    (m4:*! (transform/model entity)
-           (transform/model parent)
-           local)))
+    (m4:*! (transform/model entity) (transform/model parent) local)))
 
 (defun resolve-normal-matrix (entity)
   (declare (optimize speed))

@@ -1,7 +1,7 @@
 (in-package #:net.mfiano.lisp.pyx)
 
-(defun make-entity-class (components)
-  (make-mixin-class (make-mixin-class-list components)))
+(defun ensure-entity-class (components)
+  (ensure-mixin-class (make-mixin-class-list components)))
 
 (defun register-entity (entity)
   (on-entity-create entity)
@@ -11,7 +11,7 @@
   entity)
 
 (defun %make-entity (types &optional args)
-  (let ((class (make-entity-class types)))
+  (let ((class (ensure-entity-class types)))
     (apply #'make-instance class args)))
 
 (defmacro make-entity ((&rest types) &body body)

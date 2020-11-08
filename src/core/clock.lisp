@@ -96,7 +96,7 @@
     (when (plusp (clock-frame-count clock))
       (calculate-frame-rate clock)
       (when (zerop (mod (clock-frame-count clock) 60))
-        (log:debug :pyx.time "Frame rate: ~d fps / ~d ms/frame"
+        (log:trace :pyx "Frame rate: ~d fps / ~d ms/frame"
                    (clock-fps/average/10s clock)
                    (/ 1000 (clock-fps/average/10s clock)))))))
 

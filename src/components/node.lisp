@@ -72,4 +72,6 @@
     (unless (node/root-p entity)
       (add-child entity :parent parent))
     (when (eq (node/pause-mode entity) :inherit)
-      (setf (node/pause-mode entity) (node/pause-mode parent)))))
+      (setf (node/pause-mode entity) (if parent
+                                         (node/pause-mode parent)
+                                         :stop)))))

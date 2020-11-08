@@ -152,7 +152,7 @@
         (setf (node-tree scene) (make-entity ()
                                   :node/root-p t
                                   :node/pause-mode :stop
-                                  :id/display "scene root")
+                                  :id/display "/")
               (collision-system scene) (make-collision-system
                                         (scene-spec-collider-plan spec)))
         (make-scene-viewports scene)

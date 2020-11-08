@@ -70,10 +70,12 @@
   (node-tree (current-scene =context=)))
 
 (defun enable-entity (entity)
-  (setf (node/disabled entity) nil))
+  (do-nodes (node :parent entity)
+    (setf (node/disabled node) nil)))
 
 (defun disable-entity (entity)
-  (setf (node/disabled entity) t))
+  (do-nodes (node :parent entity)
+    (setf (node/disabled node) t)))
 
 ;;; entity hooks
 

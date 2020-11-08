@@ -57,7 +57,7 @@
 
 (define-entity-hook :attach (entity font)
   (load-font-spec entity)
-  (attach-component entity 'geometry :geometry/name 'text))
+  (attach-component entity 'geometry :geometry/name 'text :geometry/cache nil))
 
 (define-entity-hook :pre-render (entity font)
   (let ((time (get-running-time)))

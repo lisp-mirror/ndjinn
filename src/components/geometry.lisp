@@ -7,6 +7,9 @@
    (%geometry/instances :accessor geometry/instances
                         :initarg :geometry/instances
                         :initform 1)
+   (%geometry/cache :reader geometry/cache
+                    :initarg :geometry/cache
+                    :initform t)
    (%geometry/geometry :accessor geometry/geometry
                        :initform nil)
    (%geometry/data :accessor geometry/data
@@ -32,7 +35,12 @@
   (let ((name (geometry/name entity)))
     (unless name
       (error "Geometry component ~s does not have a name specified." entity))
-    (setf (geometry/geometry entity) (make-geometry name))))
+    (let ((geometry (if (geometry/cache entity)
+                        (with-asset-cache :geometry name
+                            (prog1 (make-geometry name)
+                              (log:debug :pyx "Cached geometry: ~a" name)))
+                        (make-geometry name))))
+      (setf (geometry/geometry entity) geometry))))
 
 (define-entity-hook :pre-render (entity geometry)
   (when (geometry/dirty entity)
@@ -46,4 +54,5 @@
 
 (define-entity-hook :delete (entity geometry)
   (u:when-let ((geometry (geometry/geometry entity)))
-    (delete-geometry geometry)))
+    (unless (geometry/cache entity)
+      (delete-geometry geometry))))

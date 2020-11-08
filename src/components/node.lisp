@@ -30,6 +30,8 @@
 
 (defun add-child (entity &key parent)
   (with-slots (%node/parent %node/children) entity
+    (when %node/parent
+      (u:deletef (node/children %node/parent) entity))
     (setf %node/parent (or parent (node-tree (current-scene =context=))))
     (push entity (node/children %node/parent))
     (dolist (child %node/children)

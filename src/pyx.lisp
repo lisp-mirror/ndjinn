@@ -19,18 +19,24 @@
   (start-loop))
 
 (defun deinitialize ()
-  (unwind-protect
-       (progn
-         (log:info :pyx "Shutting down ~a..." (cfg :title))
-         (on-context-destroy =context=)
-         (shutdown-gamepads)
-         (kill-display)
-         (destroy-thread-pool)
-         (sdl2:quit*)
-         (stop-logging)
-         (log:info :pyx "Exited ~a" (cfg :title)))
-    (setf =context= nil)
-    (tg:gc :full t)))
+  (macrolet ((%deinitialize (&body body)
+               `(progn
+                  ,@(mapcar
+                     (lambda (x)
+                       `(with-simple-restart (abort "Continue deinitializing")
+                          ,x))
+                     body))))
+    (%deinitialize
+     (log:info :pyx "Shutting down ~a..." (cfg :title))
+     (on-context-destroy =context=)
+     (shutdown-gamepads)
+     (kill-display)
+     (destroy-thread-pool)
+     (sdl2:quit*)
+     (log:info :pyx "Exited ~a" (cfg :title))
+     (stop-logging)
+     (setf =context= nil)
+     (tg:gc :full t))))
 
 (defun update ()
   (let ((alpha (get-alpha))

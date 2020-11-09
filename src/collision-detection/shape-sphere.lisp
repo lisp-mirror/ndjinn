@@ -1,6 +1,7 @@
 (in-package #:net.mfiano.lisp.pyx)
 
 (defstruct (collider-shape/sphere
+            (:conc-name sphere-)
             (:constructor %make-collider-shape/sphere)
             (:include collider-shape)
             (:predicate nil)
@@ -11,5 +12,5 @@
   (let ((shape (apply #'%make-collider-shape/sphere args)))
     (v3:with-components ((s (get-scale (collider-shape-entity shape)
                                        :space :world)))
-      (setf (collider-shape/sphere-radius shape) (max sx sy sz))
+      (setf (sphere-radius shape) (max sx sy sz))
       shape)))

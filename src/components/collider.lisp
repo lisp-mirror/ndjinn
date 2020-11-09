@@ -15,6 +15,9 @@
    (%collider/pickable :accessor collider/pickable
                        :initarg :collider/pickable
                        :initform t)
+   (%collider/continuable :reader collider/continuable
+                          :initarg :collider/continuable
+                          :initform nil)
    (%collider/contact-count :accessor collider/contact-count
                             :initform 0)
    (%collider/hit-p :accessor collider/hit-p

@@ -104,10 +104,8 @@
          (current (transform-state-current state)))
     (v3:+! current (if replace v3:+zero+ current) vec)
     (when instant
-      (queue-flow-work 'transform
-                       (lambda ()
-                         (v3:copy! (transform-state-previous state)
-                                   current))))
+      (defer-work (transform)
+        (v3:copy! (transform-state-previous state) current)))
     (when force
       (resolve-model entity (get-alpha)))))
 
@@ -118,10 +116,8 @@
     (v3:max! current current min)
     (v3:min! current current max)
     (when instant
-      (queue-flow-work 'transform
-                       (lambda ()
-                         (v3:copy! (transform-state-previous state)
-                                   current))))))
+      (defer-work (transform)
+        (v3:copy! (transform-state-previous state) current)))))
 
 (defun translate-entity/velocity (entity axis rate)
   (declare (optimize speed))
@@ -133,8 +129,8 @@
          (current (transform-state-current state)))
     (q:rotate! current (if replace q:+id+ current) quat)
     (when instant
-      (queue-flow-work 'transform
-                       (q:copy! (transform-state-previous state) current)))
+      (defer-work (transform)
+        (q:copy! (transform-state-previous state) current)))
     (when force
       (resolve-model entity (get-alpha)))))
 
@@ -149,10 +145,8 @@
          (current (transform-state-current state)))
     (v3:+! current (if replace v3:+zero+ current) vec)
     (when instant
-      (queue-flow-work 'transform
-                       (lambda ()
-                         (v3:copy! (transform-state-previous state)
-                                   current))))
+      (defer-work (transform)
+        (v3:copy! (transform-state-previous state) current)))
     (when force
       (resolve-model entity (get-alpha)))))
 

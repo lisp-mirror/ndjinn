@@ -109,11 +109,10 @@
 (defun %detach-component (entity type &key (remove-mixin t))
   (if (find type =meta/component-static=)
       (error "Cannot remove built-in static component: ~s." type)
-      (queue-flow-work 'detach
-                       (lambda ()
-                         (on-entity-detach entity type)
-                         (when remove-mixin
-                           (remove-mixin-class entity type))))))
+      (defer-work (detach)
+        (on-entity-detach entity type)
+        (when remove-mixin
+          (remove-mixin-class entity type)))))
 
 (defun detach-component (entity type)
   (%detach-component entity type))

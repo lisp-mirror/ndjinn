@@ -64,7 +64,8 @@
              (when parent
                (u:deletef (node/children parent) entity))
              (values))))
-    (queue-flow-work 'delete (lambda () (%delete)))))
+    (defer-work (delete)
+      (%delete))))
 
 (defun get-root-node ()
   (node-tree (current-scene =context=)))

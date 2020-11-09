@@ -74,12 +74,8 @@
   (:method progn (entity &key old-size new-size)
     (declare (ignore old-size new-size))))
 
-(defmacro do-nodes ((entity &key parent (parallel nil parallel-p)) &body body)
-  (if parallel-p
-      `(if ,parallel
-           (lp:pmap nil (lambda (,entity) ,@body) (collect-nodes ,parent))
-           (map-nodes (lambda (,entity) ,@body) ,parent))
-      `(map-nodes (lambda (,entity) ,@body) ,parent)))
+(defmacro do-nodes ((entity &key parent) &body body)
+  `(map-nodes (lambda (,entity) ,@body) ,parent))
 
 (defun delete-entity (entity &key reparent-children)
   (when (node/root-p entity)

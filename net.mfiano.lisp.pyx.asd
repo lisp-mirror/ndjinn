@@ -108,6 +108,7 @@
      (:file "viewport")
      (:file "material")
      (:file "uniform")
+     (:file "flows")
      (:file "component")
      (:file "entity-mixin")
      (:file "entity")
@@ -120,8 +121,7 @@
      (:file "render-order")
      (:file "font")
      (:file "animation")
-     (:file "curve")
-     (:file "flows")))
+     (:file "curve")))
    (:module "prefab"
     :components
     ((:file "common")

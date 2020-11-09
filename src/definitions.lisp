@@ -9,7 +9,6 @@
    :log-repl-level :debug
    :log-repl-categories (:pyx)
    :opengl-version "3.3"
-   :parallel-updates nil
    :title "Pyx Engine"))
 
 (define-collider-plan default ())

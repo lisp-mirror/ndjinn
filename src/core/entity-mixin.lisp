@@ -11,6 +11,11 @@
                                       (superclass standard-class))
   t)
 
+(u:define-printer (mixin-class stream)
+  (format stream "~{~a~^, ~}"
+          (mapcar #'class-name
+                  (cdr (c2mop:class-direct-superclasses mixin-class)))))
+
 (defun get-mixin-class-names (mixin)
   (mapcar #'class-name
           (cdr (c2mop:class-direct-superclasses

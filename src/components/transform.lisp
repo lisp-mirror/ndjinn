@@ -38,6 +38,7 @@
   (resolve-model instance (get-alpha)))
 
 (defun transform-node (entity delta)
+  (declare (optimize speed))
   (transform-node/vector (transform/scale entity) delta)
   (transform-node/quaternion (transform/rotation entity) delta)
   (transform-node/vector (transform/translation entity) delta))
@@ -86,6 +87,7 @@
      (:world (transform/model entity)))))
 
 (defun get-rotation (entity &key (space :local))
+  (declare (optimize speed))
   (q:from-mat4
    (ecase space
      (:local (transform/local entity))

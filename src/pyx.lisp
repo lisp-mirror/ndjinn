@@ -62,13 +62,12 @@
 (defun start-loop ()
   (let* ((clock (clock =context=))
          (display (display =context=))
-         (input-data (input-data =context=))
          (refresh-rate (display-refresh-rate display)))
     (log:debug :pyx "Entered main game loop")
     (with-profile
       (u:while (running =context=)
         (with-continuable
-          (handle-events input-data)
+          (handle-events)
           (tick-clock clock refresh-rate #'physics-update #'periodic-update)
           (update)
           (render display))))))

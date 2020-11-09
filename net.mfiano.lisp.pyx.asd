@@ -53,12 +53,12 @@
    (:module "input"
     :components
     ((:file "data")
+     (:file "transition")
      (:file "keyboard")
      (:file "mouse")
      (:file "gamepad")
      (:file "window")
-     (:file "button")
-     (:file "input")))
+     (:file "event")))
    (:module "texture"
     :components
     ((:file "spec")

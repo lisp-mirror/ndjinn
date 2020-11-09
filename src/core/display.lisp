@@ -58,11 +58,10 @@
   (u:mvlet* ((window (window-handle (display-window display)))
              (index (sdl2-ffi.functions:sdl-get-window-display-index window))
              (format width height rate (sdl2:get-current-display-mode index)))
-    (setf
-     (display-monitor display) (get-current-monitor)
-     (display-position display) (get-display-position)
-     (display-resolution display) (v2:vec width height)
-     (display-refresh-rate display) rate)))
+    (setf (display-monitor display) (get-current-monitor)
+          (display-position display) (get-display-position)
+          (display-resolution display) (v2:vec width height)
+          (display-refresh-rate display) rate)))
 
 (defun make-display ()
   (sdl2:init* '(:video :gamecontroller))

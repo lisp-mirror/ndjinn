@@ -191,22 +191,12 @@
    #:on-button-enabled
    #:on-button-enter
    #:on-button-exit
-   #:on-gamepad-analog-move
    #:on-gamepad-attach
    #:on-gamepad-detach
    #:on-gamepad-enabled
-   #:on-window-close
-   #:on-window-hide
-   #:on-window-keyboard-focus-enter
-   #:on-window-keyboard-focus-leave
-   #:on-window-maximize
-   #:on-window-minimize
-   #:on-window-mouse-focus-enter
-   #:on-window-mouse-focus-leave
-   #:on-window-move
-   #:on-window-resize
-   #:on-window-restore
-   #:on-window-show)
+   #:on-window-event-enabled
+   #:on-window-event-enter
+   #:on-window-event-exit)
   ;; material
   (:export
    #:as-uniform

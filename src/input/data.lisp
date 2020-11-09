@@ -1,21 +1,18 @@
 (in-package #:net.mfiano.lisp.pyx)
 
-(defclass input-data ()
-  ((%gamepad-instances :reader gamepad-instances
-                       :initform (u:dict #'eq))
-   (%gamepad-ids :reader gamepad-ids
-                 :initform (u:dict #'eq))
-   (%detached-gamepads :accessor detached-gamepads
-                       :initform nil)
-   (%entering :reader entering
-              :initform (u:dict #'eq))
-   (%exiting :reader exiting
-             :initform (u:dict #'eq))
-   (%states :reader states
-            :initform (u:dict #'equal))))
+(defstruct (input-data
+            (:constructor %make-input-data)
+            (:predicate nil)
+            (:copier nil))
+  (gamepad-instances (u:dict #'eq) :type hash-table)
+  (gamepad-ids (u:dict #'eq) :type hash-table)
+  (detached-gamepads nil :type list)
+  (entering (u:dict #'eq) :type hash-table)
+  (exiting (u:dict #'eq) :type hash-table)
+  (states (u:dict #'equal) :type hash-table))
 
 (defun make-input-data ()
-  (let ((input-data (make-instance 'input-data))
+  (let ((data (%make-input-data))
         (motion-state (make-mouse-motion-state)))
-    (setf (u:href (states input-data) '(:mouse :motion)) motion-state
-          (input-data =context=) input-data)))
+    (setf (u:href (input-data-states data) '(:mouse :motion)) motion-state
+          (input-data =context=) data)))

@@ -35,12 +35,12 @@
       :kbdillumup :eject :sleep)
   :test #'equalp)
 
-(defun on-key-up (data key)
-  (button-transition-out data (list :key key))
-  (button-transition-out data '(:key :any))
-  (button-transition-out data '(:button :any)))
+;;; Internal event hooks
 
-(defun on-key-down (data key)
-  (button-transition-in data (list :key key))
-  (button-transition-in data '(:key :any))
-  (button-transition-in data '(:button :any)))
+(defun event/key-up (key)
+  (input-transition-out :key key)
+  (input-transition-out :key :any))
+
+(defun event/key-down (key)
+  (input-transition-in :key key)
+  (input-transition-in :key :any))

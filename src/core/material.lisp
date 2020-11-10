@@ -177,7 +177,7 @@
 (on-recompile :material data ()
   (u:when-let ((shader (shader (find-material-spec data))))
     (recompile :shaders (list shader)))
-  (let ((material (u:href (materials (current-scene =context=)) data)))
+  (u:when-let ((material (u:href (materials (current-scene =context=)) data)))
     (make-material-uniforms material)
     (ensure-material-framebuffer material))
   (log:debug :pyx "Recompiled material: ~s" data))

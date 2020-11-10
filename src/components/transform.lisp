@@ -76,9 +76,6 @@
       (m4:transpose! result result))
     (m4:rotation-to-mat3 result)))
 
-(define-entity-hook :pre-render (entity transform)
-  (set-uniforms entity :model (transform/model entity)))
-
 (defun get-translation (entity &key (space :local))
   (declare (optimize speed))
   (m4:get-translation
@@ -181,3 +178,8 @@
      (ecase space
        (:local (m4:*v4 model (v4:vec direction 1)))
        (:world (m4:*v4 (m4:invert model) (v4:vec direction 1)))))))
+
+;;; Entity hooks
+
+(define-entity-hook :pre-render (entity transform)
+  (set-uniforms entity :model (transform/model entity)))

@@ -83,7 +83,8 @@
 
 (defun pause-game ()
   (do-nodes (entity)
-    (when (eq (node/pause-mode entity) :stop)
+    (when (and (not (node/root-p entity))
+               (eq (node/pause-mode entity) :stop))
       (setf (node/paused entity) t))))
 
 (defun unpause-game ()

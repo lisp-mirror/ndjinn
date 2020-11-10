@@ -33,22 +33,25 @@
       (add-child child :parent entity))
     entity))
 
-(defun collect-nodes (root &key include-paused)
+(defun collect-nodes (root &key include-disabled include-paused)
   (let ((nodes nil))
     (labels ((recurse (node)
-               (when (and (not (node/disabled node))
+               (when (and (or include-disabled
+                              (not (node/disabled node)))
                           (or include-paused
                               (not (node/paused node))))
                  (dolist (child (node/children node))
-                   (recurse child)))
-               (push node nodes)))
+                   (recurse child))
+                 (push node nodes))))
       (recurse (or root (get-root-node)))
       nodes)))
 
-(defun map-nodes (func &key root include-paused)
+(defun map-nodes (func &key root include-disabled include-paused)
   (map nil
        (lambda (x) (funcall func x))
-       (collect-nodes root :include-paused include-paused)))
+       (collect-nodes root
+                      :include-disabled include-disabled
+                      :include-paused include-paused)))
 
 (defun delete-node (entity &key reparent-children)
   (flet ((%delete ()
@@ -70,7 +73,7 @@
   (node-tree (current-scene =context=)))
 
 (defun enable-entity (entity)
-  (do-nodes (node :parent entity)
+  (do-nodes (node :parent entity :include-disabled t)
     (when (has-component-p node 'render)
       (u:do-hash-values (viewport (table (get-viewport-manager)))
         (register-render-order viewport entity)))
@@ -81,7 +84,8 @@
     (when (has-component-p node 'render)
       (u:do-hash-values (viewport (table (get-viewport-manager)))
         (deregister-render-order viewport entity)))
-    (setf (node/disabled node) t)))
+    (unless (node/root-p node)
+      (setf (node/disabled node) t))))
 
 ;;; entity hooks
 

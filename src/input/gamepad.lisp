@@ -103,14 +103,14 @@
 (defun event/gamepad-button-up (instance button)
   (let* ((data (input-data =context=))
          (id (gamepad-id (get-gamepad-by-instance data instance))))
-    (input-transition-out :gamepad id button)
-    (input-transition-out :gamepad id :any)))
+    (input-transition-out id button)
+    (input-transition-out id :any)))
 
 (defun event/gamepad-button-down (instance button)
   (let* ((data (input-data =context=))
          (id (gamepad-id (get-gamepad-by-instance data instance))))
-    (input-transition-in :gamepad id button)
-    (input-transition-in :gamepad id :any)))
+    (input-transition-in id button)
+    (input-transition-in id :any)))
 
 ;;; Interface
 

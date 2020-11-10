@@ -1,7 +1,8 @@
 (in-package #:net.mfiano.lisp.pyx)
 
-(defstruct (uniform (:predicate nil)
-                    (:copier nil))
+(defstruct (uniform
+            (:predicate nil)
+            (:copier nil))
   program
   key
   type

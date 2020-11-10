@@ -80,13 +80,13 @@
                 (file-name (file-namestring x))
                 (spec (list asset-name file-name)))
            (u:if-found (existing (u:href (asset-specs pool) asset-name))
-                       (error "Asset pool ~s has ambiguously named assets:~%~
-                               File 1: ~a~%File 2: ~a~%Normalized name: ~a"
-                              pool-name
-                              file-name
-                              (file-namestring (path existing))
-                              asset-name)
-                       (make-asset-spec pool-name path spec))))
+             (error "Asset pool ~s has ambiguously named assets:~%~
+                     File 1: ~a~%File 2: ~a~%Normalized name: ~a"
+                    pool-name
+                    file-name
+                    (file-namestring (path existing))
+                    asset-name)
+             (make-asset-spec pool-name path spec))))
        :test (lambda (x) (if filter (asset-path-collect-p x filter) t))
        :recursive-p nil))))
 

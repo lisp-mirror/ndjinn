@@ -19,9 +19,9 @@
   (let ((uuids (uuids (current-scene =context=)))
         (uuid (id/uuid entity)))
     (u:if-found (found (u:href uuids uuid))
-                (error "Entity ~s has a UUID collision with object ~s."
-                       entity found)
-                (setf (u:href uuids uuid) entity))))
+      (error "Entity ~s has a UUID collision with object ~s."
+             entity found)
+      (setf (u:href uuids uuid) entity))))
 
 (defun deregister-uuid (entity)
   (remhash (id/uuid entity) (uuids (current-scene =context=))))

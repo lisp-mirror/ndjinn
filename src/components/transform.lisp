@@ -163,7 +163,7 @@
     (v3:vec
      (ecase space
        (:local (m4:*v4 model (v4:vec point 1)))
-       (:world (m4:*v4 (m4:invert! model model) (v4:vec point 1)))))))
+       (:world (m4:*v4 (m4:invert model) (v4:vec point 1)))))))
 
 (defun transform-vector (entity vector &key (space :local))
   (let ((model (m4:copy (transform/model entity))))
@@ -171,7 +171,7 @@
     (v3:vec
      (ecase space
        (:local (m4:*v4 model (v4:vec vector 1)))
-       (:world (m4:*v4 (m4:invert! model model) (v4:vec vector 1)))))))
+       (:world (m4:*v4 (m4:invert model) (v4:vec vector 1)))))))
 
 (defun transform-direction (entity direction &key (space :local))
   (let ((model (m4:copy (transform/model entity))))
@@ -180,4 +180,4 @@
     (v3:vec
      (ecase space
        (:local (m4:*v4 model (v4:vec direction 1)))
-       (:world (m4:*v4 (m4:invert! model model) (v4:vec direction 1)))))))
+       (:world (m4:*v4 (m4:invert model) (v4:vec direction 1)))))))

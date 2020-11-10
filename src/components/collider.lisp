@@ -32,7 +32,7 @@
   (attach-component collider 'mesh
                     :mesh/asset "meshes/colliders.glb"
                     :mesh/name (format nil "~(~a~)"
-                                       (shape-type
+                                       (collider-shape-type
                                         (collider/shape collider))))
   (attach-component collider 'render :render/materials '(collider)))
 
@@ -79,7 +79,7 @@
   (deregister-collider entity (collider/layer entity)))
 
 (define-entity-hook :physics-update (entity collider)
-  (update-collider-shape (collider/shape entity)))
+  (update-collider-shape entity))
 
 (define-entity-hook :pre-render (entity collider)
   (when (collider/visualize entity)

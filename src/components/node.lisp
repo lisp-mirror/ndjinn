@@ -7,26 +7,21 @@
    (%node/parent :reader node/parent
                  :initarg :node/parent
                  :initform nil)
+   (%node/disabled :accessor node/disabled
+                   :initarg :node/disabled
+                   :initform nil)
+   (%node/pause-mode :accessor node/pause-mode
+                     :initarg :node/pause-mode
+                     :initform :inherit)
    (%node/children :accessor node/children
                    :initform nil)
    (%node/prefab :accessor node/prefab
                  :initform nil)
    (%node/prefab-path :accessor node/prefab-path
                       :initform nil)
-   (%node/disabled :accessor node/disabled
-                   :initarg :node/disabled
-                   :initform nil)
-   (%node/pause-mode :accessor node/pause-mode
-                     :initarg :node/pause-mode
-                     :initform :inherit))
+   (%node/paused :accessor node/paused
+                 :initform nil))
   (:static t))
-
-(defun node-active-p (entity)
-  (let ((scene (current-scene =context=)))
-    (and (not (node/disabled entity))
-         (or (not (paused scene))
-             (node/root-p entity)
-             (not (eq (node/pause-mode entity) :stop))))))
 
 (defun add-child (entity &key parent)
   (with-slots (%node/parent %node/children) entity
@@ -38,18 +33,22 @@
       (add-child child :parent entity))
     entity))
 
-(defun collect-nodes (&optional root)
+(defun collect-nodes (root &key include-paused)
   (let ((nodes nil))
     (labels ((recurse (node)
-               (when (node-active-p node)
+               (when (and (not (node/disabled node))
+                          (or include-paused
+                              (not (node/paused node))))
                  (dolist (child (node/children node))
                    (recurse child)))
                (push node nodes)))
       (recurse (or root (get-root-node)))
       nodes)))
 
-(defun map-nodes (func &optional root)
-  (map nil (lambda (x) (funcall func x)) (collect-nodes root)))
+(defun map-nodes (func &key root include-paused)
+  (map nil
+       (lambda (x) (funcall func x))
+       (collect-nodes root :include-paused include-paused)))
 
 (defun delete-node (entity &key reparent-children)
   (flet ((%delete ()

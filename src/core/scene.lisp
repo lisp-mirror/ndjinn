@@ -90,8 +90,6 @@
           :initarg :spec)
    (%loaded :accessor loaded
             :initform nil)
-   (%paused :accessor paused
-            :initform nil)
    (%viewports :reader viewports
                :initform nil)
    (%node-tree :accessor node-tree)

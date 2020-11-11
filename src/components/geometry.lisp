@@ -16,7 +16,7 @@
                    :initform (u:dict #'eq))
    (%geometry/dirty :accessor geometry/dirty
                     :initform nil))
-  (:type-order :after render))
+  (:order :after render))
 
 (defun update-geometry (entity buffer-name data &key replace)
   (cond

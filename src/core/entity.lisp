@@ -16,7 +16,7 @@
 
 (defmacro make-entity ((&rest types) &body body)
   (u:with-gensyms (entity)
-    `(let ((,entity (%make-entity ',(compute-component-type-order types)
+    `(let ((,entity (%make-entity ',(compute-component-order types)
                                   (list ,@body))))
        (register-entity ,entity)
        ,entity)))

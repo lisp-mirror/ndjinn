@@ -17,13 +17,12 @@
      (lambda (x) (find x types))
      (digraph:topological-sort graph))))
 
-(defun compute-component-type-order (types)
+(defun compute-component-order (types)
   (sort-component-types =meta/component-order=
                         (append =meta/component-static= types)))
 
-(defun compute-total-component-type-order ()
-  (compute-component-type-order
-   (u:hash-keys =meta/component-order=)))
+(defun compute-total-component-order ()
+  (compute-component-order (u:hash-keys =meta/component-order=)))
 
 (defun compute-component-accessors (type)
   (labels ((get-all-direct-slots (class)
@@ -97,35 +96,38 @@
 (defmacro define-component (name super-classes &body slots/options)
   (u:with-gensyms (func)
     (destructuring-bind (&optional slots . options) slots/options
-      (let ((type-order (cdr (find :type-order options :key #'car)))
+      (let ((order (cdr (find :order options :key #'car)))
             (static (cadr (find :static options :key #'car)))
             (class-options (remove-if
-                            (lambda (x) (find x '(:type-order :static)))
+                            (lambda (x) (find x '(:order :static)))
                             options
                             :key #'car)))
-        (destructuring-bind (&key before after) type-order
+        (destructuring-bind (&key before after) order
           (declare (ignorable before after))
-          `(progn
-             (u:eval-always
-               (unless =context=
-                 (defclass ,name ,super-classes ,slots ,@class-options)))
-             (when =context=
-               (let ((,func (lambda ()
-                              (defclass ,name ,super-classes
-                                ,slots
-                                ,@class-options))))
-                 (enqueue :recompile (list :component (list ',name ,func)))))
-             (track-component-initargs ',name ',slots)
-             (setf (u:href =meta/component-order= ',name)
-                   '(:before ,(u:ensure-list before)
-                     :after ,(u:ensure-list after)))
-             (compute-total-component-type-order)
-             ,@(if (eq static t)
-                   `((pushnew ',name =meta/component-static=))
-                   `((u:deletef =meta/component-static=
-                                ',name)))
-             ,@(unless (typep static 'boolean)
-                 `((error ":STATIC must be either T or NIL.")))))))))
+          (let ((after (or after
+                           (unless (find name '(node id transform))
+                             '(node id transform)))))
+            `(progn
+               (u:eval-always
+                 (unless =context=
+                   (defclass ,name ,super-classes ,slots ,@class-options)))
+               (when =context=
+                 (let ((,func (lambda ()
+                                (defclass ,name ,super-classes
+                                  ,slots
+                                  ,@class-options))))
+                   (enqueue :recompile (list :component (list ',name ,func)))))
+               (track-component-initargs ',name ',slots)
+               (setf (u:href =meta/component-order= ',name)
+                     '(:before ,(u:ensure-list before)
+                       :after ,(u:ensure-list after)))
+               (compute-total-component-order)
+               ,@(if (eq static t)
+                     `((pushnew ',name =meta/component-static=))
+                     `((u:deletef =meta/component-static=
+                                  ',name)))
+               ,@(unless (typep static 'boolean)
+                   `((error ":STATIC must be either T or NIL."))))))))))
 
 (on-recompile :component data ()
   (destructuring-bind (name func) data

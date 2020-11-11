@@ -22,7 +22,7 @@
                       :initform 0)
    (%font/dimensions :accessor font/dimensions
                      :initform (v2:vec)))
-  (:type-order :before geometry :after render))
+  (:order :before geometry :after render))
 
 (defun load-font-spec (entity)
   (with-slots (%font/asset %font/spec) entity

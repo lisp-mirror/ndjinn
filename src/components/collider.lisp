@@ -22,7 +22,7 @@
                             :initform 0)
    (%collider/hit-p :accessor collider/hit-p
                     :initform nil))
-  (:type-order :after render))
+  (:order :after render))
 
 (defun initialize-collider-visualization (collider)
   (when (or (has-component-p collider 'mesh)

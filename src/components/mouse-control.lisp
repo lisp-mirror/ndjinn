@@ -9,7 +9,7 @@
                                  :initform :left)
    (%mouse-control/rotation :accessor mouse-control/rotation
                             :initform nil))
-  (:type-order :before render :after transform))
+  (:order :before render :after transform))
 
 (defclass mouse-control/rotation-state ()
   ((%dragging :accessor dragging

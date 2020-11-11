@@ -20,7 +20,7 @@
                 :initform nil)
    (%curve/segments :accessor curve/segments
                     :initform nil))
-  (:type-order :after transform))
+  (:order :after transform))
 
 (defun make-curve-data (curve)
   (u:if-let ((name (curve/name curve)))

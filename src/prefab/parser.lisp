@@ -130,26 +130,26 @@
 (defun resolve-prefab-component-types (prefab)
   (u:do-hash-values (node (nodes prefab))
     (with-slots (%options %template %component-types) node
-      (let* ((type-order =meta/component-order=)
+      (let* ((order =meta/component-order=)
              (types (when %template
                       (copy-seq
                        (u:href (component-types %template) :resolved)))))
         (destructuring-bind (&key add remove &allow-other-keys) %options
           (dolist (type remove)
-            (unless (u:href type-order type)
+            (unless (u:href order type)
               (error "Cannot remove component from prefab ~s: component ~s is ~
                       not a defined component."
                      (name prefab)
                      type))
             (u:deletef types type))
           (dolist (type add)
-            (unless (u:href type-order type)
+            (unless (u:href order type)
               (error "Cannot add component to prefab ~s: ~s is not a defined ~
                       component."
                      (name prefab)
                      type))
             (pushnew type types))
-          (let ((types (compute-component-type-order types)))
+          (let ((types (compute-component-order types)))
             (setf (u:href %component-types :self) add
                   (u:href %component-types :removed) remove
                   (u:href %component-types :resolved) types)))))))

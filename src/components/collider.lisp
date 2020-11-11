@@ -14,7 +14,7 @@
                         :initform nil)
    (%collider/pickable :accessor collider/pickable
                        :initarg :collider/pickable
-                       :initform t)
+                       :initform nil)
    (%collider/continuable :reader collider/continuable
                           :initarg :collider/continuable
                           :initform nil)

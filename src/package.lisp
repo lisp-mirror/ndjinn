@@ -206,6 +206,8 @@
   (:export
    #:disable-entity
    #:enable-entity
+   #:entity-enabled-p
+   #:entity-paused-p
    #:get-root-node)
   ;; prefab
   (:export

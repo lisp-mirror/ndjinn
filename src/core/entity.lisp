@@ -154,6 +154,12 @@
       (incf all))
     (values enabled all)))
 
+(defun entity-enabled-p (entity)
+  (not (node/disabled entity)))
+
+(defun entity-paused-p (entity)
+  (node/paused entity))
+
 (defun invoke-entity-window-resize-hook (old-size new-size)
   (do-nodes (entity)
     (on-entity-window-resize entity :old-size old-size :new-size new-size)))

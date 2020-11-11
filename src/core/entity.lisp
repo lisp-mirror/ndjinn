@@ -74,9 +74,10 @@
   (:method progn (entity &key old-size new-size)
     (declare (ignore old-size new-size))))
 
-(defmacro do-nodes ((entity &key parent include-disabled include-paused)
+(defmacro do-nodes ((entity &key parent type include-disabled include-paused)
                     &body body)
   `(map-nodes (lambda (,entity) ,@body)
+              :type ',type
               :root ,parent
               :include-disabled ,include-disabled
               :include-paused ,include-paused))

@@ -33,7 +33,7 @@
       (add-child child :parent entity))
     entity))
 
-(defun collect-nodes (root &key include-disabled include-paused)
+(defun collect-nodes (root &key type include-disabled include-paused)
   (let ((nodes nil))
     (labels ((recurse (node)
                (when (and (or include-disabled
@@ -42,14 +42,17 @@
                               (not (node/paused node))))
                  (dolist (child (node/children node))
                    (recurse child))
-                 (push node nodes))))
+                 (when (or (not type)
+                           (and type (has-component-p node type)))
+                   (push node nodes)))))
       (recurse (or root (get-root-node)))
       nodes)))
 
-(defun map-nodes (func &key root include-disabled include-paused)
+(defun map-nodes (func &key root type include-disabled include-paused)
   (map nil
        (lambda (x) (funcall func x))
        (collect-nodes root
+                      :type type
                       :include-disabled include-disabled
                       :include-paused include-paused)))
 

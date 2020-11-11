@@ -17,6 +17,7 @@
     (make-flows)
     (apply #'on-context-create =context= user-args)
     (log:info :pyx "Started ~a" title)
+    (tg:gc :full t)
     (start-loop)))
 
 (defun deinitialize ()

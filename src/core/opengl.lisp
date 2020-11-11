@@ -1,4 +1,4 @@
-(in-package #:net.mfiano.lisp.pyx)
+(in-package #:ndjinn)
 
 (u:define-constant +enabled-capabilities+
     '(:blend :cull-face :depth-test :dither :multisample)
@@ -28,7 +28,7 @@
     (values-list (mapcar #'parse-integer (ss:split-sequence #\. version)))))
 
 (defmacro with-debug-group (name &body body)
-  (if (find :pyx.release *features*)
+  (if (find :ndjinn.release *features*)
       `(progn ,@body)
       (u:once-only (name)
         `(progn

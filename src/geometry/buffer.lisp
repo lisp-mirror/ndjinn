@@ -1,4 +1,4 @@
-(in-package #:net.mfiano.lisp.pyx)
+(in-package #:ndjinn)
 
 (defun get-geometry-buffer-names (group)
   (ecase (geometry-group-format group)

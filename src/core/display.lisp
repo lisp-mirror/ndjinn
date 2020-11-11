@@ -1,4 +1,4 @@
-(in-package #:net.mfiano.lisp.pyx)
+(in-package #:ndjinn)
 
 (defstruct (display
             (:constructor %make-display)
@@ -16,7 +16,7 @@
             (:predicate nil)
             (:copier nil))
   handle
-  (%title "Pyx" :type string)
+  (%title "Ndjinn" :type string)
   (%size (error "Window size unset.") :type v2:vec)
   (%position (v2:vec) :type v2:vec))
 
@@ -31,7 +31,7 @@
                                        :h y
                                        :flags '(:opengl)))
            (window (%make-window :handle handle :%title title :%size s)))
-      (log:debug :pyx "Created window (~dx~d)" x y)
+      (log:debug :ndjinn "Created window (~dx~d)" x y)
       window)))
 
 (defun configure-opengl-context ()
@@ -52,7 +52,7 @@
     (apply #'gl:blend-func +blend-mode+)
     (gl:depth-func +depth-mode+)
     (gl:pixel-store :unpack-alignment 1)
-    (log:debug :pyx "Created OpenGL ~a context" (cfg :opengl-version))))
+    (log:debug :ndjinn "Created OpenGL ~a context" (cfg :opengl-version))))
 
 (defun set-display-properties (display)
   (u:mvlet* ((window (window-handle (display-window display)))

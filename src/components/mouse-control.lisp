@@ -1,4 +1,4 @@
-(in-package #:net.mfiano.lisp.pyx)
+(in-package #:ndjinn)
 
 (define-component mouse-control ()
   ((%mouse-control/rotation-speed :accessor mouse-control/rotation-speed

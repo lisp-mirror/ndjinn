@@ -1,4 +1,4 @@
-(in-package #:net.mfiano.lisp.pyx)
+(in-package #:ndjinn)
 
 (define-component animate ()
   ((%animate/sequence :reader animate/sequence

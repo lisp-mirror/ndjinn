@@ -1,4 +1,4 @@
-(in-package #:net.mfiano.lisp.pyx)
+(in-package #:ndjinn)
 
 (u:define-constant +gltf-attribute-locations+
     '(("POSITION" . 0)
@@ -276,7 +276,7 @@
     (make-gltf-vertex-buffers gltf primitive data)
     (make-gltf-index-buffer gltf primitive data)
     (make-gltf-draw-func primitive)
-    (log:debug :pyx "Loaded mesh: ~a, primitive: ~a (VAO: ~d)"
+    (log:debug :ndjinn "Loaded mesh: ~a, primitive: ~a (VAO: ~d)"
                (file-name gltf)
                mesh-name vao)
     primitive))

@@ -1,4 +1,4 @@
-(in-package #:net.mfiano.lisp.pyx)
+(in-package #:ndjinn)
 
 ;;; Begin parsing the raw data of the prefab. If any part of the parsing fails,
 ;;; clean up by removing the prefab entry from the metadata store.

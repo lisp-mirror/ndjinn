@@ -1,4 +1,4 @@
-(in-package #:net.mfiano.lisp.pyx)
+(in-package #:ndjinn)
 
 (defstruct (thread-pool
             (:constructor %make-thread-pool)
@@ -14,7 +14,7 @@
          (thread-pool (%make-thread-pool :worker-count worker-count)))
     (setf lp:*kernel* (lp:make-kernel worker-count)
           (thread-pool =context=) thread-pool)
-    (log:debug :pyx "Initialized thread-pool with ~d workers" worker-count)))
+    (log:debug :ndjinn "Initialized thread-pool with ~d workers" worker-count)))
 
 (defun destroy-thread-pool ()
   (u:when-let ((thread-pool (thread-pool =context=)))

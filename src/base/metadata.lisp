@@ -1,4 +1,4 @@
-(in-package #:net.mfiano.lisp.pyx)
+(in-package #:ndjinn)
 
 (glob:define-global-var =meta/asset-pools= (u:dict #'eq))
 (glob:define-global-var =meta/collider-plans= (u:dict #'eq))

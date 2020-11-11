@@ -1,4 +1,4 @@
-(in-package #:net.mfiano.lisp.pyx)
+(in-package #:ndjinn)
 
 (defstruct (shader-manager
             (:predicate nil)
@@ -14,10 +14,9 @@
                  (lambda (x) (enqueue :recompile (list :shaders x)))))
          (shaders (make-shader-manager :table table)))
     (setf (shaders =context=) shaders)
-    (log:debug :pyx "Loaded ~d shader programs"
-               (hash-table-count table))))
+    (log:debug :ndjinn "Loaded ~d shader programs" (hash-table-count table))))
 
 (on-recompile :shaders data ()
   (shadow:recompile-shaders data)
   (dolist (program data)
-    (log:debug :pyx "Recompiled shader: ~s" program)))
+    (log:debug :ndjinn "Recompiled shader: ~s" program)))

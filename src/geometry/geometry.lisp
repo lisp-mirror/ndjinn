@@ -1,9 +1,9 @@
-(in-package #:net.mfiano.lisp.pyx)
+(in-package #:ndjinn)
 
 (defun make-geometry (name)
   (let* ((geometry (funcall (u:href =meta/geometry= name)))
          (id (geometry-spec-id geometry)))
-    (log:debug :pyx "Created geometry: ~s (VAO: ~d)" name id)
+    (log:debug :ndjinn "Created geometry: ~s (VAO: ~d)" name id)
     geometry))
 
 (defun %update-geometry (geometry buffer-name data)
@@ -28,4 +28,4 @@
         (id (geometry-spec-id geometry)))
     (gl:delete-buffers (geometry-spec-buffers geometry))
     (gl:delete-vertex-arrays (list id))
-    (log:debug :pyx "Deleted geometry: ~s (VAO: ~d)" name id)))
+    (log:debug :ndjinn "Deleted geometry: ~s (VAO: ~d)" name id)))

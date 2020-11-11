@@ -1,4 +1,4 @@
-(in-package #:net.mfiano.lisp.pyx)
+(in-package #:ndjinn)
 
 (defclass hdr-image-buffer ()
   ((%stream :reader buffer-stream

@@ -1,9 +1,9 @@
-(in-package #:net.mfiano.lisp.pyx)
+(in-package #:ndjinn)
 
 (defun initialize (user-args)
   (let ((title (cfg :title)))
     (start-logging)
-    (log:info :pyx "Starting ~a..." title)
+    (log:info :ndjinn "Starting ~a..." title)
     (load-player-config)
     (setup-repl)
     (initialize-rng)
@@ -16,7 +16,7 @@
     (make-clock)
     (make-flows)
     (apply #'on-context-create =context= user-args)
-    (log:info :pyx "Started ~a" title)
+    (log:info :ndjinn "Started ~a" title)
     (tg:gc :full t)
     (start-loop)))
 
@@ -30,13 +30,13 @@
                      body))))
     (let ((title (cfg :title)))
       (%deinitialize
-       (log:info :pyx "Shutting down ~a..." title)
+       (log:info :ndjinn "Shutting down ~a..." title)
        (on-context-destroy =context=)
        (shutdown-gamepads)
        (kill-display)
        (destroy-thread-pool)
        (sdl2:quit*)
-       (log:info :pyx "Exited ~a" title)
+       (log:info :ndjinn "Exited ~a" title)
        (stop-logging)
        (setf =context= nil)
        (tg:gc :full t)))))
@@ -64,7 +64,7 @@
   (let* ((clock (clock =context=))
          (display (display =context=))
          (refresh-rate (display-refresh-rate display)))
-    (log:debug :pyx "Entered main game loop")
+    (log:debug :ndjinn "Entered main game loop")
     (with-profile
       (u:while (running =context=)
         (with-continuable

@@ -1,4 +1,4 @@
-(in-package #:net.mfiano.lisp.pyx)
+(in-package #:ndjinn)
 
 ;;; defaults
 
@@ -7,9 +7,9 @@
    :delta-time 1/60
    :log-asset-pool nil
    :log-repl-level :debug
-   :log-repl-categories (:pyx)
+   :log-repl-categories (:ndjinn)
    :opengl-version "3.3"
-   :title "Pyx Engine"))
+   :title "Ndjinn"))
 
 (define-collider-plan default ())
 

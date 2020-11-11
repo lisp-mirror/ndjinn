@@ -1,4 +1,4 @@
-(in-package #:net.mfiano.lisp.pyx.shader)
+(in-package #:ndjinn.shader)
 
 (defun font/distance ((color :vec3))
   (let ((r (.r color))

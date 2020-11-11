@@ -1,4 +1,4 @@
-(in-package #:net.mfiano.lisp.pyx)
+(in-package #:ndjinn)
 
 (defun find-prefab-reference-path (factory path)
   (with-slots (%current-node %entities) factory

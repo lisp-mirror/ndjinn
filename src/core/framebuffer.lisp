@@ -1,4 +1,4 @@
-(in-package #:net.mfiano.lisp.pyx)
+(in-package #:ndjinn)
 
 ;;; spec
 
@@ -224,4 +224,4 @@
     (framebuffer-attach-all data)
     (dolist (material (framebuffer-spec-materials spec))
       (enqueue :recompile (list :material material)))
-    (log:debug :pyx "Recompiled framebuffer: ~s" name)))
+    (log:debug :ndjinn "Recompiled framebuffer: ~s" name)))

@@ -1,4 +1,4 @@
-(in-package #:net.mfiano.lisp.pyx)
+(in-package #:ndjinn)
 
 (defun get-png-channel-count (image)
   (ecase (pngload:color-type image)

@@ -1,12 +1,11 @@
 (push :cl-opengl-no-masked-traps *features*)
 
-(asdf:defsystem #:net.mfiano.lisp.pyx
+(asdf:defsystem #:ndjinn
   :description "A professional-quality game engine with an emphasis on productivity."
   :author ("Michael Fiano <mail@mfiano.net>")
   :license "MIT"
-  :homepage "https://mfiano.net/projects/pyx"
-  :source-control (:git "https://github.com/mfiano/pyx")
-  :bug-tracker "https://github.com/mfiano/pyx/issues"
+  :source-control (:git "https://github.com/ndjinn/ndjinn")
+  :bug-tracker "https://github.com/ndjinn/ndjinn/issues"
   :encoding :utf-8
   :depends-on (#:3b-bmfont
                #:3b-bmfont/json
@@ -146,4 +145,4 @@
      (:file "animate")
      (:file "curve")))
    (:file "definitions")
-   (:file "pyx")))
+   (:file "ndjinn")))

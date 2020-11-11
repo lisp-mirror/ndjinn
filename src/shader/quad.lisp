@@ -1,4 +1,4 @@
-(in-package #:net.mfiano.lisp.pyx.shader)
+(in-package #:ndjinn.shader)
 
 (defun quad/vertex ((pos2 :vec3)
                     (uv :vec2)

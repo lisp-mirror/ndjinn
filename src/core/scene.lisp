@@ -1,4 +1,4 @@
-(in-package #:net.mfiano.lisp.pyx)
+(in-package #:ndjinn)
 
 ;;; spec
 
@@ -63,7 +63,7 @@
           (delete-node (get-root-node))
           (setf %loaded nil)
           (load-scene data))
-        (log:debug :pyx "Recompiled scene: ~s" name)))))
+        (log:debug :ndjinn "Recompiled scene: ~s" name)))))
 
 (defun get-registered-scene-names (&optional package-name)
   (let ((package-name (or package-name *package*)))
@@ -164,5 +164,5 @@
 
 (defun switch-scene (scene-name)
   (let ((scene (load-scene scene-name)))
-    (log:debug :pyx "Switched to scene: ~s" scene-name)
+    (log:debug :ndjinn "Switched to scene: ~s" scene-name)
     (setf (current-scene =context=) scene)))

@@ -1,4 +1,4 @@
-(in-package #:net.mfiano.lisp.pyx)
+(in-package #:ndjinn)
 
 ;;; spec
 
@@ -112,7 +112,7 @@
 
 (on-recompile :viewport data ()
   (recompile :scene (get-scene-name))
-  (log:debug :pyx "Recompiled viewport: ~s" data))
+  (log:debug :ndjinn "Recompiled viewport: ~s" data))
 
 (defun get-viewport-size (&optional viewport-name)
   (let* ((manager (get-viewport-manager))

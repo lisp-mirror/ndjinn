@@ -1,4 +1,4 @@
-(in-package #:net.mfiano.lisp.pyx)
+(in-package #:ndjinn)
 
 (define-component geometry ()
   ((%geometry/name :reader geometry/name
@@ -37,8 +37,8 @@
       (error "Geometry component ~s does not have a name specified." entity))
     (let ((geometry (if (geometry/cache entity)
                         (with-asset-cache :geometry name
-                            (prog1 (make-geometry name)
-                              (log:debug :pyx "Cached geometry: ~a" name)))
+                          (prog1 (make-geometry name)
+                            (log:debug :ndjinn "Cached geometry: ~a" name)))
                         (make-geometry name))))
       (setf (geometry/geometry entity) geometry))))
 

@@ -1,4 +1,4 @@
-(in-package #:net.mfiano.lisp.pyx)
+(in-package #:ndjinn)
 
 (glob:define-global-var =context= nil)
 
@@ -54,7 +54,7 @@
   (:method :before (context &rest user-args)
     (declare (ignore user-args))
     (let ((scene (initial-scene context)))
-      (log:debug :pyx "Starting initial scene...")
+      (log:debug :ndjinn "Starting initial scene...")
       (switch-scene scene))))
 
 (defgeneric on-context-destroy (context)

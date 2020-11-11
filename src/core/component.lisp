@@ -1,4 +1,4 @@
-(in-package #:net.mfiano.lisp.pyx)
+(in-package #:ndjinn)
 
 (defun sort-component-types (order-table types)
   (let ((graph (digraph:make-digraph)))
@@ -130,4 +130,4 @@
 (on-recompile :component data ()
   (destructuring-bind (name func) data
     (funcall func)
-    (log:debug :pyx "Recompiled component: ~s" name)))
+    (log:debug :ndjinn "Recompiled component: ~s" name)))

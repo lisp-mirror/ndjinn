@@ -1,4 +1,4 @@
-(in-package #:net.mfiano.lisp.pyx)
+(in-package #:ndjinn)
 
 (defstruct (geometry-spec
             (:constructor %make-geometry-spec)

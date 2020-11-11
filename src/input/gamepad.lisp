@@ -1,4 +1,4 @@
-(in-package #:net.mfiano.lisp.pyx)
+(in-package #:ndjinn)
 
 (u:define-constant +gamepad-axis-names+
     #((:left-stick :x) (:left-stick :y) (:right-stick :x) (:right-stick :y)
@@ -72,7 +72,7 @@
       (setf (u:href (input-data-gamepad-instances data) instance) gamepad
             (u:href (input-data-gamepad-ids data) id) gamepad)
       (input-transition-in :gamepad :attach id)
-      (log:debug :pyx "Gamepad attached: ~s" id))))
+      (log:debug :ndjinn "Gamepad attached: ~s" id))))
 
 (defun event/gamepad-detach (instance)
   (let* ((data (input-data =context=))
@@ -84,7 +84,7 @@
     (remhash id (input-data-gamepad-ids data))
     (remhash instance instances)
     (input-transition-out :gamepad :attach id)
-    (log:debug :pyx "Gamepad detached: ~s" id)))
+    (log:debug :ndjinn "Gamepad detached: ~s" id)))
 
 (defun event/gamepad-analog-motion (instance axis value)
   (destructuring-bind (sub-device axis) axis

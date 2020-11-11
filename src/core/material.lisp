@@ -1,4 +1,4 @@
-(in-package #:net.mfiano.lisp.pyx)
+(in-package #:ndjinn)
 
 ;;; spec
 
@@ -180,4 +180,4 @@
   (u:when-let ((material (u:href (materials (current-scene =context=)) data)))
     (make-material-uniforms material)
     (ensure-material-framebuffer material))
-  (log:debug :pyx "Recompiled material: ~s" data))
+  (log:debug :ndjinn "Recompiled material: ~s" data))

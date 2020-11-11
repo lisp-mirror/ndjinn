@@ -1,4 +1,4 @@
-(in-package #:net.mfiano.lisp.pyx)
+(in-package #:ndjinn)
 
 (defun make-prefab-entity (node)
   (%make-entity (u:href (component-types node) :resolved)))

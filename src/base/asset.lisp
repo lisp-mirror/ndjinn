@@ -1,4 +1,4 @@
-(in-package #:net.mfiano.lisp.pyx)
+(in-package #:ndjinn)
 
 ;;; spec
 
@@ -122,7 +122,7 @@
       (error "Release must be deployed on SBCL to load assets.")
       (asdf:system-relative-pathname system path)))
 
-(defun resolve-system-path (path &optional (system :net.mfiano.lisp.pyx))
+(defun resolve-system-path (path &optional (system :ndjinn))
   (let* ((system (asdf:find-system system))
          (path (uiop:merge-pathnames*
                 path
@@ -153,7 +153,7 @@
                  spec-name pool-name path)))))
 
 (defmethod resolve-path ((asset string))
-  (resolve-system-path asset :net.mfiano.lisp.pyx))
+  (resolve-system-path asset :ndjinn))
 
 (defmacro with-asset-cache (type key &body body)
   (u:with-gensyms (table value found-p)

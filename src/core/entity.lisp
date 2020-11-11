@@ -1,4 +1,4 @@
-(in-package #:net.mfiano.lisp.pyx)
+(in-package #:ndjinn)
 
 (defun ensure-entity-class (components)
   (ensure-mixin-class (make-mixin-class-list components)))
@@ -138,7 +138,7 @@
      ,@body))
 
 (defmacro define-entity-hook (hook (entity type &rest data) &body body)
-  (let ((method (u:format-symbol :net.mfiano.lisp.pyx "ON-ENTITY-~a" hook))
+  (let ((method (u:format-symbol :ndjinn "ON-ENTITY-~a" hook))
         (parameters (get-flow-hook-parameters hook entity type data)))
     `(defmethod ,method progn ,parameters
        ,@(when data

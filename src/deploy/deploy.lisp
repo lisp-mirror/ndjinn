@@ -1,9 +1,9 @@
-(in-package #:net.mfiano.lisp.pyx)
+(in-package #:ndjinn)
 
 (defun deploy/check-features ()
-  (unless (and (find :pyx.release *features*)
+  (unless (and (find :ndjinn.release *features*)
                (find :cl-opengl-no-check-error *features*))
-    (error "You can only deploy by depending on the pyx.deploy system.")))
+    (error "You can only deploy by depending on the ndjinn-deploy system.")))
 
 (defun deploy/setup ()
   (setf =release= t)

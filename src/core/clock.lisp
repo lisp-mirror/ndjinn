@@ -1,4 +1,4 @@
-(in-package #:net.mfiano.lisp.pyx)
+(in-package #:ndjinn)
 
 (defstruct (clock (:constructor %make-clock)
                   (:predicate nil)
@@ -30,7 +30,7 @@
     (setf (clock-init-time clock) (get-internal-real-time)
           (clock-running-time clock) (%get-time clock))
     (setf (clock =context=) clock)
-    (log:debug :pyx "Initialized game clock: delta: ~,3f ms/frame"
+    (log:debug :ndjinn "Initialized game clock: delta: ~,3f ms/frame"
                (* (cfg :delta-time) 1000f0))))
 
 (defun smooth-delta-time (clock refresh-rate)
@@ -96,7 +96,7 @@
     (when (plusp (clock-frame-count clock))
       (calculate-frame-rate clock)
       (when (zerop (mod (clock-frame-count clock) 60))
-        (log:trace :pyx "Frame rate: ~d fps / ~d ms/frame"
+        (log:trace :ndjinn "Frame rate: ~d fps / ~d ms/frame"
                    (clock-fps/average/10s clock)
                    (/ 1000 (clock-fps/average/10s clock)))))))
 

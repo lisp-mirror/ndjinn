@@ -1,4 +1,4 @@
-(in-package #:net.mfiano.lisp.pyx)
+(in-package #:ndjinn)
 
 (u:define-constant +window-event-names+
     #(nil :show :hide nil :move :resize nil :minimize :maximize :restore

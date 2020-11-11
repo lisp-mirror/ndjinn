@@ -1,4 +1,4 @@
-(in-package #:net.mfiano.lisp.pyx)
+(in-package #:ndjinn)
 
 (defun render-order-comparator (x y)
   (let ((order (scene-spec-draw-order (spec (current-scene =context=)))))

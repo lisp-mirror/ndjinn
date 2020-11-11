@@ -1,4 +1,4 @@
-(in-package #:net.mfiano.lisp.pyx)
+(in-package #:ndjinn)
 
 (defun select-shader-buffer-binding ()
   (let* ((shaders (shaders =context=))

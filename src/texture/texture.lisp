@@ -1,4 +1,4 @@
-(in-package #:net.mfiano.lisp.pyx)
+(in-package #:ndjinn)
 
 (defclass texture ()
   ((%spec :reader spec
@@ -68,7 +68,7 @@
 
 (defun load-texture (name &key width height)
   (with-asset-cache :texture name
-    (log:debug :pyx "Loading texture: ~s..." name)
+    (log:debug :ndjinn "Loading texture: ~s..." name)
     (let* ((spec (find-texture-spec name))
            (type (texture-type spec))
            (source (load-texture-source spec
@@ -78,7 +78,7 @@
                                         :height height))
            (texture (make-texture spec type source)))
       (configure-texture texture)
-      (log:debug :pyx "Texture loaded: ~s" name)
+      (log:debug :ndjinn "Texture loaded: ~s" name)
       texture)))
 
 (on-recompile :texture data ()
@@ -88,4 +88,4 @@
     (load-texture data :width (width texture) :height (height texture))
     (dolist (material-name (materials texture))
       (recompile :material material-name))
-    (log:debug :pyx "Recompiled texture: ~s" data)))
+    (log:debug :ndjinn "Recompiled texture: ~s" data)))

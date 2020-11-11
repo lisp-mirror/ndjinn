@@ -1,4 +1,4 @@
-(in-package #:net.mfiano.lisp.pyx)
+(in-package #:ndjinn)
 
 (defun start-logging ()
   (unless (log:thread log:*global-controller*)

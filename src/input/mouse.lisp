@@ -1,4 +1,4 @@
-(in-package #:net.mfiano.lisp.pyx)
+(in-package #:ndjinn)
 
 (u:define-constant +mouse-button-names+
     #(nil :left :middle :right :x1 :x2)

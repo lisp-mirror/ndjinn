@@ -1,4 +1,4 @@
-(in-package #:net.mfiano.lisp.pyx)
+(in-package #:ndjinn)
 
 (defclass image ()
   ((%path :reader path
@@ -40,6 +40,6 @@
 (defmethod load-image (asset &key)
   (let* ((path (resolve-path asset))
          (type (get-image-type path)))
-    (log:debug :pyx "Loading image: ~s..." path)
+    (log:debug :ndjinn "Loading image: ~s..." path)
     (prog1 (%load-image type path)
-      (log:debug :pyx "Loaded image: ~s" path))))
+      (log:debug :ndjinn "Loaded image: ~s" path))))

@@ -1,6 +1,6 @@
 (in-package #:cl-user)
 
-(uiop:define-package #:net.mfiano.lisp.pyx.shader
+(uiop:define-package #:ndjinn.shader
   (:use-reexport
    #:net.mfiano.lisp.shadow.glsl
    #:net.mfiano.lisp.umbra.common)
@@ -17,7 +17,7 @@
    #:matcap
    #:quad))
 
-(defpackage #:net.mfiano.lisp.pyx
+(defpackage #:ndjinn
   (:local-nicknames
    (#:avl #:net.mfiano.lisp.algae.data-structures.avl-tree)
    (#:curve #:net.mfiano.lisp.algae.spline.cubic-bezier)
@@ -33,7 +33,7 @@
    (#:math #:net.mfiano.lisp.origin)
    (#:q #:net.mfiano.lisp.origin.quat)
    (#:shadow #:net.mfiano.lisp.shadow)
-   (#:shader #:net.mfiano.lisp.pyx.shader)
+   (#:shader #:ndjinn.shader)
    (#:umbra.sprite #:net.mfiano.lisp.umbra.sprite)
    (#:ss #:split-sequence)
    (#:sv #:static-vectors)

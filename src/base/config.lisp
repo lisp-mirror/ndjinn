@@ -1,4 +1,4 @@
-(in-package #:net.mfiano.lisp.pyx)
+(in-package #:ndjinn)
 
 (defmacro define-config (name () &body body)
   (u:with-gensyms (key value)
@@ -18,8 +18,7 @@
 (defun load-player-config ()
   (u:when-let* ((project (project =context=))
                 (path (uiop:merge-pathnames*
-                       (make-pathname :directory `(:relative "Pyx Games"
-                                                             ,project)
+                       (make-pathname :directory `(:relative "Ndjinn" ,project)
                                       :name "settings"
                                       :type "conf")
                        (uiop:xdg-config-home)))
@@ -29,18 +28,18 @@
     (ensure-directories-exist path)
     (cond
       ((uiop:file-exists-p path)
-       (log:info :pyx "Loading player configuration from ~a" path)
+       (log:info :ndjinn "Loading player configuration from ~a" path)
        (let ((table =meta/config-player=))
          (u:do-plist (k v (u:safe-read-file-forms path :package package))
            (let ((key (u:make-keyword k)))
              (u:if-found (#:nil (u:href table 'default key))
                (progn
                  (setf (cfg/player key) v)
-                 (log:info :pyx "Player configuration override: ~(~a~) = ~s"
+                 (log:info :ndjinn "Player configuration override: ~(~a~) = ~s"
                            k v))
-               (log:warn :pyx "Invalid configuration option: ~(~a~)" k))))))
+               (log:warn :ndjinn "Invalid configuration option: ~(~a~)" k))))))
       (t
-       (log:info :pyx "No user configuration file found at ~a" path)))))
+       (log:info :ndjinn "No user configuration file found at ~a" path)))))
 
 (defun cfg (key)
   (let ((config =meta/config-developer=))

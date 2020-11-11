@@ -1,4 +1,4 @@
-(in-package #:net.mfiano.lisp.pyx)
+(in-package #:ndjinn)
 
 (defgeneric collide-p (shape1 shape2)
   (:method (shape1 shape2)))

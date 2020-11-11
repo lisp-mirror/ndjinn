@@ -1,4 +1,4 @@
-(in-package #:net.mfiano.lisp.pyx)
+(in-package #:ndjinn)
 
 (defmacro with-continuable (&body body)
   (u:with-gensyms (debugger-entry-time previous-hook pause-time)
@@ -9,17 +9,17 @@
               (,hook
                 (lambda (condition hook)
                   (declare (ignore hook))
-                  (log:debug :pyx "Entered debugger")
+                  (log:debug :ndjinn "Entered debugger")
                   (setf ,debugger-entry-time (get-time))
                   (when ,previous-hook
                     (funcall ,previous-hook condition ,previous-hook)))))
          (restart-case (progn ,@body)
            (abort ()
-             :report "Pyx: Skip processing the currently executing frame"
+             :report "Ndjinn: Skip processing the currently executing frame"
              (when ,debugger-entry-time
                (let ((,pause-time (- (get-time) ,debugger-entry-time)))
                  (incf (pause-time) ,pause-time)
-                 (log:debug :pyx "Spent ~3$ seconds in the debugger"
+                 (log:debug :ndjinn "Spent ~3$ seconds in the debugger"
                             ,pause-time)))))))))
 
 (flet ((generate-live-support-functions ()
@@ -51,7 +51,7 @@
            (compile
             'send-to-repl
             (if (eq repl-package :slynk)
-                `(lambda (values &key (comment "Sent from Pyx"))
+                `(lambda (values &key (comment "Sent from Ndjinn"))
                    (,(find-symbol "COPY-TO-REPL-IN-EMACS" :slynk-mrepl)
                     values :blurb comment :pop-to-buffer nil))
                 (constantly nil))))))

@@ -1,4 +1,4 @@
-(in-package #:net.mfiano.lisp.pyx)
+(in-package #:ndjinn)
 
 (defclass animation ()
   ((%name :reader name
@@ -78,6 +78,6 @@
   (:method (entity name data)))
 
 (defmacro define-animate-hook (hook (entity name data) &body body)
-  (let ((method (u:format-symbol :net.mfiano.lisp.pyx "ON-ANIMATE-~a" hook)))
+  (let ((method (u:format-symbol :ndjinn "ON-ANIMATE-~a" hook)))
     `(defmethod ,method (,entity (name (eql ',name)) ,data)
        ,@body)))

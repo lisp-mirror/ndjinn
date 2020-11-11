@@ -1,4 +1,4 @@
-(in-package #:net.mfiano.lisp.pyx)
+(in-package #:ndjinn)
 
 (defstruct (hardware-info
             (:predicate nil)
@@ -55,7 +55,7 @@
         :collect (cons i (sdl2:get-display-name i))))
 
 (defun load-hardware-info ()
-  (log:debug :pyx "Reading hardware information...")
+  (log:debug :ndjinn "Reading hardware information...")
   (let* ((cpu (machine-version))
          (cpu-count (cl-cpus:get-number-of-processors))
          (monitors (get-monitor-names))
@@ -76,14 +76,15 @@
                          :max-texture-size max-texture-size
                          :max-ssbo-bindings max-ssbo-bindings)))
     (setf (hardware-info =context=) hardware-info)
-    (log:debug :pyx "CPU: ~a (threads: ~d)" cpu cpu-count)
+    (log:debug :ndjinn "CPU: ~a (threads: ~d)" cpu cpu-count)
     (dolist (x monitors)
-      (log:debug :pyx "Monitor ~d: ~a" (car x) (cdr x)))
-    (log:debug :pyx "GPU: ~a (version: ~a)" gpu-make/model gpu-version)
-    (log:debug :pyx "GPU limit - Maximum texture size: ~dx~d"
+      (log:debug :ndjinn "Monitor ~d: ~a" (car x) (cdr x)))
+    (log:debug :ndjinn "GPU: ~a (version: ~a)" gpu-make/model gpu-version)
+    (log:debug :ndjinn "GPU limit - Maximum texture size: ~dx~d"
                max-texture-size
                max-texture-size)
-    (log:debug :pyx "GPU limit - Maximum SSBO bindings: ~d" max-ssbo-bindings)))
+    (log:debug :ndjinn "GPU limit - Maximum SSBO bindings: ~d"
+               max-ssbo-bindings)))
 
 (defgeneric get-hardware-info (key)
   (:method ((key (eql :cpu)))

@@ -1,16 +1,16 @@
-# Pyx
+# ndjinn
 A declarative, component-based game engine.
 
 ## Install
 
 ```lisp
-(ql:quickload :net.mfiano.lisp.pyx)
+(ql:quickload :ndjinn)
 ```
 
 ## Usage
 
 Sorry, no documentation yet. While it works and games can be written with it,
-Pyx's API is still in flux.
+ndjinn's API is still in flux.
 
 ## License
 

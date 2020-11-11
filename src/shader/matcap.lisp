@@ -1,4 +1,4 @@
-(in-package #:net.mfiano.lisp.pyx.shader)
+(in-package #:ndjinn.shader)
 
 (defun matcap/vertex ((mesh-attrs mesh-attrs)
                       &uniforms

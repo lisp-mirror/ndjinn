@@ -1,4 +1,4 @@
-(in-package #:net.mfiano.lisp.pyx)
+(in-package #:ndjinn)
 
 (defmethod update-texture ((type (eql :cube-map-array)) texture source)
   (let* ((id (gl:gen-texture))

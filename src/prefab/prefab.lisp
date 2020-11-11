@@ -1,4 +1,4 @@
-(in-package #:net.mfiano.lisp.pyx)
+(in-package #:ndjinn)
 
 (defun register-prefab-viewports (entity &key viewports)
   (let ((viewports-table (table (viewports (current-scene =context=)))))
@@ -43,7 +43,7 @@
            (new-entity (load-prefab data :parent parent)))
       (translate-entity new-entity translation :replace t)
       (delete-node entity)))
-  (log:debug :pyx "Recompiled prefab: ~s" data))
+  (log:debug :ndjinn "Recompiled prefab: ~s" data))
 
 (defmacro define-prefab (name options &body body)
   (u:with-gensyms (data)

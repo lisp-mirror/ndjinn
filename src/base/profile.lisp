@@ -1,4 +1,4 @@
-(in-package #:net.mfiano.lisp.pyx)
+(in-package #:ndjinn)
 
 (defvar *profile* nil)
 (defvar *profile-frames* 1800)
@@ -7,7 +7,8 @@
 (defmacro with-profile (&body body)
   (let ((packages (remove-if-not
                    (lambda (x)
-                     (or (u:string-starts-with-p x "NET.MFIANO")
+                     (or (u:string-starts-with-p x "NDJINN")
+                         (u:string-starts-with-p x "NET.MFIANO")
                          (string= x "SDL2")
                          (string= x "CL-OPENGL")))
                    (mapcar #'package-name (list-all-packages)))))

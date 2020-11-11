@@ -1,4 +1,4 @@
-(in-package #:net.mfiano.lisp.pyx)
+(in-package #:ndjinn)
 
 (defgeneric on-collision-enter (layer1-symbol layer1 layer2-symbol layer2)
   (:method (layer1-symbol layer1 layer2-symbol layer2)))
@@ -28,8 +28,7 @@
                `((defmethod on-collision-picked ((,layer1-symbol (eql ',layer1))
                                                  ,layer1)
                    ,@body))
-               `((defmethod ,(u:format-symbol :net.mfiano.lisp.pyx
-                                              "ON-COLLISION-~a" hook)
+               `((defmethod ,(u:format-symbol :ndjinn "ON-COLLISION-~a" hook)
                      ((,layer1-symbol (eql ',layer1)) ,layer1
                       (,layer2-symbol (eql ',layer2)) ,layer2)
                    (when (and ,layer1 ,layer2)

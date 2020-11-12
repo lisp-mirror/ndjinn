@@ -27,8 +27,8 @@
 (defun initialize-collider-visualization (collider)
   (when (or (has-component-p collider 'mesh)
             (has-component-p collider 'render))
-    (error "Entity ~s has a collider to be visualized, but it must not have ~
-              a mesh or render component attached." collider))
+    (error "Entity ~s has a collider to be visualized, but it must not have a ~
+            mesh or render component attached." collider))
   (attach-component collider 'mesh
                     :mesh/asset "meshes/colliders.glb"
                     :mesh/name (format nil "~(~a~)"

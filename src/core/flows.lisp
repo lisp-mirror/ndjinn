@@ -8,11 +8,9 @@
 
 (defun make-flow-priorities ()
   (let ((table (u:dict #'eq)))
-    (setf (u:href table 'enable) 0
-          (u:href table 'transform) 1
-          (u:href table 'detach) 2
-          (u:href table 'disable) 3
-          (u:href table 'delete) 4)
+    (setf (u:href table 'transform) 0
+          (u:href table 'detach) 1
+          (u:href table 'disable) 2)
     table))
 
 (defun compare-flow-item (item1 item2)

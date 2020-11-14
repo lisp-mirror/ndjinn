@@ -77,13 +77,11 @@
 
 (defun enable-entity (entity)
   (do-nodes (node :parent entity :include-disabled t)
-    (defer-work (enable)
-      (on-entity-enable node))))
+    (on-entity-enable node)))
 
 (defun disable-entity (entity)
   (do-nodes (node :parent entity)
-    (defer-work (disable)
-      (on-entity-disable node))))
+    (on-entity-disable node)))
 
 ;;; entity hooks
 

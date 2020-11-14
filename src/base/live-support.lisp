@@ -17,7 +17,7 @@
                         (let ((,pause-time (- (get-time) ,debugger-entry-time)))
                           (incf (pause-time) ,pause-time)
                           (log:debug :ndjinn
-                                     "Foo: Spent ~3$ seconds in the debugger"
+                                     "Spent ~3$ seconds in the debugger"
                                      ,pause-time))))))))
          (restart-case (progn ,@body)
            (abort ()

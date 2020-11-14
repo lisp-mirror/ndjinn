@@ -56,10 +56,8 @@
     (%on-collision-enter collider2 collider1)))
 
 (defun collider-contact-continue (collider1 collider2)
-  (when (collider/continuable collider1)
-    (%on-collision-continue collider1 collider2))
-  (when (collider/continuable collider2)
-    (%on-collision-continue collider2 collider1)))
+  (%on-collision-continue collider1 collider2)
+  (%on-collision-continue collider2 collider1))
 
 (defun collider-contact-exit (system collider1 collider2)
   (let ((contacts (contacts system)))

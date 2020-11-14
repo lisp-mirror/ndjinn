@@ -30,7 +30,8 @@
 
 (defun get-flow-hook-parameters (hook entity type data)
   (ecase hook
-    ((:create :delete :physics-update :update :pre-render :render)
+    ((:create :delete :physics-update :update :pre-render :render :enable
+              :disable)
      `((,entity ,type)))
     ((:attach :detach)
      `(,entity (type (eql ',type))))
@@ -68,6 +69,14 @@
 (defgeneric on-entity-detach (entity type)
   (:method-combination progn :most-specific-last)
   (:method progn (entity type)))
+
+(defgeneric on-entity-enable (entity)
+  (:method-combination progn :most-specific-last)
+  (:method progn (entity)))
+
+(defgeneric on-entity-disable (entity)
+  (:method-combination progn :most-specific-last)
+  (:method progn (entity)))
 
 (defgeneric on-entity-window-resize (entity &key)
   (:method-combination progn :most-specific-last)

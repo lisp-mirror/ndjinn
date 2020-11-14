@@ -15,9 +15,6 @@
    (%collider/pickable :accessor collider/pickable
                        :initarg :collider/pickable
                        :initform t)
-   (%collider/continuable :reader collider/continuable
-                          :initarg :collider/continuable
-                          :initform nil)
    (%collider/contact-count :accessor collider/contact-count
                             :initform 0)
    (%collider/hit-p :accessor collider/hit-p
@@ -84,3 +81,10 @@
 (define-entity-hook :pre-render (entity collider)
   (when (collider/visualize entity)
     (set-uniforms entity :contact (collider/hit-p entity))))
+
+(define-entity-hook :enable (entity collider)
+  (register-collider entity (collider/layer entity)))
+
+(define-entity-hook :disable (entity collider)
+  (deregister-collider entity (collider/layer entity))
+  (setf (collider/hit-p entity) nil))

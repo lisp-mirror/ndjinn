@@ -112,3 +112,11 @@
       (set-uniforms entity
                     :view (camera/view camera)
                     :proj (camera/projection camera)))))
+
+(define-entity-hook :enable (entity render)
+  (dolist (viewport (get-entity-viewports entity))
+    (register-render-order viewport entity)))
+
+(define-entity-hook :disable (entity render)
+  (dolist (viewport (get-entity-viewports entity))
+    (deregister-render-order viewport entity)))

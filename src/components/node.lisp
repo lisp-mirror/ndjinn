@@ -77,18 +77,13 @@
 
 (defun enable-entity (entity)
   (do-nodes (node :parent entity :include-disabled t)
-    (when (has-component-p node 'render)
-      (dolist (viewport (get-entity-viewports node))
-        (register-render-order viewport node)))
-    (setf (node/disabled node) nil)))
+    (defer-work (enable)
+      (on-entity-enable node))))
 
 (defun disable-entity (entity)
   (do-nodes (node :parent entity)
-    (when (has-component-p node 'render)
-      (dolist (viewport (get-entity-viewports node))
-        (deregister-render-order viewport node)))
-    (unless (node/root-p node)
-      (setf (node/disabled node) t))))
+    (defer-work (disable)
+      (on-entity-disable node))))
 
 ;;; entity hooks
 
@@ -100,3 +95,10 @@
       (setf (node/pause-mode entity) (if parent
                                          (node/pause-mode parent)
                                          :stop)))))
+
+(define-entity-hook :enable (entity node)
+  (setf (node/disabled entity) nil))
+
+(define-entity-hook :disable (entity node)
+  (unless (node/root-p entity)
+    (setf (node/disabled entity) t)))

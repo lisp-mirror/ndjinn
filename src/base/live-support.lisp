@@ -4,23 +4,24 @@
   (u:with-gensyms (debugger-entry-time previous-hook pause-time)
     (let ((hook #+sbcl 'sb-ext:*invoke-debugger-hook*
                 #-sbcl '*debugger-hook*))
-      `(let* ((,debugger-entry-time nil)
-              (,previous-hook ,hook)
+      `(let* ((,previous-hook ,hook)
               (,hook
                 (lambda (condition hook)
                   (declare (ignore hook))
-                  (log:debug :ndjinn "Entered debugger")
-                  (setf ,debugger-entry-time (get-time))
-                  (when ,previous-hook
-                    (funcall ,previous-hook condition ,previous-hook)))))
+                  (let ((,debugger-entry-time (get-time)))
+                    (log:debug :ndjinn "Entered debugger")
+                    (unwind-protect
+                         (when ,previous-hook
+                           (funcall ,previous-hook condition ,previous-hook))
+                      (when ,debugger-entry-time
+                        (let ((,pause-time (- (get-time) ,debugger-entry-time)))
+                          (incf (pause-time) ,pause-time)
+                          (log:debug :ndjinn
+                                     "Foo: Spent ~3$ seconds in the debugger"
+                                     ,pause-time))))))))
          (restart-case (progn ,@body)
            (abort ()
-             :report "Ndjinn: Skip processing the currently executing frame"
-             (when ,debugger-entry-time
-               (let ((,pause-time (- (get-time) ,debugger-entry-time)))
-                 (incf (pause-time) ,pause-time)
-                 (log:debug :ndjinn "Spent ~3$ seconds in the debugger"
-                            ,pause-time)))))))))
+             :report "Ndjinn: Skip processing current frame"))))))
 
 (flet ((generate-live-support-functions ()
          (let ((repl-package (find-if #'find-package '(:slynk :swank))))

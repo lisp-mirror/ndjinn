@@ -46,11 +46,11 @@
            (and (not %self-finishing-p) (>= %elapsed %duration)))
        (on-animate-finish entity %name %data)
        (deregister-animation entity animation)))
-    (incf %elapsed (get-frame-time))
     (let ((step (funcall %shape
                          (if (zerop %duration)
                              0f0
                              (u:clamp (/ %elapsed %duration) 0f0 1f0)))))
+      (incf %elapsed (get-frame-time))
       (setf (u:href %data :step) step)
       (on-animate-update entity %name %data)
       (setf (u:href %data :previous-step) step

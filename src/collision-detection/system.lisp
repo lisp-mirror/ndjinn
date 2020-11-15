@@ -40,11 +40,13 @@
     (setf (u:href deregistered layer collider) collider)))
 
 (defun collider-contact-p (system collider1 collider2)
+  (declare (optimize speed))
   (let ((contacts (contacts system)))
     (when (u:href contacts collider1)
       (u:href contacts collider1 collider2))))
 
 (defun collider-contact-enter (system collider1 collider2)
+  (declare (optimize speed))
   (let ((contacts (contacts system)))
     (unless (u:href contacts collider1)
       (setf (u:href contacts collider1) (u:dict #'eq)))
@@ -56,10 +58,12 @@
     (%on-collision-enter collider2 collider1)))
 
 (defun collider-contact-continue (collider1 collider2)
+  (declare (optimize speed))
   (%on-collision-continue collider1 collider2)
   (%on-collision-continue collider2 collider1))
 
 (defun collider-contact-exit (system collider1 collider2)
+  (declare (optimize speed))
   (let ((contacts (contacts system)))
     (u:when-let ((table2 (u:href contacts collider1)))
       (remhash collider2 table2)
@@ -80,12 +84,16 @@
           (collider-contact-exit system collider k))))))
 
 (defun compute-collider-contact (system collider1 collider2)
+  (declare (optimize speed))
   (u:when-let ((shape1 (collider/shape collider1))
                (shape2 (collider/shape collider2)))
     (let ((collided-p (collide-p shape1 shape2))
           (contact-p (collider-contact-p system collider1 collider2)))
       (cond
-        ((and collided-p contact-p)
+        ((and collided-p
+              contact-p
+              (collider/continuable collider1)
+              (collider/continuable collider2))
          (collider-contact-continue collider1 collider2))
         ((and collided-p (not contact-p))
          (collider-contact-enter system collider1 collider2))
@@ -115,6 +123,7 @@
                 (compute-collider-contact system k1 k2))))))))
 
 (defun compute-collisions/registered (system)
+  (declare (optimize speed))
   (let* ((active (active system))
          (registered (registered system))
          (table (table (spec system))))
@@ -130,6 +139,7 @@
               (setf (u:href active c1-layer c1) c1))))))))
 
 (defun compute-collisions/deregistered (system)
+  (declare (optimize speed))
   (let* ((active (active system))
          (registered (registered system))
          (deregistered (deregistered system)))
@@ -143,6 +153,7 @@
             (remhash k layer-deregistered)))))))
 
 (defun compute-collisions ()
+  (declare (optimize speed))
   (let ((system (collision-system (current-scene =context=))))
     (compute-collisions/active system)
     (compute-collisions/registered system)

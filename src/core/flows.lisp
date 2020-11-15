@@ -10,7 +10,7 @@
   (let ((table (u:dict #'eq)))
     (setf (u:href table 'transform) 0
           (u:href table 'detach) 1
-          (u:href table 'disable) 2)
+          (u:href table 'delete) 2)
     table))
 
 (defun compare-flow-item (item1 item2)

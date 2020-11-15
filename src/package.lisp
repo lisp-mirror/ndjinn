@@ -208,7 +208,8 @@
    #:enable-entity
    #:entity-enabled-p
    #:entity-paused-p
-   #:get-root-node)
+   #:get-root-node
+   #:reparent-node)
   ;; prefab
   (:export
    #:define-prefab

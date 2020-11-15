@@ -23,15 +23,19 @@
                  :initform nil))
   (:static t))
 
-(defun add-child (entity &key parent)
-  (with-slots (%node/parent %node/children) entity
+(defun reparent-node (entity parent)
+  (with-slots (%node/parent) entity
     (when %node/parent
       (u:deletef (node/children %node/parent) entity))
     (setf %node/parent (or parent (get-root-node)))
     (push entity (node/children %node/parent))
-    (dolist (child %node/children)
-      (add-child child :parent entity))
     entity))
+
+(defun add-child (entity &key parent)
+  (reparent-node entity parent)
+  (dolist (child (node/children entity))
+    (add-child child :parent entity))
+  entity)
 
 (defun collect-nodes (root &key type include-disabled include-paused)
   (let ((nodes nil))

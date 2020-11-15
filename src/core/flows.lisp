@@ -28,9 +28,10 @@
 
 (defun process-flows ()
   (loop :with queue = (queue (flows =context=))
-        :for ((nil . func) found) = (multiple-value-list (queues:qpop queue))
-        :while found
-        :do (funcall func)))
+        :do (u:mvlet ((item found (queues:qpop queue)))
+              (unless found
+                (return-from process-flows))
+              (funcall (cdr item)))))
 
 (defmacro defer-work ((flow-type) &body body)
   `(queues:qpush

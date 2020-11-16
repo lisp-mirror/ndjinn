@@ -82,7 +82,7 @@
              (picker (picker viewport))
              (picked nil))
     (update-picker)
-    (u:do-hash-values (v (active (collision-system scene)))
+    (u:do-hash-values (v (collision-system-active (collision-system scene)))
       (u:do-hash-keys (k v)
         (u:when-let ((n (pick-collider-shape picker (collider/shape k))))
           (when (collider/pickable k)

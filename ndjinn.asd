@@ -81,8 +81,8 @@
      (:file "shape-sphere")
      (:file "shape-box")
      (:file "tests")
-     (:file "object-picking")
-     (:file "system")))
+     (:file "system")
+     (:file "object-picking")))
    (:module "shader"
     :components
     ((:file "default")

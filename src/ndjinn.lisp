@@ -65,6 +65,7 @@
          (refresh-rate (display-refresh-rate display)))
     (log:debug :ndjinn "Entered main game loop")
     (with-profile
+      (process-delayed-work)
       (u:while (running =context=)
         (with-continuable
           (handle-events)

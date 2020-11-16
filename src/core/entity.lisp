@@ -91,6 +91,9 @@
               :include-disabled ,include-disabled
               :include-paused ,include-paused))
 
+(defmacro do-nodes/active ((entity &key parent) &body body)
+  `(map nil (lambda (,entity) ,@body) (collect-active-nodes ,parent)))
+
 (defun delete-entity (entity &key reparent-children)
   (when (node/root-p entity)
     (error "Cannot remove the root entity."))
@@ -170,5 +173,5 @@
   (node/paused entity))
 
 (defun invoke-entity-window-resize-hook (old-size new-size)
-  (do-nodes (entity)
+  (do-nodes/active (entity)
     (on-entity-window-resize entity :old-size old-size :new-size new-size)))

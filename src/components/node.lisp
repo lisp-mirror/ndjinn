@@ -37,6 +37,20 @@
     (add-child child :parent entity))
   entity)
 
+(defun collect-active-nodes (root)
+  (let ((nodes nil))
+    (labels ((recurse (node)
+               (unless (or (node/disabled node)
+                           (node/paused node))
+                 (dolist (child (node/children node))
+                   (recurse child))
+                 (push node nodes))))
+      (recurse (or root (get-root-node)))
+      nodes)))
+
+(defun map-nodes/active (func &key root)
+  (map nil (lambda (x) (funcall func x)) (collect-active-nodes root)))
+
 (defun collect-nodes (root &key type include-disabled include-paused)
   (let ((nodes nil))
     (labels ((recurse (node)
@@ -84,7 +98,7 @@
     (on-entity-enable node)))
 
 (defun disable-entity (entity)
-  (do-nodes (node :parent entity)
+  (do-nodes/active (node :parent entity)
     (on-entity-disable node)))
 
 ;;; entity hooks

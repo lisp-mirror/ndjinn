@@ -2,7 +2,7 @@
 
 (defun register-prefab-viewports (entity &key viewports)
   (let ((viewports-table (table (viewports (current-scene =context=)))))
-    (do-nodes (node :parent entity)
+    (do-nodes/active (node :parent entity)
       (when (has-component-p node 'render)
         (if viewports
             (dolist (name viewports)

@@ -42,15 +42,15 @@
 
 (defun update ()
   (let ((alpha (get-alpha)))
-    (do-nodes (node)
+    (do-nodes/active (node)
       (on-entity-update node))
     (process-delayed-work)
-    (do-nodes (entity)
+    (do-nodes/active (entity)
       (resolve-model entity alpha))))
 
 (defun physics-update ()
   (let ((delta (float (cfg :delta-time) 1f0)))
-    (do-nodes (entity)
+    (do-nodes/active (entity)
       (on-entity-physics-update entity)
       (transform-node entity delta))
     (compute-collisions)))
@@ -82,7 +82,7 @@
   (setf (running =context=) nil))
 
 (defun pause-game ()
-  (do-nodes (entity)
+  (do-nodes/active (entity)
     (when (and (not (node/root-p entity))
                (eq (node/pause-mode entity) :stop))
       (setf (node/paused entity) t))))

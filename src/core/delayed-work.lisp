@@ -1,0 +1,25 @@
+(in-package #:ndjinn)
+
+(defstruct (delayed-work
+            (:predicate nil)
+            (:copier nil))
+  (transform (make-array 8 :fill-pointer 0 :adjustable t) :type vector)
+  (detach (make-array 8 :fill-pointer 0 :adjustable t) :type vector)
+  (delete (make-array 8 :fill-pointer 0 :adjustable t) :type vector))
+
+(defun process-delayed-work ()
+  (let* ((delayed-work (delayed-work =context=))
+         (transform (delayed-work-transform delayed-work))
+         (detach (delayed-work-detach delayed-work))
+         (delete (delayed-work-delete delayed-work)))
+    (u:while (plusp (length transform))
+      (funcall (vector-pop transform)))
+    (u:while (plusp (length detach))
+      (funcall (vector-pop detach)))
+    (u:while (plusp (length delete))
+      (funcall (vector-pop delete)))
+    (values)))
+
+(defmacro delay-work ((type) &body body)
+  (let ((work (u:format-symbol :ndjinn "DELAYED-WORK-~a" type)))
+    `(vector-push-extend (lambda () ,@body) (,work (delayed-work =context=)))))

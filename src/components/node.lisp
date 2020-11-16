@@ -73,7 +73,7 @@
              (when parent
                (u:deletef (node/children parent) entity))
              (values))))
-    (defer-work (delete)
+    (delay-work (delete)
       (%delete))))
 
 (defun get-root-node ()

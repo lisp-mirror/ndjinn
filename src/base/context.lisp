@@ -31,8 +31,8 @@
                    :initform nil)
    (%thread-pool :accessor thread-pool
                  :initform nil)
-   (%flows :accessor flows
-           :initform nil)))
+   (%delayed-work :accessor delayed-work
+                  :initform (make-delayed-work))))
 
 (defun make-context (context-name)
   (if (find-class context-name nil)

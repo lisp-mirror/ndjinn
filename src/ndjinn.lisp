@@ -14,7 +14,6 @@
     (make-thread-pool)
     (initialize-shaders)
     (make-clock)
-    (make-flows)
     (apply #'on-context-create =context= user-args)
     (log:info :ndjinn "Started ~a" title)
     (tg:gc :full t)
@@ -45,7 +44,7 @@
   (let ((alpha (get-alpha)))
     (do-nodes (node)
       (on-entity-update node))
-    (process-flows)
+    (process-delayed-work)
     (do-nodes (entity)
       (resolve-model entity alpha))))
 

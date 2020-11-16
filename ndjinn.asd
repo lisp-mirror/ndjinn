@@ -27,7 +27,6 @@
                #:net.mfiano.lisp.umbra
                #:pngload
                #:printv
-               #:queues.priority-cqueue
                #:sdl2
                #:split-sequence
                #:trivial-garbage
@@ -107,7 +106,7 @@
      (:file "viewport")
      (:file "material")
      (:file "uniform")
-     (:file "flows")
+     (:file "delayed-work")
      (:file "component")
      (:file "entity-mixin")
      (:file "entity")

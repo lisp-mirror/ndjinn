@@ -1,32 +1,32 @@
 (in-package #:ndjinn)
 
-(defclass collision-system ()
-  ((%spec :reader spec
-          :initarg :spec)
-   (%registered :reader registered
-                :initform (u:dict #'eq))
-   (%deregistered :reader deregistered
-                  :initform (u:dict #'eq))
-   (%active :reader active
-            :initform (u:dict #'eq))
-   (%contacts :reader contacts
-              :initform (u:dict #'eq))
-   (%buffer :reader buffer
-            :initform (make-array 8 :adjustable t :fill-pointer t))))
+(defstruct (collision-system
+            (:constructor %make-collision-system)
+            (:predicate nil)
+            (:copier nil))
+  spec
+  (registered (u:dict #'eq) :type hash-table)
+  (deregistered (u:dict #'eq) :type hash-table)
+  (active (u:dict #'eq) :type hash-table)
+  (contacts (u:dict #'eq) :type hash-table)
+  (buffer (make-array 8 :fill-pointer 0 :adjustable t) :type vector))
 
 (defun make-collision-system (plan-name)
   (u:if-let ((spec (u:href =meta/collider-plans= plan-name)))
-    (let ((system (make-instance 'collision-system :spec spec)))
+    (let* ((system (%make-collision-system :spec spec))
+           (registered (collision-system-registered system))
+           (deregistered (collision-system-deregistered system))
+           (active (collision-system-active system)))
       (dolist (layer (layers spec))
-        (setf (u:href (registered system) layer) (u:dict #'eq)
-              (u:href (deregistered system) layer) (u:dict #'eq)
-              (u:href (active system) layer) (u:dict #'eq)))
+        (setf (u:href registered layer) (u:dict #'eq)
+              (u:href deregistered layer) (u:dict #'eq)
+              (u:href active layer) (u:dict #'eq)))
       system)
     (error "Collider plan ~s not found." plan-name)))
 
 (defun register-collider (collider layer)
   (let* ((system (collision-system (current-scene =context=)))
-         (registered (registered system)))
+         (registered (collision-system-registered system)))
     (unless (u:href registered layer)
       (error "Collider ~s has a layer that is not in the scene's collider ~
               plan."
@@ -35,19 +35,19 @@
 
 (defun deregister-collider (collider layer)
   (let* ((system (collision-system (current-scene =context=)))
-         (deregistered (deregistered system)))
+         (deregistered (collision-system-deregistered system)))
     (remove-collider-contacts system collider)
     (setf (u:href deregistered layer collider) collider)))
 
 (defun collider-contact-p (system collider1 collider2)
   (declare (optimize speed))
-  (let ((contacts (contacts system)))
+  (let ((contacts (collision-system-contacts system)))
     (when (u:href contacts collider1)
       (u:href contacts collider1 collider2))))
 
 (defun collider-contact-enter (system collider1 collider2)
   (declare (optimize speed))
-  (let ((contacts (contacts system)))
+  (let ((contacts (collision-system-contacts system)))
     (unless (u:href contacts collider1)
       (setf (u:href contacts collider1) (u:dict #'eq)))
     (setf (u:href contacts collider1 collider2) collider2)
@@ -64,7 +64,7 @@
 
 (defun collider-contact-exit (system collider1 collider2)
   (declare (optimize speed))
-  (let ((contacts (contacts system)))
+  (let ((contacts (collision-system-contacts system)))
     (u:when-let ((table2 (u:href contacts collider1)))
       (remhash collider2 table2)
       (when (zerop (hash-table-count table2))
@@ -77,7 +77,7 @@
     (%on-collision-exit collider2 collider1)))
 
 (defun remove-collider-contacts (system collider)
-  (let ((contacts (contacts system)))
+  (let ((contacts (collision-system-contacts system)))
     (u:when-let ((colliders (u:href contacts collider)))
       (u:do-hash-keys (k colliders)
         (when (collider-contact-p system collider k)
@@ -101,10 +101,11 @@
          (collider-contact-exit system collider1 collider2))))))
 
 (defun compute-collisions/active (system)
-  (let* ((active (active system))
-         (buffer (buffer system))
-         (table (table (spec system))))
-    (dolist (collider1-layer (layers (spec system)))
+  (let* ((active (collision-system-active system))
+         (buffer (collision-system-buffer system))
+         (spec (collision-system-spec system))
+         (table (table spec)))
+    (dolist (collider1-layer (layers spec))
       (dolist (collider2-layer (u:href table collider1-layer))
         (if (eq collider1-layer collider2-layer)
             (u:when-let ((colliders (u:href active collider1-layer)))
@@ -124,10 +125,11 @@
 
 (defun compute-collisions/registered (system)
   (declare (optimize speed))
-  (let* ((active (active system))
-         (registered (registered system))
-         (table (table (spec system))))
-    (dolist (c1-layer (layers (spec system)))
+  (let* ((active (collision-system-active system))
+         (registered (collision-system-registered system))
+         (spec (collision-system-spec system))
+         (table (table spec)))
+    (dolist (c1-layer (layers spec))
       (let ((layer-registered (u:href registered c1-layer)))
         (u:do-hash-keys (c1 layer-registered)
           (remhash c1 layer-registered)
@@ -140,10 +142,10 @@
 
 (defun compute-collisions/deregistered (system)
   (declare (optimize speed))
-  (let* ((active (active system))
-         (registered (registered system))
-         (deregistered (deregistered system)))
-    (dolist (layer (layers (spec system)))
+  (let* ((active (collision-system-active system))
+         (registered (collision-system-registered system))
+         (deregistered (collision-system-deregistered system)))
+    (dolist (layer (layers (collision-system-spec system)))
       (let ((layer-deregistered (u:href deregistered layer)))
         (unless (zerop (hash-table-count layer-deregistered))
           (u:do-hash-keys (k layer-deregistered)

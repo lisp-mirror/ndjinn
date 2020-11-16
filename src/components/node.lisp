@@ -37,42 +37,27 @@
     (add-child child :parent entity))
   entity)
 
-(defun collect-active-nodes (root)
-  (let ((nodes nil))
-    (labels ((recurse (node)
-               (unless (or (node/disabled node)
-                           (node/paused node))
-                 (dolist (child (node/children node))
-                   (recurse child))
-                 (push node nodes))))
-      (recurse (or root (get-root-node)))
-      nodes)))
-
 (defun map-nodes/active (func &key root)
-  (map nil (lambda (x) (funcall func x)) (collect-active-nodes root)))
-
-(defun collect-nodes (root &key type include-disabled include-paused)
-  (let ((nodes nil))
-    (labels ((recurse (node)
-               (when (and (or include-disabled
-                              (not (node/disabled node)))
-                          (or include-paused
-                              (not (node/paused node))))
-                 (dolist (child (node/children node))
-                   (recurse child))
-                 (when (or (not type)
-                           (and type (has-component-p node type)))
-                   (push node nodes)))))
-      (recurse (or root (get-root-node)))
-      nodes)))
+  (labels ((recurse (node)
+             (unless (or (node/disabled node)
+                         (node/paused node))
+               (funcall func node)
+               (dolist (child (node/children node))
+                 (recurse child)))))
+    (recurse (or root (get-root-node)))))
 
 (defun map-nodes (func &key root type include-disabled include-paused)
-  (map nil
-       (lambda (x) (funcall func x))
-       (collect-nodes root
-                      :type type
-                      :include-disabled include-disabled
-                      :include-paused include-paused)))
+  (labels ((recurse (node)
+             (when (and (or include-disabled
+                            (not (node/disabled node)))
+                        (or include-paused
+                            (not (node/paused node))))
+               (when (or (not type)
+                         (and type (has-component-p node type)))
+                 (funcall func node))
+               (dolist (child (node/children node))
+                 (recurse child)))))
+    (recurse (or root (get-root-node)))))
 
 (defun delete-node (entity &key reparent-children)
   (flet ((%delete ()

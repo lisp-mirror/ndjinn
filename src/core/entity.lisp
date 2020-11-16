@@ -92,7 +92,7 @@
               :include-paused ,include-paused))
 
 (defmacro do-nodes/active ((entity &key parent) &body body)
-  `(map nil (lambda (,entity) ,@body) (collect-active-nodes ,parent)))
+  `(map-nodes/active (lambda (,entity) ,@body) :root ,parent))
 
 (defun delete-entity (entity &key reparent-children)
   (when (node/root-p entity)

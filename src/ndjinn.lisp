@@ -42,8 +42,8 @@
 
 (defun update ()
   (let ((alpha (get-alpha)))
-    (do-nodes/active (node)
-      (on-entity-update node))
+    (do-nodes/active (entity)
+      (on-entity-update entity))
     (process-delayed-work)
     (do-nodes/active (entity)
       (resolve-model entity alpha))))

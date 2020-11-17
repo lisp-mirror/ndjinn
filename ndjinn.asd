@@ -28,6 +28,7 @@
                #:pngload
                #:printv
                #:sdl2
+               #:sdl2-mixer
                #:split-sequence
                #:trivial-garbage
                #:uiop
@@ -112,6 +113,7 @@
      (:file "entity")
      (:file "clock")
      (:file "display")
+     (:file "audio")
      (:file "transform")
      (:file "free-look-state")
      (:file "scene")

@@ -7,11 +7,11 @@
                       (shape2 collider-shape/sphere))
   (let ((entity1 (collider-shape-entity shape1))
         (entity2 (collider-shape-entity shape2)))
-    (<= (v3:distance-squared
+    (<= (v3:distance
          (transform-point entity1 (collider-shape-center shape1))
          (transform-point entity2 (collider-shape-center shape2)))
-        (+ (v3:length-squared (transform-vector entity1 v3:+right+))
-           (v3:length-squared (transform-vector entity2 v3:+right+))))))
+        (+ (v3:length (transform-vector entity1 v3:+right+))
+           (v3:length (transform-vector entity2 v3:+right+))))))
 
 (defun %collide-p/sphere-box (sphere box)
   (declare (optimize speed))

@@ -3,22 +3,20 @@
 (defmacro with-continuable (&body body)
   (u:with-gensyms (debugger-entry-time previous-hook pause-time)
     (let ((hook #+sbcl 'sb-ext:*invoke-debugger-hook*
-                #-sbcl '*debugger-hook*))
+                #-sbcl *debugger-hook*))
       `(let* ((,previous-hook ,hook)
               (,hook
                 (lambda (condition hook)
                   (declare (ignore hook))
-                  (let ((,debugger-entry-time (get-time)))
+                  (let ((,debugger-entry-time (get-time))
+                        (,hook ,previous-hook))
                     (log:debug :ndjinn "Entered debugger")
-                    (unwind-protect
-                         (when ,previous-hook
-                           (funcall ,previous-hook condition ,previous-hook))
-                      (when ,debugger-entry-time
-                        (let ((,pause-time (- (get-time) ,debugger-entry-time)))
-                          (incf (pause-time) ,pause-time)
-                          (log:debug :ndjinn
-                                     "Spent ~3$ seconds in the debugger"
-                                     ,pause-time))))))))
+                    (unwind-protect (invoke-debugger condition)
+                      (let ((,pause-time (- (get-time) ,debugger-entry-time)))
+                        (incf (pause-time) ,pause-time)
+                        (log:debug :ndjinn
+                                   "Spent ~3$ seconds in the debugger"
+                                   ,pause-time)))))))
          (restart-case (progn ,@body)
            (abort ()
              :report "Ndjinn: Skip processing current frame"))))))

@@ -115,17 +115,15 @@
    #:get-running-time)
   ;; collision detection
   (:export
-   #:define-collider-plan
+   #:define-collision-plan
    #:define-collision-hook
    #:entity-picked-p
-   #:pick-entity)
+   #:pick-entity
+   #:unpick-entity)
   ;; collider shapes
   (:export
    #:box
    #:sphere)
-  ;; config
-  (:export
-   #:define-config)
   ;; context
   (:export
    #:define-context
@@ -245,4 +243,4 @@
   (:export
    #:find-sprite
    #:make-spritesheet
-   #:vao))
+   #:spritesheet-vao))

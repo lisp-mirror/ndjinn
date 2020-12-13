@@ -9,9 +9,11 @@
    :log-repl-level :debug
    :log-repl-categories (:ndjinn)
    :opengl-version "3.3"
+   :project nil
+   :scene nil
    :title "Ndjinn"))
 
-(define-collider-plan default ())
+(define-collision-plan default ())
 
 (define-viewport default ()
   (:x 0 :y 0 :width 1 :height 1))

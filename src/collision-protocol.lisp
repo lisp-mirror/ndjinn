@@ -12,16 +12,15 @@
 (defgeneric on-collision-picked (layer-symbol entity)
   (:method (layer-symbol entity)))
 
-(defmacro define-collision-hook (hook layer-specs &body body)
+(defmacro define-collision-hook (hook layer-spec &body body)
   (u:with-gensyms (layer1-symbol layer2-symbol)
     (case hook
       (:picked
-       (destructuring-bind (owner layer) layer-specs
-         `(defmethod on-collision-picked ((,layer1-symbol (eql ',layer))
-                                          ,owner)
-            ,@body)))
+       (let ((layer (car layer-spec)))
+         `(defmethod on-collision-picked ((,layer1-symbol (eql ',layer)) ,layer)
+           ,@body)))
       ((:enter :continue :exit)
-       (destructuring-bind ((owner1 layer1) (owner2 layer2)) layer-specs
+       (destructuring-bind ((owner1 layer1) (owner2 layer2)) layer-spec
          `(defmethod ,(u:format-symbol :ndjinn "ON-COLLISION-~a" hook)
               ((,layer1-symbol (eql ',layer1)) ,owner1
                (,layer2-symbol (eql ',layer2)) ,owner2)

@@ -49,31 +49,31 @@
 
 (defmethod %set-camera-projection ((entity camera) (mode (eql :perspective)))
   (with-slots (%camera/viewport) entity
-    (m4:set-projection/perspective! (camera/projection entity)
-                                    (/ (camera/fov-y entity)
-                                       (camera/zoom entity))
-                                    (/ (viewport-width %camera/viewport)
-                                       (viewport-height %camera/viewport))
-                                    (camera/clip-near entity)
-                                    (camera/clip-far entity))))
+    (m4:perspective! (camera/projection entity)
+                     (/ (camera/fov-y entity)
+                        (camera/zoom entity))
+                     (/ (viewport-width %camera/viewport)
+                        (viewport-height %camera/viewport))
+                     (camera/clip-near entity)
+                     (camera/clip-far entity))))
 
 (defmethod %set-camera-projection ((entity camera) (mode (eql :orthographic)))
   (with-slots (%camera/zoom %camera/viewport) entity
     (let ((w (/ (viewport-width %camera/viewport) %camera/zoom 2))
           (h (/ (viewport-height %camera/viewport) %camera/zoom 2)))
-      (m4:set-projection/orthographic! (camera/projection entity)
-                                       (- w)
-                                       w
-                                       (- h)
-                                       h
-                                       (camera/clip-near entity)
-                                       (camera/clip-far entity)))))
+      (m4:ortho! (camera/projection entity)
+                 (- w)
+                 w
+                 (- h)
+                 h
+                 (camera/clip-near entity)
+                 (camera/clip-far entity)))))
 
 (defmethod %set-camera-projection ((entity camera) (mode (eql :isometric)))
   (let ((rotation (q:inverse
                    (q:rotate-euler
                     q:+id+
-                    (v3:vec (- (asin (/ (sqrt 3)))) 0 math:pi/4)))))
+                    (v3:vec (- (asin (/ (sqrt 3)))) 0 const:pi/4)))))
     (%set-camera-projection entity :orthographic)
     (initialize-rotation (transform/rotation entity) rotation)))
 
@@ -92,7 +92,7 @@
                     (m4:get-translation model)))
            (target (v3:+ eye (v3:negate (m4:rotation-axis-to-vec3 model :z))))
            (up (m4:rotation-axis-to-vec3 model :y)))
-      (m4:set-view! %camera/view eye target up)
+      (m4:look-at! %camera/view eye target up)
       (unless (camera/translate-view entity)
         (m4:set-translation! %camera/view %camera/view v3:+zero+))
       (when free-look-state
@@ -120,7 +120,7 @@
       (setf (viewport-camera entity-viewport) entity))
     (when (camera/free-look entity)
       (setf (camera/free-look-state entity) (make-free-look-state entity)))
-    (setf (camera/fov-y entity) (* (camera/fov-y entity) math:+deg+)
+    (setf (camera/fov-y entity) (* (camera/fov-y entity) const:+deg+)
           (camera/clip-near entity) (float (camera/clip-near entity) 1f0)
           (camera/clip-far entity) (float (camera/clip-far entity) 1f0)
           (camera/viewport entity) entity-viewport)))

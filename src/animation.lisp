@@ -9,7 +9,7 @@
   (duration 1f0 :type single-float)
   (blocking-p nil :type boolean)
   (self-finishing-p nil :type boolean)
-  (shape #'math:linear :type function)
+  (shape #'shaping:linear :type function)
   (data (u:dict #'equalp) :type hash-table))
 
 (defun register-animation (entity animation &key where target)
@@ -65,7 +65,7 @@
 
 (defun make-animation (entity name
                        &key blocking self-finishing (duration 1f0)
-                         (shape #'math:linear) (where :after) target)
+                         (shape #'shaping:linear) (where :after) target)
   (let ((animation (%make-animation :name name
                                     :duration (float duration 1f0)
                                     :blocking-p blocking

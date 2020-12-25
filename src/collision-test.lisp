@@ -7,7 +7,7 @@
                       (shape2 collision-shape/sphere))
   (let ((entity1 (collision-shape-entity shape1))
         (entity2 (collision-shape-entity shape2)))
-    (<= (v3:distance
+    (<= (point3d:distance
          (transform-point entity1 (collision-shape-center shape1))
          (transform-point entity2 (collision-shape-center shape2)))
         (+ (v3:length (transform-vector entity1 v3:+right+))

@@ -63,7 +63,8 @@
   (loop :with manager = (make-viewport-manager)
         :for (view-spec nil) :in (scene-spec-viewports (scene-spec scene))
         :for order = (make-render-order-tree)
-        :for picker = (make-picker)
+        :for picker = (line:line :start (point3d:point 0f0 0f0 0f0)
+                                 :end (point3d:point 0f0 0f0 0f0))
         :for viewport = (make-viewport view-spec order picker)
         :for i :from 0
         :collect view-spec :into viewport-order

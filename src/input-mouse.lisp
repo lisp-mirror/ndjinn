@@ -62,7 +62,10 @@
          (y (mouse-motion-state-y motion-state))
          (dx (mouse-motion-state-dx motion-state))
          (dy (mouse-motion-state-dy motion-state)))
-    (values x y dx dy)))
+    (values (float x 1f0)
+            (float y 1f0)
+            (float dx 1f0)
+            (float dy 1f0))))
 
 (defun get-mouse-scroll (axis)
   (let ((states (input-data-states (input-data =context=))))

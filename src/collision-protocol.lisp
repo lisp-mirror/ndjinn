@@ -12,24 +12,19 @@
 (defgeneric on-collision-picked (layer-symbol entity)
   (:method (layer-symbol entity)))
 
-(defmacro define-collision-hook (hook (layer1 &optional layer2) &body body)
+(defmacro define-collision-hook (hook layer-specs &body body)
   (u:with-gensyms (layer1-symbol layer2-symbol)
-    (let ((hook-types '(:enter :continue :exit :picked)))
-      `(progn
-         ,@(unless (find hook hook-types)
-             `((error "Hook type must be one of: ~{~s~^, ~}" ',hook-types)))
-         ,@(unless (symbolp layer1)
-             `((error "Layer 1 of a collision hook must be a symbol: ~s."
-                      ',layer1)))
-         ,@(unless (symbolp layer2)
-             `((error "Layer 2 of a collision hook must be a symbol: ~s."
-                      ',layer2)))
-         ,@(if (eq hook :picked)
-               `((defmethod on-collision-picked ((,layer1-symbol (eql ',layer1))
-                                                 ,layer1)
-                   ,@body))
-               `((defmethod ,(u:format-symbol :ndjinn "ON-COLLISION-~a" hook)
-                     ((,layer1-symbol (eql ',layer1)) ,layer1
-                      (,layer2-symbol (eql ',layer2)) ,layer2)
-                   (when (and ,layer1 ,layer2)
-                     ,@body))))))))
+    (case hook
+      (:picked
+       (destructuring-bind (owner layer) layer-specs
+         `(defmethod on-collision-picked ((,layer1-symbol (eql ',layer))
+                                          ,owner)
+            ,@body)))
+      ((:enter :continue :exit)
+       (destructuring-bind ((owner1 layer1) (owner2 layer2)) layer-specs
+         `(defmethod ,(u:format-symbol :ndjinn "ON-COLLISION-~a" hook)
+              ((,layer1-symbol (eql ',layer1)) ,owner1
+               (,layer2-symbol (eql ',layer2)) ,owner2)
+            (when (and ,owner1 ,owner2)
+              ,@body))))
+      (t `(error "Invalid hook type: ~s." ',hook)))))

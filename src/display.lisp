@@ -101,6 +101,9 @@
   (when *profile*
     (incf =profile-frame-counter=)))
 
+(defun get-refresh-rate ()
+  (display-refresh-rate (display =context=)))
+
 (defun window-size ()
   (window-%size (display-window (display =context=))))
 

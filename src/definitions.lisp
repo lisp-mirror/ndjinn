@@ -4,7 +4,7 @@
 
 (define-config default ()
   (:anti-alias t
-   :delta-time 1/60
+   :delta-time nil
    :log-asset-pool nil
    :log-repl-level :debug
    :log-repl-categories (:ndjinn)

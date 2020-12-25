@@ -51,7 +51,7 @@
       (resolve-model entity alpha))))
 
 (defun physics-update ()
-  (let ((delta (float (cfg :delta-time) 1f0)))
+  (let ((delta (clock-delta-time (clock =context=))))
     (do-nodes/active (entity)
       (on-entity-physics-update entity)
       (transform-node entity delta))

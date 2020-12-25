@@ -13,6 +13,7 @@
   (frame-count 0 :type fixnum)
   (frame-time 0d0 :type double-float)
   (init-time 0 :type fixnum)
+  (delta-time 0f0 :type single-float)
   (alpha 0f0 :type single-float)
   (period-elapsed 0d0 :type double-float)
   (period-interval 0.25d0 :type double-float)
@@ -26,12 +27,14 @@
      (float internal-time-units-per-second 1d0)))
 
 (defun make-clock ()
-  (let ((clock (%make-clock)))
+  (let ((clock (%make-clock))
+        (delta-time (float (or (cfg :delta-time) (/ (get-refresh-rate))) 1f0)))
     (setf (clock-init-time clock) (get-internal-real-time)
-          (clock-running-time clock) (%get-time clock))
+          (clock-running-time clock) (%get-time clock)
+          (clock-delta-time clock) delta-time)
     (setf (clock =context=) clock)
     (log:debug :ndjinn "Initialized game clock: delta: ~,3f ms/frame"
-               (* (cfg :delta-time) 1000f0))))
+               (* delta-time 1000f0))))
 
 (defun smooth-delta-time (clock refresh-rate)
   (symbol-macrolet ((frame-time (clock-frame-time clock)))
@@ -64,7 +67,7 @@
                 average fps)))))
 
 (defun clock-update (clock func)
-  (let ((delta-time (float (cfg :delta-time) 1f0)))
+  (let ((delta-time (clock-delta-time clock)))
     (symbol-macrolet ((accumulator (clock-accumulator clock)))
       (incf accumulator (clock-frame-time clock))
       (when (zerop (clock-frame-count clock))
@@ -88,7 +91,7 @@
     (setf (clock-previous-time clock) previous
           (clock-running-time clock) current)
     (if (zerop (clock-frame-count clock))
-        (setf (clock-frame-time clock) (float (cfg :delta-time) 1d0))
+        (setf (clock-frame-time clock) (float (clock-delta-time clock) 1d0))
         (setf (clock-frame-time clock) (- current previous)))
     (smooth-delta-time clock refresh-rate)
     (clock-update clock update-func)

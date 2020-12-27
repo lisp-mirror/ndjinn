@@ -11,7 +11,7 @@
   (func nil :type (or function null)))
 
 (defun %generate-uniform-func (material type)
-  (let ((func (u:format-symbol :net.mfiano.lisp.shadow "UNIFORM-~a" type)))
+  (let ((func (u:format-symbol :shadow "UNIFORM-~a" type)))
     (lambda (k v)
       (funcall func (material-spec-shader (material-spec material)) k v))))
 

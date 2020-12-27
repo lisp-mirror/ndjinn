@@ -9,6 +9,7 @@
   :encoding :utf-8
   :depends-on (#:3b-bmfont
                #:3b-bmfont/json
+               #:algae
                #:babel
                #:cl-cpus
                #:cl-digraph
@@ -18,20 +19,19 @@
                #:fast-io
                #:filtered-functions
                #:global-vars
+               #:golden-utils
                #:jsown
                #:lparallel
-               #:net.mfiano.lisp.algae
-               #:net.mfiano.lisp.golden-utils
-               #:net.mfiano.lisp.origin
-               #:net.mfiano.lisp.shadow
-               #:net.mfiano.lisp.umbra
+               #:origin
                #:pngload
                #:printv
                #:sdl2
                #:sdl2-mixer
+               #:shadow
                #:split-sequence
                #:trivial-garbage
                #:uiop
+               #:umbra
                #:verbose)
   :pathname "src"
   :components

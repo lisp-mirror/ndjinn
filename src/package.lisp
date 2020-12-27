@@ -2,8 +2,8 @@
 
 (uiop:define-package #:ndjinn.shader
   (:use-reexport
-   #:net.mfiano.lisp.shadow.glsl
-   #:net.mfiano.lisp.umbra.common)
+   #:shadow.glsl
+   #:umbra.common)
   ;; functions
   (:export
    #:full-quad/vertex
@@ -19,34 +19,32 @@
 
 (defpackage #:ndjinn
   (:local-nicknames
-   (#:avl #:net.mfiano.lisp.algae.data-structures.avl-tree)
-   (#:const #:net.mfiano.lisp.origin.constants)
-   (#:curve #:net.mfiano.lisp.algae.spline.cubic-bezier)
-   (#:dll #:net.mfiano.lisp.algae.data-structures.doubly-linked-list)
+   (#:avl #:algae.avl-tree)
+   (#:const #:origin.constants)
+   (#:curve #:algae.cubic-bezier)
+   (#:dll #:algae.doubly-linked-list)
    (#:ff #:filtered-functions)
    (#:font #:3b-bmfont)
-   (#:geo #:net.mfiano.lisp.origin.geometry)
+   (#:geo #:origin.geometry)
    (#:glob #:global-vars)
-   (#:line #:net.mfiano.lisp.origin.geometry.line3d)
+   (#:line #:origin.geometry.line3d)
    (#:log #:verbose)
    (#:lp #:lparallel)
    (#:lpq #:lparallel.queue)
-   (#:m3 #:net.mfiano.lisp.origin.mat3)
-   (#:m4 #:net.mfiano.lisp.origin.mat4)
-   (#:q #:net.mfiano.lisp.origin.quat)
-   (#:point3d #:net.mfiano.lisp.origin.geometry.point3d)
+   (#:m3 #:origin.mat3)
+   (#:m4 #:origin.mat4)
+   (#:q #:origin.quat)
+   (#:point3d #:origin.geometry.point3d)
    (#:shader #:ndjinn.shader)
-   (#:shadow #:net.mfiano.lisp.shadow)
-   (#:shaping #:net.mfiano.lisp.origin.shaping)
-   (#:sphere #:net.mfiano.lisp.origin.geometry.sphere)
-   (#:umbra.sprite #:net.mfiano.lisp.umbra.sprite)
+   (#:shaping #:origin.shaping)
+   (#:sphere #:origin.geometry.sphere)
    (#:ss #:split-sequence)
    (#:sv #:static-vectors)
-   (#:u #:net.mfiano.lisp.golden-utils)
-   (#:uuid #:net.mfiano.lisp.algae.uuid)
-   (#:v2 #:net.mfiano.lisp.origin.vec2)
-   (#:v3 #:net.mfiano.lisp.origin.vec3)
-   (#:v4 #:net.mfiano.lisp.origin.vec4))
+   (#:u #:golden-utils)
+   (#:uuid #:algae.uuid)
+   (#:v2 #:origin.vec2)
+   (#:v3 #:origin.vec3)
+   (#:v4 #:origin.vec4))
   (:use #:cl)
   (:shadow #:debug)
   (:export

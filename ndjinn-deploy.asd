@@ -6,8 +6,8 @@
   :description "A system used for deploying a game developed with Ndjinn."
   :author ("Michael Fiano <mail@mfiano.net>")
   :license "MIT"
-  :source-control (:git "https://github.com/ndjinn/ndjinn")
-  :bug-tracker "https://github.com/ndjinn/ndjinn/issues"
+  :source-control (:git "https://git.mfiano.net/mfiano/ndjinn")
+  :bug-tracker "https://git.mfiano.net/mfiano/ndjinn/issues"
   :encoding :utf-8
   :depends-on (#:ndjinn)
   :pathname "src/deploy"

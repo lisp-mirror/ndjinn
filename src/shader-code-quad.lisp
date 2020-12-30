@@ -1,12 +1,12 @@
 (in-package #:ndjinn.shader)
 
-(defun quad/vertex ((pos2 :vec3)
+(defun quad/vertex ((pos :vec3)
                     (uv :vec2)
                     &uniforms
                     (model :mat4)
                     (view :mat4)
                     (proj :mat4))
-  (values (* proj view model (vec4 (.xy pos2) 0 1))
+  (values (* proj view model (vec4 (.xy pos) 0 1))
           uv))
 
 (defun quad/fragment ((uv :vec2)

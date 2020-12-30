@@ -30,7 +30,7 @@
               :miss-color (v4:vec 1 0 0 0.35))
    :features (:enable (:line-smooth)
               :polygon-mode :line
-              :line-width 4.0)))
+              :line-width 2.0)))
 
 (define-material curve ()
   (:shader shader:default

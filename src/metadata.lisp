@@ -7,6 +7,7 @@
 (glob:define-global-var =meta/component-static= nil)
 (glob:define-global-var =meta/config-developer= (u:dict #'eq))
 (glob:define-global-var =meta/config-player= (u:dict #'eq))
+(glob:define-global-var =meta/contexts= (u:dict #'eq))
 (glob:define-global-var =meta/curves= (u:dict #'eq))
 (glob:define-global-var =meta/entity-mixins= (u:dict #'equal))
 (glob:define-global-var =meta/framebuffers= (u:dict #'eq))

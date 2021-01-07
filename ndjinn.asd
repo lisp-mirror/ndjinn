@@ -37,9 +37,9 @@
   :components
   ((:file "package")
    (:file "general")
+   (:file "metadata")
    (:file "context")
    (:file "profile")
-   (:file "metadata")
    (:file "config")
    (:file "logging")
    (:file "hardware")

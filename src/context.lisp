@@ -32,17 +32,23 @@
 
 (glob:define-global-var =context= nil)
 
+(defun find-context (name)
+  (u:if-let ((class-name (u:href =meta/contexts= name)))
+    (find-class class-name nil)
+    (error "Context ~s is not defined." name)))
+
 (defun make-context (context-name)
-  (if (find-class context-name nil)
-      (make-instance context-name)
-      (error "Context ~s not defined." context-name)))
+  (let ((context (find-context context-name)))
+    (make-instance context)))
 
 (defmacro define-context (name () &body body)
-  `(u:eval-always
-     (define-config ,name () ,@body)
-     (defclass ,name (context) ()
-       (:default-initargs
-        :name ',name))))
+  (u:with-gensyms (context-name)
+    `(u:eval-always
+       (define-config ,name () ,@body)
+       (defclass ,context-name (context) ()
+         (:default-initargs
+          :name ',name))
+       (setf (u:href =meta/contexts= ',name) ',context-name))))
 
 (defgeneric on-context-create (context)
   (:method ((context context)))

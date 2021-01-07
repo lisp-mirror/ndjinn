@@ -44,6 +44,9 @@
 
 (defgeneric update-shader-buffer (object))
 
+(defun find-shader-buffer (key)
+  (shadow:find-buffer key))
+
 (defun delete-shader-buffer (key)
   (release-shader-buffer-binding key)
   (shadow::clear-buffer key)
@@ -65,7 +68,7 @@
 
 (defmacro with-shader-buffers ((&rest keys) &body body)
   (u:with-gensyms (table)
-    (let ((key-syms (mapcar (lambda (x) (list (u:make-gensym x) x)) keys)))
+    (let ((key-syms (mapcar (lambda (x) (list (u:make-gensym x) `',x)) keys)))
       `(let ((,table (shader-manager-buffer-bindings (shaders =context=)))
              ,@key-syms)
          ,@(mapcar

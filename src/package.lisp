@@ -229,6 +229,7 @@
    #:bind-shader-buffer
    #:clear-shader-buffer
    #:delete-shader-buffer
+   #:find-shader-buffer
    #:make-shader-buffer
    #:read-shader-buffer
    #:unbind-shader-buffer

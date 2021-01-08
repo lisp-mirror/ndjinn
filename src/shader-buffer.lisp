@@ -68,7 +68,7 @@
 
 (defmacro with-shader-buffers ((&rest keys) &body body)
   (u:with-gensyms (table)
-    (let ((key-syms (mapcar (lambda (x) (list (u:make-gensym x) `',x)) keys)))
+    (let ((key-syms (mapcar (lambda (x) (list (u:make-gensym x) x)) keys)))
       `(let ((,table (shader-manager-buffer-bindings (shaders =context=)))
              ,@key-syms)
          ,@(mapcar

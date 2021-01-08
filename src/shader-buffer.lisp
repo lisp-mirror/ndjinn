@@ -35,6 +35,8 @@
               game was configured for OpenGL version ~d.~d" major minor)))
   (let ((bindings (shader-manager-buffer-bindings (shaders =context=)))
         (binding (select-shader-buffer-binding)))
+    (when (find-shader-buffer key)
+      (delete-shader-buffer key))
     (setf (u:href bindings key) binding)
     (shadow:create-block-alias :buffer block-id shader key)
     (shadow:bind-block key binding)

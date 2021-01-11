@@ -13,7 +13,6 @@
     (apply #'reinitialize-instance entity args)
     (setf (node/prefab-path entity) path
           (id/display entity) display-id)
-    (register-entity entity)
     entity))
 
 (defun resolve-prefab-entity-args (node root)
@@ -30,9 +29,10 @@
             (or root (get-root-node))))
     (u:hash->plist args)))
 
-(defun register-prefab-root (prefab)
+(defun register-prefab-root (prefab args)
   (with-slots (%name %root %factory) prefab
     (let ((root (u:href (entities %factory) (path %root))))
+      (apply #'reinitialize-instance root args)
       (push root (u:href (scene-prefabs (current-scene =context=)) %name))
       (setf (node/prefab root) %name)
       root)))
@@ -40,7 +40,7 @@
 (defun build-prefab-factory (prefab)
   (with-slots (%nodes %factory) prefab
     (with-slots (%current-node %entities %func) %factory
-      (setf %func (lambda (&key parent)
+      (setf %func (lambda (root-args &key parent)
                     (u:do-hash (path node %nodes)
                       (let ((entity (make-prefab-entity node)))
                         (setf (u:href %entities path) entity)))
@@ -48,6 +48,8 @@
                       (setf %current-node node)
                       (let ((args (resolve-prefab-entity-args node parent))
                             (entity (u:href %entities path)))
-                        (realize-prefab-entity entity parent path args)))
-                    (setf %current-node nil)
-                    (register-prefab-root prefab))))))
+                        (realize-prefab-entity entity parent path args)
+                        (when (equal path (path (root prefab)))
+                          (register-prefab-root prefab root-args))
+                        (register-entity entity)))
+                    (setf %current-node nil))))))

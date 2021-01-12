@@ -51,11 +51,18 @@
     `(defmethod ,method ((context ,(make-context-symbol context)))
        ,@body)))
 
-(defgeneric on-context-create (context)
+(defgeneric on-context-pre-create (context)
+  (:method ((context context))))
+
+(defgeneric on-context-post-create (context)
   (:method ((context context)))
   (:method :before ((context context))
     (log:debug :ndjinn "Starting initial scene...")
     (switch-scene (cfg :scene))))
+
+(defun on-context-create (context)
+  (on-context-pre-create context)
+  (on-context-post-create context))
 
 (defgeneric on-context-destroy (context)
   (:method ((context context))))

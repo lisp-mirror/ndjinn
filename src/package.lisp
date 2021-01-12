@@ -130,8 +130,7 @@
   ;; context
   (:export
    #:define-context
-   #:on-context-create
-   #:on-context-destroy
+   #:define-context-hook
    #:user-data)
   ;; core
   (:export

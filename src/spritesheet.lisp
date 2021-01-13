@@ -22,8 +22,8 @@
                 (setf (aref pos i) (vector x y)
                       (aref size i) (vector w h)
                       (u:href (spritesheet-sprites object) id) i)))
-        :finally (write-shader-buffer name :pos pos)
-                 (write-shader-buffer name :size size)))
+        :finally (write-shader-buffer name :path :pos :value pos)
+                 (write-shader-buffer name :path :size :value size)))
 
 (defun find-sprite (spritesheet name)
   (or (u:href (spritesheet-sprites spritesheet) name)

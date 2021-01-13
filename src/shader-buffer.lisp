@@ -21,11 +21,11 @@
           (sort (copy-seq (shader-manager-released-buffer-bindings shaders))
                 #'<))))
 
-(defun write-shader-buffer (key path value)
-  (shadow:write-buffer-path key path value))
+(defun write-shader-buffer (key &key path (index 0) value)
+  (shadow:write-buffer-path key :path path :index index :value value))
 
-(defun read-shader-buffer (key path)
-  (shadow:read-buffer-path key path))
+(defun read-shader-buffer (key &key path (index 0) count)
+  (shadow:read-buffer-path key :path path :index index :count count))
 
 (defun make-shader-buffer (key block-id shader)
   (u:mvlet ((major minor (get-opengl-version)))

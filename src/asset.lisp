@@ -124,30 +124,32 @@
          (resolved-path (%resolve-path system path)))
     resolved-path))
 
-(defgeneric resolve-path (pool/asset))
+(defgeneric resolve-path (pool/asset &key))
 
-(defmethod resolve-path ((pool-name symbol))
+(defmethod resolve-path ((pool-name symbol) &key)
   (let* ((pool (find-asset-pool pool-name))
          (system (asset-pool-spec-system pool))
          (path (%resolve-path system (asset-pool-spec-path pool))))
     (ensure-directories-exist path)
     path))
 
-(defmethod resolve-path ((pool asset-pool-spec))
+(defmethod resolve-path ((pool asset-pool-spec) &key)
   (resolve-path (asset-pool-spec-name pool)))
 
-(defmethod resolve-path ((asset list))
+(defmethod resolve-path ((asset list) &key (not-found-error-p t))
   (destructuring-bind (pool-name spec-name) asset
     (let* ((pool (find-asset-pool pool-name))
            (spec (find-asset-spec pool-name spec-name))
            (system (asset-pool-spec-system pool))
            (path (%resolve-path system (asset-spec-path spec))))
-      (if (uiop:file-exists-p path)
-          (values path spec)
-          (error "File path not found for asset ~s of pool ~s.~%Path: ~s."
-                 spec-name pool-name path)))))
+      (if not-found-error-p
+          (if (uiop:file-exists-p path)
+              (values path spec)
+              (error "File path not found for asset ~s of pool ~s.~%Path: ~s."
+                     spec-name pool-name path))
+          (values path spec)))))
 
-(defmethod resolve-path ((asset string))
+(defmethod resolve-path ((asset string) &key)
   (resolve-system-path asset :ndjinn))
 
 (defmacro with-asset-cache (type key &body body)

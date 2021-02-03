@@ -9,6 +9,7 @@
    :log-repl-level :debug
    :log-repl-categories (:ndjinn)
    :opengl-version "3.3"
+   :enable-key-repeat nil
    :project nil
    :scene nil
    :title "Ndjinn"))

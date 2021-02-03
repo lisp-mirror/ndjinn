@@ -44,11 +44,11 @@
      (event/mouse-motion x y dx dy))
     (:keyup
      (:keysym keysym :repeat repeat)
-     (when (zerop repeat)
+     (when (or (zerop repeat) (cfg :enable-key-repeat))
        (event/key-up (aref +key-names+ (sdl2:scancode-value keysym)))))
     (:keydown
      (:keysym keysym :repeat repeat)
-     (when (zerop repeat)
+     (when (or (zerop repeat) (cfg :enable-key-repeat))
        (event/key-down (aref +key-names+ (sdl2:scancode-value keysym)))))
     (:controllerdeviceadded
      (:which gamepad-id)

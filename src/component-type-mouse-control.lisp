@@ -19,7 +19,7 @@
   (drag-end (v2:vec) :type v2:vec)
   (initial (q:quat 1) :type q:quat)
   (rotation-vector (v2:vec) :type v2:vec)
-  (speed 0.005 :type single-float))
+  (speed 0.005 :type u:f32))
 
 (defun mouse-control/start-rotation (entity)
   (u:mvlet ((state (mouse-control/rotation entity))

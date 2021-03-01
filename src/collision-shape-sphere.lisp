@@ -6,7 +6,7 @@
             (:conc-name sphere-)
             (:predicate nil)
             (:copier nil))
-  (radius 1f0 :type single-float))
+  (radius 1f0 :type u:f32))
 
 (defun make-collision-shape/sphere (&rest args)
   (let ((shape (apply #'%make-collision-shape/sphere args)))

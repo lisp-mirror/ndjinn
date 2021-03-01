@@ -6,7 +6,7 @@
   stream
   (position 0 :type u:ub32)
   (end 0 :type u:ub32)
-  (data (make-array 0 :element-type 'u:ub8) :type (simple-array u:ub8 (*))))
+  (data (make-array 0 :element-type 'u:ub8) :type u:ub8a))
 
 (defun hdr-image-buffer-empty-p (buffer)
   (>= (hdr-image-buffer-position buffer)
@@ -96,9 +96,9 @@
         (data (hdr-image-buffer-data buffer))
         (pos (hdr-image-buffer-position buffer))
         (end (hdr-image-buffer-end buffer)))
-    (declare (type (simple-array u:ub32 (*)) destination)
-             (type (simple-array u:ub8 (*)) data)
-             (type u:ub24 pos end))
+    (declare (u:ub32a destination)
+             (u:ub8a data)
+             (u:ub24 pos end))
     (labels ((%read-byte ()
                (when (= pos end)
                  (setf pos 0

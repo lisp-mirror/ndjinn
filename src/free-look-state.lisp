@@ -8,8 +8,8 @@
   (initial-state nil :type boolean)
   (initial-orientation (m4:mat 1) :type m4:mat)
   (key-state (u:dict #'eq) :type hash-table)
-  (key-speed 30f0 :type single-float)
-  (mouse-sensitivity 5f0 :type single-float))
+  (key-speed 30f0 :type u:f32)
+  (mouse-sensitivity 5f0 :type u:f32))
 
 (defun make-free-look-state (camera)
   (%make-free-look-state :camera camera))

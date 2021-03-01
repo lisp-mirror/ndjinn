@@ -7,10 +7,10 @@
             (:predicate nil)
             (:copier nil))
   (name nil :type symbol)
-  (x 0f0 :type single-float)
-  (y 0f0 :type single-float)
-  (width 0f0 :type single-float)
-  (height 0f0 :type single-float))
+  (x 0f0 :type u:f32)
+  (y 0f0 :type u:f32)
+  (width 0f0 :type u:f32)
+  (height 0f0 :type u:f32))
 
 (u:define-printer (viewport-spec stream)
   (format stream "~s" (viewport-spec-name viewport-spec)))
@@ -54,10 +54,10 @@
   camera
   (draw-order nil :type (or avl:tree null))
   picker
-  (x 0f0 :type single-float)
-  (y 0f0 :type single-float)
-  (width 0f0 :type single-float)
-  (height 0f0 :type single-float))
+  (x 0f0 :type u:f32)
+  (y 0f0 :type u:f32)
+  (width 0f0 :type u:f32)
+  (height 0f0 :type u:f32))
 
 (u:define-printer (viewport stream)
   (format stream "~s" (viewport-spec-name (viewport-spec viewport))))

@@ -11,9 +11,9 @@
 (defstruct (gamepad-analog-state
             (:predicate nil)
             (:copier nil))
-  (x 0f0 :type single-float)
-  (y 0f0 :type single-float)
-  (deadzone 0f0 :type single-float))
+  (x 0f0 :type u:f32)
+  (y 0f0 :type u:f32)
+  (deadzone 0f0 :type u:f32))
 
 (u:define-constant +gamepad-axis-names+
     #((:left-stick :x) (:left-stick :y) (:right-stick :x) (:right-stick :y)

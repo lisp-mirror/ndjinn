@@ -46,7 +46,7 @@
   (when velocity
     (setf (transform-state-incremental state) velocity)))
 
-(u:fn-> interpolate-vector (transform-state single-float) v3:vec)
+(u:fn-> interpolate-vector (transform-state u:f32) v3:vec)
 (u:defun-inline interpolate-vector (state factor)
   (declare (optimize speed))
   (v3:lerp! (transform-state-interpolated state)
@@ -54,7 +54,7 @@
             (transform-state-current state)
             factor))
 
-(u:fn-> interpolate-quaternion (transform-state single-float) q:quat)
+(u:fn-> interpolate-quaternion (transform-state u:f32) q:quat)
 (u:defun-inline interpolate-quaternion (state factor)
   (declare (optimize speed))
   (q:slerp! (transform-state-interpolated state)
@@ -62,7 +62,7 @@
             (transform-state-current state)
             factor))
 
-(u:fn-> transform-node/vector (transform-state single-float) null)
+(u:fn-> transform-node/vector (transform-state u:f32) null)
 (defun transform-node/vector (state delta)
   (declare (optimize speed))
   (let ((current (transform-state-current state))
@@ -72,7 +72,7 @@
     (v3:+! current current incremental-delta)
     nil))
 
-(u:fn-> transform-node/quaternion (transform-state single-float) null)
+(u:fn-> transform-node/quaternion (transform-state u:f32) null)
 (defun transform-node/quaternion (state delta)
   (declare (optimize speed))
   (let ((current (transform-state-current state))

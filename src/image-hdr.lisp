@@ -6,7 +6,7 @@
   stream
   (position 0 :type u:ub32)
   (end 0 :type u:ub32)
-  (data (make-array 0 :element-type 'u:ub8) :type u:ub8a))
+  (data (u:make-ub8-array 0) :type u:ub8a))
 
 (defun hdr-image-buffer-empty-p (buffer)
   (>= (hdr-image-buffer-position buffer)
@@ -170,7 +170,7 @@
 
 (defmethod %load-image ((type (eql :hdr)) path)
   (u:with-binary-input (in path)
-    (let* ((data (make-array 8192 :element-type 'u:ub8 :initial-element 0))
+    (let* ((data (u:make-ub8-array 8192))
            (buffer (make-hdr-image-buffer :stream in :data data))
            (header (read-hdr-image-header buffer))
            (width (getf header :width))

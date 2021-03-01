@@ -25,7 +25,7 @@
 (defun evaluate-curve (entity parameter)
   (v3:+ (v3:* (curve:evaluate (curve/data entity)
                               parameter
-                              :even-spacing (curve/even-spacing entity))
+                              :even-spacing-p (curve/even-spacing entity))
               (get-scale entity))
         (get-translation entity)))
 
@@ -56,7 +56,7 @@
              (even-spacing (curve/even-spacing curve))
              (segments (curve:collect-segments data
                                                (curve/divisions curve)
-                                               :even-spacing even-spacing)))
+                                               :even-spacing-p even-spacing)))
         (setf (curve/data curve) data
               (curve/segments curve) segments))
       (error "Curve spec ~s not defined." name))
@@ -66,7 +66,7 @@
   (u:when-let ((data (curve/data curve)))
     (curve:collect-segments data
                             (curve/divisions curve)
-                            :even-spacing (curve/even-spacing curve))))
+                            :even-spacing-p (curve/even-spacing curve))))
 
 (defun initialize-curve-visualization (curve)
   (when (curve/visualize curve)

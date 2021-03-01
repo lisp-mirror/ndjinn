@@ -37,13 +37,13 @@
   (:method ((uuid uuid:uuid))
     (u:href (scene-uuids (current-scene =context=)) uuid))
   (:method ((uuid string))
-    (u:href (scene-uuids (current-scene =context=)) (uuid:string->uuid uuid))))
+    (u:href (scene-uuids (current-scene =context=)) (uuid:from-string uuid))))
 
 (defun get-display-id (entity)
   (id/display entity))
 
 (defun get-uuid (entity)
-  (uuid:uuid->string (id/uuid entity)))
+  (uuid:to-string (id/uuid entity)))
 
 ;;; entity hooks
 

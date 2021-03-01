@@ -21,7 +21,7 @@
   (:local-nicknames
    (#:avl #:algae.avl-tree)
    (#:const #:origin.constants)
-   (#:curve #:algae.cubic-bezier)
+   (#:curve #:cubic-bezier)
    (#:dll #:algae.doubly-linked-list)
    (#:ff #:filtered-functions)
    (#:font #:3b-bmfont)
@@ -41,7 +41,7 @@
    (#:ss #:split-sequence)
    (#:sv #:static-vectors)
    (#:u #:golden-utils)
-   (#:uuid #:algae.uuid)
+   (#:uuid #:random-uuid)
    (#:v2 #:origin.vec2)
    (#:v3 #:origin.vec3)
    (#:v4 #:origin.vec4))

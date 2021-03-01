@@ -16,6 +16,7 @@
                #:cl-opengl
                #:cl-slug
                #:closer-mop
+               #:cubic-bezier
                #:fast-io
                #:filtered-functions
                #:global-vars
@@ -25,6 +26,7 @@
                #:origin
                #:pngload
                #:printv
+               #:random-uuid
                #:sdl2
                #:sdl2-mixer
                #:shadow

@@ -4,8 +4,7 @@
   :description "A professional-quality game engine with an emphasis on productivity."
   :author ("Michael Fiano <mail@mfiano.net>")
   :license "MIT"
-  :source-control (:git "https://git.mfiano.net/mfiano/ndjinn")
-  :bug-tracker "https://git.mfiano.net/mfiano/ndjinn/issues"
+  :homepage "https://git.mfiano.net/mfiano/ndjinn"
   :encoding :utf-8
   :depends-on (#:3b-bmfont
                #:3b-bmfont/json

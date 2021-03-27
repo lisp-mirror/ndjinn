@@ -26,9 +26,9 @@
   (lambda (program k v)
     (loop :with unit-state = (material-texture-unit-state material)
           :with unit-count = (+ unit-state dimensions)
-          :for texture-name :in v
+          :for texture :in v
           :for unit :from unit-state :to unit-count
-          :do (bind-texture v unit)
+          :do (bind-texture texture unit)
           :collect unit :into units
           :finally (incf (material-texture-unit-state material) dimensions)
                    (shadow:uniform-int-array program k units))))
